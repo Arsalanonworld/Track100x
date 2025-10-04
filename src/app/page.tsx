@@ -1,8 +1,10 @@
+
 'use client';
 
 import { WhaleFeed } from '@/components/whale-feed';
 import { BarChart, Bell, CheckCircle, Zap } from 'lucide-react';
 import { TypewriterHero } from '@/components/typewriter-hero';
+import { HomePageCta } from '@/components/home-page-cta';
 
 const features = [
   {
@@ -45,6 +47,9 @@ export default function HomePage() {
 
       {/* Whale Feed Section */}
       <WhaleFeed />
+
+      {/* CTA Section */}
+      <HomePageCta />
     </div>
   );
 }
