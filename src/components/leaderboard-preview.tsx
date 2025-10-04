@@ -37,7 +37,7 @@ export function LeaderboardPreview() {
           </Link>
         </Button>
       </div>
-      <Card>
+      <Card className="hover:shadow-lg">
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <Table>
@@ -52,7 +52,7 @@ export function LeaderboardPreview() {
               </TableHeader>
               <TableBody>
                 {topWallets.map((wallet, index) => (
-                  <TableRow key={wallet.rank}>
+                  <TableRow key={wallet.rank} className="hover:shadow-sm">
                     <TableCell className="font-medium text-lg text-center flex items-center justify-center gap-2">
                       {index === 0 ? <Trophy className="h-5 w-5 text-yellow-500" /> : wallet.rank}
                     </TableCell>

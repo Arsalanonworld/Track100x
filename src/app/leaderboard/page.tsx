@@ -93,7 +93,7 @@ export default function LeaderboardPage() {
               </TableHeader>
               <TableBody>
                 {walletLeaderboard.map((wallet) => (
-                  <TableRow key={wallet.rank}>
+                  <TableRow key={wallet.rank} className="hover:shadow-md">
                     <TableCell className="font-medium text-lg text-center">
                       {wallet.rank}
                     </TableCell>

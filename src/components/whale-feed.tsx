@@ -78,7 +78,7 @@ export function WhaleFeed() {
                 <Accordion type="single" collapsible className="space-y-2">
                     {whaleTransactions.map((tx) => (
                         <AccordionItem value={tx.id} key={tx.id} className="border-b-0">
-                             <Card className="overflow-hidden">
+                             <Card className="overflow-hidden hover:shadow-md hover:-translate-y-px">
                                 <div className="flex items-center p-4">
                                      {/* Amount & Token */}
                                     <div className="flex items-center gap-4 flex-1">
@@ -123,7 +123,7 @@ export function WhaleFeed() {
                                                 </Tooltip>
                                             </DialogTrigger>
                                         </TooltipProvider>
-                                        <AccordionTrigger className="p-2 hover:bg-accent rounded-md [&[data-state=open]>svg]:-rotate-180">
+                                        <AccordionTrigger className="p-2 hover:bg-accent rounded-md [&[data-state=open]>svg]:-rotate-180 transition-transform">
                                             <MoreVertical className="h-4 w-4"/>
                                         </AccordionTrigger>
                                     </div>

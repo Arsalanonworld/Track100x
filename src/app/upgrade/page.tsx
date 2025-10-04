@@ -87,7 +87,7 @@ export default function UpgradePage() {
              <p className="text-lg text-muted-foreground mt-4">Here's how Track100x Pro gives you a real-time edge.</p>
              <div className="mt-12 grid md:grid-cols-3 gap-8 text-left">
                 {features.map(feature => (
-                    <Card key={feature.title} className="bg-card/50">
+                    <Card key={feature.title} className="bg-card/50 hover:bg-card hover:shadow-lg hover:-translate-y-1">
                         <CardHeader>
                             <div className="bg-primary/10 text-primary h-12 w-12 rounded-lg flex items-center justify-center mb-4">
                                 <feature.icon className="h-6 w-6"/>
@@ -110,7 +110,7 @@ export default function UpgradePage() {
             </div>
 
             <div className="grid md:grid-cols-2 gap-8 items-start max-w-4xl mx-auto mt-12">
-                <Card className="border-2">
+                <Card className="border-2 hover:shadow-xl hover:-translate-y-1">
                     <CardHeader>
                         <CardTitle className="text-3xl font-headline">Free</CardTitle>
                         <CardDescription>
@@ -136,7 +136,7 @@ export default function UpgradePage() {
                         <Button className="w-full" variant="secondary" disabled>Your Current Plan</Button>
                     </CardFooter>
                 </Card>
-                <Card className="border-2 border-primary shadow-2xl shadow-primary/20 relative">
+                <Card className="border-2 border-primary shadow-2xl shadow-primary/20 relative hover:-translate-y-1">
                     <div className="absolute top-0 right-4 -mt-3">
                          <div className="bg-primary text-primary-foreground text-xs font-semibold px-3 py-1 rounded-full">MOST POPULAR</div>
                     </div>
@@ -176,7 +176,7 @@ export default function UpgradePage() {
              <Accordion type="single" collapsible className="w-full mt-8">
                 {faqs.map(faq => (
                     <AccordionItem value={faq.question} key={faq.question}>
-                        <AccordionTrigger className="text-lg font-semibold">{faq.question}</AccordionTrigger>
+                        <AccordionTrigger className="text-lg font-semibold hover:text-primary transition-colors">{faq.question}</AccordionTrigger>
                         <AccordionContent className="text-base text-muted-foreground">
                             {faq.answer}
                         </AccordionContent>

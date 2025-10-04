@@ -150,7 +150,7 @@ export default function AlertsPage() {
                         <AlertTitle className="text-primary">Upgrade to Pro</AlertTitle>
                         <AlertDescription>
                             You have {Math.max(0, freeAlertLimit - activeAlertCount)} of {freeAlertLimit} free alerts remaining. {' '}
-                            <a href="/upgrade" className="font-semibold hover:underline">Upgrade</a> for unlimited alerts & advanced rules.
+                            <a href="/upgrade" className="font-semibold hover:text-primary/90 transition-colors">Upgrade</a> for unlimited alerts & advanced rules.
                         </AlertDescription>
                     </Alert>
                  )}
@@ -159,7 +159,7 @@ export default function AlertsPage() {
                     <Accordion type="single" collapsible className="space-y-4">
                         {alerts.map((alert) => (
                             <AccordionItem value={alert.id} key={alert.id} className="border-b-0">
-                                <Card className="overflow-hidden">
+                                <Card className="overflow-hidden hover:shadow-md hover:-translate-y-px">
                                     <div className="flex items-center p-4">
                                         <div className="flex-shrink-0">
                                         {alert.alertType === 'wallet' ? <Wallet className="h-6 w-6 text-accent-foreground"/> : <Tag className="h-6 w-6 text-accent-foreground"/>}

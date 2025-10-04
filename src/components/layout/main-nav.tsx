@@ -22,7 +22,7 @@ export function MainNav() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                    "flex items-center gap-2 transition-colors hover:text-foreground/80",
+                    "flex items-center gap-2 transition-colors hover:text-foreground",
                     pathname === item.href ? "text-foreground" : "text-foreground/60"
                 )}
             >
@@ -33,7 +33,7 @@ export function MainNav() {
          <Link
             href="/upgrade"
             className={cn(
-                "flex items-center gap-2 transition-colors text-primary font-semibold hover:text-primary/80",
+                "flex items-center gap-2 transition-colors text-primary font-semibold hover:text-primary/90",
             )}
         >
             <Zap className="h-4 w-4" />
