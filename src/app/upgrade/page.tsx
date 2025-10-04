@@ -18,14 +18,12 @@ import { AnimatedButton } from '@/components/ui/animated-button';
 
 
 const features = [
-  { name: 'Live Whale Feed', free: '15 min delay', pro: 'Real-time (0-delay)' },
+  { name: 'Live Whale Feed', free: '1-2 min delay', pro: 'Real-time (0-delay)' },
   { name: 'Leaderboard Access', free: 'Top 10 Wallets', pro: 'Top 100 + History' },
-  { name: 'Alerts', free: '3 Active Alerts', pro: 'Unlimited Alerts' },
+  { name: 'Alerts', free: '1 Active Alert', pro: 'Unlimited Alerts' },
   { name: 'Advanced Alert Builder', free: false, pro: true },
-  { name: 'Premium Insights & Research', free: false, pro: true },
-  { name: 'AI-Curated News Feed', free: false, pro: true },
-  { name: 'Multi-Channel Notifications', free: 'Email only', pro: 'Email, Telegram, Discord' },
-  { name: 'Data Export (CSV)', free: false, pro: true },
+  { name: 'Premium Insights & Research', free: 'Limited Access', pro: 'Full Access' },
+  { name: 'Multi-Channel Notifications', free: 'In-app only', pro: 'Email, Telegram, Discord' },
 ];
 
 const proFeatures = [
@@ -225,9 +223,9 @@ export default function UpgradePage() {
                 </CardHeader>
                 <CardContent className="flex-1 space-y-4">
                     {billingCycle === 'monthly' ? (
-                        <p className="text-4xl font-bold">$49<span className="text-lg font-normal text-muted-foreground">/month</span></p>
+                        <p className="text-4xl font-bold">$29<span className="text-lg font-normal text-muted-foreground">/month</span></p>
                     ) : (
-                         <p className="text-4xl font-bold">$490<span className="text-lg font-normal text-muted-foreground">/year</span></p>
+                         <p className="text-4xl font-bold">$290<span className="text-lg font-normal text-muted-foreground">/year</span></p>
                     )}
                     <ul className="space-y-3 text-sm">
                         {features.map(feature => (
@@ -301,3 +299,5 @@ export default function UpgradePage() {
     </div>
   );
 }
+
+    
