@@ -95,7 +95,7 @@ export default function UpgradePage() {
     
   
   return (
-    <div className="bg-background text-foreground -mt-8 -mx-8">
+    <div className="bg-background text-foreground -mt-8 -mx-4 sm:-mx-8">
       {/* Hero Section */}
       <section className="py-16 sm:py-24 text-center relative overflow-hidden">
         <div 

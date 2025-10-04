@@ -64,17 +64,17 @@ export default function HeroSection() {
     }, [text, isDeleting, phraseIndex]);
 
     return (
-        <section className="relative overflow-hidden bg-gradient-to-b from-card to-background flex flex-col items-center justify-center min-h-[280px] py-12 lg:py-8">
+        <section className="relative overflow-hidden bg-gradient-to-b from-card to-background flex flex-col items-center justify-center min-h-[280px] py-12">
             <div className="absolute inset-0 bg-[url('/grid.svg')] bg-repeat [mask-image:linear-gradient(to_bottom,white_5%,transparent_80%)] dark:opacity-20"></div>
             <div className="container mx-auto px-4 text-center relative">
-                <h1 className="relative text-4xl font-extrabold tracking-tighter sm:text-5xl lg:text-6xl text-foreground inline-block h-20 items-center">
+                <h1 className="relative text-3xl font-extrabold tracking-tighter sm:text-5xl lg:text-6xl text-foreground inline-block h-16 sm:h-20 items-center">
                     <span>{text}</span>
                     <span className="absolute -right-2 top-0 bottom-0 w-1.5 bg-primary animate-blinking-cursor"></span>
                 </h1>
                  <p className="max-w-2xl mx-auto mt-4 text-lg text-muted-foreground">
                     The ultimate wallet intelligence platform. Track whale transactions and get real-time smart alerts.
                 </p>
-                 <div className="mt-8 flex flex-wrap items-center justify-center gap-x-8 gap-y-4">
+                 <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-4 sm:gap-x-8">
                     {features.map((feature) => (
                        <div key={feature.label} className="flex items-center gap-3">
                             {feature.icon}

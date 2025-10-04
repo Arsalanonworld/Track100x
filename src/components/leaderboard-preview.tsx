@@ -53,7 +53,7 @@ export function LeaderboardPreview() {
               <TableBody>
                 {topWallets.map((wallet, index) => (
                   <TableRow key={wallet.rank} className="hover:shadow-sm">
-                    <TableCell className="font-medium text-lg text-center flex items-center justify-center gap-2">
+                    <TableCell className="font-medium text-base sm:text-lg text-center flex items-center justify-center gap-2">
                       {index === 0 ? <Trophy className="h-5 w-5 text-yellow-500" /> : wallet.rank}
                     </TableCell>
                     <TableCell>

@@ -88,7 +88,7 @@ const TransactionCard = ({ tx }: TransactionCardProps) => {
                 <Card className="w-full hover:shadow-md transition-shadow duration-200">
                     <CollapsibleTrigger asChild>
                         <div className="cursor-pointer">
-                            <CardContent className="p-4">
+                            <CardContent className="p-3 sm:p-4">
                                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                                     {/* Mobile: Top Row / Desktop: Left Column */}
                                     <div className="flex justify-between items-center md:flex-none md:w-1/4">
