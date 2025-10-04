@@ -58,7 +58,7 @@ export default function InsightsPage() {
 
   const lockedArticles = useMemo(() => {
     return filteredArticles.slice(getVisibleArticleCount(), getVisibleArticleCount() + 3);
-  }, [filteredArticles, isPro, user]);
+  }, [filteredArticles, getVisibleArticleCount]);
 
   const hasMoreArticles = filteredArticles.length > visibleArticles.length;
   const showLoginWall = !user && !isUserLoading;

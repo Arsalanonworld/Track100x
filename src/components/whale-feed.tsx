@@ -143,7 +143,15 @@ export function WhaleFeed() {
   );
 
   const PaginationControls = () => {
-    if (!canPaginate) return null;
+    if (!canPaginate) {
+        return (
+            <div className="text-center mt-6">
+                <Button variant="link" asChild>
+                    <Link href="/auth/signup">Sign up to see more transactions</Link>
+                </Button>
+            </div>
+        )
+    };
 
     return (
      <div className="flex justify-center items-center gap-4 mt-6">

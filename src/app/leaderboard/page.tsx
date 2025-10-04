@@ -239,7 +239,7 @@ export default function LeaderboardPage() {
                                   variant="ghost"
                                   size="icon"
                                   onClick={() => handleFollowToggle(wallet.address)}
-                                  disabled={!user}
+                                  disabled={isLoading || (!user && !isUserLoading)}
                                 >
                                   <Star className={cn("h-4 w-4", followedAddresses.has(wallet.address) ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground")} />
                                   <span className="sr-only">Follow wallet</span>
@@ -289,7 +289,7 @@ export default function LeaderboardPage() {
                     <TableRow>
                       <TableCell colSpan={7} className="text-center p-0">
                          <div className="p-4">
-                            <h3 className="font-semibold">Unlock the full Top 100 whales</h3>
+                            <h3 className="font-semibold">Unlock the rest of the Top 100 whales</h3>
                             <p className="text-muted-foreground text-sm mb-4">Upgrade to Pro to get full access to the leaderboard and advanced analytics.</p>
                             <AnimatedButton asChild>
                                <Link href="/upgrade">
@@ -311,5 +311,3 @@ export default function LeaderboardPage() {
     </Dialog>
   );
 }
-
-    
