@@ -44,16 +44,12 @@ export default function AccountPage() {
   
   const isLoading = isUserLoading || isUserDataLoading;
   
-  if (isLoading) {
+  if (isLoading || !user || !userData) {
     return (
       <div className="flex justify-center items-center h-[calc(100vh-200px)]">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
-  }
-
-  if (!user || !userData) {
-    return null;
   }
 
   return (

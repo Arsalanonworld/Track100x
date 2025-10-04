@@ -22,8 +22,8 @@ export default function ConfirmationPage() {
   
   const { data: userData, isLoading: isUserDataLoading } = useDoc(userDocRef);
 
-  const isPro = userData?.plan === 'pro';
   const isLoading = isUserLoading || isUserDataLoading;
+  const isPro = userData?.plan === 'pro';
 
   useEffect(() => {
     // Redirect if user is not logged in or is not a pro user after loading

@@ -12,6 +12,7 @@ import { CreditCard, Lock, Star, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Separator } from '@/components/ui/separator';
 import { doc, setDoc } from 'firebase/firestore';
+import { useDoc } from '@/firebase/firestore/use-doc';
 
 export default function CheckoutPage() {
   const { user, isUserLoading } = useUser();
@@ -27,6 +28,7 @@ export default function CheckoutPage() {
     if (!firestore || !user) return null;
     return doc(firestore, 'users', user.uid);
   }, [firestore, user]);
+  const { data: userData, isLoading: isUserDataLoading } = useDoc(userDocRef);
 
   const planDetails = useMemo(() => {
     if (plan === 'yearly') {
@@ -47,7 +49,10 @@ export default function CheckoutPage() {
     if (!isUserLoading && !user) {
       router.push('/auth/login?next=/upgrade');
     }
-  }, [user, isUserLoading, router]);
+    if (!isUserDataLoading && userData?.plan === 'pro') {
+        router.push('/account');
+    }
+  }, [user, isUserLoading, router, userData, isUserDataLoading]);
 
   const handleConfirmPayment = async () => {
     if (!userDocRef) return;
@@ -72,7 +77,9 @@ export default function CheckoutPage() {
     }
   };
   
-  if (isUserLoading || !user) {
+  const isLoading = isUserLoading || isUserDataLoading;
+
+  if (isLoading || !user) {
     return (
        <div className="flex justify-center items-center h-[calc(100vh-200px)]">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
