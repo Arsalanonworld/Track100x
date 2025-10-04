@@ -1,24 +1,20 @@
-
 'use client';
 import ActiveAlerts from '@/components/alerts/active-alerts';
 import AlertHistory from '@/components/alerts/alert-history';
 import AlertCreator from '@/components/alerts/alert-creator';
-import { useUser } from '@/firebase';
+import { useAuth } from '@/hooks/use-auth';
 import { Button } from '@/components/ui/button';
 import { Lock } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
-import Link from 'next/link';
 import PageHeader from '@/components/page-header';
-import { useTestUser } from '@/firebase/client-provider';
 
 export default function AlertsPage() {
-  const { user, isUserLoading } = useUser();
-  const { isTestUser } = useTestUser();
+  const { user, isLoading, setAuthDialogOpen } = useAuth();
 
-  if (isUserLoading && !isTestUser) {
+  if (isLoading) {
     return (
-        <div className="space-y-8">
+        <>
             <div className="space-y-2 mb-8">
                 <Skeleton className="h-10 w-2/3" />
                 <Skeleton className="h-6 w-full" />
@@ -32,15 +28,15 @@ export default function AlertsPage() {
                   <Skeleton className="h-64 w-full" />
                 </div>
             </div>
-        </div>
+        </>
     );
   }
 
-  const showLoginWall = !user && !isTestUser && !isUserLoading;
+  const showLoginWall = !user && !isLoading;
 
   return (
       <div className="space-y-8">
-          <PageHeader
+           <PageHeader
             title="Your Alerts"
             description="Track whales, wallets, and tokens in real-time. Never miss a big move."
            />
@@ -66,8 +62,8 @@ export default function AlertsPage() {
                          <p className="text-muted-foreground mb-4 max-w-sm">
                             Create a free account to set up real-time notifications for your favorite wallets and tokens.
                          </p>
-                         <Button size="lg" asChild>
-                             <Link href="/auth/login?next=/alerts">Log In / Sign Up</Link>
+                         <Button size="lg" onClick={() => setAuthDialogOpen(true)}>
+                             Log In / Sign Up
                          </Button>
                      </div>
                  </div>

@@ -5,7 +5,7 @@ import { useTestUser } from '@/firebase/client-provider';
 
 export function useAuth() {
   const { user, isUserLoading } = useUser();
-  const { isTestUser } = useTestUser();
+  const { isTestUser, authDialogOpen, setAuthDialogOpen } = useTestUser();
   const firestore = useFirestore();
 
   const userDocRef = useMemoFirebase(() => {
@@ -18,5 +18,5 @@ export function useAuth() {
   const isPro = isTestUser ? true : userData?.plan === 'pro';
   const isLoading = isUserLoading || isUserDataLoading;
 
-  return { user, isPro, isLoading, isTestUser };
+  return { user, isPro, isLoading, isTestUser, authDialogOpen, setAuthDialogOpen };
 }

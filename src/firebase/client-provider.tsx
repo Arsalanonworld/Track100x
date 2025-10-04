@@ -18,12 +18,15 @@ interface FirebaseClientProviderProps {
 const TestUserContext = createContext({
   isTestUser: false,
   setIsTestUser: (isTest: boolean) => {},
+  authDialogOpen: false,
+  setAuthDialogOpen: (isOpen: boolean) => {},
 });
 
 export function FirebaseClientProvider({
   children,
 }: FirebaseClientProviderProps) {
   const [isTestUser, setIsTestUser] = useState(false);
+  const [authDialogOpen, setAuthDialogOpen] = useState(false);
 
   const firebaseServices = useMemo(() => {
     // Initialize Firebase on the client side, once per component mount.
@@ -34,8 +37,10 @@ export function FirebaseClientProvider({
     () => ({
       isTestUser,
       setIsTestUser,
+      authDialogOpen,
+      setAuthDialogOpen,
     }),
-    [isTestUser]
+    [isTestUser, authDialogOpen]
   );
 
   return (
