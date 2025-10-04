@@ -120,11 +120,6 @@ export function WhaleFeed() {
           <SelectItem value="swap">Swap</SelectItem>
         </SelectContent>
       </Select>
-      {!isPro && (
-        <p className="text-xs text-muted-foreground text-center md:text-left">
-          Multi-filtering is a Pro feature. <Link href="/upgrade" className="underline font-semibold">Upgrade to unlock.</Link>
-        </p>
-      )}
     </>
   );
 
