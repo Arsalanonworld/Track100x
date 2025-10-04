@@ -81,7 +81,9 @@ export default function UpgradePage() {
     }, [firestore, user]);
 
     const { data: userData, isLoading: isUserDataLoading } = useDoc(userDocRef);
+    
     const isPro = userData?.plan === 'pro';
+    const isLoading = isUserLoading || isUserDataLoading;
 
     const handleUpgradeClick = () => {
         if (!user) {
@@ -91,7 +93,6 @@ export default function UpgradePage() {
         }
     }
     
-    const isLoading = isUserLoading || isUserDataLoading;
   
   return (
     <div className="bg-background text-foreground -mt-8 -mx-8">

@@ -8,10 +8,12 @@ import { Input } from '@/components/ui/input';
 import { Search, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { useUser } from '@/firebase';
-import { useAuthDialog } from '@/hooks/use-auth-dialog';
 import Link from 'next/link';
 import { Separator } from '@/components/ui/separator';
+import { useUser, useFirestore, useMemoFirebase } from '@/firebase';
+import { useAuthDialog } from '@/hooks/use-auth-dialog';
+import { useDoc } from '@/firebase/firestore/use-doc';
+import { doc } from 'firebase/firestore';
 
 const allCategories = ['All', ...Array.from(new Set(allArticles.map(a => a.category)))];
 
@@ -19,10 +21,17 @@ export default function InsightsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const { user, isUserLoading } = useUser();
+  const firestore = useFirestore();
   const { setAuthDialogOpen } = useAuthDialog();
 
-  // In a real app, isPro would be derived from user data/entitlements
-  const isPro = false; 
+  const userDocRef = useMemoFirebase(() => {
+    if (!firestore || !user) return null;
+    return doc(firestore, 'users', user.uid);
+  }, [firestore, user]);
+
+  const { data: userData, isLoading: isUserDataLoading } = useDoc(userDocRef);
+
+  const isPro = userData?.plan === 'pro';
 
   const filteredArticles = useMemo(() => {
     return allArticles.filter(article => {

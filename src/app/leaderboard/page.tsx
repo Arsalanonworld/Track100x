@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState } from 'react';
@@ -55,7 +56,18 @@ export default function LeaderboardPage() {
   const isLoading = isUserLoading || isUserDataLoading;
 
   const topNFree = userData?.entitlements?.leaderboard?.topN || 10;
-  const leaderboardData = isPro ? walletLeaderboard : walletLeaderboard.slice(0, topNFree);
+  
+  // Decide which data to show based on auth state and plan
+  let leaderboardData;
+  if (isPro) {
+    leaderboardData = walletLeaderboard; // Pro users see everything
+  } else if (user) {
+    leaderboardData = walletLeaderboard.slice(0, topNFree); // Logged-in free users see top N
+  } else {
+    leaderboardData = walletLeaderboard.slice(0, 5); // Guests see top 5
+  }
+
+  const showProLock = !isPro;
 
   return (
     <Dialog onOpenChange={(isOpen) => !isOpen && setSelectedWallet(undefined)}>
@@ -69,7 +81,7 @@ export default function LeaderboardPage() {
            <div className="absolute inset-0 z-20 flex items-center justify-center bg-background/80 backdrop-blur-sm">
              <Loader2 className="h-8 w-8 animate-spin text-primary" />
            </div>
-        ) : !isPro && user && (
+        ) : showProLock && (
            <ProFeatureLock
             title="View the Full Leaderboard"
             description="Upgrade to Pro to unlock the top 100 wallets, deep wallet profiles, and more."

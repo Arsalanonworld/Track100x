@@ -1,18 +1,14 @@
 
 'use client';
 
-import { useAuthDialog } from '@/hooks/use-auth-dialog';
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { LoginForm } from '@/components/auth-components';
 
 export default function LoginPage() {
-    const { setAuthDialogOpen } = useAuthDialog();
-    const router = useRouter();
-
-    useEffect(() => {
-        setAuthDialogOpen(true);
-        router.push('/');
-    }, [setAuthDialogOpen, router]);
-    
-    return null;
+    return (
+        <div className="flex justify-center items-center py-8">
+            <div className="w-full max-w-md">
+                <LoginForm />
+            </div>
+        </div>
+    );
 }
