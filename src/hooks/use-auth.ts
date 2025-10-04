@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useUser as useFirebaseUser } from '@/firebase';
+import { useAuthDialog } from './use-auth-dialog';
 
 export interface User {
   uid: string;
@@ -11,18 +11,21 @@ export interface User {
 }
 
 export const useAuth = () => {
-  const { user, isUserLoading, userError } = useFirebaseUser();
-
-  // Here you can add logic to fetch user profile from Firestore
-  // and determine if they are a "Pro" user.
-  // For now, we will just pass through the Firebase user.
-
-  const isPro = true; // Placeholder
+  const { setAuthDialogOpen } = useAuthDialog();
+  
+  // Mock user for testing purposes
+  const mockUser: User = {
+    uid: 'test-user-123',
+    email: 'test@example.com',
+    displayName: 'Test User',
+    photoURL: null,
+  };
 
   return {
-    user: user as User | null,
-    loading: isUserLoading,
-    isPro: isPro, // This would be derived from Firestore data
-    userError: userError,
+    user: mockUser,
+    loading: false,
+    isPro: true, // Always return true for isPro
+    userError: null,
+    setAuthDialogOpen,
   };
 };
