@@ -88,27 +88,26 @@ export default function WatchlistPage() {
                 {watchlist && watchlist.length > 0 ? (
                     watchlist.map((item: any) => (
                         <Card key={item.id}>
-                            <CardHeader className="flex flex-row items-center justify-between">
-                                <div>
-                                    <CardTitle className="flex items-center gap-2">
+                            <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                                <div className="flex-1">
+                                    <CardTitle className="flex items-center gap-2 mb-2">
                                         <Star className="h-5 w-5 text-yellow-400 fill-yellow-400" />
                                         <span>Wallet</span>
                                     </CardTitle>
-                                    <div className="text-sm text-muted-foreground mt-2">
-                                        <Badge variant="secondary" className="font-mono">{item.id}</Badge>
-                                    </div>
+                                    <Badge variant="secondary" className="font-mono">{item.id}</Badge>
                                 </div>
                                  <DialogTrigger asChild>
                                     <Button
                                       variant="outline"
+                                      className="w-full sm:w-auto"
                                     >
                                       <Zap className="h-4 w-4 mr-2" />
                                       Set New Alert
                                     </Button>
                                 </DialogTrigger>
                             </CardHeader>
-                            <CardContent className="space-y-3">
-                                <h4 className="font-semibold text-muted-foreground text-sm">Recent Transactions:</h4>
+                            <CardContent className="space-y-3 pt-0">
+                                <h4 className="font-semibold text-muted-foreground text-sm pt-4 border-t">Recent Transactions:</h4>
                                 {getWalletTransactions(item.id).length > 0 ? (
                                     getWalletTransactions(item.id).map(tx => (
                                         <TransactionCard key={tx.id} tx={tx} />
