@@ -44,7 +44,7 @@ export function WhaleFeed() {
 
 
   return (
-        <Card>
+        <Card className="border-x-0 sm:border-x">
             <CardHeader>
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div className="flex-1">

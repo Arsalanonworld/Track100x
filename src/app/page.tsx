@@ -8,21 +8,21 @@ import { LeaderboardPreview } from '@/components/leaderboard-preview';
 
 export default function HomePage() {
   return (
-    <div className="space-y-12 md:space-y-16 -mt-8">
+    <div className="space-y-12 md:space-y-16 lg:-mt-8">
       {/* Hero Section */}
       <HeroSection />
 
-      <div className="container space-y-12 md:space-y-16">
-        {/* Whale Feed Section */}
-        <div id="whale-feed">
-            <WhaleFeed />
-        </div>
+      {/* Whale Feed Section - Full width on mobile */}
+      <div id="whale-feed">
+          <WhaleFeed />
+      </div>
 
-        {/* Leaderboard Preview Section */}
-        <LeaderboardPreview />
-
-        {/* CTA Section */}
-        <HomePageCta />
+      {/* Other sections with container for padding */}
+      <div className="container">
+          <div className="space-y-12 md:space-y-16">
+            <LeaderboardPreview />
+            <HomePageCta />
+          </div>
       </div>
     </div>
   );

@@ -64,7 +64,7 @@ export default function HeroSection() {
     }, [text, isDeleting, phraseIndex]);
 
     return (
-        <section className="relative overflow-hidden bg-gradient-to-b from-card to-background flex flex-col items-center justify-center min-h-[280px] py-8">
+        <section className="relative overflow-hidden bg-gradient-to-b from-card to-background flex flex-col items-center justify-center min-h-[280px] py-12 lg:py-8">
             <div className="absolute inset-0 bg-[url('/grid.svg')] bg-repeat [mask-image:linear-gradient(to_bottom,white_5%,transparent_80%)] dark:opacity-20"></div>
             <div className="container mx-auto px-4 text-center relative">
                 <h1 className="relative text-4xl font-extrabold tracking-tighter sm:text-5xl lg:text-6xl text-foreground inline-block h-20 items-center">
@@ -86,4 +86,3 @@ export default function HeroSection() {
         </section>
     );
 }
-
