@@ -182,7 +182,7 @@ export default function AccountPage() {
                         {isPro ? (
                             <>
                             <p className="text-muted-foreground">You have access to all Pro features.</p>
-                                <Button className="w-full" onClick={handleManageSubscription} disabled={isCancelling}>
+                                <Button className="w-full" onClick={handleManageSubscription} disabled={isCancelling || isLoading}>
                                 {isCancelling && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                 Cancel Subscription
                                 </Button>
