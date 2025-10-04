@@ -8,6 +8,7 @@ import HeroSection from '@/components/hero-section';
 import { HomePageCta } from '@/components/home-page-cta';
 import { LeaderboardPreview } from '@/components/leaderboard-preview';
 import Link from 'next/link';
+import HeroStats from '@/components/hero-stats';
 
 export default function HomePage() {
   const scrollToFeed = () => {
@@ -18,13 +19,10 @@ export default function HomePage() {
     <div className="space-y-16 md:space-y-24 -mt-8">
       {/* Hero Section */}
       <HeroSection />
+      <HeroStats />
 
       <div className="container space-y-16 md:space-y-24">
         <div className="text-center">
-            <p className="max-w-2xl mx-auto text-lg text-muted-foreground mb-8">
-            Stop guessing. Start tracking. Get real-time alerts on major whale
-            transactions and decode on-chain data to make smarter trades.
-            </p>
             <div className="flex justify-center items-center gap-4">
             <Button size="lg" onClick={scrollToFeed}>
                 <ArrowDown />
