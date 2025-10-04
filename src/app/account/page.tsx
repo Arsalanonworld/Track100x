@@ -11,7 +11,7 @@ import { logout } from '@/lib/actions';
 import { doc } from 'firebase/firestore';
 import { useDoc } from '@/firebase/firestore/use-doc';
 import { Badge } from '@/components/ui/badge';
-import { Loader2 } from 'lucide-react';
+import { Bell, Mail, MessageSquare, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useAuthDialog } from '@/hooks/use-auth-dialog';
 import { AnimatedButton } from '@/components/ui/animated-button';
@@ -84,6 +84,47 @@ export default function AccountPage() {
                 </Button>
                 </CardContent>
             </Card>
+
+            {isPro && (
+              <Card className="mt-8">
+                  <CardHeader>
+                      <CardTitle>Notification Channels</CardTitle>
+                      <CardDescription>Connect your accounts to receive real-time alerts on your favorite platforms.</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                      <div className="flex items-center justify-between rounded-lg border p-4">
+                          <div className="flex items-center gap-4">
+                              <Mail className="h-6 w-6 text-muted-foreground" />
+                              <div>
+                                <p className="font-semibold">Email Notifications</p>
+                                <p className="text-sm text-muted-foreground">{user.email}</p>
+                              </div>
+                          </div>
+                          <Button variant="secondary" disabled>Connected</Button>
+                      </div>
+                      <div className="flex items-center justify-between rounded-lg border p-4">
+                           <div className="flex items-center gap-4">
+                              <MessageSquare className="h-6 w-6 text-muted-foreground" />
+                              <div>
+                                <p className="font-semibold">Telegram</p>
+                                <p className="text-sm text-muted-foreground">Receive alerts via Telegram bot</p>
+                              </div>
+                          </div>
+                          <Button variant="outline">Connect</Button>
+                      </div>
+                      <div className="flex items-center justify-between rounded-lg border p-4">
+                           <div className="flex items-center gap-4">
+                              <Bell className="h-6 w-6 text-muted-foreground" />
+                              <div>
+                                <p className="font-semibold">Discord</p>
+                                <p className="text-sm text-muted-foreground">Receive alerts via Discord webhook</p>
+                              </div>
+                          </div>
+                          <Button variant="outline">Connect</Button>
+                      </div>
+                  </CardContent>
+              </Card>
+            )}
         </div>
         <div>
             <Card>
@@ -102,7 +143,7 @@ export default function AccountPage() {
                         {isPro ? (
                             <>
                                <p className="text-muted-foreground">
-                                You have access to all Pro features. Manage your subscription and billing details below.
+                                You have access to all Pro features.
                                </p>
                                 <Button className="w-full">Manage Subscription</Button>
                             </>
