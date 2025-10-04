@@ -18,7 +18,7 @@ import { useRouter } from 'next/navigation';
 import { Skeleton } from './ui/skeleton';
 import { useAuthDialog } from '@/hooks/use-auth-dialog';
 import { doc } from 'firebase/firestore';
-import { Zap } from 'lucide-react';
+import { Zap, Sparkles } from 'lucide-react';
 import { AnimatedButton } from './ui/animated-button';
 
 export function UserNav() {
@@ -32,22 +32,24 @@ export function UserNav() {
     return doc(firestore, 'users', user.uid);
   }, [firestore, user]);
 
-  const { data: userData } = useDoc(userDocRef);
+  const { data: userData, isLoading: isUserDataLoading } = useDoc(userDocRef);
   const isPro = userData?.plan === 'pro';
+  const isFree = user && !isPro;
+  const isLoading = isUserLoading || isUserDataLoading;
 
   const handleLogout = async () => {
     await logout();
     router.push('/');
   };
 
-  if (isUserLoading) {
+  if (isLoading) {
     return <Skeleton className="h-9 w-20 rounded-md" />;
   }
   
   if (!user) {
     return (
         <div className="flex items-center gap-2">
-            <Button variant="ghost" onClick={() => setAuthDialogOpen(true)}>Log In</Button>
+            <Button variant="outline" onClick={() => setAuthDialogOpen(true)}>Log In</Button>
             <AnimatedButton onClick={() => setAuthDialogOpen(true)}>
                 Sign Up
             </AnimatedButton>
@@ -90,7 +92,7 @@ export function UserNav() {
         ) : (
           <DropdownMenuItem asChild>
             <Link href="/upgrade" className="flex items-center justify-between">
-              Upgrade <Zap className="h-4 w-4 text-primary" />
+              Upgrade to Pro <Zap className="h-4 w-4 text-primary" />
             </Link>
           </DropdownMenuItem>
         )}
