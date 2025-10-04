@@ -26,7 +26,7 @@ export function UserNav() {
   };
 
   if (isUserLoading) {
-    return <Skeleton className="h-10 w-10 rounded-full" />;
+    return <Skeleton className="h-9 w-20 rounded-md" />;
   }
   
   if (!user) {
@@ -65,7 +65,7 @@ export function UserNav() {
           <Link href="/account">Account</Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link href="/settings">Settings</Link>
+          <Link href="/alerts">My Alerts</Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout}>

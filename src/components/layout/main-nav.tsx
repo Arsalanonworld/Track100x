@@ -1,18 +1,16 @@
-
 'use client'
 
 import * as React from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-
 import { cn } from "@/lib/utils"
+import { Badge } from "@/components/ui/badge"
+import { Zap, LayoutGrid, Bell, BarChart, FileText } from "lucide-react"
 
 const navItems = [
-    { href: '/', label: 'Home' },
-    { href: '/leaderboard', label: 'Leaderboard' },
-    { href: '/alerts', label: 'Alerts' },
-    { href: '/insights', label: 'Insights' },
-    { href: '/news', label: 'News'},
+    { href: '/leaderboard', label: 'Leaderboard', icon: BarChart },
+    { href: '/alerts', label: 'Alerts', icon: Bell },
+    { href: '/insights', label: 'Insights', icon: FileText },
   ];
 
 export function MainNav() {
@@ -25,13 +23,23 @@ export function MainNav() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                    "transition-colors hover:text-foreground/80",
+                    "flex items-center gap-2 transition-colors hover:text-foreground/80",
                     pathname === item.href ? "text-foreground" : "text-foreground/60"
                 )}
             >
+                <item.icon className="h-4 w-4" />
                 {item.label}
             </Link>
         ))}
+         <Link
+            href="/upgrade"
+            className={cn(
+                "flex items-center gap-2 transition-colors text-primary font-semibold hover:text-primary/80",
+            )}
+        >
+            <Zap className="h-4 w-4" />
+            Upgrade
+        </Link>
     </nav>
   )
 }
