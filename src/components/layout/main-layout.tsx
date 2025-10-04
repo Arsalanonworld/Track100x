@@ -5,11 +5,12 @@ import React from 'react';
 import Header from './header';
 import { TickerBar } from './ticker-bar';
 import { Footer } from './footer';
-import AuthDialog from '../auth-dialog';
 import { AuthDialogProvider, useAuthDialog } from '@/hooks/use-auth-dialog';
 import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import AuthDialog from '../auth-dialog';
+
 
 function MainLayoutContent({ children }: { children: React.ReactNode }) {
   const { authDialogOpen, setAuthDialogOpen } = useAuthDialog();

@@ -38,12 +38,14 @@ import Link from 'next/link';
 import { ProFeatureLock } from '@/components/pro-feature-lock';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useToast } from '@/hooks/use-toast';
+import { useAuthDialog } from '@/hooks/use-auth-dialog';
 
 export default function LeaderboardPage() {
   const [selectedWallet, setSelectedWallet] = useState<string | undefined>(undefined);
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
+  const { setAuthDialogOpen } = useAuthDialog();
 
   const userDocRef = useMemoFirebase(() => {
     if (!firestore || !user) return null;
@@ -74,7 +76,7 @@ export default function LeaderboardPage() {
 
   const handleFollowToggle = async (walletAddress: string) => {
     if (!user || !firestore) {
-      toast({ title: "Please log in to follow wallets.", variant: "destructive" });
+      setAuthDialogOpen(true);
       return;
     }
 
@@ -249,7 +251,13 @@ export default function LeaderboardPage() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => setSelectedWallet(wallet.address)}
+                          onClick={() => {
+                              if (!user) {
+                                  setAuthDialogOpen(true);
+                                  return;
+                              }
+                              setSelectedWallet(wallet.address);
+                          }}
                         >
                           <Zap className="h-4 w-4" />
                           <span className="sr-only">Create Quick Alert</span>
@@ -275,5 +283,3 @@ export default function LeaderboardPage() {
     </Dialog>
   );
 }
-
-    

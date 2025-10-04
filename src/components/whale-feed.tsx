@@ -44,6 +44,8 @@ export function WhaleFeed() {
   const transactionsPerPage = 10;
   
   const activeFilterCount = [tokenFilter, chainFilter, typeFilter].filter(f => f && f !== 'all').length;
+  
+  const canApplyMultipleFilters = isPro || activeFilterCount < 1;
 
   const handleNextPage = () => {
     if (currentPage * transactionsPerPage < mockWhaleTxs.length) {
@@ -71,9 +73,9 @@ export function WhaleFeed() {
           className="pl-10 w-full" 
           value={tokenFilter}
           onChange={(e) => setTokenFilter(e.target.value)}
-          disabled={!isPro && activeFilterCount >= 1 && tokenFilter === ''}
+          disabled={!canApplyMultipleFilters && !tokenFilter}
         />
-        {!isPro && activeFilterCount >= 1 && tokenFilter === '' && (
+        {!canApplyMultipleFilters && !tokenFilter && (
           <div className="absolute inset-y-0 right-3 flex items-center">
             <Badge variant="secondary">Pro</Badge>
           </div>
@@ -82,12 +84,12 @@ export function WhaleFeed() {
       <Select 
         value={chainFilter} 
         onValueChange={setChainFilter}
-        disabled={!isPro && activeFilterCount >= 1 && chainFilter === 'all'}
+        disabled={!canApplyMultipleFilters && chainFilter === 'all'}
       >
         <SelectTrigger className="w-full">
           <div className="flex justify-between items-center w-full">
             <SelectValue placeholder="All Chains" />
-            {!isPro && activeFilterCount >= 1 && chainFilter === 'all' && <Badge variant="secondary">Pro</Badge>}
+            {!canApplyMultipleFilters && chainFilter === 'all' && <Badge variant="secondary">Pro</Badge>}
           </div>
         </SelectTrigger>
         <SelectContent>
@@ -101,12 +103,12 @@ export function WhaleFeed() {
       <Select 
         value={typeFilter}
         onValueChange={setTypeFilter}
-        disabled={!isPro && activeFilterCount >= 1 && typeFilter === 'all'}
+        disabled={!canApplyMultipleFilters && typeFilter === 'all'}
       >
         <SelectTrigger className="w-full">
            <div className="flex justify-between items-center w-full">
               <SelectValue placeholder="All Types" />
-              {!isPro && activeFilterCount >= 1 && typeFilter === 'all' && <Badge variant="secondary">Pro</Badge>}
+              {!canApplyMultipleFilters && typeFilter === 'all' && <Badge variant="secondary">Pro</Badge>}
            </div>
         </SelectTrigger>
         <SelectContent>
@@ -148,7 +150,7 @@ export function WhaleFeed() {
                   <CardTitle className="flex-1 whitespace-nowrap">Live Whale Transactions</CardTitle>
                   
                   {/* Desktop Filters */}
-                  <div className="hidden md:flex flex-row gap-2 w-full sm:w-auto items-center">
+                  <div className="hidden md:flex flex-row gap-2 w-full max-w-lg items-center">
                     <FilterControls />
                   </div>
 
@@ -187,5 +189,3 @@ export function WhaleFeed() {
         </Card>
   );
 }
-
-    

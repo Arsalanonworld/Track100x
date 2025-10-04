@@ -16,11 +16,11 @@ import {
 } from "@/components/ui/collapsible"
 import { useToast } from "@/hooks/use-toast";
 import { getExplorerUrl } from "@/lib/explorers";
-import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogClose } from "./ui/dialog";
 import QuickAlertEditor from "./alerts/quick-alert-editor";
 import { Tooltip, TooltipProvider, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useUser, useFirestore, useMemoFirebase, useDoc, useCollection } from "@/firebase";
-import { useRouter } from "next/navigation";
+import { useAuthDialog } from "@/hooks/use-auth-dialog";
 import { addDoc, collection, serverTimestamp, doc, deleteDoc, setDoc } from "firebase/firestore";
 
 interface TransactionCardProps {
@@ -62,7 +62,7 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
     const { toast } = useToast();
     const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
-    const router = useRouter();
+    const { setAuthDialogOpen } = useAuthDialog();
     const [isAlertEditorOpen, setIsAlertEditorOpen] = useState(false);
 
     const userDocRef = useMemoFirebase(() => {
@@ -85,7 +85,7 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
 
     const handleFollowToggle = async (walletAddress: string) => {
         if (!user || !firestore) {
-            router.push('/auth/login');
+            setAuthDialogOpen(true);
             return;
         }
 
@@ -116,7 +116,7 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
     const openQuickAlertEditor = (e: React.MouseEvent) => {
         e.stopPropagation();
         if (!user) {
-            router.push('/auth/login');
+            setAuthDialogOpen(true);
             return;
         }
         if (!isPro) {
@@ -304,5 +304,3 @@ const TransactionDetails = ({ tx }: { tx: WhaleTransaction }) => {
 
 
 export default TransactionCard;
-
-    

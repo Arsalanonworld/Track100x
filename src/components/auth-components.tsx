@@ -19,7 +19,6 @@ import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 import { Terminal, Loader2, User } from 'lucide-react';
 import React from 'react';
 import { Separator } from './ui/separator';
-import { useTestUser } from '@/firebase/client-provider';
 
 function AuthError({ error }: { error?: string | null }) {
   if (!error) return null;
@@ -93,7 +92,6 @@ export function LoginForm() {
   const [loginState, loginAction] = useActionState(login, { error: null });
   const searchParams = useSearchParams();
   const next = searchParams.get('next') || '/';
-  const { isTestUser, setIsTestUser } = useTestUser();
 
   return (
     <Card>
@@ -131,22 +129,6 @@ export function LoginForm() {
             </Link>
           </div>
         </form>
-
-        <div className="relative my-4">
-          <Separator />
-          <span className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 bg-card px-2 text-xs text-muted-foreground">
-            OR
-          </span>
-        </div>
-
-        <Button
-          variant="secondary"
-          className="w-full"
-          onClick={() => setIsTestUser(!isTestUser)}
-        >
-          <User className="mr-2" />{' '}
-          {isTestUser ? 'Logout from Test Session' : 'Login as Test User'}
-        </Button>
 
         <div className="mt-4 text-center text-sm">
           Don't have an account?{' '}

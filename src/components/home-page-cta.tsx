@@ -10,11 +10,13 @@ import { doc, collection } from 'firebase/firestore';
 import { useDoc } from '@/firebase/firestore/use-doc';
 import { useState } from 'react';
 import { AnimatedButton } from './ui/animated-button';
+import { useAuthDialog } from '@/hooks/use-auth-dialog';
 
 export const HomePageCta = () => {
     const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const { setAuthDialogOpen } = useAuthDialog();
 
     const userDocRef = useMemoFirebase(() => {
         if (!firestore || !user) return null;
@@ -39,23 +41,19 @@ export const HomePageCta = () => {
             <p className="text-muted-foreground text-lg mb-6">Create a custom alert now and never miss a critical market move again.</p>
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogTrigger asChild>
-                    <AnimatedButton size="lg">
+                    <AnimatedButton size="lg" onClick={() => {
+                        if (!user) {
+                           setAuthDialogOpen(true);
+                        } else {
+                           setIsDialogOpen(true);
+                        }
+                    }}>
                         Create a Free Alert
                         <ArrowRight className="ml-2" />
                     </AnimatedButton>
                 </DialogTrigger>
-                {user && !isUserLoading ? (
+                {user && !isUserLoading && (
                     <CreateAlertModal isPro={isPro} canCreateAlert={canCreateAlert} userId={user.uid} onOpenChange={setIsDialogOpen} />
-                ) : (
-                    <DialogContent>
-                        <DialogHeader>
-                            <DialogTitle>Sign Up to Create Alerts</DialogTitle>
-                            <DialogDescription>
-                                Create a free account to get started with up to {freeAlertLimit} custom alerts.
-                            </DialogDescription>
-                        </DialogHeader>
-                        <AnimatedButton className="w-full" asChild><a href="/auth/login">Login / Sign Up</a></AnimatedButton>
-                    </DialogContent>
                 )}
             </Dialog>
         </div>
