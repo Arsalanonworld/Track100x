@@ -5,7 +5,7 @@ import React from 'react';
 import Header from './header';
 import { TickerBar } from './ticker-bar';
 import { Footer } from './footer';
-import { AuthDialogProvider, useAuthDialog } from '@/hooks/use-auth-dialog';
+import { AuthDialogProvider } from '@/hooks/use-auth-dialog';
 import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
@@ -13,13 +13,12 @@ import AuthDialog from '../auth-dialog';
 
 
 function MainLayoutContent({ children }: { children: React.ReactNode }) {
-  const { authDialogOpen, setAuthDialogOpen } = useAuthDialog();
   const pathname = usePathname();
   const isHomePage = pathname === '/';
 
   return (
     <>
-      <AuthDialog open={authDialogOpen} onOpenChange={setAuthDialogOpen} />
+      <AuthDialog />
       <TickerBar />
       <Header />
       <main className="flex-1">

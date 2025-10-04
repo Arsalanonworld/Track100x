@@ -11,9 +11,8 @@ export default function ResetPasswordPage() {
 
     useEffect(() => {
         setAuthDialogOpen(true);
-        // We can add logic here to switch to the reset password tab in the dialog
-        router.push('/?action=reset-password');
+        router.replace('/?action=reset-password');
     }, [setAuthDialogOpen, router]);
     
-    return null;
+    return null; // This page just triggers the dialog
 }

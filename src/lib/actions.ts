@@ -13,9 +13,7 @@ import { getFirestore, doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 
-// Initialize Firebase Admin SDK for server-side actions
-// Note: This is a simplified example. In a real app, you'd want to
-// initialize the admin SDK once and share the instance.
+// This function should be carefully managed to avoid re-initialization.
 function getFirebaseInstances() {
   if (!getApps().length) {
     initializeApp(firebaseConfig);
@@ -23,11 +21,16 @@ function getFirebaseInstances() {
   return { auth: getAuth(), firestore: getFirestore() };
 }
 
-export async function login(prevState: any, formData: FormData) {
+type ActionState = {
+  error?: string | null;
+  message?: string | null;
+};
+
+export async function login(prevState: ActionState, formData: FormData): Promise<ActionState> {
   const { auth } = getFirebaseInstances();
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
-  const next = formData.get('next') as string || '/';
+  const next = formData.get('next') as string || '/account';
 
   if (!email || !password) {
     return { error: 'Email and password are required.' };
@@ -36,20 +39,30 @@ export async function login(prevState: any, formData: FormData) {
   try {
     await signInWithEmailAndPassword(auth, email, password);
   } catch (error: any) {
-    return { error: error.message };
+    // Return a more user-friendly error message
+    if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+        return { error: 'Invalid email or password. Please try again.' };
+    }
+    return { error: 'An unexpected error occurred. Please try again later.' };
   }
-  revalidatePath('/');
+
+  // On success, revalidate and redirect
+  revalidatePath('/', 'layout');
   redirect(next);
 }
 
-export async function signup(prevState: any, formData: FormData) {
+export async function signup(prevState: ActionState, formData: FormData): Promise<ActionState> {
   const { auth, firestore } = getFirebaseInstances();
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
-  const next = formData.get('next') as string || '/';
+  const next = formData.get('next') as string || '/account';
 
   if (!email || !password) {
     return { error: 'Email and password are required.' };
+  }
+
+  if(password.length < 6) {
+    return { error: 'Password must be at least 6 characters long.' };
   }
 
   try {
@@ -65,32 +78,27 @@ export async function signup(prevState: any, formData: FormData) {
       plan: "free",
       createdAt: serverTimestamp(),
       entitlements: {
-        alerts: {
-          maxActive: 1,
-          channels: ["in-app"]
-        },
-        feed: {
-          delayMinutes: 2
-        },
-        leaderboard: {
-          topN: 10
-        },
+        alerts: { maxActive: 1, channels: ["in-app"] },
+        feed: { delayMinutes: 2 },
+        leaderboard: { topN: 10 },
         apiAccess: false
       },
-      quotas: {
-        exportsPerDay: 0
-      }
+      quotas: { exportsPerDay: 0 }
     });
 
   } catch (error: any) {
-    return { error: error.message };
+     if (error.code === 'auth/email-already-in-use') {
+        return { error: 'This email is already in use. Please log in.' };
+     }
+     return { error: 'An unexpected error occurred during sign up.' };
   }
 
-  revalidatePath('/');
+  revalidatePath('/', 'layout');
   redirect(next);
 }
 
-export async function resetPassword(prevState: any, formData: FormData) {
+
+export async function resetPassword(prevState: ActionState, formData: FormData): Promise<ActionState> {
     const { auth } = getFirebaseInstances();
     const email = formData.get('email') as string;
     
@@ -102,7 +110,7 @@ export async function resetPassword(prevState: any, formData: FormData) {
         await sendPasswordResetEmail(auth, email);
         return { message: 'A password reset link has been sent to your email.'}
     } catch(error: any) {
-        return { error: error.message };
+        return { error: 'Failed to send password reset email.' };
     }
 }
 
