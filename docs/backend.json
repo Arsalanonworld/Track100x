@@ -19,15 +19,50 @@
           "type": "string",
           "description": "Username of the user."
         },
-        "proSubscription": {
-          "type": "boolean",
-          "description": "Indicates whether the user has a Pro subscription."
+        "plan": {
+          "type": "string",
+          "description": "The user's subscription plan.",
+          "enum": ["free", "pro", "enterprise"]
+        },
+        "entitlements": {
+          "type": "object",
+          "description": "Feature access rights for the user.",
+          "properties": {
+            "alerts": {
+              "type": "object",
+              "properties": {
+                "maxActive": { "type": "number" },
+                "channels": { "type": "array", "items": { "type": "string" } }
+              }
+            },
+            "feed": {
+              "type": "object",
+              "properties": {
+                "delayMinutes": { "type": "number" }
+              }
+            },
+            "leaderboard": {
+              "type": "object",
+              "properties": {
+                "topN": { "type": "number" }
+              }
+            },
+            "apiAccess": { "type": "boolean" }
+          }
+        },
+        "quotas": {
+          "type": "object",
+          "description": "Usage limits for the user.",
+          "properties": {
+            "exportsPerDay": { "type": "number" }
+          }
         }
       },
       "required": [
         "id",
         "email",
-        "username"
+        "username",
+        "plan"
       ]
     },
     "Wallet": {

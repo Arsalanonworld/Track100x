@@ -8,21 +8,22 @@ import {
 } from 'firebase/auth';
 import { firebaseConfig } from '@/firebase/config';
 import { initializeApp, getApps } from 'firebase/app';
+import { getFirestore, doc, setDoc } from 'firebase/firestore';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 
 // Initialize Firebase Admin SDK for server-side actions
 // Note: This is a simplified example. In a real app, you'd want to
 // initialize the admin SDK once and share the instance.
-function getAuthInstance() {
+function getFirebaseInstances() {
   if (!getApps().length) {
     initializeApp(firebaseConfig);
   }
-  return getAuth();
+  return { auth: getAuth(), firestore: getFirestore() };
 }
 
 export async function login(prevState: any, formData: FormData) {
-  const auth = getAuthInstance();
+  const { auth } = getFirebaseInstances();
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
   const next = formData.get('next') as string || '/';
@@ -37,13 +38,40 @@ export async function login(prevState: any, formData: FormData) {
 }
 
 export async function signup(prevState: any, formData: FormData) {
-  const auth = getAuthInstance();
+  const { auth, firestore } = getFirebaseInstances();
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
   const next = formData.get('next') as string || '/';
 
   try {
-    await createUserWithEmailAndPassword(auth, email, password);
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+    
+    // Create user profile in Firestore
+    const userRef = doc(firestore, "users", user.uid);
+    await setDoc(userRef, {
+      id: user.uid,
+      email: user.email,
+      username: user.email?.split('@')[0], // default username
+      plan: "free",
+      entitlements: {
+        alerts: {
+          maxActive: 3,
+          channels: ["email"]
+        },
+        feed: {
+          delayMinutes: 15
+        },
+        leaderboard: {
+          topN: 25
+        },
+        apiAccess: false
+      },
+      quotas: {
+        exportsPerDay: 1
+      }
+    });
+
   } catch (error: any) {
     return { error: error.message };
   }
@@ -53,7 +81,7 @@ export async function signup(prevState: any, formData: FormData) {
 }
 
 export async function resetPassword(prevState: any, formData: FormData) {
-    const auth = getAuthInstance();
+    const { auth } = getFirebaseInstances();
     const email = formData.get('email') as string;
 
     try {
@@ -65,7 +93,7 @@ export async function resetPassword(prevState: any, formData: FormData) {
 }
 
 export async function logout() {
-  const auth = getAuthInstance();
+  const { auth } = getFirebaseInstances();
   await auth.signOut();
   revalidatePath('/');
   redirect('/');
