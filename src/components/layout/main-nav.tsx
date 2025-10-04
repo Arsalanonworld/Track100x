@@ -40,8 +40,8 @@ export function MainNav() {
     });
 
   return (
-    <nav className="hidden md:flex items-center space-x-4 text-sm font-medium">
-        <div className="flex items-center space-x-6">
+    <nav className="hidden md:flex items-center space-x-6 text-sm font-medium">
+        <div className="flex items-center space-x-4">
             {isLoading && (
                 <>
                     <Skeleton className="h-4 w-20" />
@@ -62,17 +62,15 @@ export function MainNav() {
             ))}
         </div>
          {isFree && !isLoading && (
-             <AnimatedButton asChild size="sm" className="ml-6">
+            <AnimatedButton asChild size="sm">
                 <Link
                     href="/upgrade"
-                    className={cn(
-                        "flex items-center gap-2"
-                    )}
+                    className="flex items-center gap-2"
                 >
                     <Zap className="h-4 w-4" />
                     Upgrade
                 </Link>
-             </AnimatedButton>
+            </AnimatedButton>
         )}
     </nav>
   )
