@@ -15,7 +15,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Input } from './ui/input';
-import { ArrowRight, RefreshCw, Zap, Search, Copy, ExternalLink } from 'lucide-react';
+import { ArrowRight, RefreshCw, Zap, Search, ExternalLink, MoreVertical } from 'lucide-react';
 import { whaleTransactions } from '@/lib/mock-data';
 import { CryptoIcon } from './crypto-icon';
 import { Badge } from './ui/badge';
@@ -25,14 +25,13 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { QuickAlertModal } from './quick-alert-modal';
-import { cn } from '@/lib/utils';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from './ui/tooltip';
-
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './ui/accordion';
 
 export function WhaleFeed() {
     const [selectedWallet, setSelectedWallet] = useState<string | undefined>(undefined);
@@ -76,68 +75,78 @@ export function WhaleFeed() {
                 </div>
             </CardHeader>
             <CardContent>
-                <div className="flex flex-col gap-2">
+                <Accordion type="single" collapsible className="space-y-2">
                     {whaleTransactions.map((tx) => (
-                        <div key={tx.id} className="grid grid-cols-1 md:grid-cols-[150px_1fr_250px] items-center gap-4 p-3 border rounded-lg hover:bg-muted/50 transition-colors">
-                            {/* Amount & Token */}
-                            <div className="flex items-center gap-4">
-                                <CryptoIcon token={tx.token} className="h-10 w-10"/>
-                                <div>
-                                <p className="font-bold text-lg">
-                                    ${(tx.amountUSD / 1_000_000).toFixed(1)}M
-                                </p>
-                                <p className="text-sm text-muted-foreground">
-                                    {tx.amountToken.toLocaleString()} {tx.token}
-                                </p>
+                        <AccordionItem value={tx.id} key={tx.id} className="border-b-0">
+                             <Card className="overflow-hidden">
+                                <div className="flex items-center p-4">
+                                     {/* Amount & Token */}
+                                    <div className="flex items-center gap-4 flex-1">
+                                        <CryptoIcon token={tx.token} className="h-10 w-10"/>
+                                        <div>
+                                        <p className="font-bold text-lg">
+                                            ${(tx.amountUSD / 1_000_000).toFixed(1)}M
+                                        </p>
+                                        <p className="text-sm text-muted-foreground">
+                                            {tx.amountToken.toLocaleString()} {tx.token}
+                                        </p>
+                                        </div>
+                                    </div>
+                                    {/* Meta */}
+                                    <div className="hidden sm:flex items-center justify-end gap-3 text-sm text-muted-foreground">
+                                        <Badge variant={tx.type === 'Swap' ? 'default' : 'secondary'}>{tx.type}</Badge>
+                                        <span>{tx.blockchain}</span>
+                                        <span>5m ago</span>
+                                    </div>
+                                     <div className="flex items-center gap-0 ml-4">
+                                         <TooltipProvider>
+                                            <Tooltip>
+                                                <TooltipTrigger asChild>
+                                                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                                                        <ExternalLink className="h-4 w-4" />
+                                                    </Button>
+                                                </TooltipTrigger>
+                                                <TooltipContent>
+                                                    <p>View on Explorer</p>
+                                                </TooltipContent>
+                                            </Tooltip>
+                                            <DialogTrigger asChild>
+                                                <Tooltip>
+                                                    <TooltipTrigger asChild>
+                                                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setSelectedWallet(tx.from)}>
+                                                            <Zap className="h-4 w-4" />
+                                                        </Button>
+                                                    </TooltipTrigger>
+                                                    <TooltipContent>
+                                                        <p>Create Quick Alert</p>
+                                                    </TooltipContent>
+                                                </Tooltip>
+                                            </DialogTrigger>
+                                        </TooltipProvider>
+                                        <AccordionTrigger className="p-2 hover:bg-accent rounded-md [&[data-state=open]>svg]:-rotate-180">
+                                            <MoreVertical className="h-4 w-4"/>
+                                        </AccordionTrigger>
+                                    </div>
                                 </div>
-                            </div>
-                            
-                            {/* From/To */}
-                            <div className="flex items-center gap-2 text-sm font-mono flex-wrap">
-                                <div className="flex flex-col items-start">
-                                    <span className="font-mono">{tx.from.slice(0, 6)}...{tx.from.slice(-4)}</span>
-                                    <Badge variant="outline" className="font-sans">Whale</Badge>
-                                </div>
-                                <ArrowRight className="h-4 w-4 text-muted-foreground mx-2" />
-                                <div className="flex flex-col items-start">
-                                    <span>{tx.to.slice(0,6)}...{tx.to.slice(-4)}</span>
-                                    <Badge variant="outline" className="font-sans">CEX</Badge>
-                                </div>
-                            </div>
-
-                            {/* Meta */}
-                            <div className="flex items-center justify-start md:justify-end gap-3 text-sm text-muted-foreground">
-                                <Badge variant={tx.type === 'Swap' ? 'default' : 'secondary'}>{tx.type}</Badge>
-                                <span>{tx.blockchain}</span>
-                                <span>5m ago</span>
-                                <TooltipProvider>
-                                    <Tooltip>
-                                        <TooltipTrigger asChild>
-                                             <Button variant="ghost" size="icon" className="h-8 w-8">
-                                                <ExternalLink className="h-4 w-4" />
-                                            </Button>
-                                        </TooltipTrigger>
-                                        <TooltipContent>
-                                            <p>View on Explorer</p>
-                                        </TooltipContent>
-                                    </Tooltip>
-                                    <Tooltip>
-                                        <DialogTrigger asChild>
-                                            <TooltipTrigger asChild>
-                                                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setSelectedWallet(tx.from)}>
-                                                    <Zap className="h-4 w-4" />
-                                                </Button>
-                                            </TooltipTrigger>
-                                        </DialogTrigger>
-                                        <TooltipContent>
-                                            <p>Create Quick Alert</p>
-                                        </TooltipContent>
-                                    </Tooltip>
-                                </TooltipProvider>
-                            </div>
-                        </div>
+                                <AccordionContent>
+                                    <div className="bg-muted/50 px-4 py-3 border-t text-sm font-mono">
+                                        <div className="flex justify-between items-center">
+                                            <p>From: <span className="text-foreground">{tx.from}</span></p>
+                                            <Badge variant="outline" className="font-sans">Whale</Badge>
+                                        </div>
+                                         <div className="flex justify-between items-center mt-1">
+                                            <p>To: <span className="text-foreground">{tx.to}</span></p>
+                                            <Badge variant="outline" className="font-sans">CEX</Badge>
+                                        </div>
+                                        <div className="mt-2">
+                                            <p>Tx Hash: <span className="text-foreground">{tx.hash}</span></p>
+                                        </div>
+                                    </div>
+                                </AccordionContent>
+                             </Card>
+                        </AccordionItem>
                     ))}
-                </div>
+                </Accordion>
 
                 <div className="flex justify-center mt-6">
                     <Button variant="outline">
