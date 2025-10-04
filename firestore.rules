@@ -1,5 +1,5 @@
 /**
- * @fileoverview Firestore Security Rules for Tack100x application.
+ * @fileoverview Firestore Security Rules for Tack100x Application
  *
  * Core Philosophy:
  * This ruleset enforces a strict user-ownership model for private user data
@@ -8,146 +8,118 @@
  * Data Structure:
  * - /users/{userId}: Stores user profiles. Only the authenticated user can
  *   read/write their own profile.
- * - /users/{userId}/alerts/{alertId}: Stores user-defined alerts. Only the
- *   authenticated user can read/write their own alerts.
- * - /users/{userId}/watchlist/{walletId}: Stores wallets followed by the user.
- *   Only the authenticated user can read/write their own watchlist.
- * - /leaderboard/{leaderboardEntryId}: Stores public leaderboard data. Anyone
- *   can read, but only authorized services can write. (Write rules are TODO).
- * - /whaleFeed/{whaleTransactionId}: Stores public whale feed data. Anyone can
- *   read, but only authorized services can write. (Write rules are TODO).
+ * - /users/{userId}/alerts/{alertId}: Stores alerts for each user. Only the
+ *   authenticated user can manage their own alerts.
+ * - /users/{userId}/watchlist/{walletId}: Stores watchlist for each user.
+ *   Only the authenticated user can manage their own watchlist.
+ * - /leaderboard/{leaderboardEntryId}: Stores public leaderboard data. Read
+ *   access is public, write access is restricted.
+ * - /whaleFeed/{whaleTransactionId}: Stores public whale feed data. Read access
+ *   is public, write access is restricted.
  *
  * Key Security Decisions:
- * - Users can only access their own data under their respective user ID.
+ * - Users can only access their own data under the /users/{userId} collection.
  * - Listing of all users is disallowed.
- * - Leaderboard and whale feed data are publicly readable.
- * - Write access to leaderboard and whale feed is restricted (TODO).
+ * - Leaderboard and WhaleFeed collections are publicly readable but not writable.
  *
  * Denormalization for Authorization:
- * - The rules rely on the `request.auth.uid` to match the `userId` in the path
- *   to ensure ownership. No `get()` calls are needed.
- *
- * Structural Segregation:
- * - Private user data is stored under /users/{userId} to ensure clear ownership
- *   and prevent accidental public exposure. Public data (leaderboard, whale
- *   feed) is stored in top-level collections.
+ *  - The `Alert`, `Wallet`, and `Transaction` entities contain a `userId` field,
+ *    allowing for direct ownership checks without additional reads.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Manages user profile access.
+     * @description Controls access to user profile data.
      * @path /users/{userId}
-     * @allow (create) - User with UID 'user123' can create their own profile document if document id is same as uid.
-     * @allow (get) - User with UID 'user123' can read their own profile.
-     * @allow (update) - User with UID 'user123' can update their own profile.
-     * @allow (delete) - User with UID 'user123' can delete their own profile.
-     * @deny (create) - User with UID 'user456' cannot create a profile for user 'user123'.
-     * @principle Enforces document ownership for writes.
+     * @allow (create) - If the user's ID matches the requested document ID.
+     * @allow (get, update, delete) - If the user is the owner of the document.
+     * @deny (list) - Listing all users is not allowed.
+     * @deny (create, update, delete) - If the user is not the owner.
+     * @principle Enforces document ownership for writes and restricts access to a user's own data tree.
      */
     match /users/{userId} {
-      function isSignedIn() {
-        return request.auth != null;
-      }
-
       function isOwner(userId) {
-        return request.auth.uid == userId;
+        return request.auth != null && request.auth.uid == userId;
+      }
+      function isExistingOwner(userId) {
+        return isOwner(userId) && resource != null;
       }
 
-      allow get: if isSignedIn() && isOwner(userId);
+      allow get: if isOwner(userId);
       allow list: if false;
-      allow create: if isSignedIn() && isOwner(userId);
-      allow update: if isSignedIn() && isOwner(userId);
-      allow delete: if isSignedIn() && isOwner(userId);
+      allow create: if isOwner(userId) && request.resource.data.id == userId;
+      allow update: if isExistingOwner(userId) && request.resource.data.id == resource.data.id;
+      allow delete: if isExistingOwner(userId);
     }
 
     /**
-     * @description Manages access to user-specific alerts.
+     * @description Controls access to user-specific alerts.
      * @path /users/{userId}/alerts/{alertId}
-     * @allow (create) - User with UID 'user123' can create an alert under their profile.
-     * @allow (get) - User with UID 'user123' can read an alert under their profile.
-     * @allow (update) - User with UID 'user123' can update an alert under their profile.
-     * @allow (delete) - User with UID 'user123' can delete an alert under their profile.
-     * @deny (create) - User with UID 'user456' cannot create an alert for user 'user123'.
-     * @principle Restricts access to a user's own data tree.
+     * @allow (create, get, list, update, delete) - If the user is the owner of the alert.
+     * @deny (create, get, list, update, delete) - If the user is not the owner.
+     * @principle Enforces document ownership and restricts access to a user's own alerts.
      */
     match /users/{userId}/alerts/{alertId} {
-      function isSignedIn() {
-        return request.auth != null;
-      }
-
       function isOwner(userId) {
-        return request.auth.uid == userId;
+        return request.auth != null && request.auth.uid == userId;
+      }
+      function isExistingOwner(userId) {
+        return isOwner(userId) && resource != null;
       }
 
-      allow get: if isSignedIn() && isOwner(userId);
+      allow get: if isOwner(userId);
       allow list: if isOwner(userId);
-      allow create: if isSignedIn() && isOwner(userId);
-      allow update: if isSignedIn() && isOwner(userId);
-      allow delete: if isSignedIn() && isOwner(userId);
+      allow create: if isOwner(userId) && request.resource.data.userId == userId;
+      allow update: if isExistingOwner(userId) && request.resource.data.userId == resource.data.userId;
+      allow delete: if isExistingOwner(userId);
     }
 
-        /**
-         * @description Manages access to user-specific watchlist.
-         * @path /users/{userId}/watchlist/{walletId}
-         * @allow (create) - User with UID 'user123' can create a watchlist entry under their profile.
-         * @allow (get) - User with UID 'user123' can read a watchlist entry under their profile.
-         * @allow (update) - User with UID 'user123' can update a watchlist entry under their profile.
-         * @allow (delete) - User with UID 'user123' can delete a watchlist entry under their profile.
-         * @deny (create) - User with UID 'user456' cannot create a watchlist entry for user 'user123'.
-         * @principle Restricts access to a user's own data tree.
-         */
-        match /users/{userId}/watchlist/{walletId} {
-          function isSignedIn() {
-            return request.auth != null;
-          }
+    /**
+     * @description Controls access to user-specific watchlist.
+     * @path /users/{userId}/watchlist/{walletId}
+     * @allow (create, get, list, update, delete) - If the user is the owner of the watchlist.
+     * @deny (create, get, list, update, delete) - If the user is not the owner.
+     * @principle Enforces document ownership and restricts access to a user's own watchlist.
+     */
+    match /users/{userId}/watchlist/{walletId} {
+      function isOwner(userId) {
+        return request.auth != null && request.auth.uid == userId;
+      }
+      function isExistingOwner(userId) {
+        return isOwner(userId) && resource != null;
+      }
 
-          function isOwner(userId) {
-            return request.auth.uid == userId;
-          }
-
-          allow get: if isSignedIn() && isOwner(userId);
-          allow list: if isOwner(userId);
-          allow create: if isSignedIn() && isOwner(userId);
-          allow update: if isSignedIn() && isOwner(userId);
-          allow delete: if isSignedIn() && isOwner(userId);
-        }
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId);
+      allow update: if isExistingOwner(userId);
+      allow delete: if isExistingOwner(userId);
+    }
 
     /**
-     * @description Manages access to public leaderboard data.
+     * @description Controls access to public leaderboard data.
      * @path /leaderboard/{leaderboardEntryId}
-     * @allow (get) - Anyone can read leaderboard entries.
-     * @allow (list) - Anyone can list leaderboard entries.
-     * @deny (create) - No one should be able to create leaderboard entries without authorization.
-     * @deny (update) - No one should be able to update leaderboard entries without authorization.
-     * @deny (delete) - No one should be able to delete leaderboard entries without authorization.
-     * @principle Allows public read access, restricts write access (TODO).
+     * @allow (get, list) - Public read access.
+     * @deny (create, update, delete) - No public write access.
+     * @principle Allows public read access but restricts write access.
      */
     match /leaderboard/{leaderboardEntryId} {
-      allow get: if true;
-      allow list: if true;
-      allow create: if false; // TODO: Add service account or admin validation.
-      allow update: if false; // TODO: Add service account or admin validation.
-      allow delete: if false; // TODO: Add service account or admin validation.
+      allow get, list: if true;
+      allow create, update, delete: if false;
     }
 
     /**
-     * @description Manages access to public whale feed data.
+     * @description Controls access to public whale feed data.
      * @path /whaleFeed/{whaleTransactionId}
-     * @allow (get) - Anyone can read whale feed transactions.
-     * @allow (list) - Anyone can list whale feed transactions.
-     * @deny (create) - No one should be able to create whale feed transactions without authorization.
-     * @deny (update) - No one should be able to update whale feed transactions without authorization.
-     * @deny (delete) - No one should be able to delete whale feed transactions without authorization.
-     * @principle Allows public read access, restricts write access (TODO).
+     * @allow (get, list) - Public read access.
+     * @deny (create, update, delete) - No public write access.
+     * @principle Allows public read access but restricts write access.
      */
     match /whaleFeed/{whaleTransactionId} {
-      allow get: if true;
-      allow list: if true;
-      allow create: if false;  // TODO: Add service account or admin validation.
-      allow update: if false;  // TODO: Add service account or admin validation.
-      allow delete: if false;  // TODO: Add service account or admin validation.
+      allow get, list: if true;
+      allow create, update, delete: if false;
     }
   }
 }
