@@ -45,15 +45,17 @@ export function UserNav() {
   if (isLoading) {
     return <Skeleton className="h-9 w-20 rounded-md" />;
   }
-  
+
   if (!user) {
     return (
-        <div className="flex items-center gap-2">
-            <Button variant="outline" onClick={() => setAuthDialogOpen(true)}>Log In</Button>
-            <AnimatedButton onClick={() => setAuthDialogOpen(true)}>
-                Sign Up
-            </AnimatedButton>
-        </div>
+      <div className="flex items-center gap-2">
+        <Button variant="outline" onClick={() => setAuthDialogOpen(true)}>
+          Log In
+        </Button>
+        <AnimatedButton onClick={() => router.push('/auth/signup')}>
+          Sign Up
+        </AnimatedButton>
+      </div>
     );
   }
 
@@ -86,8 +88,8 @@ export function UserNav() {
         </DropdownMenuItem>
         
         {isPro ? (
-           <DropdownMenuItem>
-              Manage Subscription
+           <DropdownMenuItem asChild>
+              <Link href="/account">Manage Subscription</Link>
           </DropdownMenuItem>
         ) : (
           <DropdownMenuItem asChild>
