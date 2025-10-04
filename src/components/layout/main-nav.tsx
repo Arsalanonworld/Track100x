@@ -5,11 +5,12 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
-import { Zap, LayoutGrid, Bell, BarChart, FileText } from "lucide-react"
+import { Zap, LayoutGrid, Bell, BarChart, FileText, Newspaper } from "lucide-react"
 
 const navItems = [
     { href: '/leaderboard', label: 'Leaderboard', icon: BarChart },
     { href: '/alerts', label: 'Alerts', icon: Bell },
+    { href: '/news', label: 'News', icon: Newspaper },
     { href: '/insights', label: 'Insights', icon: FileText },
   ];
 

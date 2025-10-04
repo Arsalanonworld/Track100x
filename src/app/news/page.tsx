@@ -15,19 +15,29 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Sparkles, Loader2, Lock } from 'lucide-react';
+import { Sparkles, Loader2, Lock, Newspaper } from 'lucide-react';
 import { generateNewsFeedAction } from './actions';
 import type { AICuratedNewsFeedOutput } from '@/ai/flows/ai-curated-news-feed-for-pro-users';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { useUser } from '@/firebase';
+import { useDoc } from '@/firebase/firestore/use-doc';
+import { doc, DocumentData } from 'firebase/firestore';
+import { useFirestore } from '@/firebase';
+
 
 export default function NewsPage() {
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
   const [feed, setFeed] = useState<AICuratedNewsFeedOutput | null>(null);
   const { user, isUserLoading } = useUser();
-  const isPro = false; // Replace with actual user plan check
+  const firestore = useFirestore();
+
+  const userDocRef = user ? doc(firestore, 'users', user.uid) : null;
+  const { data: userData, isLoading: isUserDataLoading } = useDoc(userDocRef);
+
+  const isPro = userData?.plan === 'pro';
+  const isLoading = isUserLoading || isUserDataLoading;
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -59,23 +69,35 @@ export default function NewsPage() {
         setFeed(null);
       } else {
         setFeed(response.data);
+        toast({
+          title: 'Feed Generated',
+          description: 'Your personalized news feed is ready.',
+        });
       }
     });
   };
+  
+    if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <>
       <PageHeader
         title="AI-Curated News"
-        description="A personalized news feed based on your interests and trending topics."
+        description="Your personalized news feed based on your interests and trending topics."
       />
       
       {!isPro && (
-        <Alert className="mb-8 bg-primary/10 border-primary/20 text-primary-foreground relative overflow-hidden">
-            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-background/80 backdrop-blur-sm">
+        <Alert className="mb-8 bg-card border-primary/20 text-primary-foreground relative overflow-hidden">
+            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-background/90 backdrop-blur-sm">
                 <Lock className="h-10 w-10 text-primary mb-4" />
-                <h3 className="text-2xl font-bold font-headline mb-2">Unlock AI-Curated News</h3>
-                <p className="text-muted-foreground mb-4 max-w-xs text-center">
+                <h3 className="text-2xl font-bold font-headline mb-2 text-center">Unlock AI-Curated News</h3>
+                <p className="text-muted-foreground mb-6 max-w-xs text-center">
                     This powerful, personalized news feed is an exclusive Pro feature.
                 </p>
                 <Button asChild>
@@ -90,14 +112,14 @@ export default function NewsPage() {
             Exclusive Pro Feature
           </AlertTitle>
           <AlertDescription>
-            Our AI-powered news engine curates a feed tailored just for you.
+            Our AI-powered news engine curates a feed tailored just for you, filtering out the noise so you only get what matters.
           </AlertDescription>
         </Alert>
       )}
 
       <div className="grid gap-8 md:grid-cols-3">
         <div className="md:col-span-1">
-          <Card>
+          <Card className={cn(!isPro && 'opacity-50 pointer-events-none')}>
             <form onSubmit={handleSubmit}>
               <CardHeader>
                 <CardTitle>Your Feed Preferences</CardTitle>
@@ -112,7 +134,7 @@ export default function NewsPage() {
                     id="user-preferences"
                     name="userPreferences"
                     placeholder="e.g., Solana, NFTs, AI in crypto"
-                    defaultValue="Solana, AI"
+                    defaultValue="Solana, AI in Crypto, Memecoins"
                     disabled={!isPro || isPending}
                   />
                 </div>
@@ -142,7 +164,7 @@ export default function NewsPage() {
           </h2>
           <div className="space-y-4">
             {isPending && (
-              <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center h-full min-h-[300px]">
+              <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed p-8 text-center h-full min-h-[300px]">
                 <Loader2 className="h-8 w-8 animate-spin text-muted-foreground mb-4" />
                 <p className="text-muted-foreground">
                   Curating your personalized news...
@@ -150,9 +172,13 @@ export default function NewsPage() {
               </div>
             )}
             {!isPending && !feed && (
-              <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center h-full min-h-[300px]">
+               <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed p-8 text-center h-full min-h-[300px]">
+                <Newspaper className="h-10 w-10 text-muted-foreground mb-4"/>
+                <h3 className="text-xl font-semibold mb-2">
+                    {isPro ? 'Generate Your Feed' : 'Upgrade to See Your Feed'}
+                </h3>
                 <p className="text-muted-foreground">
-                  {isPro ? 'Generate your feed to see the latest stories.' : 'Upgrade to Pro to see your personalized news feed.'}
+                  {isPro ? 'Enter your preferences to see the latest stories.' : 'Upgrade to Pro to unlock your personalized news feed.'}
                 </p>
               </div>
             )}
