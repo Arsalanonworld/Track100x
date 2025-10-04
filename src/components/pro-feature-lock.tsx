@@ -28,8 +28,10 @@ export const ProFeatureLock = ({ title, description, buttonText = "Upgrade to Pr
             ) : (
                 <AnimatedButton asChild>
                     <Link href="/upgrade">
-                       <Sparkles className="mr-2 h-4 w-4" />
-                        {buttonText}
+                        <span className="flex items-center justify-center">
+                            <Sparkles className="mr-2 h-4 w-4" />
+                            {buttonText}
+                        </span>
                     </Link>
                 </AnimatedButton>
             )}
