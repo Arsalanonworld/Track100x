@@ -28,8 +28,12 @@ export function MainNav() {
     }, [firestore, user]);
     const { data: userData } = useDoc(userDocRef);
     const isPro = userData?.plan === 'pro';
+    const isFree = user && !isPro;
 
-    const visibleNavItems = navItems.filter(item => user || item.guest);
+    const visibleNavItems = navItems.filter(item => {
+        if (!user) return item.guest;
+        return true;
+    });
 
   return (
     <nav className="hidden md:flex items-center space-x-6 text-sm font-medium">
@@ -42,11 +46,10 @@ export function MainNav() {
                     pathname === item.href ? "text-foreground" : "text-foreground/60"
                 )}
             >
-                <item.icon className="h-4 w-4" />
                 {item.label}
             </Link>
         ))}
-        {user && !isPro && (
+         {isFree && (
              <AnimatedButton asChild size="sm">
                 <Link
                     href="/upgrade"
