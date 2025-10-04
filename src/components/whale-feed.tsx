@@ -23,6 +23,7 @@ import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetDescri
 import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Badge } from './ui/badge';
+import Link from 'next/link';
 
 export function WhaleFeed() {
   const { user, isUserLoading } = useUser();
@@ -89,7 +90,10 @@ export function WhaleFeed() {
         disabled={!isPro && activeFilter !== null && activeFilter !== 'chain'}
       >
         <SelectTrigger className="w-full">
-          <SelectValue placeholder="All Chains" />
+          <div className="flex justify-between items-center w-full">
+            <SelectValue placeholder="All Chains" />
+            {!isPro && activeFilter !== null && activeFilter !== 'chain' && <Badge variant="secondary">Pro</Badge>}
+          </div>
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">All Chains</SelectItem>
@@ -105,7 +109,10 @@ export function WhaleFeed() {
         disabled={!isPro && activeFilter !== null && activeFilter !== 'type'}
       >
         <SelectTrigger className="w-full">
-          <SelectValue placeholder="All Types" />
+           <div className="flex justify-between items-center w-full">
+              <SelectValue placeholder="All Types" />
+              {!isPro && activeFilter !== null && activeFilter !== 'type' && <Badge variant="secondary">Pro</Badge>}
+           </div>
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">All Types</SelectItem>
@@ -113,7 +120,11 @@ export function WhaleFeed() {
           <SelectItem value="swap">Swap</SelectItem>
         </SelectContent>
       </Select>
-      {!isPro && <p className="text-xs text-muted-foreground text-center md:text-left">Multi-filtering is a Pro feature. <a href="/upgrade" className="underline font-semibold">Upgrade</a> to unlock.</p>}
+      {!isPro && (
+        <p className="text-xs text-muted-foreground text-center md:text-left">
+          <Link href="/upgrade" className="underline font-semibold">Upgrade to Pro</Link> to apply multiple filters at once.
+        </p>
+      )}
     </>
   );
 
