@@ -10,11 +10,13 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import PageHeader from '@/components/page-header';
+import { useTestUser } from '@/firebase/client-provider';
 
 export default function AlertsPage() {
   const { user, isUserLoading } = useUser();
+  const { isTestUser } = useTestUser();
 
-  if (isUserLoading) {
+  if (isUserLoading && !isTestUser) {
     return (
         <div className="space-y-8">
             <div className="space-y-2 mb-8">
@@ -34,6 +36,8 @@ export default function AlertsPage() {
     );
   }
 
+  const showLoginWall = !user && !isTestUser && !isUserLoading;
+
   return (
       <div className="space-y-8">
           <PageHeader
@@ -42,7 +46,7 @@ export default function AlertsPage() {
            />
 
           <div className="relative">
-              <div className={cn(!user && "blur-sm pointer-events-none")}>
+              <div className={cn(showLoginWall && "blur-sm pointer-events-none")}>
                   <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-start">
                       <div className="lg:col-span-2 space-y-8">
                         <AlertCreator />
@@ -54,7 +58,7 @@ export default function AlertsPage() {
                   </div>
               </div>
 
-              {!user && !isUserLoading && (
+              {showLoginWall && (
                 <div className="absolute inset-0 z-10 flex items-center justify-center">
                      <div className="text-center p-8 rounded-lg bg-background/80">
                          <Lock className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
@@ -72,5 +76,3 @@ export default function AlertsPage() {
       </div>
   );
 }
-
-    

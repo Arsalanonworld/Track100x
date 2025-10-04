@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -14,9 +15,11 @@ import { CreateAlertModal } from '@/components/create-alert-modal';
 import { useUser, useFirestore, useMemoFirebase } from '@/firebase';
 import { useCollection, useDoc } from '@/firebase';
 import { collection, doc } from 'firebase/firestore';
+import { useTestUser } from '@/firebase/client-provider';
 
 export default function AlertCreator() {
   const { user, isUserLoading } = useUser();
+  const { isTestUser } = useTestUser();
   const firestore = useFirestore();
 
   const userDocRef = useMemoFirebase(() => {
@@ -31,12 +34,13 @@ export default function AlertCreator() {
   }, [firestore, user]);
   const { data: alerts } = useCollection(alertsRef);
 
-  const userPlan = userData?.plan || 'free';
+  const userPlan = isTestUser ? 'pro' : userData?.plan || 'free';
   const isPro = userPlan === 'pro';
 
   const activeAlertCount = alerts?.length ?? 0;
   const freeAlertLimit = userData?.entitlements?.alerts?.maxActive ?? 3;
   const canCreateAlert = isPro || activeAlertCount < freeAlertLimit;
+  const displayUserId = isTestUser ? 'test-user-id' : user?.uid;
 
   return (
     <div className="flex flex-col sm:flex-row sm:items-center gap-4">
@@ -47,11 +51,11 @@ export default function AlertCreator() {
             Create New Alert
           </Button>
         </DialogTrigger>
-        {user ? (
+        {displayUserId ? (
           <CreateAlertModal
             isPro={isPro}
             canCreateAlert={canCreateAlert}
-            userId={user.uid}
+            userId={displayUserId}
           />
         ) : (
           <DialogContent>
@@ -69,7 +73,7 @@ export default function AlertCreator() {
         )}
       </Dialog>
 
-      {!isPro && user && (
+      {!isPro && (user || isTestUser) && (
         <Button variant="secondary" asChild className="w-full">
           <a href="/upgrade">
             <Sparkles className="mr-2 h-4 w-4 text-primary" />

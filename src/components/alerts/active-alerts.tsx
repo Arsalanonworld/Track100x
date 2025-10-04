@@ -1,3 +1,4 @@
+
 'use client';
 
 import React from 'react';
@@ -34,9 +35,12 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { CreateAlertModal } from '../create-alert-modal';
+import { useTestUser } from '@/firebase/client-provider';
+import { mockAlerts } from '@/lib/mock-data';
 
 export default function ActiveAlerts() {
   const { user, isUserLoading } = useUser();
+  const { isTestUser } = useTestUser();
   const firestore = useFirestore();
   const { toast } = useToast();
 
@@ -50,16 +54,21 @@ export default function ActiveAlerts() {
     if (!firestore || !user) return null;
     return collection(firestore, 'users', user.uid, 'alerts');
   }, [firestore, user]);
-  const { data: alerts, isLoading: isAlertsLoading } = useCollection(alertsRef);
+  const { data: alertsFromDb, isLoading: isAlertsLoading } = useCollection(alertsRef);
+  
+  const alerts = isTestUser ? mockAlerts : alertsFromDb;
 
-  const userPlan = userData?.plan || 'free';
+  const userPlan = isTestUser ? 'pro' : userData?.plan || 'free';
   const isPro = userPlan === 'pro';
 
   const activeAlertCount = alerts?.length ?? 0;
   const freeAlertLimit = userData?.entitlements?.alerts?.maxActive ?? 3;
-  const canCreateAlert = isPro || activeAlertCount < freeAlertLimit;
 
   const handleToggleAlert = async (alertId: string, currentStatus: boolean) => {
+    if (isTestUser) {
+        toast({ title: "This is a test alert." });
+        return;
+    }
     if (!firestore || !user) return;
     const alertDocRef = doc(firestore, 'users', user.uid, 'alerts', alertId);
     try {
@@ -73,6 +82,10 @@ export default function ActiveAlerts() {
   };
 
   const handleDeleteAlert = async (alertId: string) => {
+    if (isTestUser) {
+        toast({ title: "This is a test alert." });
+        return;
+    }
     if (!firestore || !user) return;
     const alertDocRef = doc(firestore, 'users', user.uid, 'alerts', alertId);
     try {
@@ -85,7 +98,7 @@ export default function ActiveAlerts() {
     }
   };
 
-  const isLoading = isUserLoading || isUserDataLoading || isAlertsLoading;
+  const isLoading = isUserLoading || isUserDataLoading || (isAlertsLoading && !isTestUser);
 
   if (isLoading) {
     return (
@@ -100,7 +113,7 @@ export default function ActiveAlerts() {
       <h2 className="text-2xl font-bold font-headline mb-4">
         Active Alerts ({activeAlertCount})
       </h2>
-      {!isPro && user && (
+      {!isPro && (user || isTestUser) && (
         <Alert className="mb-4 bg-primary/5 border-primary/20 text-primary-foreground">
           <Sparkles className="h-4 w-4 text-primary" />
           <AlertTitle className="text-primary">Upgrade to Pro</AlertTitle>
@@ -118,14 +131,14 @@ export default function ActiveAlerts() {
         </Alert>
       )}
 
-      {user && alerts && alerts.length > 0 ? (
+      {(user || isTestUser) && alerts && alerts.length > 0 ? (
         <Accordion type="single" collapsible className="space-y-4">
           {alerts.map((alert: any) => (
             <AccordionItem value={alert.id} key={alert.id} className="border-b-0">
               <Card className="overflow-hidden hover:shadow-md hover:-translate-y-px">
                 <div className="flex items-center p-4">
                   <div className="flex-shrink-0">
-                    {alert.alertType === 'wallet' ? (
+                    {alert.type === 'wallet' ? (
                       <Wallet className="h-6 w-6 text-accent-foreground" />
                     ) : (
                       <Tag className="h-6 w-6 text-accent-foreground" />
@@ -134,7 +147,7 @@ export default function ActiveAlerts() {
                   <div className="flex-grow mx-4">
                     <p className="font-semibold">{alert.title}</p>
                     <p className="text-sm text-muted-foreground">
-                      {`Notify when ${alert.alertType} ${alert.rule} > $${alert.threshold}`}
+                      {alert.description}
                     </p>
                   </div>
                   <div className="flex items-center gap-2 ml-4">
