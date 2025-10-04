@@ -1,3 +1,4 @@
+
 'use client';
 import {
   Card,
@@ -9,24 +10,32 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { QuickAlertConfigurator } from '../quick-alert-configurator';
 import AlertBuilder from './alert-builder';
-import { useUser } from '@/firebase';
-import { useAuthDialog } from '@/hooks/use-auth-dialog';
+import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
+import { doc } from 'firebase/firestore';
+import { Lock } from 'lucide-react';
+import { Skeleton } from '../ui/skeleton';
 
 export default function AlertCreatorCard() {
   const { user, isUserLoading } = useUser();
-  const { setAuthDialogOpen } = useAuthDialog();
+  const firestore = useFirestore();
 
-  // In a real app, isPro would come from user entitlements
-  const isPro = true; 
+  const userDocRef = useMemoFirebase(() => {
+    if (!firestore || !user) return null;
+    return doc(firestore, 'users', user.uid);
+  }, [firestore, user]);
+
+  const { data: userData, isLoading: isUserDataLoading } = useDoc(userDocRef);
+  const isLoading = isUserLoading || isUserDataLoading;
+
+  const isPro = userData?.plan === 'pro'; 
 
   const userId = user?.uid;
 
-  if (isUserLoading) {
-      return null;
+  if (isLoading) {
+      return <Skeleton className="h-[500px] w-full" />;
   }
   
   if (!userId) {
-      // Or show a skeleton/placeholder
       return null;
   }
 
@@ -39,10 +48,15 @@ export default function AlertCreatorCard() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <Tabs defaultValue="advanced" className="w-full">
+        <Tabs defaultValue="quick" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="quick">Quick Alert</TabsTrigger>
-            <TabsTrigger value="advanced">Advanced Builder</TabsTrigger>
+            <TabsTrigger value="advanced" disabled={!isPro}>
+                 <div className="flex items-center gap-2">
+                    {!isPro && <Lock className="h-3 w-3" />}
+                    Advanced Builder
+                </div>
+            </TabsTrigger>
           </TabsList>
           <TabsContent value="quick" className="pt-6">
             <QuickAlertConfigurator isPro={isPro} userId={userId} />

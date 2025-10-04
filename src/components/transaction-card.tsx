@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import type { WhaleTransaction } from "@/lib/mock-data";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import Link from "next/link";
-import { ArrowRight, Copy, ChevronDown, BellPlus, ArrowDown } from "lucide-react";
+import { ArrowRight, Copy, ChevronDown, BellPlus, ArrowDown, Lock } from "lucide-react";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { cn } from "@/lib/utils";
@@ -19,9 +19,9 @@ import { getExplorerUrl } from "@/lib/explorers";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import QuickAlertEditor from "./alerts/quick-alert-editor";
 import { Tooltip, TooltipProvider, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { useUser, useFirestore, useMemoFirebase } from "@/firebase";
+import { useUser, useFirestore, useMemoFirebase, useDoc } from "@/firebase";
 import { useRouter } from "next/navigation";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { addDoc, collection, serverTimestamp, doc } from "firebase/firestore";
 
 interface TransactionCardProps {
     tx: WhaleTransaction;
@@ -53,13 +53,27 @@ const TransactionCard = ({ tx }: TransactionCardProps) => {
     const router = useRouter();
     const [isAlertEditorOpen, setIsAlertEditorOpen] = useState(false);
 
+    const userDocRef = useMemoFirebase(() => {
+        if (!firestore || !user) return null;
+        return doc(firestore, 'users', user.uid);
+    }, [firestore, user]);
+    const { data: userData } = useDoc(userDocRef);
+    const isPro = userData?.plan === 'pro';
+
     const openQuickAlertEditor = (e: React.MouseEvent) => {
         e.stopPropagation();
         if (!user) {
             router.push('/auth/login');
             return;
         }
-        // Add canAddAlert logic here if needed
+        if (!isPro) {
+            toast({
+                title: 'Pro Feature Locked',
+                description: 'Upgrade to Pro to create alerts directly from transactions.',
+                variant: 'destructive',
+            });
+            return;
+        }
         setIsAlertEditorOpen(true);
     }
     
@@ -81,6 +95,13 @@ const TransactionCard = ({ tx }: TransactionCardProps) => {
         });
         setIsAlertEditorOpen(false);
     }
+
+    const AlertButton = () => (
+        <Button variant="ghost" size="icon" className="h-8 w-8 relative shrink-0" onClick={openQuickAlertEditor} aria-label="Set quick alert">
+            <BellPlus className="h-4 w-4 text-muted-foreground hover:text-primary" />
+            {!isPro && <Lock className="absolute bottom-0 right-0 h-2.5 w-2.5 bg-background text-muted-foreground rounded-full p-0.5" />}
+        </Button>
+    )
 
     return (
         <Dialog open={isAlertEditorOpen} onOpenChange={setIsAlertEditorOpen}>
@@ -107,12 +128,10 @@ const TransactionCard = ({ tx }: TransactionCardProps) => {
                                             <TooltipProvider>
                                                 <Tooltip>
                                                     <TooltipTrigger asChild>
-                                                        <Button variant="ghost" size="icon" className="h-8 w-8 relative shrink-0" onClick={openQuickAlertEditor} aria-label="Set quick alert">
-                                                            <BellPlus className="h-4 w-4 text-muted-foreground hover:text-primary" />
-                                                        </Button>
+                                                        <AlertButton />
                                                     </TooltipTrigger>
                                                     <TooltipContent>
-                                                        <p>Create quick alert</p>
+                                                        <p>Create quick alert (Pro)</p>
                                                     </TooltipContent>
                                                 </Tooltip>
                                             </TooltipProvider>
@@ -147,12 +166,10 @@ const TransactionCard = ({ tx }: TransactionCardProps) => {
                                         <TooltipProvider>
                                           <Tooltip>
                                             <TooltipTrigger asChild>
-                                                <Button variant="ghost" size="icon" className="h-8 w-8 relative shrink-0" onClick={openQuickAlertEditor} aria-label="Set quick alert">
-                                                    <BellPlus className="h-4 w-4 text-muted-foreground hover:text-primary" />
-                                                </Button>
+                                               <AlertButton />
                                             </TooltipTrigger>
                                             <TooltipContent>
-                                              <p>Create quick alert</p>
+                                              <p>Create quick alert (Pro)</p>
                                             </TooltipContent>
                                           </Tooltip>
                                         </TooltipProvider>

@@ -14,6 +14,8 @@ import { useUser, useFirestore, useMemoFirebase } from '@/firebase';
 import { useAuthDialog } from '@/hooks/use-auth-dialog';
 import { useDoc } from '@/firebase/firestore/use-doc';
 import { doc } from 'firebase/firestore';
+import { ProFeatureLock } from '@/components/pro-feature-lock';
+import { AnimatedButton } from '@/components/ui/animated-button';
 
 const allCategories = ['All', ...Array.from(new Set(allArticles.map(a => a.category)))];
 
@@ -32,6 +34,7 @@ export default function InsightsPage() {
   const { data: userData, isLoading: isUserDataLoading } = useDoc(userDocRef);
 
   const isPro = userData?.plan === 'pro';
+  const isLoading = isUserLoading || isUserDataLoading;
 
   const filteredArticles = useMemo(() => {
     return allArticles.filter(article => {
@@ -44,11 +47,22 @@ export default function InsightsPage() {
   }, [searchTerm, selectedCategory]);
 
   const visibleArticles = useMemo(() => {
-    if (isPro || user) {
+    // Pro users see everything
+    if (isPro) {
         return filteredArticles;
     }
+    // Logged-in free users see more than guests
+    if (user) {
+        return filteredArticles.slice(0, 5);
+    }
+    // Logged-out guests see the least
     return filteredArticles.slice(0, 3);
   }, [filteredArticles, isPro, user]);
+
+  const showLoginWall = !user && !isUserLoading;
+  const showUpgradeWall = user && !isPro;
+  const hasMoreArticles = filteredArticles.length > visibleArticles.length;
+
 
   return (
     <>
@@ -100,36 +114,29 @@ export default function InsightsPage() {
               </div>
             )}
             
-            {(!user && !isUserLoading && visibleArticles.length > 0) && (
-                 <div className="absolute inset-x-0 bottom-0 h-3/4 bg-gradient-to-t from-background to-transparent z-10 flex items-end justify-center pb-8">
-                      <div className="text-center p-8 rounded-lg bg-background/95">
-                          <Lock className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                          <h3 className="text-xl font-bold font-headline">Unlock All Articles & Research</h3>
-                          <p className="text-muted-foreground mb-4 max-w-sm">Get full access to our premium analysis, deep dives, and strategy guides.</p>
-                          <Button onClick={() => setAuthDialogOpen(true)} size="lg">
-                              Log In to Continue Reading
-                          </Button>
-                      </div>
-                  </div>
+            {hasMoreArticles && (
+              <>
+                 <div className="absolute inset-x-0 bottom-0 h-3/4 bg-gradient-to-t from-background to-transparent z-10 pointer-events-none" />
+                 <div className="absolute inset-0 z-20 flex items-end justify-center pb-8">
+                  {showLoginWall && (
+                     <ProFeatureLock
+                        title="Unlock All Articles & Research"
+                        description="Get full access to our premium analysis, deep dives, and strategy guides."
+                        buttonText="Log In to Continue Reading"
+                        onButtonClick={() => setAuthDialogOpen(true)}
+                     />
+                  )}
+                   {showUpgradeWall && (
+                      <ProFeatureLock
+                        title="Unlock the Full Archive"
+                        description="Your free account gives you access to recent posts. Upgrade to Pro to unlock our entire library of in-depth research and analysis."
+                      />
+                  )}
+                 </div>
+              </>
             )}
         </div>
       </section>
-
-      {!isPro && user && (
-        <>
-            <Separator className="my-16" />
-            <div className="text-center">
-                <h2 className="text-3xl font-bold tracking-tight sm:text-4xl font-headline">Unlock the Full Archive</h2>
-                <p className="mt-4 text-lg text-muted-foreground">Your free account gives you access to recent posts. Upgrade to Pro to unlock our entire library of in-depth research and analysis.</p>
-                <div className="mt-8">
-                    <Button asChild size="lg">
-                        <Link href="/upgrade">Upgrade to Pro</Link>
-                    </Button>
-                </div>
-            </div>
-        </>
-      )}
-
     </>
   );
 }

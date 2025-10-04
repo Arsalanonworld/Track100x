@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Bell, Pencil, Trash2, Wallet, Zap, Link as LinkIcon } from 'lucide-react';
@@ -22,7 +23,7 @@ import QuickAlertEditor from './quick-alert-editor';
 import AlertBuilder from './alert-builder';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
-import { useUser, useFirestore, useCollection, useMemoFirebase, updateDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase';
+import { useUser, useFirestore, useCollection, useMemoFirebase, updateDocumentNonBlocking, deleteDocumentNonBlocking, useDoc } from '@/firebase';
 import { collection, doc } from 'firebase/firestore';
 import { type Alert } from '@/lib/types';
 
@@ -39,6 +40,13 @@ export default function ActiveAlerts() {
     const [isEditorOpen, setIsEditorOpen] = useState(false);
     const [selectedAlert, setSelectedAlert] = useState<Alert | null>(null);
 
+    const userDocRef = useMemoFirebase(() => {
+      if (!firestore || !user) return null;
+      return doc(firestore, 'users', user.uid);
+    }, [firestore, user]);
+    const { data: userData } = useDoc(userDocRef);
+    const isPro = userData?.plan === 'pro';
+
     const alertsRef = useMemoFirebase(() => {
         if (!user || !firestore) return null;
         return collection(firestore, `users/${user.uid}/alerts`);
@@ -46,8 +54,6 @@ export default function ActiveAlerts() {
 
     const { data: alerts } = useCollection<Alert>(alertsRef);
     
-    const isPro = true; 
-
     async function handleDelete(id: string) {
         if (!user || !firestore) return;
         const alertDocRef = doc(firestore, `users/${user.uid}/alerts`, id);
@@ -163,18 +169,18 @@ export default function ActiveAlerts() {
                     Edit Alert
                 </DialogTitle>
                 </DialogHeader>
-                {selectedAlert && ( true ? ( 
-                    <QuickAlertEditor
-                    entity={{
-                        type: selectedAlert.alertType === 'wallet' ? 'Wallet' : 'Token',
-                        identifier: selectedAlert.walletId || selectedAlert.token || '',
-                        label: selectedAlert.walletId || selectedAlert.token || ''
-                    }}
-                    onSave={handleSave}
-                    onCancel={handleCancel}
-                    />
-                ) : (
+                {selectedAlert && ( isPro ? ( 
                     <AlertBuilder onSave={handleSave} />
+                ) : (
+                    <QuickAlertEditor
+                        entity={{
+                            type: selectedAlert.alertType === 'wallet' ? 'Wallet' : 'Token',
+                            identifier: selectedAlert.walletId || selectedAlert.token || '',
+                            label: selectedAlert.walletId || selectedAlert.token || ''
+                        }}
+                        onSave={handleSave}
+                        onCancel={handleCancel}
+                    />
                 ))}
             </DialogContent>
         </Dialog>
