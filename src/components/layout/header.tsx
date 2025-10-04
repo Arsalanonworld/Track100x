@@ -28,21 +28,23 @@ export const LogoIcon = () => (
 export default function Header() {
     return (
         <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur-sm">
-            <div className="container flex h-16 items-center">
-                <MobileNav />
-                <Link href="/" className="mr-6 flex items-center space-x-2">
-                    <LogoIcon />
-                    <span className="hidden font-bold sm:inline-block">Tack100x</span>
-                </Link>
-                <div className="flex flex-1 items-center justify-between">
+            <div className="container flex h-16 items-center justify-between">
+                <div className="flex items-center">
+                    <MobileNav />
+                    <Link href="/" className="mr-6 flex items-center space-x-2">
+                        <LogoIcon />
+                        <span className="hidden font-bold sm:inline-block">Tack100x</span>
+                    </Link>
                     <MainNav />
-                    <div className="flex items-center space-x-2">
-                        <NotificationBell />
-                        <UserNav />
-                        <ThemeToggle />
-                    </div>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                    <NotificationBell />
+                    <UserNav />
+                    <ThemeToggle />
                 </div>
             </div>
         </header>
     );
 }
+
