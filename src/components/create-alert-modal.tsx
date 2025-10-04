@@ -6,6 +6,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
+  DialogClose,
 } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -13,8 +14,11 @@ import { Button } from './ui/button';
 import { Lock, Sparkles } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { QuickAlertConfigurator } from './quick-alert-configurator';
+import { useState } from 'react';
 
-export const CreateAlertModal = ({ isPro, canCreateAlert, userId }: { isPro: boolean, canCreateAlert: boolean, userId: string }) => (
+export const CreateAlertModal = ({ isPro, canCreateAlert, userId, onOpenChange }: { isPro: boolean, canCreateAlert: boolean, userId: string, onOpenChange: (open: boolean) => void }) => {
+    
+    return (
     <DialogContent className="max-w-lg">
         <DialogHeader>
             <DialogTitle>Create a New Alert</DialogTitle>
@@ -43,7 +47,7 @@ export const CreateAlertModal = ({ isPro, canCreateAlert, userId }: { isPro: boo
                         </AlertDescription>
                     </Alert>
                 ) : (
-                    <QuickAlertConfigurator isPro={isPro} userId={userId} />
+                    <QuickAlertConfigurator isPro={isPro} userId={userId} onSubmitted={() => onOpenChange(false)} />
                 )}
             </TabsContent>
             <TabsContent value="advanced" className="pt-4">
@@ -54,12 +58,14 @@ export const CreateAlertModal = ({ isPro, canCreateAlert, userId }: { isPro: boo
                         <p className="text-muted-foreground mb-4">
                             Build powerful, multi-condition rules and unlock more delivery channels.
                         </p>
-                        <Button asChild>
-                            <a href="/upgrade">
-                                <Sparkles className="mr-2 h-4 w-4" />
-                                Upgrade to Pro
-                            </a>
-                        </Button>
+                        <DialogClose asChild>
+                            <Button asChild>
+                                <a href="/upgrade">
+                                    <Sparkles className="mr-2 h-4 w-4" />
+                                    Upgrade to Pro
+                                </a>
+                            </Button>
+                        </DialogClose>
                     </div>
                     <CardHeader>
                       <CardTitle>Advanced Builder</CardTitle>
@@ -79,5 +85,5 @@ export const CreateAlertModal = ({ isPro, canCreateAlert, userId }: { isPro: boo
             </TabsContent>
         </Tabs>
     </DialogContent>
-);
-
+    )
+};

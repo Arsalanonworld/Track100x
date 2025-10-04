@@ -8,10 +8,12 @@ import { useUser, useFirestore, useMemoFirebase } from '@/firebase';
 import { useCollection } from '@/firebase/firestore/use-collection';
 import { doc, collection } from 'firebase/firestore';
 import { useDoc } from '@/firebase/firestore/use-doc';
+import { useState } from 'react';
 
 export const HomePageCta = () => {
     const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
 
     const userDocRef = useMemoFirebase(() => {
         if (!firestore || !user) return null;
@@ -34,7 +36,7 @@ export const HomePageCta = () => {
         <div className="text-center py-16">
             <h2 className="text-4xl font-bold font-headline mb-2">Your Market Edge is One Alert Away.</h2>
             <p className="text-muted-foreground text-lg mb-6">Create a custom alert now and never miss a critical market move again.</p>
-            <Dialog>
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogTrigger asChild>
                     <Button size="lg">
                         Create a Free Alert
@@ -42,7 +44,7 @@ export const HomePageCta = () => {
                     </Button>
                 </DialogTrigger>
                 {user && !isUserLoading ? (
-                    <CreateAlertModal isPro={isPro} canCreateAlert={canCreateAlert} userId={user.uid} />
+                    <CreateAlertModal isPro={isPro} canCreateAlert={canCreateAlert} userId={user.uid} onOpenChange={setIsDialogOpen} />
                 ) : (
                     <DialogContent>
                         <DialogHeader>

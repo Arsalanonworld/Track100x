@@ -15,7 +15,7 @@ import { Button } from './ui/button';
 import { Loader2 } from 'lucide-react';
 import { useFirestore } from '@/firebase';
 
-export const QuickAlertConfigurator = ({ isPro, userId }: { isPro: boolean; userId: string }) => {
+export const QuickAlertConfigurator = ({ isPro, userId, onSubmitted }: { isPro: boolean; userId: string, onSubmitted?: () => void }) => {
   const [alertType, setAlertType] = React.useState<'wallet' | 'token'>('wallet');
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const firestore = useFirestore();
@@ -46,7 +46,9 @@ export const QuickAlertConfigurator = ({ isPro, userId }: { isPro: boolean; user
         title: "Alert created!",
         description: "Your new alert has been saved.",
       });
-      // Here you would typically close the modal, which can be handled by the parent component
+      if (onSubmitted) {
+        onSubmitted();
+      }
     } catch (error) {
       console.error("Error creating alert:", error);
       toast({
@@ -59,6 +61,11 @@ export const QuickAlertConfigurator = ({ isPro, userId }: { isPro: boolean; user
     }
   };
 
+  const SubmitButton = () => (
+    <Button type="submit" className="w-full" disabled={isSubmitting}>
+        {isSubmitting ? <Loader2 className="animate-spin" /> : "Create Alert"}
+    </Button>
+  );
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -187,11 +194,13 @@ export const QuickAlertConfigurator = ({ isPro, userId }: { isPro: boolean; user
                 </p>
              )}
           </div>
-          <DialogClose asChild>
-            <Button type="submit" className="w-full" disabled={isSubmitting}>
-              {isSubmitting ? <Loader2 className="animate-spin" /> : "Create Alert"}
-            </Button>
-          </DialogClose>
+          {onSubmitted ? (
+            <DialogClose asChild>
+                <SubmitButton />
+            </DialogClose>
+          ) : (
+            <SubmitButton />
+          )}
     </form>
   );
 };
