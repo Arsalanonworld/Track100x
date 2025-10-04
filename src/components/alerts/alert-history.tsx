@@ -1,51 +1,55 @@
 'use client';
-import { Card, CardContent } from '@/components/ui/card';
-import { useUser } from '@/firebase';
-import { CheckCircle, History } from 'lucide-react';
-import React from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Bell, ArrowRight } from "lucide-react";
+import { Badge } from "../ui/badge";
+import Link from "next/link";
+import { Button } from "../ui/button";
+
+const mockTriggeredAlerts = [
+    { id: '1', rule: 'Sent > $1M to CEX', entity: 'PEPE Whale', time: '5 min ago', value: '$1.2M USDT', target: 'Binance' },
+    { id: '2', rule: 'Balance Change > 1k ETH', entity: "Vitalik's Main", time: '20 min ago', value: '+1,500 ETH', target: '' },
+    { id: '3', rule: 'Price < $2.00', entity: 'WIF', time: '1 hour ago', value: '$1.98', target: '' },
+];
+
 
 export default function AlertHistory() {
-  const { user } = useUser();
-  const recentAlerts: any[] = []; // Placeholder for history
-
-  return (
-    <div>
-      <h2 className="text-2xl font-bold font-headline mb-4 flex items-center gap-2">
-        <History className="h-6 w-6" />
-        Alert History
-      </h2>
-      <Card>
-        <CardContent className="p-0">
-          <ul className="divide-y">
-            {user &&
-              recentAlerts.map((item) => (
-                <li key={item.id} className="p-4 flex items-start gap-4">
-                  <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0 mt-1" />
-                  <div className="flex-grow">
-                    <p>
-                      <span className="font-semibold">{item.name}</span>{' '}
-                      <span className="text-muted-foreground">triggered:</span>{' '}
-                      {item.description}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {item.delivery} &bull; {item.time}
-                    </p>
-                  </div>
-                </li>
-              ))}
-            {!user && (
-              <li className="p-8 text-center text-muted-foreground">
-                Your triggered alert history will appear here.
-              </li>
-            )}
-            {user && recentAlerts.length === 0 && (
-              <li className="p-8 text-center text-muted-foreground">
-                No alerts have been triggered recently.
-              </li>
-            )}
-          </ul>
-        </CardContent>
-      </Card>
-    </div>
-  );
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>Recent Alerts Summary</CardTitle>
+                <CardDescription>A real-time log of your most recent triggered alerts.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div className="space-y-4">
+                    {mockTriggeredAlerts.slice(0, 3).map((alert, index) => (
+                        <div key={alert.id} className="flex items-start gap-4 p-4 border-b last:border-b-0">
+                             <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-1">
+                                <Bell className="w-4 h-4 text-primary" />
+                            </div>
+                            <div className="flex-1">
+                               <div className="flex justify-between items-start">
+                                    <div className="font-medium text-sm flex-1">
+                                    <Link href="#" className="font-bold hover:underline">{alert.entity}</Link> triggered rule <Badge variant="secondary" className="mx-1">{alert.rule}</Badge>
+                                    </div>
+                                    <p className="text-xs text-muted-foreground mt-0.5 ml-2 shrink-0">{alert.time}</p>
+                               </div>
+                               <p className="text-sm text-muted-foreground mt-1">
+                                    {alert.value} {alert.target && <><ArrowRight className="inline h-3 w-3 mx-1"/> {alert.target}</>}
+                               </p>
+                            </div>
+                        </div>
+                    ))}
+                    {mockTriggeredAlerts.length === 0 && (
+                        <div className="text-center text-muted-foreground py-8">
+                            <p>No triggered alerts yet.</p>
+                            <p className="text-sm">Activity will appear here live.</p>
+                        </div>
+                    )}
+                </div>
+                 <Button variant="link" size="sm" asChild className="w-full mt-4">
+                    <Link href="/alerts">View All Alerts</Link>
+                </Button>
+            </CardContent>
+        </Card>
+    );
 }
