@@ -1,3 +1,4 @@
+
 'use client';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -9,16 +10,16 @@ import Link from 'next/link';
 
 export default function ConfirmationPage() {
   const router = useRouter();
-  const { user, isLoading, isPro } = useAuth();
+  const { user, loading, isPro } = useAuth();
 
   useEffect(() => {
     // Redirect if user is not logged in or is not a pro user
-    if (!isLoading && (!user || !isPro)) {
+    if (!loading && (!user || !isPro)) {
       router.push('/upgrade');
     }
-  }, [user, isLoading, isPro, router]);
+  }, [user, loading, isPro, router]);
 
-  if (isLoading || !user || !isPro) {
+  if (loading || !user || !isPro) {
     return null; // Or a loading spinner
   }
 

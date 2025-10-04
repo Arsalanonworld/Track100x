@@ -1,3 +1,4 @@
+
 'use client';
 import ActiveAlerts from '@/components/alerts/active-alerts';
 import AlertHistory from '@/components/alerts/alert-history';
@@ -10,9 +11,9 @@ import { cn } from '@/lib/utils';
 import PageHeader from '@/components/page-header';
 
 export default function AlertsPage() {
-  const { user, isLoading, setAuthDialogOpen } = useAuth();
+  const { user, loading, setAuthDialogOpen } = useAuth();
 
-  if (isLoading) {
+  if (loading) {
     return (
         <>
             <div className="space-y-2 mb-8">
@@ -32,7 +33,7 @@ export default function AlertsPage() {
     );
   }
 
-  const showLoginWall = !user && !isLoading;
+  const showLoginWall = !user && !loading;
 
   return (
       <div className="space-y-8">

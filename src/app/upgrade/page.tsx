@@ -11,9 +11,7 @@ import Link from 'next/link';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { useUser, useFirestore, useMemoFirebase } from '@/firebase';
-import { doc } from 'firebase/firestore';
-import { useDoc } from '@/firebase/firestore/use-doc';
+import { useAuth } from '@/hooks/use-auth';
 
 
 const features = [
@@ -70,19 +68,10 @@ const faqs = [
 ]
 
 export default function UpgradePage() {
-    const { user, isUserLoading } = useUser();
+    const { user, loading, isPro } = useAuth();
     const router = useRouter();
     const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
 
-    const firestore = useFirestore();
-    const userDocRef = useMemoFirebase(() => {
-        if (!firestore || !user) return null;
-        return doc(firestore, 'users', user.uid);
-    }, [firestore, user]);
-    const { data: userData, isLoading: isUserDataLoading } = useDoc(userDocRef);
-
-    const isPro = userData?.plan === 'pro';
-    const isLoading = isUserLoading || isUserDataLoading;
 
     const handleUpgradeClick = () => {
         if (!user) {
@@ -242,7 +231,7 @@ export default function UpgradePage() {
                     </ul>
                 </CardContent>
                 <CardFooter>
-                     {isLoading ? (
+                     {loading ? (
                         <Button className="w-full" disabled><Loader2 className="animate-spin"/></Button>
                      ) : isPro ? (
                         <Button className="w-full" disabled>Your Current Plan</Button>

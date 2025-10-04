@@ -1,34 +1,88 @@
 
 'use client';
-import { useUser, useFirestore, useMemoFirebase, useDoc } from '@/firebase';
-import { doc, updateDoc } from 'firebase/firestore';
-import { useTestUser } from '@/firebase/client-provider';
 
-export function useAuth() {
-  const { user, isUserLoading } = useUser();
-  const { isTestUser, authDialogOpen, setAuthDialogOpen } = useTestUser();
-  const firestore = useFirestore();
+import React, { useState, useEffect, createContext, useContext, ReactNode, Dispatch, SetStateAction } from 'react';
+import { useRouter } from 'next/navigation';
 
-  const userDocRef = useMemoFirebase(() => {
-    if (!firestore || !user) return null;
-    return doc(firestore, 'users', user.uid);
-  }, [firestore, user]);
+export interface User {
+  uid: string;
+  email: string | null;
+  displayName: string | null;
+  photoURL: string | null;
+}
 
-  const { data: userData, isLoading: isUserDataLoading } = useDoc(userDocRef);
+interface AuthContextType {
+  user: User | null;
+  loading: boolean;
+  isPro: boolean;
+  signOut: () => Promise<void>;
+  upgradeToPro: () => Promise<void>;
+  authDialogOpen: boolean;
+  setAuthDialogOpen: Dispatch<SetStateAction<boolean>>;
+}
 
-  const isPro = isTestUser ? true : userData?.plan === 'pro';
-  const isLoading = isUserLoading || isUserDataLoading;
+const AuthContext = createContext<AuthContextType>({
+  user: null,
+  loading: true,
+  isPro: false,
+  signOut: async () => {},
+  upgradeToPro: async () => {},
+  authDialogOpen: false,
+  setAuthDialogOpen: () => {},
+});
+
+const mockUser: User = {
+    uid: 'mock-user-123',
+    email: 'pro@track100x.com',
+    displayName: 'Pro User',
+    photoURL: null,
+};
+
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  // Default to Pro for easier testing
+  const [isPro, setIsPro] = useState(true); 
+  const [authDialogOpen, setAuthDialogOpen] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    // Simulate fetching user
+    setTimeout(() => {
+      setUser(mockUser);
+      setLoading(false);
+    }, 500);
+  }, []);
+
+  const signOut = async () => {
+    setLoading(true);
+    setTimeout(() => {
+      setUser(null);
+      setIsPro(false);
+      setLoading(false);
+      router.push('/');
+    }, 500);
+  };
 
   const upgradeToPro = async () => {
-    if (!userDocRef) {
-      throw new Error("User document not found.");
+    if (!user) {
+        setAuthDialogOpen(true);
+        throw new Error('User not logged in.');
     }
-    // This is a placeholder for a real payment flow.
-    // In a real app, this would be handled on the backend after a successful payment.
-    await updateDoc(userDocRef, {
-      plan: 'pro'
-    });
-  }
+    setIsPro(true);
+  };
 
-  return { user, isPro, isLoading, isTestUser, authDialogOpen, setAuthDialogOpen, upgradeToPro };
-}
+  const value = {
+    user,
+    loading,
+    isPro,
+    signOut,
+    upgradeToPro,
+    authDialogOpen,
+    setAuthDialogOpen,
+  };
+
+  return React.createElement(AuthContext.Provider, { value }, children);
+};
+
+export const useAuth = () => useContext(AuthContext);

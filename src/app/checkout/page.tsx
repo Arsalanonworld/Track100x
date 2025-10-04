@@ -13,7 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Separator } from '@/components/ui/separator';
 
 export default function CheckoutPage() {
-  const { user, isUserLoading, upgradeToPro, isPro } = useAuth();
+  const { user, loading, upgradeToPro, isPro } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
   const { toast } = useToast();
@@ -37,14 +37,14 @@ export default function CheckoutPage() {
   }, [plan]);
 
   useEffect(() => {
-    if (!isUserLoading && !user) {
+    if (!loading && !user) {
       router.push('/auth/login?next=/upgrade');
     }
-    if (!isUserLoading && isPro) {
+    if (!loading && isPro) {
         // If user is already pro, redirect them
         router.push('/account');
     }
-  }, [user, isUserLoading, isPro, router]);
+  }, [user, loading, isPro, router]);
 
   const handleConfirmPayment = async () => {
     setIsProcessing(true);
@@ -66,7 +66,7 @@ export default function CheckoutPage() {
     }
   };
   
-  if (isUserLoading || !user || isPro) {
+  if (loading || !user || isPro) {
     return (
        <div className="flex justify-center items-center h-[calc(100vh-200px)]">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
