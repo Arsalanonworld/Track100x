@@ -106,7 +106,7 @@ export default function HeroSection() {
             }
         };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [text]); // Only re-trigger when text state changes
+    }, [text]);
 
     return (
         <section className="relative overflow-hidden bg-gradient-to-b from-card to-background flex flex-col items-center justify-center min-h-[280px] py-12 md:min-h-[320px]">
@@ -116,12 +116,12 @@ export default function HeroSection() {
                     <span>{text}</span>
                     <span className="animate-blinking-cursor w-1 sm:w-1.5 h-8 sm:h-12 ml-1 bg-primary"></span>
                 </h1>
-                 <p className="max-w-2xl mx-auto mt-4 text-lg text-muted-foreground">
+                 <p className="max-w-2xl mx-auto mt-4 text-base sm:text-lg text-muted-foreground">
                     The ultimate wallet intelligence platform. Track whale transactions and get real-time smart alerts.
                 </p>
-                 <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-4 sm:gap-x-8">
+                 <div className="mt-8 grid grid-cols-2 sm:flex sm:flex-wrap items-center justify-center gap-x-6 gap-y-4 sm:gap-x-8">
                     {features.map((feature) => (
-                       <div key={feature.label} className="flex items-center gap-3">
+                       <div key={feature.label} className="flex items-center gap-3 justify-center sm:justify-start">
                             {feature.icon}
                             <span className="text-sm font-medium text-muted-foreground">{feature.label}</span>
                        </div>
