@@ -9,6 +9,22 @@ const phrases = [
     'Decode On-Chain Data.',
     'Anticipate Market Moves.',
     'Unlock Crypto Alpha.',
+    'Track Whale Wallets.',
+    'Real-Time Crypto Alerts.',
+    'Your On-Chain Edge.',
+    'See Transactions Happen Live.',
+    'Monitor Top Trader Wallets.',
+    'Never Miss a Big Move.',
+    'The Ultimate Wallet Intel.',
+    'Data-Driven Crypto Trading.',
+    'Find Narratives Before They Trend.',
+    'Copy-Trade the Pros.',
+    'Follow the On-Chain Flow.',
+    'From Noise to Signal.',
+    'Master On-Chain Analysis.',
+    'Get Notified, Act Faster.',
+    'Your Window into Crypto Whales.',
+    'Trade with Confidence.',
 ];
 
 const features = [
@@ -64,10 +80,10 @@ export default function HeroSection() {
     }, [text, isDeleting, phraseIndex]);
 
     return (
-        <section className="relative overflow-hidden bg-gradient-to-b from-card to-background flex flex-col items-center justify-center min-h-[280px] py-12">
+        <section className="relative overflow-hidden bg-gradient-to-b from-card to-background flex flex-col items-center justify-center min-h-[280px] py-12 md:min-h-[320px]">
             <div className="absolute inset-0 bg-[url('/grid.svg')] bg-repeat [mask-image:linear-gradient(to_bottom,white_5%,transparent_80%)] dark:opacity-20"></div>
             <div className="container mx-auto px-4 text-center relative">
-                <h1 className="relative text-3xl font-extrabold tracking-tighter sm:text-5xl lg:text-6xl text-foreground inline-block h-16 sm:h-20 items-center">
+                <h1 className="relative text-3xl font-extrabold tracking-tighter sm:text-5xl lg:text-6xl text-foreground inline-block h-16 sm:h-20 flex items-center justify-center">
                     <span>{text}</span>
                     <span className="absolute -right-2 top-0 bottom-0 w-1.5 bg-primary animate-blinking-cursor"></span>
                 </h1>
