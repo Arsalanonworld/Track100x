@@ -7,6 +7,7 @@ import { TickerBar } from './ticker-bar';
 import { Footer } from './footer';
 import AuthDialog from '../auth-dialog';
 import { AuthDialogProvider, useAuthDialog } from '@/hooks/use-auth-dialog';
+import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
 
 function MainLayoutContent({ children }: { children: React.ReactNode }) {
   const { authDialogOpen, setAuthDialogOpen } = useAuthDialog();
@@ -16,7 +17,7 @@ function MainLayoutContent({ children }: { children: React.ReactNode }) {
       <TickerBar />
       <Header />
       <main className="flex-1">
-        <div className="container py-8">
+        <div className="container py-8 sm:py-12">
             {children}
         </div>
       </main>
@@ -30,6 +31,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
   return (
     <div className="relative flex min-h-screen flex-col">
         <AuthDialogProvider>
+          <FirebaseErrorListener/>
           <MainLayoutContent>{children}</MainLayoutContent>
         </AuthDialogProvider>
     </div>
