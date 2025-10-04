@@ -84,11 +84,9 @@ export default function WatchlistPage() {
                                         <Star className="h-5 w-5 text-yellow-400 fill-yellow-400" />
                                         <span>Wallet</span>
                                     </CardTitle>
-                                    <CardDescription>
-                                        <div className="text-sm text-muted-foreground mt-2">
-                                            <Badge variant="secondary" className="font-mono">{item.id}</Badge>
-                                        </div>
-                                    </CardDescription>
+                                    <div className="text-sm text-muted-foreground mt-2">
+                                        <Badge variant="secondary" className="font-mono">{item.id}</Badge>
+                                    </div>
                                 </div>
                                  <DialogTrigger asChild>
                                     <Button
@@ -116,11 +114,11 @@ export default function WatchlistPage() {
                      <div className="flex flex-col items-center justify-center text-center text-muted-foreground p-16 border-2 border-dashed rounded-lg">
                         <Star className="h-12 w-12 mb-4" />
                         <p className="font-semibold text-lg">Your watchlist is empty.</p>
-                        <p className="text-sm">
+                        <div className="text-sm">
                             Follow wallets from the{' '}
                             <a href="/leaderboard" className="text-primary hover:underline">Leaderboard</a> or{' '}
                             <a href="/" className="text-primary hover:underline">Whale Feed</a> to get started.
-                        </p>
+                        </div>
                     </div>
                 )}
                  {!isPro && watchlist && watchlist.length > 0 && (
@@ -134,6 +132,3 @@ export default function WatchlistPage() {
         </Dialog>
     );
 }
-
-
-
