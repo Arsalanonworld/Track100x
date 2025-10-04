@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import PageHeader from '@/components/page-header';
 import {
   Card,
@@ -21,7 +21,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { walletLeaderboard } from '@/lib/mock-data';
-import { ArrowUpDown, Zap, Lock, Loader2, Star } from 'lucide-react';
+import { ArrowUpDown, Zap, Lock, Loader2, Star, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   Select,
@@ -39,6 +39,7 @@ import { ProFeatureLock } from '@/components/pro-feature-lock';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useToast } from '@/hooks/use-toast';
 import { useAuthDialog } from '@/hooks/use-auth-dialog';
+import { AnimatedButton } from '@/components/ui/animated-button';
 
 export default function LeaderboardPage() {
   const [selectedWallet, setSelectedWallet] = useState<string | undefined>(undefined);
@@ -63,11 +64,17 @@ export default function LeaderboardPage() {
   const isPro = userData?.plan === 'pro';
   const isLoading = isUserLoading || isUserDataLoading || isWatchlistLoading;
 
-  const topNFree = userData?.entitlements?.leaderboard?.topN || 10;
+  // Guest: 5, Free: 10, Pro: All
+  const topN = useMemo(() => {
+    if (isPro) return walletLeaderboard.length;
+    if (user) return userData?.entitlements?.leaderboard?.topN || 10;
+    return 5; // Guest limit
+  }, [isPro, user, userData]);
   
-  const leaderboardData = isPro ? walletLeaderboard : walletLeaderboard.slice(0, topNFree);
+  const leaderboardData = useMemo(() => walletLeaderboard.slice(0, topN), [topN]);
+  const lockedData = useMemo(() => walletLeaderboard.slice(topN, topN + 3), [topN]);
+  const showProLock = !isPro && walletLeaderboard.length > topN;
 
-  const showProLock = !isPro && walletLeaderboard.length > topNFree;
 
   const followedAddresses = React.useMemo(() => {
     return new Set(watchlist?.map((item: any) => item.id));
@@ -121,21 +128,18 @@ export default function LeaderboardPage() {
         description="Discover and track the most profitable and active wallets in real-time."
       />
 
-      <Card className="relative">
+      <Card>
         {isLoading && (
            <div className="absolute inset-0 z-20 flex items-center justify-center bg-background/80 backdrop-blur-sm">
              <Loader2 className="h-8 w-8 animate-spin text-primary" />
            </div>
-        )}
-        {showProLock && (
-          <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-background to-transparent z-10 pointer-events-none" />
         )}
         <CardHeader>
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div className="flex-1">
               <CardTitle>Top Wallets</CardTitle>
               <CardDescription>
-                {isPro ? "The biggest players in the crypto space." : `Showing the top ${topNFree} wallets. Upgrade to Pro to see the full list.`}
+                {isPro ? "The biggest players in the crypto space." : `Showing the top ${topN} wallets.`}
               </CardDescription>
             </div>
             <div className="flex gap-2 flex-wrap">
@@ -266,16 +270,40 @@ export default function LeaderboardPage() {
                     </TableCell>
                   </TableRow>
                 ))}
+                 {showProLock && (
+                  <>
+                    {lockedData.map((wallet) => (
+                      <TableRow key={wallet.rank} className="relative blur-sm pointer-events-none">
+                        <TableCell className="font-medium text-lg text-center">{wallet.rank}</TableCell>
+                        <TableCell><Badge variant="secondary" className="font-mono">{wallet.address.slice(0, 6)}...</Badge></TableCell>
+                        <TableCell>${(wallet.netWorth / 1_000_000).toFixed(2)}M</TableCell>
+                        <TableCell>...</TableCell>
+                        <TableCell>...</TableCell>
+                        <TableCell>...</TableCell>
+                        <TableCell className="text-right">
+                          <Button variant="ghost" size="icon" disabled><Star className="h-4 w-4" /></Button>
+                          <Button variant="ghost" size="icon" disabled><Zap className="h-4 w-4" /></Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                    <TableRow>
+                      <TableCell colSpan={7} className="text-center p-0">
+                         <div className="p-4">
+                            <h3 className="font-semibold">Unlock the full Top 100 whales</h3>
+                            <p className="text-muted-foreground text-sm mb-4">Upgrade to Pro to get full access to the leaderboard and advanced analytics.</p>
+                            <AnimatedButton asChild>
+                               <Link href="/upgrade">
+                                  Upgrade to Pro
+                                  <ArrowRight className="ml-2 h-4 w-4" />
+                               </Link>
+                            </AnimatedButton>
+                          </div>
+                      </TableCell>
+                    </TableRow>
+                  </>
+                )}
               </TableBody>
             </Table>
-             {showProLock && (
-               <div className="mt-8">
-                 <ProFeatureLock
-                  title="View the Full Leaderboard"
-                  description="Upgrade to Pro to unlock the top 100 wallets, deep wallet profiles, and more."
-                 />
-               </div>
-            )}
           </div>
         </CardContent>
       </Card>
@@ -283,3 +311,5 @@ export default function LeaderboardPage() {
     </Dialog>
   );
 }
+
+    

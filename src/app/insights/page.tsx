@@ -46,22 +46,23 @@ export default function InsightsPage() {
     });
   }, [searchTerm, selectedCategory]);
 
+  const getVisibleArticleCount = () => {
+    if(isPro) return filteredArticles.length;
+    if(user) return 2; // Logged-in free users see more
+    return 1; // Logged-out guests see the least
+  }
+
   const visibleArticles = useMemo(() => {
-    // Pro users see everything
-    if (isPro) {
-        return filteredArticles;
-    }
-    // Logged-in free users see more than guests
-    if (user) {
-        return filteredArticles.slice(0, 1);
-    }
-    // Logged-out guests see the least
-    return filteredArticles.slice(0, 1);
+    return filteredArticles.slice(0, getVisibleArticleCount());
   }, [filteredArticles, isPro, user]);
 
+  const lockedArticles = useMemo(() => {
+    return filteredArticles.slice(getVisibleArticleCount(), getVisibleArticleCount() + 3);
+  }, [filteredArticles, isPro, user]);
+
+  const hasMoreArticles = filteredArticles.length > visibleArticles.length;
   const showLoginWall = !user && !isUserLoading;
   const showUpgradeWall = user && !isPro;
-  const hasMoreArticles = filteredArticles.length > visibleArticles.length;
 
 
   return (
@@ -101,10 +102,18 @@ export default function InsightsPage() {
         </div>
       
         <div className="relative">
-            {visibleArticles.length > 0 ? (
+            {filteredArticles.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                   {visibleArticles.map((article) => (
                     <ArticleCard key={article.id} article={article} />
+                  ))}
+                  {hasMoreArticles && lockedArticles.map((article) => (
+                     <div key={article.id} className="relative blur-sm pointer-events-none">
+                        <ArticleCard article={article} />
+                        <div className="absolute inset-0 flex items-center justify-center">
+                            <Lock className="h-8 w-8 text-foreground" />
+                        </div>
+                     </div>
                   ))}
               </div>
             ) : (
@@ -115,9 +124,7 @@ export default function InsightsPage() {
             )}
             
             {hasMoreArticles && (
-              <>
-                 <div className="absolute inset-x-0 bottom-0 h-3/4 bg-gradient-to-t from-background to-transparent z-10 pointer-events-none" />
-                 <div className="absolute inset-0 z-20 flex items-end justify-center pb-8">
+              <div className="mt-12 text-center">
                   {showLoginWall && (
                      <ProFeatureLock
                         title="Unlock All Articles & Research"
@@ -133,12 +140,9 @@ export default function InsightsPage() {
                       />
                   )}
                  </div>
-              </>
             )}
         </div>
       </section>
     </>
   );
 }
-
-    

@@ -1,6 +1,6 @@
 
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Card,
   CardContent,
@@ -59,10 +59,32 @@ export function WhaleFeed() {
     }
   };
 
-  const currentTransactions = mockWhaleTxs.slice(
-    (currentPage - 1) * transactionsPerPage,
-    currentPage * transactionsPerPage
-  );
+  const filteredTransactions = useMemo(() => {
+    let transactions = mockWhaleTxs;
+    if(tokenFilter) {
+      transactions = transactions.filter(tx => tx.token.symbol.toLowerCase().includes(tokenFilter.toLowerCase()));
+    }
+    if(chainFilter !== 'all') {
+      transactions = transactions.filter(tx => tx.network.toLowerCase() === chainFilter);
+    }
+    if(typeFilter !== 'all') {
+       transactions = transactions.filter(tx => tx.type.toLowerCase() === typeFilter);
+    }
+    return transactions;
+  }, [tokenFilter, chainFilter, typeFilter]);
+
+  const totalPages = Math.ceil(filteredTransactions.length / transactionsPerPage);
+  
+  // Guest can't paginate
+  const canPaginate = !!user; 
+
+  const currentTransactions = useMemo(() => {
+     return filteredTransactions.slice(
+        (currentPage - 1) * transactionsPerPage,
+        currentPage * transactionsPerPage
+      )
+  }, [filteredTransactions, currentPage]);
+
 
   const FilterControls = () => (
     <>
@@ -120,7 +142,10 @@ export function WhaleFeed() {
     </>
   );
 
-  const PaginationControls = () => (
+  const PaginationControls = () => {
+    if (!canPaginate) return null;
+
+    return (
      <div className="flex justify-center items-center gap-4 mt-6">
         <Button 
             variant="outline"
@@ -130,23 +155,23 @@ export function WhaleFeed() {
             Previous
         </Button>
         <span className="text-sm text-muted-foreground">
-            Page {currentPage} of {Math.ceil(mockWhaleTxs.length / transactionsPerPage)}
+            Page {currentPage} of {totalPages}
         </span>
         <Button 
             variant="outline"
             onClick={handleNextPage}
-            disabled={currentPage * transactionsPerPage >= mockWhaleTxs.length}
+            disabled={currentPage === totalPages}
         >
             Next
         </Button>
     </div>
-  );
+  )};
 
 
   return (
         <Card className="border-x-0 sm:border-x">
             <CardHeader>
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                   <CardTitle className="flex-1 whitespace-nowrap">Live Whale Transactions</CardTitle>
                   
                   {/* Desktop Filters */}
