@@ -20,7 +20,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { walletLeaderboard } from '@/lib/mock-data';
-import { ArrowUpDown, Zap } from 'lucide-react';
+import { ArrowUpDown, Zap, Lock, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   Select,
@@ -29,14 +29,34 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
-  Dialog,
-  DialogTrigger,
-} from '@/components/ui/dialog';
+import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { QuickAlertModal } from '@/components/quick-alert-modal';
+import { useUser, useFirestore, useMemoFirebase } from '@/firebase';
+import { doc } from 'firebase/firestore';
+import { useDoc } from '@/firebase/firestore/use-doc';
+import Link from 'next/link';
+import { ProFeatureLock } from '@/components/pro-feature-lock';
 
 export default function LeaderboardPage() {
-    const [selectedWallet, setSelectedWallet] = useState<string | undefined>(undefined);
+  const [selectedWallet, setSelectedWallet] = useState<string | undefined>(
+    undefined
+  );
+  const { user, isUserLoading } = useUser();
+  const firestore = useFirestore();
+
+  const userDocRef = useMemoFirebase(() => {
+    if (!firestore || !user) return null;
+    return doc(firestore, 'users', user.uid);
+  }, [firestore, user]);
+
+  const { data: userData, isLoading: isUserDataLoading } = useDoc(userDocRef);
+
+  const isPro = userData?.plan === 'pro';
+  const isLoading = isUserLoading || isUserDataLoading;
+
+  const topNFree = userData?.entitlements?.leaderboard?.topN || 10;
+  const leaderboardData = isPro ? walletLeaderboard : walletLeaderboard.slice(0, topNFree);
+
   return (
     <Dialog onOpenChange={(isOpen) => !isOpen && setSelectedWallet(undefined)}>
       <PageHeader
@@ -44,7 +64,17 @@ export default function LeaderboardPage() {
         description="Discover and track the most profitable and active wallets in real-time."
       />
 
-      <Card>
+      <Card className="relative">
+        {isLoading ? (
+           <div className="absolute inset-0 z-20 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+             <Loader2 className="h-8 w-8 animate-spin text-primary" />
+           </div>
+        ) : !isPro && user && (
+           <ProFeatureLock
+            title="View the Full Leaderboard"
+            description="Upgrade to Pro to unlock the top 100 wallets, deep wallet profiles, and more."
+           />
+        )}
         <CardHeader>
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div className="flex-1">
@@ -92,14 +122,15 @@ export default function LeaderboardPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {walletLeaderboard.map((wallet) => (
+                {leaderboardData.map((wallet) => (
                   <TableRow key={wallet.rank} className="hover:shadow-md">
                     <TableCell className="font-medium text-lg text-center">
                       {wallet.rank}
                     </TableCell>
                     <TableCell>
                       <Badge variant="secondary" className="font-mono">
-                        {wallet.address.slice(0, 6)}...{wallet.address.slice(-4)}
+                        {wallet.address.slice(0, 6)}...
+                        {wallet.address.slice(-4)}
                       </Badge>
                     </TableCell>
                     <TableCell className="font-medium">
@@ -129,7 +160,11 @@ export default function LeaderboardPage() {
                     </TableCell>
                     <TableCell className="text-right">
                       <DialogTrigger asChild>
-                        <Button variant="ghost" size="icon" onClick={() => setSelectedWallet(wallet.address)}>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => setSelectedWallet(wallet.address)}
+                        >
                           <Zap className="h-4 w-4" />
                           <span className="sr-only">Create Quick Alert</span>
                         </Button>
