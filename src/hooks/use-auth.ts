@@ -1,31 +1,30 @@
 
 'use client';
 
+import { useUser, useFirestore, useMemoFirebase } from '@/firebase';
 import { useAuthDialog } from './use-auth-dialog';
-
-export interface User {
-  uid: string;
-  email: string | null;
-  displayName: string | null;
-  photoURL: string | null;
-}
+import { doc } from 'firebase/firestore';
+import { useDoc } from '@/firebase/firestore/use-doc';
 
 export const useAuth = () => {
+  const { user, isUserLoading, userError } = useUser();
   const { setAuthDialogOpen } = useAuthDialog();
-  
-  // Mock user for testing purposes
-  const mockUser: User = {
-    uid: 'test-user-123',
-    email: 'test@example.com',
-    displayName: 'Test User',
-    photoURL: null,
-  };
+  const firestore = useFirestore();
+
+  const userDocRef = useMemoFirebase(() => {
+    if (!firestore || !user) return null;
+    return doc(firestore, 'users', user.uid);
+  }, [firestore, user]);
+
+  const { data: userData, isLoading: isUserDataLoading } = useDoc(userDocRef);
+
+  const isPro = userData?.plan === 'pro';
 
   return {
-    user: mockUser,
-    loading: false,
-    isPro: true, // Always return true for isPro
-    userError: null,
+    user,
+    loading: isUserLoading || isUserDataLoading,
+    isPro,
+    userError,
     setAuthDialogOpen,
   };
 };
