@@ -27,7 +27,7 @@ interface TransactionCardProps {
     tx: WhaleTransaction;
 }
 
-const WalletIdentifier = ({ address, shortAddress, tags, network, onFollow, isFollowing, user, isPro }: { address: string, shortAddress: string, tags?: string[], network: string, onFollow: (address: string) => void, isFollowing: boolean, user: any, isPro: boolean }) => (
+const WalletIdentifier = ({ address, shortAddress, tags, network, onFollow, isFollowing }: { address: string, shortAddress: string, tags?: string[], network: string, onFollow: (address: string) => void, isFollowing: boolean }) => (
     <div className="flex items-center gap-2 min-w-0">
         <Link 
             href={getExplorerUrl(network, address, 'address')}
@@ -198,7 +198,7 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
                                     <div className="flex md:flex-grow md:justify-center items-center gap-2">
                                         <div className="flex flex-col md:flex-row items-start md:items-center gap-2 w-full">
                                             <div className="w-full md:w-auto">
-                                                <WalletIdentifier address={tx.from} shortAddress={tx.fromShort} tags={tx.fromTags} network={tx.network} onFollow={handleFollowToggle} isFollowing={followedAddresses.has(tx.from)} user={user} isPro={isPro} />
+                                                <WalletIdentifier address={tx.from} shortAddress={tx.fromShort} tags={tx.fromTags} network={tx.network} onFollow={handleFollowToggle} isFollowing={followedAddresses.has(tx.from)} />
                                             </div>
 
                                             <div className="pl-1 md:pl-0">
@@ -207,7 +207,7 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
                                             </div>
 
                                             <div className="w-full md:w-auto">
-                                                <WalletIdentifier address={tx.to} shortAddress={tx.toShort} tags={tx.toTags} network={tx.network} onFollow={handleFollowToggle} isFollowing={followedAddresses.has(tx.to)} user={user} isPro={isPro} />
+                                                <WalletIdentifier address={tx.to} shortAddress={tx.toShort} tags={tx.toTags} network={tx.network} onFollow={handleFollowToggle} isFollowing={followedAddresses.has(tx.to)} />
                                             </div>
                                         </div>
                                     </div>
@@ -304,3 +304,5 @@ const TransactionDetails = ({ tx }: { tx: WhaleTransaction }) => {
 
 
 export default TransactionCard;
+
+    

@@ -43,16 +43,11 @@ export function WhaleFeed() {
 
   const transactionsPerPage = 10;
   
-  const activeFilter = tokenFilter ? 'token' : chainFilter !== 'all' ? 'chain' : typeFilter !== 'all' ? 'type' : null;
+  const activeFilterCount = [tokenFilter, chainFilter, typeFilter].filter(f => f && f !== 'all').length;
 
   const handleNextPage = () => {
-    if (isPro) {
-      if (currentPage * transactionsPerPage < mockWhaleTxs.length) {
-        setCurrentPage(currentPage + 1);
-      }
-    } else {
-      // Logic to show upgrade prompt for free users
-      // For now, we just disable the button
+    if (currentPage * transactionsPerPage < mockWhaleTxs.length) {
+      setCurrentPage(currentPage + 1);
     }
   };
 
@@ -76,23 +71,23 @@ export function WhaleFeed() {
           className="pl-10 w-full" 
           value={tokenFilter}
           onChange={(e) => setTokenFilter(e.target.value)}
-          disabled={!isPro && activeFilter !== null && activeFilter !== 'token'}
+          disabled={!isPro && activeFilterCount >= 1 && tokenFilter === ''}
         />
-        {!isPro && activeFilter !== null && activeFilter !== 'token' && 
+        {!isPro && activeFilterCount >= 1 && tokenFilter === '' && (
           <div className="absolute inset-y-0 right-3 flex items-center">
             <Badge variant="secondary">Pro</Badge>
           </div>
-        }
+        )}
       </div>
       <Select 
         value={chainFilter} 
         onValueChange={setChainFilter}
-        disabled={!isPro && activeFilter !== null && activeFilter !== 'chain'}
+        disabled={!isPro && activeFilterCount >= 1 && chainFilter === 'all'}
       >
         <SelectTrigger className="w-full">
           <div className="flex justify-between items-center w-full">
             <SelectValue placeholder="All Chains" />
-            {!isPro && activeFilter !== null && activeFilter !== 'chain' && <Badge variant="secondary">Pro</Badge>}
+            {!isPro && activeFilterCount >= 1 && chainFilter === 'all' && <Badge variant="secondary">Pro</Badge>}
           </div>
         </SelectTrigger>
         <SelectContent>
@@ -106,12 +101,12 @@ export function WhaleFeed() {
       <Select 
         value={typeFilter}
         onValueChange={setTypeFilter}
-        disabled={!isPro && activeFilter !== null && activeFilter !== 'type'}
+        disabled={!isPro && activeFilterCount >= 1 && typeFilter === 'all'}
       >
         <SelectTrigger className="w-full">
            <div className="flex justify-between items-center w-full">
               <SelectValue placeholder="All Types" />
-              {!isPro && activeFilter !== null && activeFilter !== 'type' && <Badge variant="secondary">Pro</Badge>}
+              {!isPro && activeFilterCount >= 1 && typeFilter === 'all' && <Badge variant="secondary">Pro</Badge>}
            </div>
         </SelectTrigger>
         <SelectContent>
@@ -133,23 +128,15 @@ export function WhaleFeed() {
             Previous
         </Button>
         <span className="text-sm text-muted-foreground">
-            Page {currentPage} of {isPro ? Math.ceil(mockWhaleTxs.length / transactionsPerPage) : 1}
+            Page {currentPage} of {Math.ceil(mockWhaleTxs.length / transactionsPerPage)}
         </span>
-        {isPro ? (
-          <Button 
-              variant="outline"
-              onClick={handleNextPage}
-              disabled={currentPage * transactionsPerPage >= mockWhaleTxs.length}
-          >
-              Next
-          </Button>
-        ) : (
-          <Button asChild variant="outline">
-            <a href="/upgrade">
-              Next <Lock className="ml-2 h-3 w-3" />
-            </a>
-          </Button>
-        )}
+        <Button 
+            variant="outline"
+            onClick={handleNextPage}
+            disabled={currentPage * transactionsPerPage >= mockWhaleTxs.length}
+        >
+            Next
+        </Button>
     </div>
   );
 
@@ -158,7 +145,7 @@ export function WhaleFeed() {
         <Card className="border-x-0 sm:border-x">
             <CardHeader>
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                  <CardTitle className="flex-1">Live Whale Transactions</CardTitle>
+                  <CardTitle className="flex-1 whitespace-nowrap">Live Whale Transactions</CardTitle>
                   
                   {/* Desktop Filters */}
                   <div className="hidden md:flex flex-row gap-2 w-full sm:w-auto items-center">
@@ -200,3 +187,5 @@ export function WhaleFeed() {
         </Card>
   );
 }
+
+    

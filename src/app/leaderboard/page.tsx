@@ -63,9 +63,9 @@ export default function LeaderboardPage() {
 
   const topNFree = userData?.entitlements?.leaderboard?.topN || 10;
   
-  let leaderboardData = isPro ? walletLeaderboard : walletLeaderboard.slice(0, 5);
+  const leaderboardData = isPro ? walletLeaderboard : walletLeaderboard.slice(0, topNFree);
 
-  const showProLock = !isPro;
+  const showProLock = !isPro && walletLeaderboard.length > topNFree;
 
   const followedAddresses = React.useMemo(() => {
     return new Set(watchlist?.map((item: any) => item.id));
@@ -120,11 +120,12 @@ export default function LeaderboardPage() {
       />
 
       <Card className="relative">
-        {isLoading ? (
+        {isLoading && (
            <div className="absolute inset-0 z-20 flex items-center justify-center bg-background/80 backdrop-blur-sm">
              <Loader2 className="h-8 w-8 animate-spin text-primary" />
            </div>
-        ) : showProLock && (
+        )}
+        {showProLock && (
           <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-background to-transparent z-10 pointer-events-none" />
         )}
         <CardHeader>
@@ -274,3 +275,5 @@ export default function LeaderboardPage() {
     </Dialog>
   );
 }
+
+    

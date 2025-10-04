@@ -53,10 +53,10 @@ export default function InsightsPage() {
     }
     // Logged-in free users see more than guests
     if (user) {
-        return filteredArticles.slice(0, 5);
+        return filteredArticles.slice(0, 1);
     }
     // Logged-out guests see the least
-    return filteredArticles.slice(0, 3);
+    return filteredArticles.slice(0, 1);
   }, [filteredArticles, isPro, user]);
 
   const showLoginWall = !user && !isUserLoading;
@@ -140,3 +140,5 @@ export default function InsightsPage() {
     </>
   );
 }
+
+    
