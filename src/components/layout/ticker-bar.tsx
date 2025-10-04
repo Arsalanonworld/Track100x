@@ -1,6 +1,6 @@
 'use client';
 import { cn } from '@/lib/utils';
-import { TriangleUp, TriangleDown } from 'lucide-react';
+import { Triangle } from 'lucide-react';
 import React from 'react';
 
 const mockTickerData = [
@@ -30,7 +30,7 @@ const TickerItem = ({ item }: { item: typeof mockTickerData[0] }) => {
             isDown && 'text-red-600 dark:text-red-500'
           )}
         >
-          {isUp ? <TriangleUp className="h-3 w-3 fill-current"/> : <TriangleDown className="h-3 w-3 fill-current"/>}
+          {isUp ? <Triangle className="h-3 w-3 fill-current"/> : <Triangle className="h-3 w-3 fill-current rotate-180"/>}
           <span className="ml-1">{Math.abs(item.change)}%</span>
         </div>
       </div>
