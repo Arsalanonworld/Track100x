@@ -12,8 +12,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { mockAlerts } from '@/lib/mock-data';
-import { Bell, Plus, Sparkles, Edit, Trash2, Lock, Wallet, Tag, History, CheckCircle, PauseCircle, PlayCircle, MoreVertical } from 'lucide-react';
+import { Bell, Plus, Sparkles, Edit, Trash2, Lock, Wallet, Tag, History, CheckCircle, PauseCircle, PlayCircle, MoreVertical, Loader2 } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import {
   Select,
@@ -23,10 +22,13 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { useUser } from '@/firebase';
+import { useUser, useFirestore, useMemoFirebase } from '@/firebase';
+import { useCollection } from '@/firebase/firestore/use-collection';
+import { useDoc } from '@/firebase/firestore/use-doc';
+import { collection, doc, addDoc, updateDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import React from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger, DialogClose } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   DropdownMenu,
@@ -35,16 +37,58 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { useRouter } from 'next/navigation';
+import { useToast } from '@/hooks/use-toast';
 
-
-const QuickAlertConfigurator = ({ isPro }: { isPro: boolean }) => {
+const QuickAlertConfigurator = ({ isPro, userId }: { isPro: boolean; userId: string }) => {
   const [alertType, setAlertType] = React.useState<'wallet' | 'token'>('wallet');
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const firestore = useFirestore();
+  const { toast } = useToast();
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setIsSubmitting(true);
+    const formData = new FormData(event.currentTarget);
+    
+    const dataToSave = {
+      userId,
+      title: `New ${alertType} alert`,
+      alertType: formData.get('alertType'),
+      threshold: Number(formData.get('threshold')),
+      enabled: true,
+      createdAt: serverTimestamp(),
+      walletId: formData.get('walletId') || null,
+      token: formData.get('token') || null,
+    };
+
+    try {
+      if (!firestore || !userId) throw new Error("Firestore not available");
+      const alertsRef = collection(firestore, 'users', userId, 'alerts');
+      await addDoc(alertsRef, dataToSave);
+      toast({
+        title: "Alert created!",
+        description: "Your new alert has been saved.",
+      });
+      // Here you would typically close the modal, which can be handled by the parent component
+    } catch (error) {
+      console.error("Error creating alert:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Could not create alert.",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
 
   return (
-    <div className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-6">
         <div className="space-y-2">
             <Label>Alert Type</Label>
-            <Select onValueChange={(v: 'wallet' | 'token') => setAlertType(v)} defaultValue="wallet">
+            <Select onValueChange={(v: 'wallet' | 'token') => setAlertType(v)} defaultValue="wallet" name="alertType">
                 <SelectTrigger>
                     <SelectValue placeholder="Select alert type..." />
                 </SelectTrigger>
@@ -65,12 +109,13 @@ const QuickAlertConfigurator = ({ isPro }: { isPro: boolean }) => {
               <Label htmlFor="wallet-address">Wallet Address or ENS</Label>
               <Input
                 id="wallet-address"
+                name="walletId"
                 placeholder="e.g., 0x... or vitalik.eth"
               />
             </div>
              <div className="space-y-2">
               <Label htmlFor="wallet-rule">Rule</Label>
-               <Select>
+               <Select name="rule">
                 <SelectTrigger id="wallet-rule">
                   <SelectValue placeholder="Select a rule..." />
                 </SelectTrigger>
@@ -90,7 +135,7 @@ const QuickAlertConfigurator = ({ isPro }: { isPro: boolean }) => {
             </div>
              <div className="space-y-2">
               <Label htmlFor="wallet-threshold">Threshold</Label>
-               <Select>
+               <Select name="threshold">
                 <SelectTrigger id="wallet-threshold">
                   <SelectValue placeholder="Select a threshold..." />
                 </SelectTrigger>
@@ -113,12 +158,13 @@ const QuickAlertConfigurator = ({ isPro }: { isPro: boolean }) => {
               <Label htmlFor="token-symbol">Token Symbol</Label>
               <Input
                 id="token-symbol"
+                name="token"
                 placeholder="e.g., WIF, PEPE"
               />
             </div>
              <div className="space-y-2">
               <Label htmlFor="token-rule">Rule</Label>
-               <Select>
+               <Select name="rule">
                 <SelectTrigger id="token-rule">
                   <SelectValue placeholder="Select a rule..." />
                 </SelectTrigger>
@@ -165,14 +211,16 @@ const QuickAlertConfigurator = ({ isPro }: { isPro: boolean }) => {
                 </p>
              )}
           </div>
-          <Button className="w-full">
-          Create Alert
-        </Button>
-    </div>
+          <DialogClose asChild>
+            <Button type="submit" className="w-full" disabled={isSubmitting}>
+              {isSubmitting ? <Loader2 className="animate-spin" /> : "Create Alert"}
+            </Button>
+          </DialogClose>
+    </form>
   );
 };
 
-const CreateAlertModal = ({ isPro, canCreateAlert }: { isPro: boolean, canCreateAlert: boolean }) => (
+const CreateAlertModal = ({ isPro, canCreateAlert, userId }: { isPro: boolean, canCreateAlert: boolean, userId: string }) => (
     <DialogContent className="max-w-lg">
         <DialogHeader>
             <DialogTitle>Create a New Alert</DialogTitle>
@@ -201,7 +249,7 @@ const CreateAlertModal = ({ isPro, canCreateAlert }: { isPro: boolean, canCreate
                         </AlertDescription>
                     </Alert>
                 ) : (
-                    <QuickAlertConfigurator isPro={isPro} />
+                    <QuickAlertConfigurator isPro={isPro} userId={userId} />
                 )}
             </TabsContent>
             <TabsContent value="advanced" className="pt-4">
@@ -242,26 +290,73 @@ const CreateAlertModal = ({ isPro, canCreateAlert }: { isPro: boolean, canCreate
 
 export default function AlertsPage() {
   const { user, isUserLoading } = useUser();
+  const router = useRouter();
+  const firestore = useFirestore();
+  const { toast } = useToast();
 
-  // For now, we'll assume any logged in user is 'free'
-  // and pro features are locked. This can be expanded later.
-  const userPlan = user ? 'free' : 'public';
+  const userDocRef = useMemoFirebase(() => {
+    if (!firestore || !user) return null;
+    return doc(firestore, 'users', user.uid);
+  }, [firestore, user]);
+  const { data: userData, isLoading: isUserDataLoading } = useDoc(userDocRef);
+
+  const alertsRef = useMemoFirebase(() => {
+    if (!firestore || !user) return null;
+    return collection(firestore, 'users', user.uid, 'alerts');
+  }, [firestore, user]);
+  const { data: alerts, isLoading: isAlertsLoading } = useCollection(alertsRef);
+  
+  React.useEffect(() => {
+    if (!isUserLoading && !user) {
+      router.push('/auth/login?next=/alerts');
+    }
+  }, [user, isUserLoading, router]);
+
+  const userPlan = userData?.plan || 'free';
   const isPro = userPlan === 'pro';
+  
+  const activeAlertCount = alerts?.length ?? 0;
+  const freeAlertLimit = userData?.entitlements?.alerts?.maxActive ?? 3;
+  const canCreateAlert = isPro || activeAlertCount < freeAlertLimit;
 
-  const activeAlertCount = mockAlerts.length;
-  const freeAlertLimit = 3;
+  const handleToggleAlert = async (alertId: string, currentStatus: boolean) => {
+    if (!firestore || !user) return;
+    const alertDocRef = doc(firestore, 'users', user.uid, 'alerts', alertId);
+    try {
+      await updateDoc(alertDocRef, { enabled: !currentStatus });
+      toast({
+        title: `Alert ${!currentStatus ? 'resumed' : 'paused'}.`
+      });
+    } catch (error) {
+      toast({ variant: 'destructive', title: 'Error updating alert.' });
+    }
+  };
 
-  const canCreateAlert = user && (isPro || activeAlertCount < freeAlertLimit);
-
-  const recentAlerts = [
-      { id: '1', name: 'PEPE Whale Tx', description: 'Whale 0x123... swapped $1.25M PEPE to ETH on Uniswap', time: '5 min ago', delivery: 'Email'},
-      { id: '2', name: 'Vitalik Wallet Monitor', description: '0xabc... received 5,000 ETH from Wintermute', time: '2 hours ago', delivery: 'Push'},
-      { id: '3', name: 'WIF Price Alert', description: 'WIF Price increased by 12.5% to $2.80', time: 'yesterday', delivery: 'Email'},
-  ];
-
-  if (isUserLoading) {
-    return <div>Loading...</div>;
+  const handleDeleteAlert = async (alertId: string) => {
+     if (!firestore || !user) return;
+    const alertDocRef = doc(firestore, 'users', user.uid, 'alerts', alertId);
+    try {
+      await deleteDoc(alertDocRef);
+       toast({
+        title: `Alert deleted.`
+      });
+    } catch (error) {
+      toast({ variant: 'destructive', title: 'Error deleting alert.' });
+    }
   }
+
+
+  const isLoading = isUserLoading || isUserDataLoading || isAlertsLoading;
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-[calc(100vh-200px)]">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  const recentAlerts: any[] = []; // Placeholder for history
 
   return (
     <>
@@ -278,13 +373,13 @@ export default function AlertsPage() {
                 </Button>
             </DialogTrigger>
             {user ? (
-                <CreateAlertModal isPro={isPro} canCreateAlert={canCreateAlert} />
+                <CreateAlertModal isPro={isPro} canCreateAlert={canCreateAlert} userId={user.uid} />
             ) : (
                  <DialogContent>
                     <DialogHeader>
                         <DialogTitle>Sign Up to Create Alerts</DialogTitle>
                         <DialogDescription>
-                            Create a free account to get started with up to 3 custom alerts.
+                            Create a free account to get started with up to {freeAlertLimit} custom alerts.
                         </DialogDescription>
                     </DialogHeader>
                     <Alert>
@@ -311,9 +406,9 @@ export default function AlertsPage() {
         <div className="space-y-8">
             <div>
               <h2 className="text-2xl font-bold font-headline mb-4">
-                Active Alerts ({user ? activeAlertCount : 0})
+                Active Alerts ({activeAlertCount})
               </h2>
-               {userPlan === 'free' && (
+               {!isPro && user && (
                     <Alert className="mb-4 bg-primary/5 border-primary/20 text-primary-foreground">
                         <Sparkles className="h-4 w-4 text-primary" />
                         <AlertTitle className="text-primary">Upgrade to Pro</AlertTitle>
@@ -324,17 +419,17 @@ export default function AlertsPage() {
                     </Alert>
                  )}
               <Accordion type="single" collapsible className="space-y-4">
-                {user && mockAlerts.map((alert) => (
+                {user && alerts && alerts.map((alert) => (
                     <AccordionItem value={alert.id} key={alert.id} className="border-b-0">
                          <Card className="overflow-hidden">
                             <div className="flex items-center p-4">
                                 <div className="flex-shrink-0">
-                                {alert.type === 'wallet' ? <Wallet className="h-6 w-6 text-accent-foreground"/> : <Tag className="h-6 w-6 text-accent-foreground"/>}
+                                {alert.alertType === 'wallet' ? <Wallet className="h-6 w-6 text-accent-foreground"/> : <Tag className="h-6 w-6 text-accent-foreground"/>}
                                 </div>
                                 <div className="flex-grow mx-4">
                                     <p className="font-semibold">{alert.title}</p>
                                     <p className="text-sm text-muted-foreground">
-                                        {alert.description}
+                                        {`Notify when ${alert.alertType} ${alert.rule} > $${alert.threshold}`}
                                     </p>
                                 </div>
                                 <div className="flex items-center gap-2 ml-4">
@@ -348,19 +443,19 @@ export default function AlertsPage() {
                                 <div className="bg-muted/50 px-4 py-3 border-t">
                                     <div className="flex justify-between items-center text-sm">
                                         <div className="text-muted-foreground">
-                                            <p>Last triggered: <span className="text-foreground">3 hours ago</span></p>
-                                            <p>Created on: <span className="text-foreground">June 1, 2024</span></p>
+                                            <p>Last triggered: <span className="text-foreground">Never</span></p>
+                                            <p>Created on: <span className="text-foreground">{alert.createdAt ? new Date(alert.createdAt.seconds * 1000).toLocaleDateString() : 'N/A'}</span></p>
                                         </div>
                                         <div className="flex gap-2">
-                                            <Button variant="ghost" size="sm">
+                                            <Button variant="ghost" size="sm" onClick={() => handleToggleAlert(alert.id, alert.enabled)}>
                                                 {alert.enabled ? <PauseCircle className="mr-2" /> : <PlayCircle className="mr-2" />}
                                                 {alert.enabled ? 'Pause' : 'Resume'}
                                             </Button>
-                                             <Button variant="ghost" size="sm">
+                                             <Button variant="ghost" size="sm" disabled>
                                                 <Edit className="mr-2"/>
                                                 Edit
                                             </Button>
-                                            <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive">
+                                            <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive" onClick={() => handleDeleteAlert(alert.id)}>
                                                 <Trash2 className="mr-2"/>
                                                 Delete
                                             </Button>

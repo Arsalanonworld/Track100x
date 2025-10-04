@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useFormState } from 'react-dom';
@@ -19,7 +20,8 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
-import { Terminal } from 'lucide-react';
+import { Terminal, Loader2 } from 'lucide-react';
+import React from 'react';
 
 function AuthError({ error }: { error?: string | null }) {
     if (!error) return null;
@@ -48,10 +50,27 @@ function AuthError({ error }: { error?: string | null }) {
         <AlertDescription>{error}</AlertDescription>
       </Alert>
     )
-  }
+}
+
+const SubmitButton = ({ children }: { children: React.ReactNode }) => {
+    const [pending, setPending] = React.useState(false);
+    
+    // A bit of a hack to show pending state, since useFormStatus is not stable yet
+    const handleClick = () => {
+        setPending(true);
+    };
+
+    return (
+        <Button type="submit" className="w-full" disabled={pending} onClick={handleClick}>
+            {pending ? <Loader2 className="animate-spin" /> : children}
+        </Button>
+    );
+};
 
 export function LoginForm() {
   const [state, formAction] = useFormState(login, null);
+  const searchParams = useSearchParams();
+  const next = searchParams.get('next') || '/';
 
   return (
     <Card>
@@ -64,6 +83,7 @@ export function LoginForm() {
       <CardContent>
         <form action={formAction} className="space-y-4">
           <AuthError error={state?.error} />
+          <input type="hidden" name="next" value={next} />
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input
@@ -78,9 +98,7 @@ export function LoginForm() {
             <Label htmlFor="password">Password</Label>
             <Input id="password" name="password" type="password" required />
           </div>
-          <Button type="submit" className="w-full">
-            Log In
-          </Button>
+          <SubmitButton>Log In</SubmitButton>
           <div className="text-center text-sm">
             <Link href="/auth/reset-password" className="text-primary hover:underline">
               Forgot password?
@@ -89,7 +107,7 @@ export function LoginForm() {
         </form>
         <div className="mt-4 text-center text-sm">
           Don't have an account?{' '}
-          <Link href="/auth/signup" className="text-primary hover:underline">
+          <Link href={`/auth/signup?next=${encodeURIComponent(next)}`} className="text-primary hover:underline">
             Sign up
           </Link>
         </div>
@@ -128,14 +146,13 @@ export function SignupForm() {
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
             <Input id="password" name="password" type="password" required minLength={6} />
+            <p className="text-xs text-muted-foreground">Password must be at least 6 characters long.</p>
           </div>
-          <Button type="submit" className="w-full">
-            Create Account
-          </Button>
+          <SubmitButton>Create Account</SubmitButton>
         </form>
         <div className="mt-4 text-center text-sm">
           Already have an account?{' '}
-          <Link href="/auth/login" className="text-primary hover:underline">
+          <Link href={`/auth/login?next=${encodeURIComponent(next)}`} className="text-primary hover:underline">
             Log in
           </Link>
         </div>
@@ -175,9 +192,7 @@ export function ResetPasswordForm() {
                   required
                 />
               </div>
-              <Button type="submit" className="w-full">
-                Send Reset Link
-              </Button>
+              <SubmitButton>Send Reset Link</SubmitButton>
             </form>
           )}
            <div className="mt-4 text-center text-sm">

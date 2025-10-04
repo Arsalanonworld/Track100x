@@ -1,3 +1,4 @@
+
 'use server';
 
 import {
@@ -8,7 +9,7 @@ import {
 } from 'firebase/auth';
 import { firebaseConfig } from '@/firebase/config';
 import { initializeApp, getApps } from 'firebase/app';
-import { getFirestore, doc, setDoc } from 'firebase/firestore';
+import { getFirestore, doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 
@@ -28,6 +29,10 @@ export async function login(prevState: any, formData: FormData) {
   const password = formData.get('password') as string;
   const next = formData.get('next') as string || '/';
 
+  if (!email || !password) {
+    return { error: 'Email and password are required.' };
+  }
+
   try {
     await signInWithEmailAndPassword(auth, email, password);
   } catch (error: any) {
@@ -43,6 +48,10 @@ export async function signup(prevState: any, formData: FormData) {
   const password = formData.get('password') as string;
   const next = formData.get('next') as string || '/';
 
+  if (!email || !password) {
+    return { error: 'Email and password are required.' };
+  }
+
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
@@ -54,6 +63,7 @@ export async function signup(prevState: any, formData: FormData) {
       email: user.email,
       username: user.email?.split('@')[0], // default username
       plan: "free",
+      createdAt: serverTimestamp(),
       entitlements: {
         alerts: {
           maxActive: 3,
@@ -63,7 +73,7 @@ export async function signup(prevState: any, formData: FormData) {
           delayMinutes: 15
         },
         leaderboard: {
-          topN: 25
+          topN: 10
         },
         apiAccess: false
       },
@@ -83,6 +93,10 @@ export async function signup(prevState: any, formData: FormData) {
 export async function resetPassword(prevState: any, formData: FormData) {
     const { auth } = getFirebaseInstances();
     const email = formData.get('email') as string;
+    
+    if (!email) {
+        return { error: 'Email is required.' };
+    }
 
     try {
         await sendPasswordResetEmail(auth, email);
