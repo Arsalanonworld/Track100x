@@ -36,7 +36,7 @@ export default function NotificationBell() {
                     </span>
                 </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-80" align="end">
+            <PopoverContent className="w-[calc(100vw-2rem)] sm:w-96" align="end">
                 <div className="grid gap-4">
                     <div className="space-y-2">
                         <h4 className="font-medium leading-none">Notifications</h4>
