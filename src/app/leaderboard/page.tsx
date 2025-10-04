@@ -237,7 +237,7 @@ export default function LeaderboardPage() {
                                   variant="ghost"
                                   size="icon"
                                   onClick={() => handleFollowToggle(wallet.address)}
-                                  disabled={isLoading || (!user && !isUserLoading)}
+                                  disabled={isLoading}
                                 >
                                   <Star className={cn("h-4 w-4", followedAddresses.has(wallet.address) ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground")} />
                                   <span className="sr-only">Follow wallet</span>

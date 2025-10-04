@@ -1,4 +1,3 @@
-
 'use client'
 
 import * as React from "react"
@@ -43,7 +42,7 @@ export function MainNav() {
                 {item.label}
             </Link>
         ))}
-        {!isPro && (
+        {user && !isPro && (
              <Link
                 href="/upgrade"
                 className={cn(

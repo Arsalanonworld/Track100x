@@ -43,7 +43,6 @@ export default function AccountPage() {
   };
   
   const isLoading = isUserLoading || isUserDataLoading;
-  const isPro = userData?.plan === 'pro';
   
   if (isLoading || !user || !userData) {
     return (
@@ -52,6 +51,8 @@ export default function AccountPage() {
       </div>
     );
   }
+  
+  const isPro = userData?.plan === 'pro';
 
   return (
     <>

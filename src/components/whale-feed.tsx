@@ -15,7 +15,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Input } from './ui/input';
-import { RefreshCw, Search, Filter, Lock } from 'lucide-react';
+import { RefreshCw, Search, Filter, Lock, Sparkles } from 'lucide-react';
 import { mockWhaleTxs } from '@/lib/mock-data';
 import { Button } from './ui/button';
 import TransactionCard from './transaction-card';
@@ -24,10 +24,12 @@ import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Badge } from './ui/badge';
 import Link from 'next/link';
+import { useAuthDialog } from '@/hooks/use-auth-dialog';
 
 export function WhaleFeed() {
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
+  const { setAuthDialogOpen } = useAuthDialog();
   
   const userDocRef = useMemoFirebase(() => {
     if (!firestore || !user) return null;
@@ -61,17 +63,17 @@ export function WhaleFeed() {
 
   const filteredTransactions = useMemo(() => {
     let transactions = mockWhaleTxs;
-    if(tokenFilter) {
+    if(tokenFilter && (canApplyMultipleFilters || activeFilterCount === 1)) {
       transactions = transactions.filter(tx => tx.token.symbol.toLowerCase().includes(tokenFilter.toLowerCase()));
     }
-    if(chainFilter !== 'all') {
+    if(chainFilter !== 'all' && (canApplyMultipleFilters || activeFilterCount === 1)) {
       transactions = transactions.filter(tx => tx.network.toLowerCase() === chainFilter);
     }
-    if(typeFilter !== 'all') {
+    if(typeFilter !== 'all' && (canApplyMultipleFilters || activeFilterCount === 1)) {
        transactions = transactions.filter(tx => tx.type.toLowerCase() === typeFilter);
     }
     return transactions;
-  }, [tokenFilter, chainFilter, typeFilter]);
+  }, [tokenFilter, chainFilter, typeFilter, canApplyMultipleFilters, activeFilterCount]);
 
   const totalPages = Math.ceil(filteredTransactions.length / transactionsPerPage);
   
@@ -79,11 +81,12 @@ export function WhaleFeed() {
   const canPaginate = !!user; 
 
   const currentTransactions = useMemo(() => {
+     const end = canPaginate ? currentPage * transactionsPerPage : transactionsPerPage;
      return filteredTransactions.slice(
         (currentPage - 1) * transactionsPerPage,
-        currentPage * transactionsPerPage
+        end
       )
-  }, [filteredTransactions, currentPage]);
+  }, [filteredTransactions, currentPage, canPaginate]);
 
 
   const FilterControls = () => (
@@ -95,13 +98,7 @@ export function WhaleFeed() {
           className="pl-10 w-full" 
           value={tokenFilter}
           onChange={(e) => setTokenFilter(e.target.value)}
-          disabled={!canApplyMultipleFilters && !tokenFilter}
         />
-        {!canApplyMultipleFilters && !tokenFilter && (
-          <div className="absolute inset-y-0 right-3 flex items-center">
-            <Badge variant="secondary">Pro</Badge>
-          </div>
-        )}
       </div>
       <Select 
         value={chainFilter} 
@@ -111,7 +108,6 @@ export function WhaleFeed() {
         <SelectTrigger className="w-full">
           <div className="flex justify-between items-center w-full">
             <SelectValue placeholder="All Chains" />
-            {!canApplyMultipleFilters && chainFilter === 'all' && <Badge variant="secondary">Pro</Badge>}
           </div>
         </SelectTrigger>
         <SelectContent>
@@ -130,7 +126,6 @@ export function WhaleFeed() {
         <SelectTrigger className="w-full">
            <div className="flex justify-between items-center w-full">
               <SelectValue placeholder="All Types" />
-              {!canApplyMultipleFilters && typeFilter === 'all' && <Badge variant="secondary">Pro</Badge>}
            </div>
         </SelectTrigger>
         <SelectContent>
@@ -139,6 +134,15 @@ export function WhaleFeed() {
           <SelectItem value="swap">Swap</SelectItem>
         </SelectContent>
       </Select>
+      {!canApplyMultipleFilters && (
+        <div className="p-4 text-center bg-muted/50 rounded-lg col-span-1 sm:col-span-3">
+          <p className="text-sm text-muted-foreground">
+            <Link href="/upgrade" className="text-primary font-semibold hover:underline flex items-center justify-center gap-2">
+              <Sparkles className="h-4 w-4"/> Upgrade to Pro
+            </Link> to apply multiple filters at once.
+          </p>
+        </div>
+      )}
     </>
   );
 
@@ -146,9 +150,7 @@ export function WhaleFeed() {
     if (!canPaginate) {
         return (
             <div className="text-center mt-6">
-                <Button variant="link" asChild>
-                    <Link href="/auth/signup">Sign up to see more transactions</Link>
-                </Button>
+                <Button variant="link" onClick={() => setAuthDialogOpen(true)}>Sign up to see more transactions</Button>
             </div>
         )
     };
@@ -202,7 +204,7 @@ export function WhaleFeed() {
                               Refine the whale feed to find what you're looking for.
                             </SheetDescription>
                           </SheetHeader>
-                          <div className="grid gap-4 py-4">
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 py-4">
                             <FilterControls />
                           </div>
                         </SheetContent>

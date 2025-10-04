@@ -69,7 +69,7 @@ export function MobileNav() {
               {item.label}
             </MobileLink>
           ))}
-          {!isPro && (
+          {user && !isPro && (
             <MobileLink
               href="/upgrade"
               onOpenChange={setOpen}
