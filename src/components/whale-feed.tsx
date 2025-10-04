@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/select';
 import { Input } from './ui/input';
 import { RefreshCw, Search } from 'lucide-react';
-import { whaleTransactions } from '@/lib/mock-data';
+import { mockWhaleTxs } from '@/lib/mock-data';
 import { Button } from './ui/button';
 import TransactionCard from './transaction-card';
 
@@ -62,7 +62,7 @@ export function WhaleFeed() {
             </CardHeader>
             <CardContent>
                 <div className="space-y-3">
-                    {whaleTransactions.map((tx) => (
+                    {mockWhaleTxs.map((tx) => (
                        <TransactionCard key={tx.id} tx={tx} />
                     ))}
                 </div>
