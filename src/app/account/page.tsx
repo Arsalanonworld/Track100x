@@ -3,32 +3,34 @@
 
 import { useUser, useFirestore, useMemoFirebase } from '@/firebase';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import PageHeader from '@/components/page-header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { logout } from '@/lib/actions';
-import { doc } from 'firebase/firestore';
+import { doc, setDoc } from 'firebase/firestore';
 import { useDoc } from '@/firebase/firestore/use-doc';
 import { Badge } from '@/components/ui/badge';
-import { Bell, Mail, MessageSquare, Loader2 } from 'lucide-react';
+import { Bell, Mail, MessageSquare, Loader2, User as UserIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useAuthDialog } from '@/hooks/use-auth-dialog';
 import { AnimatedButton } from '@/components/ui/animated-button';
-
+import { useToast } from '@/hooks/use-toast';
 
 export default function AccountPage() {
   const { user, isUserLoading } = useUser();
   const { setAuthDialogOpen } = useAuthDialog();
   const router = useRouter();
   const firestore = useFirestore();
+  const { toast } = useToast();
+  const [isCancelling, setIsCancelling] = useState(false);
   
   const userDocRef = useMemoFirebase(() => {
     if (!firestore || !user) return null;
     return doc(firestore, 'users', user.uid);
   }, [firestore, user]);
   
-  const { data: userData, isLoading: isUserDataLoading } = useDoc(userDocRef);
+  const { data: userData, isLoading: isUserDataLoading, refetch } = useDoc(userDocRef);
 
   useEffect(() => {
     if (!isUserLoading && !user) {
@@ -40,6 +42,36 @@ export default function AccountPage() {
   const handleLogout = async () => {
     await logout();
     router.push('/');
+  };
+
+  const handleManageSubscription = async () => {
+    if (!userDocRef) return;
+    setIsCancelling(true);
+    try {
+      await setDoc(userDocRef, {
+        plan: "free",
+        entitlements: {
+            alerts: { maxActive: 1, channels: ["in-app"] },
+            feed: { delayMinutes: 2 },
+            leaderboard: { topN: 10 },
+            apiAccess: false
+        },
+      }, { merge: true });
+      
+      toast({
+        title: "Subscription Cancelled",
+        description: "Your Pro plan has been cancelled. You now have Free plan features.",
+      });
+      refetch();
+    } catch (error: any) {
+        toast({
+            variant: "destructive",
+            title: "Error",
+            description: "Could not update your subscription.",
+        });
+    } finally {
+        setIsCancelling(false);
+    }
   };
   
   const isLoading = isUserLoading || isUserDataLoading;
@@ -64,8 +96,11 @@ export default function AccountPage() {
         <div className="md:col-span-2 space-y-8">
             <Card>
                 <CardHeader>
-                <CardTitle>Profile</CardTitle>
-                <CardDescription>Your personal information.</CardDescription>
+                    <div className="flex items-center gap-3">
+                        <UserIcon className="h-5 w-5 text-muted-foreground" />
+                        <CardTitle>Profile</CardTitle>
+                    </div>
+                    <CardDescription>Your personal information.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                 <div className="flex items-center gap-4">
@@ -89,7 +124,10 @@ export default function AccountPage() {
             {isPro && (
               <Card>
                   <CardHeader>
-                      <CardTitle>Notification Channels</CardTitle>
+                      <div className="flex items-center gap-3">
+                        <Bell className="h-5 w-5 text-muted-foreground" />
+                        <CardTitle>Notification Channels</CardTitle>
+                      </div>
                       <CardDescription>Connect your accounts to receive real-time alerts on your favorite platforms.</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
@@ -146,7 +184,10 @@ export default function AccountPage() {
                                <p className="text-muted-foreground">
                                 You have access to all Pro features.
                                </p>
-                                <Button className="w-full">Manage Subscription</Button>
+                                <Button className="w-full" onClick={handleManageSubscription} disabled={isCancelling}>
+                                  {isCancelling && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                  Manage Subscription
+                                </Button>
                             </>
                         ) : (
                             <>
@@ -166,3 +207,5 @@ export default function AccountPage() {
     </>
   );
 }
+
+    
