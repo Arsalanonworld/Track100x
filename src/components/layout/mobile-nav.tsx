@@ -7,7 +7,7 @@ import { Menu, BarChart, Bell, FileText, Zap, X } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetClose, SheetTrigger } from "@/components/ui/sheet"
 import { LogoIcon } from "./header"
 
 const navItems = [
@@ -31,15 +31,22 @@ export function MobileNav() {
         </Button>
       </SheetTrigger>
       <SheetContent side="left" className="pr-0">
-        <MobileLink
-          href="/"
-          className="flex items-center"
-          onOpenChange={setOpen}
-        >
-          <LogoIcon />
-          <span className="ml-2 font-bold">Tack100x</span>
-        </MobileLink>
-        <div className="flex flex-col gap-4 pl-6 mt-8 text-lg font-medium">
+        <SheetHeader className="p-6 text-left">
+            <SheetTitle asChild>
+                <MobileLink
+                    href="/"
+                    className="flex items-center"
+                    onOpenChange={setOpen}
+                    >
+                    <LogoIcon />
+                    <span className="ml-2 font-bold">Tack100x</span>
+                </MobileLink>
+            </SheetTitle>
+            <SheetDescription className="sr-only">
+                Main navigation menu.
+            </SheetDescription>
+        </SheetHeader>
+        <div className="flex flex-col gap-4 pl-6 mt-2 text-lg font-medium">
           {navItems.map((item) => (
             <MobileLink
               key={item.href}
