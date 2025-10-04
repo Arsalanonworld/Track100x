@@ -34,21 +34,19 @@ export function UserNav() {
 
   const { data: userData, isLoading: isUserDataLoading } = useDoc(userDocRef);
   const isPro = userData?.plan === 'pro';
-  const isFree = user && !isPro;
+
   const isLoading = isUserLoading || isUserDataLoading;
 
-  const handleLogout = async () => {
-    await logout();
-    router.push('/');
-  };
-
   if (isLoading) {
-    return <Skeleton className="h-9 w-20 rounded-md" />;
+    return <Skeleton className="h-10 w-10 rounded-full" />;
   }
 
   if (!user) {
     return (
       <div className="flex items-center gap-2">
+         <Button variant="ghost" onClick={() => router.push('/upgrade')}>
+          Pricing
+        </Button>
         <Button variant="outline" onClick={() => setAuthDialogOpen(true)}>
           Log In
         </Button>
@@ -100,7 +98,7 @@ export function UserNav() {
         )}
 
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleLogout}>
+        <DropdownMenuItem onClick={() => logout()}>
           Log out
         </DropdownMenuItem>
       </DropdownMenuContent>
