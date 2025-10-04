@@ -7,7 +7,7 @@ import { FirebaseClientProvider } from '@/firebase/client-provider';
 import { ThemeProvider } from '@/components/theme-provider';
 
 export const metadata: Metadata = {
-  title: 'WhaleWatch100x',
+  title: 'Tack100x',
   description: 'Track significant cryptocurrency transactions and wallet activities.',
 };
 

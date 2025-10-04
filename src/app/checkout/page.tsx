@@ -31,13 +31,13 @@ export default function CheckoutPage() {
   const planDetails = useMemo(() => {
     if (plan === 'yearly') {
         return {
-            name: 'WhaleWatch100x Pro Plan (Yearly)',
+            name: 'Tack100x Pro Plan (Yearly)',
             price: 290.00,
             priceString: '$290.00'
         }
     }
     return {
-        name: 'WhaleWatch100x Pro Plan (Monthly)',
+        name: 'Tack100x Pro Plan (Monthly)',
         price: 29.00,
         priceString: '$29.00'
     }
@@ -58,7 +58,7 @@ export default function CheckoutPage() {
         await setDoc(userDocRef, { plan: 'pro' }, { merge: true });
         toast({
             title: 'Upgrade Successful!',
-            description: 'Welcome to WhaleWatch100x Pro.',
+            description: 'Welcome to Tack100x Pro.',
         });
         router.push('/confirmation');
     } catch (error: any) {
@@ -117,7 +117,7 @@ export default function CheckoutPage() {
                 <Card>
                     <CardHeader>
                         <CardTitle>Checkout</CardTitle>
-                        <CardDescription>Securely complete your upgrade to WhaleWatch100x Pro.</CardDescription>
+                        <CardDescription>Securely complete your upgrade to Tack100x Pro.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                          <div className="space-y-2">

@@ -49,7 +49,7 @@ export default function ConfirmationPage() {
           </div>
           <CardTitle className="text-3xl font-bold tracking-tighter sm:text-4xl">Upgrade Successful!</CardTitle>
           <CardDescription className="max-w-md mx-auto">
-            Welcome to WhaleWatch100x Pro! You now have access to all premium features.
+            Welcome to Tack100x Pro! You now have access to all premium features.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">

@@ -150,7 +150,7 @@ const SignUpTab = ({ closeDialog }: { closeDialog: () => void }) => {
   const handleSignUp = async () => {
     try {
       await createUserWithEmailAndPassword(auth, email, password);
-      toast({ title: 'Account created!', description: 'Welcome to Track100x.' });
+      toast({ title: 'Account created!', description: 'Welcome to Tack100x.' });
       closeDialog();
     } catch (error: any) {
       toast({
@@ -181,7 +181,7 @@ const SignUpTab = ({ closeDialog }: { closeDialog: () => void }) => {
       <DialogHeader className="text-center space-y-2">
         <DialogTitle>Create an Account</DialogTitle>
         <DialogDescription>
-          Start tracking whale wallets in minutes.
+          Start tracking wallets in minutes.
         </DialogDescription>
       </DialogHeader>
       <div className="space-y-2">

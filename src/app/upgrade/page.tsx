@@ -109,7 +109,7 @@ export default function UpgradePage() {
             Don't Follow the News. <br className="sm:hidden" /> Follow the Money.
           </h1>
           <p className="max-w-2xl mx-auto mt-6 text-lg text-muted-foreground">
-            Stop reacting to old news. WhaleWatch100x Pro gives you the real-time on-chain data and advanced tools you need to anticipate market moves before they happen.
+            Stop reacting to old news. Tack100x Pro gives you the real-time on-chain data and advanced tools you need to anticipate market moves before they happen.
           </p>
           <div className="mt-8">
             <Button size="lg" className="group relative overflow-hidden transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-primary/40" onClick={handleUpgradeClick}>

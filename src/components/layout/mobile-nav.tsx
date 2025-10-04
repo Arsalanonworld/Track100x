@@ -37,7 +37,7 @@ export function MobileNav() {
           onOpenChange={setOpen}
         >
           <LogoIcon />
-          <span className="ml-2 font-bold">WhaleWatch100x</span>
+          <span className="ml-2 font-bold">Tack100x</span>
         </MobileLink>
         <div className="flex flex-col gap-4 pl-6 mt-8 text-lg font-medium">
           {navItems.map((item) => (

@@ -32,10 +32,10 @@ export function Footer() {
           <div className="col-span-1 md:col-span-2">
             <Link href="/" className="flex items-center space-x-2 mb-4">
               <LogoIcon />
-              <span className="inline-block font-bold text-xl">WhaleWatch100x</span>
+              <span className="inline-block font-bold text-xl">Tack100x</span>
             </Link>
             <p className="text-muted-foreground max-w-sm">
-              The Whale-Powered Wallet Intelligence Platform. Monitor on-chain data, track whale wallets, and get real-time smart alerts.
+              The Wallet Intelligence Platform. Monitor on-chain data, track wallets, and get real-time smart alerts.
             </p>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 text-sm md:col-span-3">
@@ -78,7 +78,7 @@ export function Footer() {
           </div>
         </div>
         <div className="mt-12 border-t pt-6 text-sm text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} WhaleWatch100x. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Tack100x. All rights reserved.</p>
         </div>
       </div>
     </footer>
