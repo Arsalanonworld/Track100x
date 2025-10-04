@@ -16,48 +16,36 @@ import { useUser } from '@/firebase';
 import { logout } from '@/lib/actions';
 import { useRouter } from 'next/navigation';
 import { Skeleton } from './ui/skeleton';
-import { useTestUser } from '@/firebase/client-provider';
+import { useAuthDialog } from '@/hooks/use-auth-dialog';
 
 export function UserNav() {
   const { user, isUserLoading } = useUser();
-  const { isTestUser, setIsTestUser } = useTestUser();
+  const { setAuthDialogOpen } = useAuthDialog();
   const router = useRouter();
 
   const handleLogout = async () => {
-    if (isTestUser) {
-        setIsTestUser(false);
-    } else {
-        await logout();
-    }
+    await logout();
     router.push('/');
   };
 
-  const displayUser = isTestUser ? {
-    email: 'test.user@example.com',
-    photoURL: '',
-    displayName: 'Test User'
-  } : user;
-
-  if (isUserLoading && !isTestUser) {
+  if (isUserLoading) {
     return <Skeleton className="h-9 w-20 rounded-md" />;
   }
   
-  if (!displayUser) {
+  if (!user) {
     return (
-      <Button asChild>
-        <Link href="/auth/login">Log In</Link>
-      </Button>
+      <Button onClick={() => setAuthDialogOpen(true)}>Log In</Button>
     );
   }
 
-  const userInitial = displayUser.email ? displayUser.email.charAt(0).toUpperCase() : '?';
+  const userInitial = user.email ? user.email.charAt(0).toUpperCase() : '?';
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-10 w-10 rounded-full">
           <Avatar className="h-10 w-10">
-            <AvatarImage src={displayUser.photoURL ?? ''} alt="User avatar" />
+            <AvatarImage src={user.photoURL ?? ''} alt="User avatar" />
             <AvatarFallback>{userInitial}</AvatarFallback>
           </Avatar>
         </Button>
@@ -66,10 +54,10 @@ export function UserNav() {
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
             <p className="text-sm font-medium leading-none">
-              {displayUser.displayName || 'User'}
+              {user.displayName || 'User'}
             </p>
             <p className="text-xs leading-none text-muted-foreground">
-              {displayUser.email}
+              {user.email}
             </p>
           </div>
         </DropdownMenuLabel>

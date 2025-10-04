@@ -3,24 +3,41 @@
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { useAuth } from '@/hooks/use-auth';
+import { useUser, useFirestore, useMemoFirebase } from '@/firebase';
 import { useEffect } from 'react';
-import { CheckCircle, ArrowRight } from 'lucide-react';
+import { CheckCircle, ArrowRight, Loader2 } from 'lucide-react';
 import Link from 'next/link';
+import { doc } from 'firebase/firestore';
+import { useDoc } from '@/firebase/firestore/use-doc';
 
 export default function ConfirmationPage() {
   const router = useRouter();
-  const { user, loading, isPro } = useAuth();
+  const { user, isUserLoading } = useUser();
+  const firestore = useFirestore();
+
+   const userDocRef = useMemoFirebase(() => {
+    if (!firestore || !user) return null;
+    return doc(firestore, 'users', user.uid);
+  }, [firestore, user]);
+  
+  const { data: userData, isLoading: isUserDataLoading } = useDoc(userDocRef);
+
+  const isPro = userData?.plan === 'pro';
+  const isLoading = isUserLoading || isUserDataLoading;
 
   useEffect(() => {
-    // Redirect if user is not logged in or is not a pro user
-    if (!loading && (!user || !isPro)) {
+    // Redirect if user is not logged in or is not a pro user after loading
+    if (!isLoading && (!user || !isPro)) {
       router.push('/upgrade');
     }
-  }, [user, loading, isPro, router]);
+  }, [user, isLoading, isPro, router]);
 
-  if (loading || !user || !isPro) {
-    return null; // Or a loading spinner
+  if (isLoading || !user || !isPro) {
+    return (
+        <div className="flex justify-center items-center h-[calc(100vh-200px)]">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+    );
   }
 
   return (

@@ -13,11 +13,12 @@ import { useDoc } from '@/firebase/firestore/use-doc';
 import { Badge } from '@/components/ui/badge';
 import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
-import { useTestUser } from '@/firebase/client-provider';
+import { useAuthDialog } from '@/hooks/use-auth-dialog';
+
 
 export default function AccountPage() {
   const { user, isUserLoading } = useUser();
-  const { isTestUser, setIsTestUser } = useTestUser();
+  const { setAuthDialogOpen } = useAuthDialog();
   const router = useRouter();
   const firestore = useFirestore();
   
@@ -29,35 +30,20 @@ export default function AccountPage() {
   const { data: userData, isLoading: isUserDataLoading } = useDoc(userDocRef);
 
   useEffect(() => {
-    if (!isUserLoading && !user && !isTestUser) {
-      router.push('/auth/login');
+    if (!isUserLoading && !user) {
+        setAuthDialogOpen(true);
+        router.push('/');
     }
-  }, [user, isUserLoading, isTestUser, router]);
+  }, [user, isUserLoading, router, setAuthDialogOpen]);
 
   const handleLogout = async () => {
-    if (isTestUser) {
-        setIsTestUser(false);
-    } else {
-        await logout();
-    }
+    await logout();
     router.push('/');
   };
   
   const isLoading = isUserLoading || isUserDataLoading;
   
-  const displayUser = isTestUser ? {
-    email: 'test.user@example.com',
-    uid: 'test-user-uid',
-    displayName: 'Test User'
-  } : user;
-
-  const displayUserData = isTestUser ? {
-    username: 'testuser',
-    plan: 'pro'
-  } : userData;
-
-
-  if (isLoading && !isTestUser) {
+  if (isLoading) {
     return (
       <div className="flex justify-center items-center h-[calc(100vh-200px)]">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -65,7 +51,7 @@ export default function AccountPage() {
     );
   }
 
-  if (!displayUser || !displayUserData) {
+  if (!user || !userData) {
     return null;
   }
 
@@ -84,15 +70,15 @@ export default function AccountPage() {
                 <CardContent className="space-y-6">
                 <div className="flex items-center gap-4">
                     <p className="w-24 font-semibold text-muted-foreground">Email</p>
-                    <p className="text-primary-foreground">{displayUser.email}</p>
+                    <p className="text-primary-foreground">{user.email}</p>
                 </div>
                 <div className="flex items-center gap-4">
                     <p className="w-24 font-semibold text-muted-foreground">Username</p>
-                    <p className="text-primary-foreground">{displayUserData.username}</p>
+                    <p className="text-primary-foreground">{userData.username}</p>
                 </div>
                 <div className="flex items-center gap-4">
                     <p className="w-24 font-semibold text-muted-foreground">User ID</p>
-                    <p className="font-mono text-sm text-muted-foreground">{displayUser.uid}</p>
+                    <p className="font-mono text-sm text-muted-foreground">{user.uid}</p>
                 </div>
                 <Button variant="destructive" onClick={handleLogout}>
                     Log Out
@@ -105,16 +91,16 @@ export default function AccountPage() {
                 <CardHeader>
                     <CardTitle>Subscription</CardTitle>
                     <CardDescription>
-                        You are currently on the {displayUserData.plan} plan.
+                        You are currently on the {userData.plan} plan.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
                     <div className="space-y-4 rounded-lg border bg-card-nested p-4">
                         <div className="flex justify-between items-center">
                             <h4 className="text-lg font-semibold">Current Plan</h4>
-                            <Badge variant={displayUserData.plan === 'pro' ? 'default' : 'secondary'} className="capitalize">{displayUserData.plan}</Badge>
+                            <Badge variant={userData.plan === 'pro' ? 'default' : 'secondary'} className="capitalize">{userData.plan}</Badge>
                         </div>
-                        {displayUserData.plan === 'free' && (
+                        {userData.plan === 'free' && (
                             <>
                                 <p className="text-muted-foreground">
                                     Upgrade to Pro to unlock unlimited alerts, real-time data, and advanced features.
@@ -124,7 +110,7 @@ export default function AccountPage() {
                                 </Button>
                             </>
                         )}
-                        {displayUserData.plan === 'pro' && (
+                        {userData.plan === 'pro' && (
                              <p className="text-muted-foreground">
                                 You have access to all Pro features. Manage your subscription and billing details below.
                             </p>

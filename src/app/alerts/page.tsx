@@ -3,17 +3,20 @@
 import ActiveAlerts from '@/components/alerts/active-alerts';
 import AlertHistory from '@/components/alerts/alert-history';
 import AlertCreator from '@/components/alerts/alert-creator';
-import { useAuth } from '@/hooks/use-auth';
+import { useUser } from '@/firebase';
 import { Button } from '@/components/ui/button';
 import { Lock } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import PageHeader from '@/components/page-header';
+import { useAuthDialog } from '@/hooks/use-auth-dialog';
 
 export default function AlertsPage() {
-  const { user, loading, setAuthDialogOpen } = useAuth();
+  const { user, isUserLoading } = useUser();
+  const { setAuthDialogOpen } = useAuthDialog();
 
-  if (loading) {
+
+  if (isUserLoading) {
     return (
         <>
             <div className="space-y-2 mb-8">
@@ -33,7 +36,7 @@ export default function AlertsPage() {
     );
   }
 
-  const showLoginWall = !user && !loading;
+  const showLoginWall = !user;
 
   return (
       <div className="space-y-8">

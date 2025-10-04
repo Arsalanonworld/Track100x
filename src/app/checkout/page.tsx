@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useAuth } from '@/hooks/use-auth';
+import { useUser, useFirestore, useMemoFirebase } from '@/firebase';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
@@ -11,15 +11,22 @@ import { Label } from '@/components/ui/label';
 import { CreditCard, Lock, Star, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Separator } from '@/components/ui/separator';
+import { doc, setDoc } from 'firebase/firestore';
 
 export default function CheckoutPage() {
-  const { user, loading, upgradeToPro, isPro } = useAuth();
+  const { user, isUserLoading } = useUser();
+  const firestore = useFirestore();
   const router = useRouter();
   const searchParams = useSearchParams();
   const { toast } = useToast();
   const [isProcessing, setIsProcessing] = useState(false);
 
   const plan = searchParams.get('plan') || 'monthly';
+
+  const userDocRef = useMemoFirebase(() => {
+    if (!firestore || !user) return null;
+    return doc(firestore, 'users', user.uid);
+  }, [firestore, user]);
 
   const planDetails = useMemo(() => {
     if (plan === 'yearly') {
@@ -37,19 +44,18 @@ export default function CheckoutPage() {
   }, [plan]);
 
   useEffect(() => {
-    if (!loading && !user) {
+    if (!isUserLoading && !user) {
       router.push('/auth/login?next=/upgrade');
     }
-    if (!loading && isPro) {
-        // If user is already pro, redirect them
-        router.push('/account');
-    }
-  }, [user, loading, isPro, router]);
+  }, [user, isUserLoading, router]);
 
   const handleConfirmPayment = async () => {
+    if (!userDocRef) return;
     setIsProcessing(true);
     try {
-        await upgradeToPro();
+        // This is a mock payment confirmation.
+        // In a real app, this would involve Stripe or another payment provider.
+        await setDoc(userDocRef, { plan: 'pro' }, { merge: true });
         toast({
             title: 'Upgrade Successful!',
             description: 'Welcome to WhaleWatch100x Pro.',
@@ -66,7 +72,7 @@ export default function CheckoutPage() {
     }
   };
   
-  if (loading || !user || isPro) {
+  if (isUserLoading || !user) {
     return (
        <div className="flex justify-center items-center h-[calc(100vh-200px)]">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />

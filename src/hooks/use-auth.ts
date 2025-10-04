@@ -1,8 +1,7 @@
 
 'use client';
 
-import React, { useState, useEffect, createContext, useContext, ReactNode, Dispatch, SetStateAction } from 'react';
-import { useRouter } from 'next/navigation';
+import { useUser as useFirebaseUser } from '@/firebase';
 
 export interface User {
   uid: string;
@@ -11,78 +10,19 @@ export interface User {
   photoURL: string | null;
 }
 
-interface AuthContextType {
-  user: User | null;
-  loading: boolean;
-  isPro: boolean;
-  signOut: () => Promise<void>;
-  upgradeToPro: () => Promise<void>;
-  authDialogOpen: boolean;
-  setAuthDialogOpen: Dispatch<SetStateAction<boolean>>;
-}
+export const useAuth = () => {
+  const { user, isUserLoading, userError } = useFirebaseUser();
 
-const AuthContext = createContext<AuthContextType>({
-  user: null,
-  loading: true,
-  isPro: false,
-  signOut: async () => {},
-  upgradeToPro: async () => {},
-  authDialogOpen: false,
-  setAuthDialogOpen: () => {},
-});
+  // Here you can add logic to fetch user profile from Firestore
+  // and determine if they are a "Pro" user.
+  // For now, we will just pass through the Firebase user.
 
-const mockUser: User = {
-    uid: 'mock-user-123',
-    email: 'pro@track100x.com',
-    displayName: 'Pro User',
-    photoURL: null,
+  const isPro = true; // Placeholder
+
+  return {
+    user: user as User | null,
+    loading: isUserLoading,
+    isPro: isPro, // This would be derived from Firestore data
+    userError: userError,
+  };
 };
-
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-  // Default to Pro for easier testing
-  const [isPro, setIsPro] = useState(true); 
-  const [authDialogOpen, setAuthDialogOpen] = useState(false);
-  const router = useRouter();
-
-  useEffect(() => {
-    // Simulate fetching user
-    setTimeout(() => {
-      setUser(mockUser);
-      setLoading(false);
-    }, 500);
-  }, []);
-
-  const signOut = async () => {
-    setLoading(true);
-    setTimeout(() => {
-      setUser(null);
-      setIsPro(false);
-      setLoading(false);
-      router.push('/');
-    }, 500);
-  };
-
-  const upgradeToPro = async () => {
-    if (!user) {
-        setAuthDialogOpen(true);
-        throw new Error('User not logged in.');
-    }
-    setIsPro(true);
-  };
-
-  const value = {
-    user,
-    loading,
-    isPro,
-    signOut,
-    upgradeToPro,
-    authDialogOpen,
-    setAuthDialogOpen,
-  };
-
-  return React.createElement(AuthContext.Provider, { value }, children);
-};
-
-export const useAuth = () => useContext(AuthContext);

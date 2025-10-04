@@ -11,7 +11,9 @@ import Link from 'next/link';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { useAuth } from '@/hooks/use-auth';
+import { useUser, useFirestore, useMemoFirebase } from '@/firebase';
+import { doc } from 'firebase/firestore';
+import { useDoc } from '@/firebase/firestore/use-doc';
 
 
 const features = [
@@ -68,10 +70,18 @@ const faqs = [
 ]
 
 export default function UpgradePage() {
-    const { user, loading, isPro } = useAuth();
+    const { user, isUserLoading } = useUser();
+    const firestore = useFirestore();
     const router = useRouter();
     const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
 
+    const userDocRef = useMemoFirebase(() => {
+        if (!firestore || !user) return null;
+        return doc(firestore, 'users', user.uid);
+    }, [firestore, user]);
+
+    const { data: userData, isLoading: isUserDataLoading } = useDoc(userDocRef);
+    const isPro = userData?.plan === 'pro';
 
     const handleUpgradeClick = () => {
         if (!user) {
@@ -80,6 +90,8 @@ export default function UpgradePage() {
             router.push(`/checkout?plan=${billingCycle}`);
         }
     }
+    
+    const isLoading = isUserLoading || isUserDataLoading;
   
   return (
     <div className="bg-background text-foreground -mt-8 -mx-8">
@@ -231,7 +243,7 @@ export default function UpgradePage() {
                     </ul>
                 </CardContent>
                 <CardFooter>
-                     {loading ? (
+                     {isLoading ? (
                         <Button className="w-full" disabled><Loader2 className="animate-spin"/></Button>
                      ) : isPro ? (
                         <Button className="w-full" disabled>Your Current Plan</Button>

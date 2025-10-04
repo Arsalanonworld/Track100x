@@ -1,10 +1,7 @@
+
 'use client';
 
 import { createContext, useContext, useState, ReactNode, useCallback } from 'react';
-import { useAuth } from './use-auth';
-import { useToast } from './use-toast';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
 import React from 'react';
 
 
@@ -41,8 +38,8 @@ const FREE_PLAN_LIMIT = 3;
 
 export const AlertsProvider = ({ children }: { children: ReactNode }) => {
   const [alerts, setAlerts] = useState<Alert[]>(mockAlerts);
-  const { isPro } = useAuth();
-  const { toast } = useToast();
+  // This should be replaced with real data from useUser()
+  const isPro = true; 
 
   const canAddAlert = useCallback(() => {
     if (isPro) return true;
@@ -66,19 +63,6 @@ export const AlertsProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const toggleAlert = (id: string) => {
-    const alertToToggle = alerts.find(a => a.id === id);
-    if (!alertToToggle) return;
-
-    if (!isPro && alertToToggle.status === 'Inactive' && !canAddAlert()) {
-      toast({
-        title: 'Alert Limit Reached',
-        description: 'Upgrade to Pro to have more than 3 active alerts.',
-        variant: 'destructive',
-        action: React.createElement(Button, { asChild: true }, React.createElement(Link, { href: "/upgrade" }, "Upgrade")),
-      });
-      return;
-    }
-
     setAlerts(prev =>
       prev.map(alert =>
         alert.id === id

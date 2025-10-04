@@ -29,7 +29,6 @@ import { useAlerts } from '@/hooks/use-alerts';
 import { Switch } from '../ui/switch';
 import { Label } from '../ui/label';
 import { useAuth } from '@/hooks/use-auth';
-import { Tooltip, TooltipProvider, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 import Link from 'next/link';
 
 const alertFormSchema = z.object({

@@ -6,11 +6,10 @@ import Header from './header';
 import { TickerBar } from './ticker-bar';
 import { Footer } from './footer';
 import AuthDialog from '../auth-dialog';
-import { useAuth, AuthProvider } from '@/hooks/use-auth';
-import { AlertsProvider } from '@/hooks/use-alerts';
+import { AuthDialogProvider, useAuthDialog } from '@/hooks/use-auth-dialog';
 
 function MainLayoutContent({ children }: { children: React.ReactNode }) {
-  const { authDialogOpen, setAuthDialogOpen } = useAuth();
+  const { authDialogOpen, setAuthDialogOpen } = useAuthDialog();
   return (
     <>
       <AuthDialog open={authDialogOpen} onOpenChange={setAuthDialogOpen} />
@@ -30,11 +29,9 @@ function MainLayoutContent({ children }: { children: React.ReactNode }) {
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="relative flex min-h-screen flex-col">
-      <AuthProvider>
-        <AlertsProvider>
+        <AuthDialogProvider>
           <MainLayoutContent>{children}</MainLayoutContent>
-        </AlertsProvider>
-      </AuthProvider>
+        </AuthDialogProvider>
     </div>
   );
 }

@@ -16,12 +16,12 @@ import {
 } from "@/components/ui/collapsible"
 import { useToast } from "@/hooks/use-toast";
 import { getExplorerUrl } from "@/lib/explorers";
-import { useAlerts } from "@/hooks/use-alerts";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import QuickAlertEditor from "./alerts/quick-alert-editor";
 import { Tooltip, TooltipProvider, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { useUser } from "@/firebase";
+import { useUser, useFirestore, useMemoFirebase } from "@/firebase";
 import { useRouter } from "next/navigation";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 
 interface TransactionCardProps {
     tx: WhaleTransaction;
@@ -48,39 +48,33 @@ const WalletIdentifier = ({ address, shortAddress, tags, network }: { address: s
 const TransactionCard = ({ tx }: TransactionCardProps) => {
     const [isOpen, setIsOpen] = useState(false);
     const { toast } = useToast();
-    const { addAlert, canAddAlert } = useAlerts();
     const { user } = useUser();
+    const firestore = useFirestore();
     const router = useRouter();
     const [isAlertEditorOpen, setIsAlertEditorOpen] = useState(false);
 
     const openQuickAlertEditor = (e: React.MouseEvent) => {
         e.stopPropagation();
         if (!user) {
-            router.push('/auth/login?next=/');
+            router.push('/auth/login');
             return;
         }
-        if (!canAddAlert()) {
-            toast({
-                title: 'Alert Limit Reached',
-                description: "You've reached the maximum number of alerts for the free plan.",
-                variant: 'destructive',
-                action: <Button asChild><Link href="/upgrade">Upgrade</Link></Button>
-            });
-            return;
-        }
+        // Add canAddAlert logic here if needed
         setIsAlertEditorOpen(true);
     }
     
-    const handleSaveAlert = (rule: string) => {
-        addAlert({
-            id: String(Date.now()),
-            type: 'Wallet',
-            keyword: tx.fromShort,
-            condition: rule,
-            chain: 'all',
-            delivery: 'Email, In-App',
-            isQuick: true,
+    const handleSaveAlert = async (rule: string) => {
+        if (!user || !firestore) return;
+        const alertsRef = collection(firestore, `users/${user.uid}/alerts`);
+        await addDoc(alertsRef, {
+            userId: user.uid,
+            alertType: 'wallet',
+            walletId: tx.from,
+            rule: rule,
+            enabled: true,
+            createdAt: serverTimestamp(),
         });
+
         toast({
             title: 'Alert Created!',
             description: `You'll now be notified about activity for ${tx.fromShort}.`
