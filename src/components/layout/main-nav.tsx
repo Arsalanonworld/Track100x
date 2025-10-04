@@ -9,6 +9,7 @@ import { useUser, useFirestore, useMemoFirebase, useDoc } from "@/firebase"
 import { doc } from "firebase/firestore"
 import { AnimatedButton } from "../ui/animated-button"
 import { Zap } from "lucide-react"
+import { Skeleton } from "../ui/skeleton"
 
 const navItems = [
     { href: '/leaderboard', label: 'Leaderboard', guest: true },
@@ -19,7 +20,7 @@ const navItems = [
 
 export function MainNav() {
     const pathname = usePathname()
-    const { user } = useUser();
+    const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
 
     const userDocRef = useMemoFirebase(() => {
@@ -27,19 +28,27 @@ export function MainNav() {
         return doc(firestore, 'users', user.uid);
     }, [firestore, user]);
     
-    const { data: userData } = useDoc(userDocRef);
+    const { data: userData, isLoading: isUserDataLoading } = useDoc(userDocRef);
     
+    const isLoading = isUserLoading || isUserDataLoading;
     const isFree = user && userData?.plan === 'free';
 
     const visibleNavItems = navItems.filter(item => {
-        if (!user) return item.guest; // Guests see items marked for them
-        return true; // Logged-in users see all items
+        if (isLoading) return item.guest;
+        if (!user) return item.guest;
+        return true;
     });
 
   return (
     <nav className="hidden md:flex items-center space-x-4 text-sm font-medium">
         <div className="flex items-center space-x-6">
-            {visibleNavItems.map((item) => (
+            {isLoading && (
+                <>
+                    <Skeleton className="h-4 w-20" />
+                    <Skeleton className="h-4 w-20" />
+                </>
+            )}
+            {!isLoading && visibleNavItems.map((item) => (
                 <Link
                     key={item.href}
                     href={item.href}
@@ -52,8 +61,8 @@ export function MainNav() {
                 </Link>
             ))}
         </div>
-         {isFree && (
-             <AnimatedButton asChild size="sm">
+         {isFree && !isLoading && (
+             <AnimatedButton asChild size="sm" className="ml-6">
                 <Link
                     href="/upgrade"
                     className={cn(
