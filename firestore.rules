@@ -1,22 +1,27 @@
 /**
- * @fileoverview Firestore Security Rules for Tack100x application.
+ * @fileoverview Firestore Security Rules for Tack100x Application
  *
  * Core Philosophy:
- * This ruleset enforces a strict user-ownership model for user-specific data
+ * This ruleset enforces a strict user-ownership model for private user data
  * and allows public read access to leaderboard and whale feed data.
- * All write operations are protected by authorization checks based on the authenticated user's ID.
  *
  * Data Structure:
- * - /users/{userId}: Stores user profile information. Only the authenticated user can read/write their own profile.
- * - /users/{userId}/alerts/{alertId}: Stores alerts created by a user. Only the authenticated user can manage their alerts.
- * - /users/{userId}/watchlist/{walletId}: Stores wallets followed by a user. Access is now blocked per request.
- * - /leaderboard/{leaderboardEntryId}: Stores public leaderboard data. Public read access, no write access.
- * - /whaleFeed/{whaleTransactionId}: Stores public whale feed data. Public read access, no write access.
+ * - /users/{userId}: Stores user profiles. Only the authenticated user can
+ *   read or write their own profile.
+ * - /users/{userId}/alerts/{alertId}: Stores user-defined alerts. Only the
+ *   authenticated user can manage alerts under their own profile.
+ * - /users/{userId}/watchlist/{walletId}: Stores wallets followed by a user.
+ *   Only the authenticated user can manage watchlist items under their own profile.
+ * - /leaderboard/{leaderboardEntryId}: Stores public leaderboard data.
+ *   Anyone can read this data. Writes are not permitted in this prototyping phase.
+ * - /whaleFeed/{whaleTransactionId}: Stores public whale feed data. Anyone
+ *   can read this data. Writes are not permitted in this prototyping phase.
  *
  * Key Security Decisions:
- * - User listing is disallowed.
- * - Leaderboard and WhaleFeed are publicly readable.
- * - The ruleset explicitly denies access to the /users/{userId}/watchlist/{walletId} collection as requested.
+ * - User listing is explicitly disallowed for privacy.
+ * - Public read access is granted to the leaderboard and whale feed.
+ * - In this prototyping phase, data validation is omitted for faster
+ *   iteration. However, ownership is strictly enforced.
  */
 rules_version = '2';
 service cloud.firestore {
@@ -25,70 +30,103 @@ service cloud.firestore {
     /**
      * @description Controls access to user profile information.
      * @path /users/{userId}
-     * @allow (create) User with ID 'user123' can create their profile.
-     * @allow (get) User with ID 'user123' can read their profile.
-     * @allow (update) User with ID 'user123' can update their profile.
-     * @allow (delete) User with ID 'user123' can delete their profile.
-     * @deny (get) User with ID 'user456' cannot read User 'user123' profile.
-     * @deny (update) User with ID 'user456' cannot update User 'user123' profile.
-     * @deny (delete) User with ID 'user456' cannot delete User 'user123' profile.
-     * @principle Enforces document ownership for user profiles.
+     * @allow (get, create, update, delete) if the user is the owner.
+     * @deny (get, create, update, delete) if the user is not the owner.
+     * @principle Enforces document ownership for writes.
      */
     match /users/{userId} {
+      // Helper function to check if the user is signed in
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      // Helper function to check if the user is the owner of the document
+      function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
+
+      // Helper function to check if the user is the existing owner of the document
+      function isExistingOwner(userId) {
+        return request.auth.uid == resource.data.userId;
+      }
+
       allow get: if isOwner(userId);
-      allow list: if false;
-      allow create: if isOwner(userId) && request.resource.data.id == userId;
-      allow update: if isExistingOwner(userId) && request.resource.data.id == resource.data.id;
-      allow delete: if isExistingOwner(userId);
+      allow list: if false; // User listing is not allowed
+
+      // Allow the user to create their own profile if the userId matches their auth.uid
+      allow create: if isOwner(userId);
+
+      // Allow the user to update or delete their own profile
+      allow update: if isOwner(userId);
+      allow delete: if isOwner(userId);
     }
 
     /**
-     * @description Controls access to alerts created by a user.
+     * @description Controls access to user-defined alerts.
      * @path /users/{userId}/alerts/{alertId}
-     * @allow (create) User with ID 'user123' can create an alert.
-     * @allow (get) User with ID 'user123' can read their alert.
-     * @allow (update) User with ID 'user123' can update their alert.
-     * @allow (delete) User with ID 'user123' can delete their alert.
-     * @deny (get) User with ID 'user456' cannot read User 'user123' alert.
-     * @deny (update) User with ID 'user456' cannot update User 'user123' alert.
-     * @deny (delete) User with ID 'user456' cannot delete User 'user123' alert.
-     * @principle Enforces document ownership for alerts.
+     * @allow (get, create, update, delete) if the user is the owner.
+     * @deny (get, create, update, delete) if the user is not the owner.
+     * @principle Restricts access to a user's own alerts.
      */
     match /users/{userId}/alerts/{alertId} {
+      // Helper function to check if the user is signed in
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      // Helper function to check if the user is the owner of the document
+      function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
+
+        // Helper function to check if the user is the existing owner of the document
+      function isExistingOwner(userId) {
+        return request.auth.uid == resource.data.userId;
+      }
+
       allow get: if isOwner(userId);
       allow list: if isOwner(userId);
-      allow create: if isOwner(userId) && request.resource.data.userId == userId;
-      allow update: if isExistingOwner(userId) && request.resource.data.userId == resource.data.userId;
-      allow delete: if isExistingOwner(userId);
-    }
-    
-    /**
-     * @description Restricts access to the watchlist collection for all users.
-     * @path /users/{userId}/watchlist/{walletId}
-     * @deny (create) Any user cannot create a document in this path
-     * @deny (get) Any user cannot get a document in this path
-     * @deny (update) Any user cannot update a document in this path
-     * @deny (delete) Any user cannot delete a document in this path
-     * @deny (list) Any user cannot list documents in this path
-     * @principle Restricts access per user request.
-     */
-     match /users/{userId}/watchlist/{walletId} {
-        allow get: if false;
-        allow list: if false;
-        allow create: if false;
-        allow update: if false;
-        allow delete: if false;
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId);
+      allow delete: if isOwner(userId);
     }
 
+      /**
+       * @description Controls access to user's watchlist.
+       * @path /users/{userId}/watchlist/{walletId}
+       * @allow (get, create, update, delete) if the user is the owner.
+       * @deny (get, create, update, delete) if the user is not the owner.
+       * @principle Restricts access to a user's own watchlist.
+       */
+      match /users/{userId}/watchlist/{walletId} {
+          // Helper function to check if the user is signed in
+          function isSignedIn() {
+              return request.auth != null;
+          }
+
+          // Helper function to check if the user is the owner of the document
+          function isOwner(userId) {
+              return request.auth.uid == userId;
+          }
+
+          // Helper function to check if the user is the existing owner of the document
+          function isExistingOwner(userId) {
+              return request.auth.uid == resource.data.userId;
+          }
+
+          allow get: if isOwner(userId);
+          allow list: if isOwner(userId);
+          allow create: if isOwner(userId);
+          allow update: if isOwner(userId);
+          allow delete: if isOwner(userId);
+      }
+
     /**
-     * @description Allows public read access to leaderboard data.
+     * @description Controls access to leaderboard data.
      * @path /leaderboard/{leaderboardEntryId}
-     * @allow (get) Any user can read leaderboard data.
-     * @allow (list) Any user can list leaderboard data.
-     * @deny (create) No one can create leaderboard entries through client.
-     * @deny (update) No one can update leaderboard entries through client.
-     * @deny (delete) No one can delete leaderboard entries through client.
-     * @principle Provides public read-only access to leaderboard.
+     * @allow (get, list) to anyone. Writes are denied.
+     * @deny (create, update, delete) to everyone.
+     * @principle Allows public read access to leaderboard data.
      */
     match /leaderboard/{leaderboardEntryId} {
       allow get: if true;
@@ -99,14 +137,11 @@ service cloud.firestore {
     }
 
     /**
-     * @description Allows public read access to whale feed data.
+     * @description Controls access to whale feed data.
      * @path /whaleFeed/{whaleTransactionId}
-     * @allow (get) Any user can read whale feed data.
-     * @allow (list) Any user can list whale feed data.
-     * @deny (create) No one can create whale feed entries through client.
-     * @deny (update) No one can update whale feed entries through client.
-     * @deny (delete) No one can delete whale feed entries through client.
-     * @principle Provides public read-only access to whale feed.
+     * @allow (get, list) to anyone. Writes are denied.
+     * @deny (create, update, delete) to everyone.
+     * @principle Allows public read access to whale feed data.
      */
     match /whaleFeed/{whaleTransactionId} {
       allow get: if true;
@@ -115,18 +150,5 @@ service cloud.firestore {
       allow update: if false;
       allow delete: if false;
     }
-  }
-
-  // Helper functions
-  function isSignedIn() {
-    return request.auth != null;
-  }
-
-  function isOwner(userId) {
-    return isSignedIn() && request.auth.uid == userId;
-  }
-
-  function isExistingOwner(userId) {
-    return isOwner(userId) && resource != null;
   }
 }
