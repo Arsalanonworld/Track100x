@@ -119,7 +119,7 @@ export default function HeroSection() {
                  <p className="max-w-2xl mx-auto mt-4 text-base sm:text-lg text-muted-foreground">
                     The ultimate wallet intelligence platform. Track whale transactions and get real-time smart alerts.
                 </p>
-                 <div className="mt-8 grid grid-cols-2 sm:flex sm:flex-wrap items-center justify-center gap-x-6 gap-y-4 sm:gap-x-8">
+                 <div className="mt-8 grid grid-cols-1 xs:grid-cols-2 sm:flex sm:flex-wrap items-center justify-center gap-x-6 gap-y-4 sm:gap-x-8">
                     {features.map((feature) => (
                        <div key={feature.label} className="flex items-center gap-3 justify-center sm:justify-start">
                             {feature.icon}
