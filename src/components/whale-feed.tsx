@@ -122,7 +122,7 @@ export function WhaleFeed() {
       </Select>
       {!isPro && (
         <p className="text-xs text-muted-foreground text-center md:text-left">
-          <Link href="/upgrade" className="underline font-semibold">Upgrade to Pro</Link> to apply multiple filters at once.
+          Multi-filtering is a Pro feature. <Link href="/upgrade" className="underline font-semibold">Upgrade to unlock.</Link>
         </p>
       )}
     </>
@@ -163,7 +163,7 @@ export function WhaleFeed() {
         <Card className="border-x-0 sm:border-x">
             <CardHeader>
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                  <CardTitle>Live Whale Transactions</CardTitle>
+                  <CardTitle className="flex-1">Live Whale Transactions</CardTitle>
                   
                   {/* Desktop Filters */}
                   <div className="hidden md:flex flex-row gap-2 w-full sm:w-auto items-center">
