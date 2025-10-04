@@ -1,3 +1,4 @@
+
 'use client'
 
 import * as React from "react"
@@ -7,6 +8,7 @@ import { cn } from "@/lib/utils"
 import { Zap, Bell, BarChart, FileText, Star } from "lucide-react"
 import { useUser, useFirestore, useMemoFirebase, useDoc } from "@/firebase"
 import { doc } from "firebase/firestore"
+import { AnimatedButton } from "../ui/animated-button"
 
 const navItems = [
     { href: '/leaderboard', label: 'Leaderboard', icon: BarChart, guest: true },
@@ -45,16 +47,17 @@ export function MainNav() {
             </Link>
         ))}
         {user && !isPro && (
-             <Link
-                href="/upgrade"
-                className={cn(
-                    "flex items-center gap-2 transition-colors text-primary font-semibold hover:text-primary/90",
-                     pathname === '/upgrade' && "underline"
-                )}
-            >
-                <Zap className="h-4 w-4" />
-                Upgrade
-            </Link>
+             <AnimatedButton asChild size="sm">
+                <Link
+                    href="/upgrade"
+                    className={cn(
+                        "flex items-center gap-2"
+                    )}
+                >
+                    <Zap className="h-4 w-4" />
+                    Upgrade
+                </Link>
+             </AnimatedButton>
         )}
     </nav>
   )

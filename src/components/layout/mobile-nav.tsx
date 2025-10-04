@@ -12,6 +12,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetTr
 import { LogoIcon } from "./header"
 import { useUser, useFirestore, useMemoFirebase, useDoc } from "@/firebase"
 import { doc } from "firebase/firestore"
+import { AnimatedButton } from "../ui/animated-button"
 
 const navItems = [
     { href: '/leaderboard', label: 'Leaderboard', icon: BarChart, guest: true },
@@ -45,7 +46,7 @@ export function MobileNav() {
           <span className="sr-only">Toggle Menu</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="pr-0">
+      <SheetContent side="left" className="pr-0 flex flex-col">
         <SheetHeader className="p-6 text-left border-b">
             <SheetTitle asChild>
                 <MobileLink
@@ -61,7 +62,7 @@ export function MobileNav() {
                 Main navigation menu.
             </SheetDescription>
         </SheetHeader>
-        <div className="flex flex-col gap-4 pl-6 mt-4 text-lg font-medium">
+        <div className="flex flex-col gap-4 pl-6 mt-4 text-lg font-medium flex-1">
           {visibleNavItems.map((item) => (
             <MobileLink
               key={item.href}
@@ -71,16 +72,21 @@ export function MobileNav() {
               {item.label}
             </MobileLink>
           ))}
-          {user && !isPro && (
-            <MobileLink
-              href="/upgrade"
-              onOpenChange={setOpen}
-              className="text-primary"
-            >
-              Upgrade
-            </MobileLink>
-          )}
         </div>
+        {!isPro && (
+            <div className="p-6 border-t">
+                <AnimatedButton className="w-full" asChild>
+                    <MobileLink
+                        href="/upgrade"
+                        onOpenChange={setOpen}
+                        className="flex items-center gap-2"
+                        >
+                        <Zap className="h-4 w-4" />
+                        Upgrade to Pro
+                    </MobileLink>
+                </AnimatedButton>
+            </div>
+        )}
       </SheetContent>
     </Sheet>
   )

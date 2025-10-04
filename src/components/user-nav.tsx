@@ -19,6 +19,7 @@ import { Skeleton } from './ui/skeleton';
 import { useAuthDialog } from '@/hooks/use-auth-dialog';
 import { doc } from 'firebase/firestore';
 import { Zap } from 'lucide-react';
+import { AnimatedButton } from './ui/animated-button';
 
 export function UserNav() {
   const { user, isUserLoading } = useUser();
@@ -45,7 +46,12 @@ export function UserNav() {
   
   if (!user) {
     return (
-      <Button onClick={() => setAuthDialogOpen(true)}>Log In</Button>
+        <div className="flex items-center gap-2">
+            <Button variant="ghost" onClick={() => setAuthDialogOpen(true)}>Log In</Button>
+            <AnimatedButton onClick={() => setAuthDialogOpen(true)}>
+                Sign Up
+            </AnimatedButton>
+        </div>
     );
   }
 

@@ -34,11 +34,13 @@ export default function Header() {
                     <LogoIcon />
                     <span className="hidden font-bold sm:inline-block">Tack100x</span>
                 </Link>
-                <MainNav />
-                <div className="flex flex-1 items-center justify-end space-x-2">
-                    <NotificationBell />
-                    <UserNav />
-                    <ThemeToggle />
+                <div className="flex flex-1 items-center justify-between">
+                    <MainNav />
+                    <div className="flex items-center space-x-2">
+                        <NotificationBell />
+                        <UserNav />
+                        <ThemeToggle />
+                    </div>
                 </div>
             </div>
         </header>
