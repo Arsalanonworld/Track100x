@@ -1,7 +1,6 @@
 import { MainNav } from "@/components/layout/main-nav";
 import { UserNav } from "@/components/user-nav";
-import { Button } from "@/components/ui/button";
-import { Sun } from "lucide-react";
+import { ThemeToggle } from "@/components/theme-toggle";
 import Link from "next/link";
 
 export const LogoIcon = () => (
@@ -25,10 +24,7 @@ export default function Header() {
                 </div>
 
                 <div className="flex flex-1 items-center justify-end space-x-2">
-                    <Button variant="ghost" size="icon">
-                        <Sun className="h-5 w-5"/>
-                        <span className="sr-only">Toggle theme</span>
-                    </Button>
+                    <ThemeToggle />
                     <UserNav />
                 </div>
             </div>
