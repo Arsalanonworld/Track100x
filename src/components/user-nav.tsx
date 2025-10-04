@@ -18,14 +18,16 @@ import { useRouter } from 'next/navigation';
 import { Skeleton } from './ui/skeleton';
 import { useAuthDialog } from '@/hooks/use-auth-dialog';
 import { doc } from 'firebase/firestore';
-import { Zap } from 'lucide-react';
+import { Zap, Loader2 } from 'lucide-react';
 import { AnimatedButton } from './ui/animated-button';
+import { useState } from 'react';
 
 export function UserNav() {
   const { user, isUserLoading } = useUser();
   const { setAuthDialogOpen } = useAuthDialog();
   const router = useRouter();
   const firestore = useFirestore();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const userDocRef = useMemoFirebase(() => {
     if (!firestore || !user) return null;
@@ -38,7 +40,9 @@ export function UserNav() {
   const isLoading = isUserLoading || isUserDataLoading;
 
   const handleLogout = async () => {
+    setIsLoggingOut(true);
     await logout();
+    router.refresh();
   };
 
   if (isLoading) {
@@ -98,7 +102,8 @@ export function UserNav() {
         )}
 
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleLogout}>
+        <DropdownMenuItem onClick={handleLogout} disabled={isLoggingOut}>
+            {isLoggingOut && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Log out
         </DropdownMenuItem>
       </DropdownMenuContent>

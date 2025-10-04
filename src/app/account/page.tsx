@@ -24,6 +24,7 @@ export default function AccountPage() {
   const firestore = useFirestore();
   const { toast } = useToast();
   const [isCancelling, setIsCancelling] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   
   const userDocRef = useMemoFirebase(() => {
     if (!firestore || !user) return null;
@@ -40,7 +41,9 @@ export default function AccountPage() {
   }, [user, isUserLoading, router, setAuthDialogOpen]);
 
   const handleLogout = async () => {
+    setIsLoggingOut(true);
     await logout();
+    router.refresh();
   };
 
   const handleManageSubscription = async () => {
@@ -111,7 +114,8 @@ export default function AccountPage() {
                         <p className="w-24 font-semibold text-muted-foreground">User ID</p>
                         <p className="font-mono text-sm text-muted-foreground">{user.uid}</p>
                     </div>
-                    <Button variant="destructive" onClick={handleLogout}>
+                    <Button variant="destructive" onClick={handleLogout} disabled={isLoggingOut}>
+                        {isLoggingOut && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                         Log Out
                     </Button>
                 </CardContent>
