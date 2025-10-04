@@ -10,15 +10,15 @@ import TransactionCard from '@/components/transaction-card';
 import { mockWhaleTxs } from '@/lib/mock-data';
 import { ProFeatureLock } from '@/components/pro-feature-lock';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogTrigger } from '@/components/ui/dialog';
-import { QuickAlertModal } from '@/components/quick-alert-modal';
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { CreateAlertDialog } from '@/components/create-alert-dialog';
 import { useState } from 'react';
 import { useAuthDialog } from '@/hooks/use-auth-dialog';
 
 export default function WatchlistPage() {
     const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
-    const [selectedWallet, setSelectedWallet] = useState<string | undefined>(undefined);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
     const { setAuthDialogOpen } = useAuthDialog();
 
     const watchlistRef = useMemoFirebase(() => {
@@ -33,9 +33,19 @@ export default function WatchlistPage() {
         return doc(firestore, 'users', user.uid);
     }, [firestore, user]);
     const { data: userData, isLoading: isUserDataLoading } = useDoc(userDocRef);
+    
+    const alertsRef = useMemoFirebase(() => {
+        if (!user || !firestore) return null;
+        return collection(firestore, `users/${user.uid}/alerts`);
+    }, [user, firestore]);
+    const { data: alerts } = useCollection(alertsRef);
 
     const isLoading = isUserLoading || isWatchlistLoading || isUserDataLoading;
     const isPro = userData?.plan === 'pro';
+    const activeAlertCount = alerts?.length ?? 0;
+    const freeAlertLimit = userData?.entitlements?.alerts?.maxActive ?? 1;
+    const canCreateAlert = isPro || activeAlertCount < freeAlertLimit;
+
 
     const getWalletTransactions = (walletAddress: string) => {
         return mockWhaleTxs.filter(tx => tx.from === walletAddress || tx.to === walletAddress).slice(0, 5);
@@ -68,7 +78,7 @@ export default function WatchlistPage() {
 
 
     return (
-        <Dialog onOpenChange={(isOpen) => !isOpen && setSelectedWallet(undefined)}>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <PageHeader
                 title="Watchlist"
                 description="Track your favorite wallets and their latest activity."
@@ -91,7 +101,6 @@ export default function WatchlistPage() {
                                  <DialogTrigger asChild>
                                     <Button
                                       variant="outline"
-                                      onClick={() => setSelectedWallet(item.id)}
                                     >
                                       <Zap className="h-4 w-4 mr-2" />
                                       Set New Alert
@@ -128,7 +137,14 @@ export default function WatchlistPage() {
                       />
                  )}
             </div>
-             <QuickAlertModal walletAddress={selectedWallet} />
+             {user && !isLoading && (
+                <CreateAlertDialog 
+                    isPro={isPro} 
+                    canCreateAlert={canCreateAlert} 
+                    userId={user.uid} 
+                    onOpenChange={setIsDialogOpen}
+                />
+             )}
         </Dialog>
     );
 }
