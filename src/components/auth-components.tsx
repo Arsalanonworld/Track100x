@@ -6,6 +6,7 @@ import {
   login,
   signup,
   resetPassword,
+  anonymousLogin,
 } from '@/lib/actions';
 import {
   Card,
@@ -20,8 +21,9 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
-import { Terminal, Loader2 } from 'lucide-react';
+import { Terminal, Loader2, User } from 'lucide-react';
 import React from 'react';
+import { Separator } from './ui/separator';
 
 function AuthError({ error }: { error?: string | null }) {
     if (!error) return null;
@@ -36,7 +38,7 @@ function AuthError({ error }: { error?: string | null }) {
                 <p>Please check the following:</p>
                 <ul className="list-disc pl-5 mt-2 text-xs">
                     <li>Ensure Firebase Authentication is enabled in your project.</li>
-                    <li>Verify that the Email/Password sign-in provider is enabled.</li>
+                    <li>Verify that the Email/Password and Anonymous sign-in providers are enabled.</li>
                     <li>Check your Firestore security rules to allow user creation.</li>
                 </ul>
               </AlertDescription>
@@ -52,23 +54,23 @@ function AuthError({ error }: { error?: string | null }) {
     )
 }
 
-const SubmitButton = ({ children }: { children: React.ReactNode }) => {
+const SubmitButton = ({ children, variant, formAction }: { children: React.ReactNode, variant?: any, formAction?: any }) => {
     const [pending, setPending] = React.useState(false);
     
-    // A bit of a hack to show pending state, since useFormStatus is not stable yet
     const handleClick = () => {
         setPending(true);
     };
 
     return (
-        <Button type="submit" className="w-full" disabled={pending} onClick={handleClick}>
+        <Button type="submit" formAction={formAction} className="w-full" variant={variant} disabled={pending} onClick={handleClick}>
             {pending ? <Loader2 className="animate-spin" /> : children}
         </Button>
     );
 };
 
 export function LoginForm() {
-  const [state, formAction] = useActionState(login, null);
+  const [loginState, loginAction] = useActionState(login, null);
+  const [anonState, anonAction] = useActionState(anonymousLogin, null);
   const searchParams = useSearchParams();
   const next = searchParams.get('next') || '/';
 
@@ -81,8 +83,8 @@ export function LoginForm() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form action={formAction} className="space-y-4">
-          <AuthError error={state?.error} />
+        <form className="space-y-4">
+          <AuthError error={loginState?.error || anonState?.error} />
           <input type="hidden" name="next" value={next} />
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
@@ -98,13 +100,28 @@ export function LoginForm() {
             <Label htmlFor="password">Password</Label>
             <Input id="password" name="password" type="password" required />
           </div>
-          <SubmitButton>Log In</SubmitButton>
+          <SubmitButton formAction={loginAction}>Log In</SubmitButton>
           <div className="text-center text-sm">
             <Link href="/auth/reset-password" className="text-primary hover:underline">
               Forgot password?
             </Link>
           </div>
         </form>
+
+        <div className="relative my-4">
+          <Separator />
+          <span className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 bg-card px-2 text-xs text-muted-foreground">
+            OR
+          </span>
+        </div>
+        
+        <form action={anonAction}>
+            <input type="hidden" name="next" value={next} />
+            <SubmitButton variant="secondary">
+                <User /> Login as Test User
+            </SubmitButton>
+        </form>
+
         <div className="mt-4 text-center text-sm">
           Don't have an account?{' '}
           <Link href={`/auth/signup?next=${encodeURIComponent(next)}`} className="text-primary hover:underline">
@@ -148,7 +165,7 @@ export function SignupForm() {
             <Input id="password" name="password" type="password" required minLength={6} />
             <p className="text-xs text-muted-foreground">Password must be at least 6 characters long.</p>
           </div>
-          <SubmitButton>Create Account</SubmitButton>
+          <SubmitButton formAction={formAction}>Create Account</SubmitButton>
         </form>
         <div className="mt-4 text-center text-sm">
           Already have an account?{' '}
@@ -192,7 +209,7 @@ export function ResetPasswordForm() {
                   required
                 />
               </div>
-              <SubmitButton>Send Reset Link</SubmitButton>
+              <SubmitButton formAction={formAction}>Send Reset Link</SubmitButton>
             </form>
           )}
            <div className="mt-4 text-center text-sm">
@@ -205,5 +222,3 @@ export function ResetPasswordForm() {
       </Card>
     );
   }
-
-    
