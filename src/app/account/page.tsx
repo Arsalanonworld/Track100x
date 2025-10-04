@@ -57,14 +57,15 @@ export default function AccountPage() {
   return (
     <>
       <PageHeader
-        title="My Account"
-        description="Manage your profile, subscription, and settings."
+        title="Settings"
+        description="Manage your profile, subscription, and notification preferences."
       />
       <div className="grid gap-8 md:grid-cols-3">
-        <div className="md:col-span-2">
+        <div className="md:col-span-2 space-y-8">
             <Card>
                 <CardHeader>
-                <CardTitle>Profile Details</CardTitle>
+                <CardTitle>Profile</CardTitle>
+                <CardDescription>Your personal information.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                 <div className="flex items-center gap-4">
@@ -86,7 +87,7 @@ export default function AccountPage() {
             </Card>
 
             {isPro && (
-              <Card className="mt-8">
+              <Card>
                   <CardHeader>
                       <CardTitle>Notification Channels</CardTitle>
                       <CardDescription>Connect your accounts to receive real-time alerts on your favorite platforms.</CardDescription>
