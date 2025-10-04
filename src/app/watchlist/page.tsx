@@ -85,7 +85,9 @@ export default function WatchlistPage() {
                                         <span>Wallet</span>
                                     </CardTitle>
                                     <CardDescription>
-                                        <Badge variant="secondary" className="font-mono mt-2">{item.id}</Badge>
+                                        <div className="text-sm text-muted-foreground mt-2">
+                                            <Badge variant="secondary" className="font-mono">{item.id}</Badge>
+                                        </div>
                                     </CardDescription>
                                 </div>
                                  <DialogTrigger asChild>
@@ -132,5 +134,6 @@ export default function WatchlistPage() {
         </Dialog>
     );
 }
+
 
 
