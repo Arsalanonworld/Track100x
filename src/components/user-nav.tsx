@@ -12,16 +12,27 @@ import {
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Link from 'next/link';
-import { useUser } from '@/firebase';
+import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { logout } from '@/lib/actions';
 import { useRouter } from 'next/navigation';
 import { Skeleton } from './ui/skeleton';
 import { useAuthDialog } from '@/hooks/use-auth-dialog';
+import { doc } from 'firebase/firestore';
+import { Zap } from 'lucide-react';
 
 export function UserNav() {
   const { user, isUserLoading } = useUser();
   const { setAuthDialogOpen } = useAuthDialog();
   const router = useRouter();
+  const firestore = useFirestore();
+
+  const userDocRef = useMemoFirebase(() => {
+    if (!firestore || !user) return null;
+    return doc(firestore, 'users', user.uid);
+  }, [firestore, user]);
+
+  const { data: userData } = useDoc(userDocRef);
+  const isPro = userData?.plan === 'pro';
 
   const handleLogout = async () => {
     await logout();
@@ -54,7 +65,7 @@ export function UserNav() {
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
             <p className="text-sm font-medium leading-none">
-              {user.displayName || 'User'}
+              {user.displayName || userData?.username || 'User'}
             </p>
             <p className="text-xs leading-none text-muted-foreground">
               {user.email}
@@ -65,9 +76,19 @@ export function UserNav() {
         <DropdownMenuItem asChild>
           <Link href="/account">Account</Link>
         </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link href="/alerts">My Alerts</Link>
-        </DropdownMenuItem>
+        
+        {isPro ? (
+           <DropdownMenuItem>
+              Manage Subscription
+          </DropdownMenuItem>
+        ) : (
+          <DropdownMenuItem asChild>
+            <Link href="/upgrade" className="flex items-center justify-between">
+              Upgrade <Zap className="h-4 w-4 text-primary" />
+            </Link>
+          </DropdownMenuItem>
+        )}
+
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout}>
           Log out

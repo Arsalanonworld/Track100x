@@ -14,10 +14,10 @@ import { useUser, useFirestore, useMemoFirebase, useDoc } from "@/firebase"
 import { doc } from "firebase/firestore"
 
 const navItems = [
-    { href: '/leaderboard', label: 'Leaderboard', icon: BarChart },
-    { href: '/watchlist', label: 'Watchlist', icon: Star },
-    { href: '/alerts', label: 'Alerts', icon: Bell },
-    { href: '/insights', label: 'Insights', icon: FileText },
+    { href: '/leaderboard', label: 'Leaderboard', icon: BarChart, guest: true },
+    { href: '/watchlist', label: 'Watchlist', icon: Star, guest: false },
+    { href: '/alerts', label: 'Alerts', icon: Bell, guest: false },
+    { href: '/insights', label: 'Insights', icon: FileText, guest: true },
 ];
 
 export function MobileNav() {
@@ -31,6 +31,8 @@ export function MobileNav() {
   }, [firestore, user]);
   const { data: userData } = useDoc(userDocRef);
   const isPro = userData?.plan === 'pro';
+
+  const visibleNavItems = navItems.filter(item => user || item.guest);
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -60,7 +62,7 @@ export function MobileNav() {
             </SheetDescription>
         </SheetHeader>
         <div className="flex flex-col gap-4 pl-6 mt-4 text-lg font-medium">
-          {navItems.map((item) => (
+          {visibleNavItems.map((item) => (
             <MobileLink
               key={item.href}
               href={item.href}
