@@ -71,6 +71,9 @@ export default function HeroSection() {
                     <span>{text}</span>
                     <span className="absolute -right-2 top-0 bottom-0 w-1.5 bg-primary animate-blinking-cursor"></span>
                 </h1>
+                 <p className="max-w-2xl mx-auto mt-4 text-lg text-muted-foreground">
+                    The ultimate wallet intelligence platform. Track whale transactions and get real-time smart alerts.
+                </p>
                  <div className="mt-8 flex flex-wrap items-center justify-center gap-x-8 gap-y-4">
                     {features.map((feature) => (
                        <div key={feature.label} className="flex items-center gap-3">
@@ -83,3 +86,4 @@ export default function HeroSection() {
         </section>
     );
 }
+
