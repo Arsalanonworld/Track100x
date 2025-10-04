@@ -13,6 +13,13 @@ interface ProFeatureLockProps {
 }
 
 export const ProFeatureLock = ({ title, description, buttonText = "Upgrade to Pro", onButtonClick }: ProFeatureLockProps) => {
+    const buttonContent = (
+        <span className="flex items-center justify-center">
+            <Sparkles className="mr-2 h-4 w-4" />
+            {buttonText}
+        </span>
+    );
+
     return (
         <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-background/80 backdrop-blur-sm p-8 text-center rounded-lg">
             <Lock className="h-10 w-10 text-primary mb-4" />
@@ -22,20 +29,14 @@ export const ProFeatureLock = ({ title, description, buttonText = "Upgrade to Pr
             </p>
             {onButtonClick ? (
                 <AnimatedButton onClick={onButtonClick}>
-                    <span className="flex items-center justify-center">
-                        <Sparkles className="mr-2 h-4 w-4" />
-                        {buttonText}
-                    </span>
+                    {buttonContent}
                 </AnimatedButton>
             ) : (
-                <AnimatedButton asChild>
-                    <Link href="/upgrade">
-                        <span className="flex items-center justify-center">
-                            <Sparkles className="mr-2 h-4 w-4" />
-                            {buttonText}
-                        </span>
-                    </Link>
-                </AnimatedButton>
+                <Link href="/upgrade" passHref>
+                  <AnimatedButton>
+                      {buttonContent}
+                  </AnimatedButton>
+                </Link>
             )}
         </div>
     )
