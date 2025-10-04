@@ -1,14 +1,25 @@
-export type Transaction = {
+
+export type WhaleTransaction = {
   id: string;
-  hash: string;
-  token: 'BTC' | 'ETH' | 'SOL';
-  amountUSD: number;
-  amountToken: number;
+  txHash: string;
   from: string;
+  fromShort: string;
+  fromTags?: string[];
   to: string;
-  blockchain: 'Bitcoin' | 'Ethereum' | 'Solana';
-  type: 'Transfer' | 'Swap';
+  toShort: string;
+  toTags?: string[];
+  token: {
+    symbol: string;
+    icon?: string;
+  };
+  value: string;
+  amountToken: number;
+  network: 'Ethereum' | 'Solana' | 'Bitcoin';
+  time: string;
+  gasFee: string;
+  priceImpact: string;
 };
+
 
 export type Wallet = {
   rank: number;
@@ -32,74 +43,67 @@ export type Alert = {
   type: 'wallet' | 'token';
 };
 
-export const whaleTransactions: Transaction[] = [
+export const whaleTransactions: WhaleTransaction[] = [
   {
     id: '1',
-    hash: '0xabc123',
-    token: 'ETH',
-    amountUSD: 12000000,
-    amountToken: 4000,
+    txHash: '0xabc123def456...',
     from: '0x742d35Cc6634C0532925a3b844Bc454e4438f44e',
+    fromShort: '0x742d...f44e',
+    fromTags: ['Whale', 'Justin Sun'],
     to: '0x9b5a8b7c6a5d4e3f2e1d0c9b8a7f6e5d4c3b2a1e',
-    blockchain: 'Ethereum',
-    type: 'Transfer',
+    toShort: '0x9b5a...2a1e',
+    toTags: ['CEX', 'Binance'],
+    token: {
+      symbol: 'ETH',
+      icon: 'https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=032',
+    },
+    value: '$12.0M',
+    amountToken: 4000,
+    network: 'Ethereum',
+    time: '2m ago',
+    gasFee: '$42.50',
+    priceImpact: '-0.02%',
   },
   {
     id: '2',
-    hash: '8cdef456',
-    token: 'BTC',
-    amountUSD: 50000000,
-    amountToken: 1000,
-    from: 'bc1q...',
+    txHash: '8cdef456abc123...',
+    from: 'bc1qylzqr2y8ne6x5wz9s9z2v8q5q5z5c5q5q5q5q5',
+    fromShort: 'bc1qy...q5q5',
     to: '3J98t1WpEZ73CNmQviecrnyiWrnqRhWNLy',
-    blockchain: 'Bitcoin',
-    type: 'Transfer',
+    toShort: '3J98t...hWNLy',
+    toTags: ['Institution'],
+    token: {
+      symbol: 'BTC',
+      icon: 'https://cryptologos.cc/logos/bitcoin-btc-logo.svg?v=032',
+    },
+    value: '$50.0M',
+    amountToken: 1000,
+    network: 'Bitcoin',
+    time: '5m ago',
+    gasFee: '$10.12',
+    priceImpact: 'N/A',
   },
-  {
+   {
     id: '3',
-    hash: '0xghi789',
-    token: 'SOL',
-    amountUSD: 5000000,
-    amountToken: 50000,
+    txHash: '0xghi789jkl012...',
     from: 'So11111111111111111111111111111111111111112',
+    fromShort: 'So11...1112',
     to: '4pUQS4p2KtV3yS5tC4tFzS1vG2vA3eB4c5D6F7G8H9J',
-    blockchain: 'Solana',
-    type: 'Swap',
-  },
-  {
-    id: '4',
-    hash: '0xjkl012',
-    token: 'ETH',
-    amountUSD: 8000000,
-    amountToken: 2667,
-    from: '0x5a7d35Cc6634C0532925a3b844Bc454e4438f44a',
-    to: '0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B',
-    blockchain: 'Ethereum',
-    type: 'Transfer',
-  },
-    {
-    id: '5',
-    hash: '0x mno345',
-    token: 'SOL',
-    amountUSD: 2500000,
-    amountToken: 25000,
-    from: '5o2a...s2df',
-    to: '3pQR...eE4d',
-    blockchain: 'Solana',
-    type: 'Transfer',
-  },
-  {
-    id: '6',
-    hash: '0xpqr678',
-    token: 'ETH',
-    amountUSD: 15000000,
-    amountToken: 5000,
-    from: '0x0d...f3A7',
-    to: '0x73...eF44',
-    blockchain: 'Ethereum',
-    type: 'Swap',
+    toShort: '4pUQS...8H9J',
+    toTags: ['DEX', 'Raydium'],
+    token: {
+      symbol: 'SOL',
+      icon: 'https://cryptologos.cc/logos/solana-sol-logo.svg?v=032',
+    },
+    value: '$5.0M',
+    amountToken: 50000,
+    network: 'Solana',
+    time: '8m ago',
+    gasFee: '$0.01',
+    priceImpact: '-0.15%',
   },
 ];
+
 
 export const walletLeaderboard: Wallet[] = [
   {
