@@ -43,6 +43,7 @@ export function UserNav() {
     setIsLoggingOut(true);
     await logout();
     router.refresh();
+    router.push('/');
   };
 
   if (isLoading) {

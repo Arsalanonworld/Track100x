@@ -117,6 +117,5 @@ export async function resetPassword(prevState: ActionState, formData: FormData):
 export async function logout() {
   const { auth } = getFirebaseInstances();
   await auth.signOut();
-  revalidatePath('/');
-  redirect('/');
+  revalidatePath('/', 'layout');
 }
