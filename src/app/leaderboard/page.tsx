@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PageHeader from '@/components/page-header';
 import {
   Card,
@@ -21,7 +21,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { walletLeaderboard } from '@/lib/mock-data';
-import { ArrowUpDown, Zap, Lock, Loader2 } from 'lucide-react';
+import { ArrowUpDown, Zap, Lock, Loader2, Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   Select,
@@ -32,19 +32,18 @@ import {
 } from '@/components/ui/select';
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { QuickAlertModal } from '@/components/quick-alert-modal';
-import { useUser, useFirestore, useMemoFirebase } from '@/firebase';
-import { doc } from 'firebase/firestore';
-import { useDoc } from '@/firebase/firestore/use-doc';
+import { useUser, useFirestore, useMemoFirebase, useDoc, useCollection } from '@/firebase';
+import { doc, setDoc, deleteDoc, serverTimestamp, collection } from 'firebase/firestore';
 import Link from 'next/link';
 import { ProFeatureLock } from '@/components/pro-feature-lock';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useToast } from '@/hooks/use-toast';
 
 export default function LeaderboardPage() {
-  const [selectedWallet, setSelectedWallet] = useState<string | undefined>(
-    undefined
-  );
+  const [selectedWallet, setSelectedWallet] = useState<string | undefined>(undefined);
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
+  const { toast } = useToast();
 
   const userDocRef = useMemoFirebase(() => {
     if (!firestore || !user) return null;
@@ -53,22 +52,65 @@ export default function LeaderboardPage() {
 
   const { data: userData, isLoading: isUserDataLoading } = useDoc(userDocRef);
 
+  const watchlistRef = useMemoFirebase(() => {
+    if (!user || !firestore) return null;
+    return collection(firestore, `users/${user.uid}/watchlist`);
+  }, [user, firestore]);
+  const { data: watchlist, isLoading: isWatchlistLoading } = useCollection(watchlistRef);
+
   const isPro = userData?.plan === 'pro';
-  const isLoading = isUserLoading || isUserDataLoading;
+  const isLoading = isUserLoading || isUserDataLoading || isWatchlistLoading;
 
   const topNFree = userData?.entitlements?.leaderboard?.topN || 10;
   
-  // Decide which data to show based on auth state and plan
-  let leaderboardData;
-  if (isPro) {
-    leaderboardData = walletLeaderboard; // Pro users see everything
-  } else if (user) {
-    leaderboardData = walletLeaderboard.slice(0, topNFree); // Logged-in free users see top N
-  } else {
-    leaderboardData = walletLeaderboard.slice(0, 5); // Guests see top 5
-  }
+  let leaderboardData = isPro ? walletLeaderboard : walletLeaderboard.slice(0, 5);
 
   const showProLock = !isPro;
+
+  const followedAddresses = React.useMemo(() => {
+    return new Set(watchlist?.map((item: any) => item.id));
+  }, [watchlist]);
+
+
+  const handleFollowToggle = async (walletAddress: string) => {
+    if (!user || !firestore) {
+      toast({ title: "Please log in to follow wallets.", variant: "destructive" });
+      return;
+    }
+
+    const isFollowing = followedAddresses.has(walletAddress);
+    const watchlistItemRef = doc(firestore, `users/${user.uid}/watchlist`, walletAddress);
+
+    if (isFollowing) {
+      try {
+        await deleteDoc(watchlistItemRef);
+        toast({ title: "Wallet unfollowed." });
+      } catch (error) {
+        console.error("Error unfollowing wallet:", error);
+        toast({ title: "Could not unfollow wallet.", variant: "destructive" });
+      }
+    } else {
+      if (!isPro && followedAddresses.size >= 1) {
+        toast({
+          title: "Free Limit Reached",
+          description: "Upgrade to Pro to follow more than one wallet.",
+          variant: "destructive",
+        });
+        return;
+      }
+      try {
+        await setDoc(watchlistItemRef, {
+          walletAddress,
+          createdAt: serverTimestamp(),
+        });
+        toast({ title: "Wallet followed!" });
+      } catch (error) {
+        console.error("Error following wallet:", error);
+        toast({ title: "Could not follow wallet.", variant: "destructive" });
+      }
+    }
+  };
+
 
   return (
     <Dialog onOpenChange={(isOpen) => !isOpen && setSelectedWallet(undefined)}>
@@ -83,10 +125,7 @@ export default function LeaderboardPage() {
              <Loader2 className="h-8 w-8 animate-spin text-primary" />
            </div>
         ) : showProLock && (
-           <ProFeatureLock
-            title="View the Full Leaderboard"
-            description="Upgrade to Pro to unlock the top 100 wallets, deep wallet profiles, and more."
-           />
+          <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-background to-transparent z-10 pointer-events-none" />
         )}
         <CardHeader>
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -186,6 +225,25 @@ export default function LeaderboardPage() {
                       {wallet.activity} txns
                     </TableCell>
                     <TableCell className="text-right">
+                       <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                               <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => handleFollowToggle(wallet.address)}
+                                  disabled={!user}
+                                >
+                                  <Star className={cn("h-4 w-4", followedAddresses.has(wallet.address) ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground")} />
+                                  <span className="sr-only">Follow wallet</span>
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>{followedAddresses.has(wallet.address) ? "Unfollow" : "Follow"} wallet</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+
                       <DialogTrigger asChild>
                         <Button
                           variant="ghost"
@@ -201,6 +259,14 @@ export default function LeaderboardPage() {
                 ))}
               </TableBody>
             </Table>
+             {showProLock && (
+               <div className="mt-8">
+                 <ProFeatureLock
+                  title="View the Full Leaderboard"
+                  description="Upgrade to Pro to unlock the top 100 wallets, deep wallet profiles, and more."
+                 />
+               </div>
+            )}
           </div>
         </CardContent>
       </Card>

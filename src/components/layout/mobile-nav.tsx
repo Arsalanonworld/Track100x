@@ -3,15 +3,16 @@
 import * as React from "react"
 import Link, { type LinkProps } from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { Menu, BarChart, Bell, FileText, Zap, X } from "lucide-react"
+import { Menu, BarChart, Bell, FileText, Zap, Star } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetClose, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetTrigger } from "@/components/ui/sheet"
 import { LogoIcon } from "./header"
 
 const navItems = [
     { href: '/leaderboard', label: 'Leaderboard', icon: BarChart },
+    { href: '/watchlist', label: 'Watchlist', icon: Star },
     { href: '/alerts', label: 'Alerts', icon: Bell },
     { href: '/insights', label: 'Insights', icon: FileText },
 ];
@@ -31,7 +32,7 @@ export function MobileNav() {
         </Button>
       </SheetTrigger>
       <SheetContent side="left" className="pr-0">
-        <SheetHeader className="p-6 text-left">
+        <SheetHeader className="p-6 text-left border-b">
             <SheetTitle asChild>
                 <MobileLink
                     href="/"
@@ -46,7 +47,7 @@ export function MobileNav() {
                 Main navigation menu.
             </SheetDescription>
         </SheetHeader>
-        <div className="flex flex-col gap-4 pl-6 mt-2 text-lg font-medium">
+        <div className="flex flex-col gap-4 pl-6 mt-4 text-lg font-medium">
           {navItems.map((item) => (
             <MobileLink
               key={item.href}

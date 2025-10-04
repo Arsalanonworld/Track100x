@@ -1,4 +1,5 @@
 
+
 export type Alert = {
     id: string;
     alertType: 'wallet' | 'token';
@@ -9,4 +10,10 @@ export type Alert = {
     enabled: boolean;
     createdAt: any; // Firebase Timestamp
     userId: string;
+};
+
+export type WatchlistItem = {
+    id: string;
+    walletAddress: string;
+    createdAt: any; // Firebase Timestamp
 };

@@ -200,6 +200,17 @@
         "timestamp": { "type": "string", "format": "date-time" }
       },
       "required": ["transactionId", "timestamp"]
+    },
+    "Watchlist": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Watchlist",
+      "type": "object",
+      "description": "Represents a user's followed wallet.",
+      "properties": {
+        "walletAddress": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["walletAddress", "createdAt"]
     }
   },
   "auth": {
@@ -220,13 +231,19 @@
         }
       },
       {
-        "path": "/alerts/{alertId}",
+        "path": "/users/{userId}/alerts/{alertId}",
         "definition": {
           "entityName": "Alert",
-          "schema": {
-            "$ref": "#/backend/entities/Alert"
-          },
-          "description": "Stores alerts created by users. Enforces ownership via userId field."
+          "schema": { "$ref": "#/backend/entities/Alert" },
+          "description": "Stores alerts created by a user."
+        }
+      },
+      {
+        "path": "/users/{userId}/watchlist/{walletId}",
+        "definition": {
+            "entityName": "Watchlist",
+            "schema": { "$ref": "#/backend/entities/Watchlist" },
+            "description": "Stores wallets followed by a user."
         }
       },
       {

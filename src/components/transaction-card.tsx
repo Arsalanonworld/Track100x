@@ -4,11 +4,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import type { WhaleTransaction } from "@/lib/mock-data";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import Link from "next/link";
-import { ArrowRight, Copy, ChevronDown, BellPlus, ArrowDown, Lock } from "lucide-react";
+import { ArrowRight, Copy, ChevronDown, BellPlus, ArrowDown, Lock, Star } from "lucide-react";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   Collapsible,
   CollapsibleContent,
@@ -16,18 +16,18 @@ import {
 } from "@/components/ui/collapsible"
 import { useToast } from "@/hooks/use-toast";
 import { getExplorerUrl } from "@/lib/explorers";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import QuickAlertEditor from "./alerts/quick-alert-editor";
 import { Tooltip, TooltipProvider, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { useUser, useFirestore, useMemoFirebase, useDoc } from "@/firebase";
+import { useUser, useFirestore, useMemoFirebase, useDoc, useCollection } from "@/firebase";
 import { useRouter } from "next/navigation";
-import { addDoc, collection, serverTimestamp, doc } from "firebase/firestore";
+import { addDoc, collection, serverTimestamp, doc, deleteDoc, setDoc } from "firebase/firestore";
 
 interface TransactionCardProps {
     tx: WhaleTransaction;
 }
 
-const WalletIdentifier = ({ address, shortAddress, tags, network }: { address: string, shortAddress: string, tags?: string[], network: string }) => (
+const WalletIdentifier = ({ address, shortAddress, tags, network, onFollow, isFollowing, user, isPro }: { address: string, shortAddress: string, tags?: string[], network: string, onFollow: (address: string) => void, isFollowing: boolean, user: any, isPro: boolean }) => (
     <div className="flex items-center gap-2 min-w-0">
         <Link 
             href={getExplorerUrl(network, address, 'address')}
@@ -41,14 +41,26 @@ const WalletIdentifier = ({ address, shortAddress, tags, network }: { address: s
         <div className="flex items-center gap-1 flex-wrap">
             {tags?.map(tag => <Badge key={tag} variant="secondary" className="text-xs font-normal">{tag}</Badge>)}
         </div>
+        <TooltipProvider>
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <Button variant="ghost" size="icon" className="h-6 w-6" onClick={(e) => { e.stopPropagation(); onFollow(address); }}>
+                        <Star className={cn("h-4 w-4", isFollowing ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground")} />
+                    </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                    <p>{isFollowing ? "Unfollow" : "Follow"} wallet</p>
+                </TooltipContent>
+            </Tooltip>
+        </TooltipProvider>
     </div>
 );
 
 
-const TransactionCard = ({ tx }: TransactionCardProps) => {
+const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
     const [isOpen, setIsOpen] = useState(false);
     const { toast } = useToast();
-    const { user } = useUser();
+    const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
     const router = useRouter();
     const [isAlertEditorOpen, setIsAlertEditorOpen] = useState(false);
@@ -57,8 +69,49 @@ const TransactionCard = ({ tx }: TransactionCardProps) => {
         if (!firestore || !user) return null;
         return doc(firestore, 'users', user.uid);
     }, [firestore, user]);
-    const { data: userData } = useDoc(userDocRef);
+    const { data: userData, isLoading: isUserDataLoading } = useDoc(userDocRef);
+
+    const watchlistRef = useMemoFirebase(() => {
+        if (!user || !firestore) return null;
+        return collection(firestore, `users/${user.uid}/watchlist`);
+    }, [user, firestore]);
+
+    const { data: watchlist, isLoading: isWatchlistLoading } = useCollection(watchlistRef);
+    
     const isPro = userData?.plan === 'pro';
+    const isLoading = isUserLoading || isUserDataLoading || isWatchlistLoading;
+
+    const followedAddresses = useMemo(() => new Set(watchlist?.map((item: any) => item.id)), [watchlist]);
+
+    const handleFollowToggle = async (walletAddress: string) => {
+        if (!user || !firestore) {
+            router.push('/auth/login');
+            return;
+        }
+
+        const isFollowing = followedAddresses.has(walletAddress);
+        const watchlistItemRef = doc(firestore, `users/${user.uid}/watchlist`, walletAddress);
+
+        if (isFollowing) {
+            await deleteDoc(watchlistItemRef);
+            toast({ title: "Wallet unfollowed." });
+        } else {
+            if (!isPro && followedAddresses.size >= 1) {
+                toast({
+                    title: "Free Limit Reached",
+                    description: "Upgrade to Pro to follow more than one wallet.",
+                    variant: "destructive",
+                });
+                return;
+            }
+            await setDoc(watchlistItemRef, {
+                walletAddress,
+                createdAt: serverTimestamp(),
+            });
+            toast({ title: "Wallet followed!" });
+        }
+    };
+
 
     const openQuickAlertEditor = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -145,7 +198,7 @@ const TransactionCard = ({ tx }: TransactionCardProps) => {
                                     <div className="flex md:flex-grow md:justify-center items-center gap-2">
                                         <div className="flex flex-col md:flex-row items-start md:items-center gap-2 w-full">
                                             <div className="w-full md:w-auto">
-                                                <WalletIdentifier address={tx.from} shortAddress={tx.fromShort} tags={tx.fromTags} network={tx.network} />
+                                                <WalletIdentifier address={tx.from} shortAddress={tx.fromShort} tags={tx.fromTags} network={tx.network} onFollow={handleFollowToggle} isFollowing={followedAddresses.has(tx.from)} user={user} isPro={isPro} />
                                             </div>
 
                                             <div className="pl-1 md:pl-0">
@@ -154,7 +207,7 @@ const TransactionCard = ({ tx }: TransactionCardProps) => {
                                             </div>
 
                                             <div className="w-full md:w-auto">
-                                                <WalletIdentifier address={tx.to} shortAddress={tx.toShort} tags={tx.toTags} network={tx.network} />
+                                                <WalletIdentifier address={tx.to} shortAddress={tx.toShort} tags={tx.toTags} network={tx.network} onFollow={handleFollowToggle} isFollowing={followedAddresses.has(tx.to)} user={user} isPro={isPro} />
                                             </div>
                                         </div>
                                     </div>

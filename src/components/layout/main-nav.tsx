@@ -4,10 +4,11 @@ import * as React from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { Zap, Bell, BarChart, FileText } from "lucide-react"
+import { Zap, Bell, BarChart, FileText, Star } from "lucide-react"
 
 const navItems = [
     { href: '/leaderboard', label: 'Leaderboard', icon: BarChart },
+    { href: '/watchlist', label: 'Watchlist', icon: Star },
     { href: '/alerts', label: 'Alerts', icon: Bell },
     { href: '/insights', label: 'Insights', icon: FileText },
   ];
