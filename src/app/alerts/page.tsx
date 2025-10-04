@@ -82,6 +82,9 @@ const QuickAlertConfigurator = ({ isPro }: { isPro: boolean }) => {
                    <SelectItem value="pnl-change" disabled={!isPro}>
                     <div className="flex items-center justify-between w-full"><span>7d PnL Change</span> {!isPro && <Badge variant="secondary" className="ml-2">Pro</Badge>}</div>
                   </SelectItem>
+                   <SelectItem value="dormancy" disabled={!isPro}>
+                    <div className="flex items-center justify-between w-full"><span>Dormancy Status</span> {!isPro && <Badge variant="secondary" className="ml-2">Pro</Badge>}</div>
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -138,22 +141,29 @@ const QuickAlertConfigurator = ({ isPro }: { isPro: boolean }) => {
                     <p className="text-sm font-medium">Email</p>
                     <Switch defaultChecked disabled/>
                 </div>
-                <div className="flex items-center justify-between rounded-md border p-3 bg-muted/50 opacity-60">
-                    <p className="text-sm font-medium">Telegram</p>
-                    <Switch disabled/>
+                <div className={`flex items-center justify-between rounded-md border p-3 ${!isPro ? 'bg-muted/50 opacity-60' : ''}`}>
+                    <div className="flex items-center gap-2">
+                        <p className="text-sm font-medium">Telegram</p>
+                        {!isPro && <Badge variant="secondary">Pro</Badge>}
+                    </div>
+                    <Switch disabled={!isPro}/>
                 </div>
-                <div className="flex items-center justify-between rounded-md border p-3 bg-muted/50 opacity-60">
-                    <p className="text-sm font-medium">Discord</p>
-                    <Switch disabled/>
+                <div className={`flex items-center justify-between rounded-md border p-3 ${!isPro ? 'bg-muted/50 opacity-60' : ''}`}>
+                    <div className="flex items-center gap-2">
+                       <p className="text-sm font-medium">Discord</p>
+                       {!isPro && <Badge variant="secondary">Pro</Badge>}
+                    </div>
+                    <Switch disabled={!isPro}/>
                 </div>
              </div>
-             <p className="text-sm text-muted-foreground">
-                Email alerts are enabled by default. {' '}
-                <a href="/upgrade" className="text-primary hover:underline">
-                  Upgrade to Pro
-                </a>
-                {' '} for Telegram & Discord.
-              </p>
+             {!isPro && (
+                <p className="text-sm text-muted-foreground">
+                    <a href="/upgrade" className="text-primary hover:underline font-semibold">
+                    Upgrade to Pro
+                    </a>
+                    {' '} for Telegram & Discord notifications.
+                </p>
+             )}
           </div>
           <Button className="w-full">
           Create Alert
@@ -398,7 +408,7 @@ export default function AlertsPage() {
                              {user && recentAlerts.length === 0 && (
                                  <li className="p-8 text-center text-muted-foreground">
                                     No alerts have been triggered recently.
-                                </li>
+                                 </li>
                              )}
                         </ul>
                     </CardContent>
@@ -408,5 +418,3 @@ export default function AlertsPage() {
     </>
   );
 }
-
-    
