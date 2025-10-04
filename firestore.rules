@@ -1,86 +1,153 @@
+/**
+ * @fileoverview Firestore Security Rules for Tack100x application.
+ *
+ * Core Philosophy:
+ * This ruleset enforces a strict user-ownership model for private user data
+ * and allows public read access to leaderboard and whale feed data.
+ *
+ * Data Structure:
+ * - /users/{userId}: Stores user profiles. Only the authenticated user can
+ *   read/write their own profile.
+ * - /users/{userId}/alerts/{alertId}: Stores user-defined alerts. Only the
+ *   authenticated user can read/write their own alerts.
+ * - /users/{userId}/watchlist/{walletId}: Stores wallets followed by the user.
+ *   Only the authenticated user can read/write their own watchlist.
+ * - /leaderboard/{leaderboardEntryId}: Stores public leaderboard data. Anyone
+ *   can read, but only authorized services can write. (Write rules are TODO).
+ * - /whaleFeed/{whaleTransactionId}: Stores public whale feed data. Anyone can
+ *   read, but only authorized services can write. (Write rules are TODO).
+ *
+ * Key Security Decisions:
+ * - Users can only access their own data under their respective user ID.
+ * - Listing of all users is disallowed.
+ * - Leaderboard and whale feed data are publicly readable.
+ * - Write access to leaderboard and whale feed is restricted (TODO).
+ *
+ * Denormalization for Authorization:
+ * - The rules rely on the `request.auth.uid` to match the `userId` in the path
+ *   to ensure ownership. No `get()` calls are needed.
+ *
+ * Structural Segregation:
+ * - Private user data is stored under /users/{userId} to ensure clear ownership
+ *   and prevent accidental public exposure. Public data (leaderboard, whale
+ *   feed) is stored in top-level collections.
+ */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Rules for the /users/{userId} collection. Enforces user-ownership for user profiles.
+     * @description Manages user profile access.
+     * @path /users/{userId}
+     * @allow (create) - User with UID 'user123' can create their own profile document if document id is same as uid.
+     * @allow (get) - User with UID 'user123' can read their own profile.
+     * @allow (update) - User with UID 'user123' can update their own profile.
+     * @allow (delete) - User with UID 'user123' can delete their own profile.
+     * @deny (create) - User with UID 'user456' cannot create a profile for user 'user123'.
+     * @principle Enforces document ownership for writes.
      */
     match /users/{userId} {
-      // Verified user can only read/write their own profile
-      allow get: if isSignedIn() && isOwner(userId);
-      allow list: if false; // No listing of users
+      function isSignedIn() {
+        return request.auth != null;
+      }
 
-      // User can only create their own profile with matching userId
-      allow create: if isSignedIn() && isOwner(userId) && request.auth.uid == userId;
-      // Existing user can update their own profile
-      allow update: if isSignedIn() && isOwner(userId); // Enforce immutability of userId
-      // Existing user can delete their own profile
-      allow delete: if isSignedIn() && isOwner(userId);
-    }
+      function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
 
-    /**
-     * @description Rules for the /users/{userId}/alerts/{alertId} collection. Enforces user-ownership for alerts and plan-based limits.
-     */
-    match /users/{userId}/alerts/{alertId} {
-      // Only allow access if the user is signed in and owns the parent user document
       allow get: if isSignedIn() && isOwner(userId);
       allow list: if false;
-
-      // Check alert limits on create
-      allow create: if isSignedIn() && isOwner(userId) && canCreateAlert(userId);
-      // Update/Delete is only allowed if the user owns the alert
+      allow create: if isSignedIn() && isOwner(userId);
       allow update: if isSignedIn() && isOwner(userId);
       allow delete: if isSignedIn() && isOwner(userId);
     }
 
     /**
-     * @description Rules for the /users/{userId}/watchlist/{walletId} collection. Enforces user-ownership and limits on the number of wallets in the watchlist based on the user's plan.
+     * @description Manages access to user-specific alerts.
+     * @path /users/{userId}/alerts/{alertId}
+     * @allow (create) - User with UID 'user123' can create an alert under their profile.
+     * @allow (get) - User with UID 'user123' can read an alert under their profile.
+     * @allow (update) - User with UID 'user123' can update an alert under their profile.
+     * @allow (delete) - User with UID 'user123' can delete an alert under their profile.
+     * @deny (create) - User with UID 'user456' cannot create an alert for user 'user123'.
+     * @principle Restricts access to a user's own data tree.
      */
-    match /users/{userId}/watchlist/{walletId} {
+    match /users/{userId}/alerts/{alertId} {
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
+
       allow get: if isSignedIn() && isOwner(userId);
-      allow list: if false;
-      allow create: if isSignedIn() && isOwner(userId) && canAddToWatchlist(userId);
-      allow update: if false; // Updates are not allowed on watchlist entries.
+      allow list: if isOwner(userId);
+      allow create: if isSignedIn() && isOwner(userId);
+      allow update: if isSignedIn() && isOwner(userId);
       allow delete: if isSignedIn() && isOwner(userId);
     }
 
+        /**
+         * @description Manages access to user-specific watchlist.
+         * @path /users/{userId}/watchlist/{walletId}
+         * @allow (create) - User with UID 'user123' can create a watchlist entry under their profile.
+         * @allow (get) - User with UID 'user123' can read a watchlist entry under their profile.
+         * @allow (update) - User with UID 'user123' can update a watchlist entry under their profile.
+         * @allow (delete) - User with UID 'user123' can delete a watchlist entry under their profile.
+         * @deny (create) - User with UID 'user456' cannot create a watchlist entry for user 'user123'.
+         * @principle Restricts access to a user's own data tree.
+         */
+        match /users/{userId}/watchlist/{walletId} {
+          function isSignedIn() {
+            return request.auth != null;
+          }
+
+          function isOwner(userId) {
+            return request.auth.uid == userId;
+          }
+
+          allow get: if isSignedIn() && isOwner(userId);
+          allow list: if isOwner(userId);
+          allow create: if isSignedIn() && isOwner(userId);
+          allow update: if isSignedIn() && isOwner(userId);
+          allow delete: if isSignedIn() && isOwner(userId);
+        }
+
     /**
-     * @description Rules for the /leaderboard/{leaderboardEntryId} collection. Allows public read access to leaderboard data.
+     * @description Manages access to public leaderboard data.
+     * @path /leaderboard/{leaderboardEntryId}
+     * @allow (get) - Anyone can read leaderboard entries.
+     * @allow (list) - Anyone can list leaderboard entries.
+     * @deny (create) - No one should be able to create leaderboard entries without authorization.
+     * @deny (update) - No one should be able to update leaderboard entries without authorization.
+     * @deny (delete) - No one should be able to delete leaderboard entries without authorization.
+     * @principle Allows public read access, restricts write access (TODO).
      */
     match /leaderboard/{leaderboardEntryId} {
-      // Leaderboard is publicly readable
-      allow get, list: if true;
-      // No client-side writes allowed
-      allow create, update, delete: if false;
+      allow get: if true;
+      allow list: if true;
+      allow create: if false; // TODO: Add service account or admin validation.
+      allow update: if false; // TODO: Add service account or admin validation.
+      allow delete: if false; // TODO: Add service account or admin validation.
     }
 
     /**
-     * @description Rules for the /whaleFeed/{whaleTransactionId} collection. Allows public read access to whale feed data.
+     * @description Manages access to public whale feed data.
+     * @path /whaleFeed/{whaleTransactionId}
+     * @allow (get) - Anyone can read whale feed transactions.
+     * @allow (list) - Anyone can list whale feed transactions.
+     * @deny (create) - No one should be able to create whale feed transactions without authorization.
+     * @deny (update) - No one should be able to update whale feed transactions without authorization.
+     * @deny (delete) - No one should be able to delete whale feed transactions without authorization.
+     * @principle Allows public read access, restricts write access (TODO).
      */
     match /whaleFeed/{whaleTransactionId} {
-      // Whale feed is publicly readable
-      allow get, list: if true;
-      // No client-side writes allowed
-      allow create, update, delete: if false;
+      allow get: if true;
+      allow list: if true;
+      allow create: if false;  // TODO: Add service account or admin validation.
+      allow update: if false;  // TODO: Add service account or admin validation.
+      allow delete: if false;  // TODO: Add service account or admin validation.
     }
-  }
-
-  // Helper Functions
-  function isSignedIn() {
-    return request.auth != null;
-  }
-
-  function isOwner(userId) {
-    return request.auth.uid == userId;
-  }
-
-  // Check if user can create another alert based on their plan
-  function canCreateAlert(userId) {
-    return true;
-  }
-
-  // Check if user can add another wallet to the watchlist based on their plan
-  function canAddToWatchlist(userId) {
-    return true;
   }
 }
