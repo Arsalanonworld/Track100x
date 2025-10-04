@@ -15,10 +15,11 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Input } from './ui/input';
-import { RefreshCw, Search } from 'lucide-react';
+import { RefreshCw, Search, Filter } from 'lucide-react';
 import { mockWhaleTxs } from '@/lib/mock-data';
 import { Button } from './ui/button';
 import TransactionCard from './transaction-card';
+import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 
 
 export function WhaleFeed() {
@@ -42,42 +43,71 @@ export function WhaleFeed() {
     currentPage * transactionsPerPage
   );
 
+  const FilterControls = () => (
+    <>
+      <div className="relative w-full">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input placeholder="Filter by token..." className="pl-10 w-full" />
+      </div>
+      <Select>
+        <SelectTrigger className="w-full">
+          <SelectValue placeholder="All Chains" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">All Chains</SelectItem>
+          <SelectItem value="ethereum">Ethereum</SelectItem>
+          <SelectItem value="solana">Solana</SelectItem>
+          <SelectItem value="bitcoin">Bitcoin</SelectItem>
+          <SelectItem value="polygon">Polygon</SelectItem>
+        </SelectContent>
+      </Select>
+      <Select>
+        <SelectTrigger className="w-full">
+          <SelectValue placeholder="All Types" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">All Types</SelectItem>
+          <SelectItem value="transfer">Transfer</SelectItem>
+          <SelectItem value="swap">Swap</SelectItem>
+        </SelectContent>
+      </Select>
+    </>
+  );
+
 
   return (
         <Card className="border-x-0 sm:border-x">
             <CardHeader>
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <div className="flex-1">
-                    <CardTitle>Live Whale Transactions</CardTitle>
-                </div>
-                <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-                    <div className="relative w-full sm:w-auto">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input placeholder="Filter by token..." className="pl-10 w-full sm:w-[180px]" />
-                    </div>
-                    <Select>
-                    <SelectTrigger className="w-full sm:w-[160px]">
-                        <SelectValue placeholder="All Chains" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="all">All Chains</SelectItem>
-                        <SelectItem value="ethereum">Ethereum</SelectItem>
-                        <SelectItem value="solana">Solana</SelectItem>
-                        <SelectItem value="bitcoin">Bitcoin</SelectItem>
-                        <SelectItem value="polygon">Polygon</SelectItem>
-                    </SelectContent>
-                    </Select>
-                    <Select>
-                    <SelectTrigger className="w-full sm:w-[160px]">
-                        <SelectValue placeholder="All Types" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="all">All Types</SelectItem>
-                        <SelectItem value="transfer">Transfer</SelectItem>
-                        <SelectItem value="swap">Swap</SelectItem>
-                    </SelectContent>
-                    </Select>
-                </div>
+                  <CardTitle>Live Whale Transactions</CardTitle>
+                  
+                  {/* Desktop Filters */}
+                  <div className="hidden md:flex flex-row gap-2 w-full sm:w-auto">
+                    <FilterControls />
+                  </div>
+
+                  {/* Mobile Filter Button */}
+                  <div className="md:hidden w-full flex justify-end">
+                     <Sheet>
+                        <SheetTrigger asChild>
+                           <Button variant="outline" size="icon">
+                             <Filter className="h-4 w-4" />
+                           </Button>
+                        </SheetTrigger>
+                        <SheetContent side="bottom">
+                          <SheetHeader>
+                            <SheetTitle>Filter Transactions</SheetTitle>
+                            <SheetDescription>
+                              Refine the whale feed to find what you're looking for.
+                            </SheetDescription>
+                          </SheetHeader>
+                          <div className="grid gap-4 py-4">
+                            <FilterControls />
+                          </div>
+                        </SheetContent>
+                      </Sheet>
+                  </div>
+
                 </div>
             </CardHeader>
             <CardContent>
