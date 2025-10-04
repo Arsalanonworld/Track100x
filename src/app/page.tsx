@@ -8,7 +8,6 @@ import HeroSection from '@/components/hero-section';
 import { HomePageCta } from '@/components/home-page-cta';
 import { LeaderboardPreview } from '@/components/leaderboard-preview';
 import Link from 'next/link';
-import HeroStats from '@/components/hero-stats';
 
 export default function HomePage() {
   const scrollToFeed = () => {
@@ -19,7 +18,6 @@ export default function HomePage() {
     <div className="space-y-16 md:space-y-24 -mt-8">
       {/* Hero Section */}
       <HeroSection />
-      <HeroStats />
 
       <div className="container space-y-16 md:space-y-24">
         <div className="text-center">

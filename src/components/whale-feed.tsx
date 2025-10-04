@@ -1,6 +1,6 @@
 
 'use client';
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Card,
   CardContent,
@@ -22,6 +22,26 @@ import TransactionCard from './transaction-card';
 
 
 export function WhaleFeed() {
+  const [currentPage, setCurrentPage] = useState(1);
+  const transactionsPerPage = 10;
+
+  const handleNextPage = () => {
+    if (currentPage * transactionsPerPage < mockWhaleTxs.length) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const currentTransactions = mockWhaleTxs.slice(
+    (currentPage - 1) * transactionsPerPage,
+    currentPage * transactionsPerPage
+  );
+
 
   return (
         <Card>
@@ -62,15 +82,28 @@ export function WhaleFeed() {
             </CardHeader>
             <CardContent>
                 <div className="space-y-3">
-                    {mockWhaleTxs.map((tx) => (
+                    {currentTransactions.map((tx) => (
                        <TransactionCard key={tx.id} tx={tx} />
                     ))}
                 </div>
 
-                <div className="flex justify-center mt-6">
-                    <Button variant="outline">
-                        <RefreshCw className="mr-2 h-4 w-4"/>
-                        Load More Transactions
+                <div className="flex justify-center items-center gap-4 mt-6">
+                    <Button 
+                        variant="outline"
+                        onClick={handlePrevPage}
+                        disabled={currentPage === 1}
+                    >
+                        Previous
+                    </Button>
+                    <span className="text-sm text-muted-foreground">
+                        Page {currentPage} of {Math.ceil(mockWhaleTxs.length / transactionsPerPage)}
+                    </span>
+                    <Button 
+                        variant="outline"
+                        onClick={handleNextPage}
+                        disabled={currentPage * transactionsPerPage >= mockWhaleTxs.length}
+                    >
+                        Next
                     </Button>
                 </div>
             </CardContent>
