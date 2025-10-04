@@ -1,3 +1,4 @@
+
 'use client';
 import ActiveAlerts from '@/components/alerts/active-alerts';
 import AlertHistory from '@/components/alerts/alert-history';
@@ -71,3 +72,5 @@ export default function AlertsPage() {
       </div>
   );
 }
+
+    

@@ -102,13 +102,52 @@ export const whaleTransactions: WhaleTransaction[] = [
     gasFee: '$0.01',
     priceImpact: '-0.15%',
   },
+  {
+    id: '4',
+    txHash: '0xmno345pqr678...',
+    from: '0xLargeTraderAddress...',
+    fromShort: '0xLarg...ress',
+    fromTags: ['Whale'],
+    to: '0xExchangeDepositAddress...',
+    toShort: '0xExch...ress',
+    toTags: ['CEX', 'Kraken'],
+    token: {
+      symbol: 'USDC',
+      icon: 'https://cryptologos.cc/logos/usd-coin-usdc-logo.svg?v=032',
+    },
+    value: '$25.5M',
+    amountToken: 25500000,
+    network: 'Ethereum',
+    time: '12m ago',
+    gasFee: '$22.80',
+    priceImpact: '0.00%',
+  },
+  {
+    id: '5',
+    txHash: 'solanaTxHash...',
+    from: 'WifHolderAddress...',
+    fromShort: 'WifH...ress',
+    fromTags: ['Top Holder'],
+    to: 'AnotherSolanaWallet...',
+    toShort: 'Anot...llet',
+    token: {
+      symbol: 'WIF',
+      icon: 'https://assets.coingecko.com/coins/images/34041/standard/wif.jpg?1715065403',
+    },
+    value: '$2.1M',
+    amountToken: 700000,
+    network: 'Solana',
+    time: '15m ago',
+    gasFee: '$0.02',
+    priceImpact: '+0.80%',
+  },
 ];
 
 
 export const walletLeaderboard: Wallet[] = [
   {
     rank: 1,
-    address: '0x1234...aBcd',
+    address: '0x1234567890abcdef1234567890abcdef12345678',
     netWorth: 55200000,
     pnl: 5200000,
     pnlPercent: 10.2,
@@ -118,7 +157,7 @@ export const walletLeaderboard: Wallet[] = [
   },
   {
     rank: 2,
-    address: '0x3456...dEfg',
+    address: '3J98t1WpEZ73CNmQviecrnyiWrnqRhWNLy',
     netWorth: 48100000,
     pnl: -1200000,
     pnlPercent: -2.4,
@@ -127,7 +166,7 @@ export const walletLeaderboard: Wallet[] = [
   },
   {
     rank: 3,
-    address: '0x5678...gHij',
+    address: 'So11111111111111111111111111111111111111112',
     netWorth: 32800000,
     pnl: 850000,
     pnlPercent: 2.6,
@@ -136,7 +175,7 @@ export const walletLeaderboard: Wallet[] = [
   },
   {
     rank: 4,
-    address: '0x7890...jKlm',
+    address: '0x78901234567890abcdef1234567890abcdef1234',
     netWorth: 29200000,
     pnl: 2300000,
     pnlPercent: 8.5,
@@ -145,7 +184,7 @@ export const walletLeaderboard: Wallet[] = [
   },
   {
     rank: 5,
-    address: '0x9012...mNop',
+    address: '4pUQS4p2KtV3yS5tC4tFzS1vG2vA3eB4c5D6F7G8H9J',
     netWorth: 17500000,
     pnl: 450000,
     pnlPercent: 2.6,
@@ -154,7 +193,7 @@ export const walletLeaderboard: Wallet[] = [
   },
   {
     rank: 6,
-    address: '0xab12...f123',
+    address: '0xab12cd34ef56ab12cd34ef56ab12cd34ef56ab12',
     netWorth: 15300000,
     pnl: -300000,
     pnlPercent: -1.9,
@@ -163,7 +202,7 @@ export const walletLeaderboard: Wallet[] = [
   },
   {
     rank: 7,
-    address: '0xcd45...e456',
+    address: '0xcd45ef67ab12cd45ef67ab12cd45ef67ab12cd45',
     netWorth: 11900000,
     pnl: 1500000,
     pnlPercent: 12.8,
@@ -173,7 +212,7 @@ export const walletLeaderboard: Wallet[] = [
   },
   {
     rank: 8,
-    address: '0xef78...d789',
+    address: '0xef78ab12cd34ef78ab12cd34ef78ab12cd34ef78',
     netWorth: 8700000,
     pnl: -2700000,
     pnlPercent: -31.0,
@@ -183,7 +222,7 @@ export const walletLeaderboard: Wallet[] = [
   },
   {
     rank: 9,
-    address: '0x1a2b...b3c4',
+    address: '1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p7q8r9s0t',
     netWorth: 6100000,
     pnl: 470000,
     pnlPercent: 7.8,
@@ -193,7 +232,7 @@ export const walletLeaderboard: Wallet[] = [
   },
   {
     rank: 10,
-    address: '0x2b3c...c5d6',
+    address: '2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p7q8r9s0t1u',
     netWorth: 4500000,
     pnl: 280000,
     pnlPercent: 6.2,
@@ -209,3 +248,5 @@ export const mockAlerts: Alert[] = [
     { id: '2', title: 'WIF Token', description: 'Price Change > 10%', enabled: true, type: 'token'},
     { id: '3', title: 'Solana DEX Activity', description: 'Swaps > $100k on Solana DEXs.', enabled: false, type: 'wallet' },
 ];
+
+    
