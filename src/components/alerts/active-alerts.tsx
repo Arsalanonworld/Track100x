@@ -1,225 +1,201 @@
-
 'use client';
 
-import React from 'react';
+import { Bell, Pencil, Trash2, Wallet, Zap } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
 } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import {
-  Wallet,
-  Tag,
-  Edit,
-  Trash2,
-  PauseCircle,
-  PlayCircle,
-  MoreVertical,
-  Loader2,
-  Sparkles,
-  ArrowRight,
-} from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { useUser, useFirestore, useMemoFirebase, useCollection, useDoc } from '@/firebase';
-import { collection, doc, updateDoc, deleteDoc } from 'firebase/firestore';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion';
+import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
+import { useAlerts, type Alert } from '@/hooks/use-alerts';
+import { Badge } from '../ui/badge';
+import { useState } from 'react';
 import {
   Dialog,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import { CreateAlertModal } from '../create-alert-modal';
-import { useTestUser } from '@/firebase/client-provider';
-import { mockAlerts } from '@/lib/mock-data';
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '../ui/dialog';
+import QuickAlertEditor from './quick-alert-editor';
+import AlertBuilder from './alert-builder';
+import { cn } from '@/lib/utils';
+import { useAuth } from '@/hooks/use-auth';
+import Link from 'next/link';
+
+const iconMap = {
+  Wallet: <Wallet className="h-5 w-5 text-muted-foreground" />,
+  Token: <Zap className="h-5 w-5 text-muted-foreground" />,
+};
 
 export default function ActiveAlerts() {
-  const { user, isUserLoading } = useUser();
-  const { isTestUser } = useTestUser();
-  const firestore = useFirestore();
+  const { alerts, deleteAlert, toggleAlert, updateAlert, canAddAlert } =
+    useAlerts();
+  const { isPro } = useAuth();
   const { toast } = useToast();
+  const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [selectedAlert, setSelectedAlert] = useState<Alert | null>(null);
 
-  const userDocRef = useMemoFirebase(() => {
-    if (!firestore || !user) return null;
-    return doc(firestore, 'users', user.uid);
-  }, [firestore, user]);
-  const { data: userData, isLoading: isUserDataLoading } = useDoc(userDocRef);
-
-  const alertsRef = useMemoFirebase(() => {
-    if (!firestore || !user) return null;
-    return collection(firestore, 'users', user.uid, 'alerts');
-  }, [firestore, user]);
-  const { data: alertsFromDb, isLoading: isAlertsLoading } = useCollection(alertsRef);
-  
-  const alerts = isTestUser ? mockAlerts : alertsFromDb;
-
-  const userPlan = isTestUser ? 'pro' : userData?.plan || 'free';
-  const isPro = userPlan === 'pro';
-
-  const activeAlertCount = alerts?.length ?? 0;
-  const freeAlertLimit = userData?.entitlements?.alerts?.maxActive ?? 3;
-
-  const handleToggleAlert = async (alertId: string, currentStatus: boolean) => {
-    if (isTestUser) {
-        toast({ title: "This is a test alert." });
-        return;
-    }
-    if (!firestore || !user) return;
-    const alertDocRef = doc(firestore, 'users', user.uid, 'alerts', alertId);
-    try {
-      await updateDoc(alertDocRef, { enabled: !currentStatus });
-      toast({
-        title: `Alert ${!currentStatus ? 'resumed' : 'paused'}.`,
-      });
-    } catch (error) {
-      toast({ variant: 'destructive', title: 'Error updating alert.' });
-    }
-  };
-
-  const handleDeleteAlert = async (alertId: string) => {
-    if (isTestUser) {
-        toast({ title: "This is a test alert." });
-        return;
-    }
-    if (!firestore || !user) return;
-    const alertDocRef = doc(firestore, 'users', user.uid, 'alerts', alertId);
-    try {
-      await deleteDoc(alertDocRef);
-      toast({
-        title: `Alert deleted.`,
-      });
-    } catch (error) {
-      toast({ variant: 'destructive', title: 'Error deleting alert.' });
-    }
-  };
-
-  const isLoading = isUserLoading || isUserDataLoading || (isAlertsLoading && !isTestUser);
-
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-48">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
+  function handleDelete(id: string) {
+    deleteAlert(id);
+    toast({
+      title: 'Alert Deleted',
+      variant: 'destructive',
+    });
   }
 
-  return (
-    <div>
-      <h2 className="text-2xl font-bold font-headline mb-4">
-        Active Alerts ({activeAlertCount})
-      </h2>
-      {!isPro && (user || isTestUser) && (
-        <Alert className="mb-4 bg-primary/5 border-primary/20 text-primary-foreground">
-          <Sparkles className="h-4 w-4 text-primary" />
-          <AlertTitle className="text-primary">Upgrade to Pro</AlertTitle>
-          <AlertDescription>
-            You have {Math.max(0, freeAlertLimit - activeAlertCount)} of{' '}
-            {freeAlertLimit} free alerts remaining.{' '}
-            <a
-              href="/upgrade"
-              className="font-semibold hover:text-primary/90 transition-colors"
-            >
-              Upgrade
-            </a>{' '}
-            for unlimited alerts & advanced rules.
-          </AlertDescription>
-        </Alert>
-      )}
+  const handleEdit = (alert: Alert) => {
+    if (!isPro && !alert.isQuick) {
+      toast({
+        title: 'Pro Feature',
+        description: 'Editing advanced alerts requires a Pro plan.',
+        action: (
+          <Button asChild>
+            <Link href="/upgrade">Upgrade</Link>
+          </Button>
+        ),
+      });
+      return;
+    }
+    setSelectedAlert(alert);
+    setIsEditorOpen(true);
+  };
 
-      {(user || isTestUser) && alerts && alerts.length > 0 ? (
-        <Accordion type="single" collapsible className="space-y-4">
-          {alerts.map((alert: any) => (
-            <AccordionItem value={alert.id} key={alert.id} className="border-b-0">
-              <Card className="overflow-hidden hover:shadow-md hover:-translate-y-px">
-                <div className="flex items-center p-4">
-                  <div className="flex-shrink-0">
-                    {alert.type === 'wallet' ? (
-                      <Wallet className="h-6 w-6 text-accent-foreground" />
-                    ) : (
-                      <Tag className="h-6 w-6 text-accent-foreground" />
-                    )}
-                  </div>
-                  <div className="flex-grow mx-4">
-                    <p className="font-semibold">{alert.title}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {alert.description}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2 ml-4">
-                    <Badge variant={alert.enabled ? 'default' : 'secondary'}>
-                      {alert.enabled ? 'Active' : 'Paused'}
-                    </Badge>
-                    <AccordionTrigger className="p-2 hover:bg-accent rounded-md [&[data-state=open]>svg]:rotate-90">
-                      <MoreVertical className="h-4 w-4" />
-                    </AccordionTrigger>
-                  </div>
-                </div>
-                <AccordionContent>
-                  <div className="bg-muted/50 px-4 py-3 border-t">
-                    <div className="flex justify-between items-center text-sm">
-                      <div className="text-muted-foreground">
-                        <p>
-                          Last triggered:{' '}
-                          <span className="text-foreground">Never</span>
-                        </p>
-                        <p>
-                          Created on:{' '}
-                          <span className="text-foreground">
-                            {alert.createdAt
-                              ? new Date(
-                                  alert.createdAt.seconds * 1000
-                                ).toLocaleDateString()
-                              : 'N/A'}
-                          </span>
-                        </p>
-                      </div>
-                      <div className="flex gap-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() =>
-                            handleToggleAlert(alert.id, alert.enabled)
-                          }
-                        >
-                          {alert.enabled ? (
-                            <PauseCircle className="mr-2" />
-                          ) : (
-                            <PlayCircle className="mr-2" />
-                          )}
-                          {alert.enabled ? 'Pause' : 'Resume'}
-                        </Button>
-                        <Button variant="ghost" size="sm" disabled>
-                          <Edit className="mr-2" />
-                          Edit
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="text-destructive hover:text-destructive"
-                          onClick={() => handleDeleteAlert(alert.id)}
-                        >
-                          <Trash2 className="mr-2" />
-                          Delete
-                        </Button>
-                      </div>
+  const handleSave = (newRule: string) => {
+    if (selectedAlert) {
+      updateAlert(selectedAlert.id, newRule);
+      toast({
+        title: 'Alert Updated!',
+        description: 'Your alert has been successfully updated.',
+      });
+    }
+    setIsEditorOpen(false);
+    setSelectedAlert(null);
+  };
+
+  const handleCancel = () => {
+    setIsEditorOpen(false);
+    setSelectedAlert(null);
+  };
+
+  const handleAdvancedSave = () => {
+    toast({
+      title: 'Alert Updated!',
+      description: 'Your advanced alert has been updated.',
+    });
+    setIsEditorOpen(false);
+    setSelectedAlert(null);
+  };
+
+  const activeAlerts = alerts.filter(a => a.status === 'Active');
+
+  return (
+    <Dialog open={isEditorOpen} onOpenChange={setIsEditorOpen}>
+      <Card>
+        <CardHeader>
+          <div className="flex justify-between items-center">
+            <div>
+              <CardTitle>Your Active Alerts</CardTitle>
+              <CardDescription>
+                {isPro
+                  ? 'Manage your saved alerts.'
+                  : `You are using ${activeAlerts.length} of 3 available active alerts.`}
+              </CardDescription>
+            </div>
+            {!isPro && !canAddAlert() && (
+              <Button asChild size="sm">
+                <Link href="/upgrade">Upgrade for More</Link>
+              </Button>
+            )}
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {alerts.length > 0 ? (
+              alerts.map(alert => (
+                <div
+                  key={alert.id}
+                  className={cn(
+                    'p-4 rounded-lg border flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4',
+                    alert.status === 'Inactive' && 'bg-muted/50'
+                  )}
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="hidden sm:block">{iconMap[alert.type]}</div>
+                    <div>
+                      <p className="font-semibold">{alert.keyword}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {alert.condition}
+                      </p>
                     </div>
                   </div>
-                </AccordionContent>
-              </Card>
-            </AccordionItem>
+                  <div className="flex items-center justify-end gap-2">
+                    <Badge
+                      variant={alert.status === 'Active' ? 'default' : 'outline'}
+                      className="hidden sm:inline-flex"
+                    >
+                      {alert.status}
+                    </Badge>
+                    <Switch
+                      checked={alert.status === 'Active'}
+                      onCheckedChange={() => toggleAlert(alert.id)}
+                      aria-label="Toggle alert"
+                    />
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleEdit(alert)}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleDelete(alert.id)}
+                    >
+                      <Trash2 className="h-4 w-4 text-destructive" />
+                    </Button>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="flex flex-col items-center justify-center text-center text-muted-foreground p-8 border-2 border-dashed rounded-lg">
+                <Bell className="h-10 w-10 mb-4" />
+                <p className="font-semibold">No active alerts found.</p>
+                <p className="text-sm">
+                  Create an alert to get started with real-time tracking.
+                </p>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+      <DialogContent className="sm:max-w-xl">
+        <DialogHeader>
+          <DialogTitle>
+            {selectedAlert?.isQuick
+              ? 'Edit Quick Alert'
+              : 'Edit Advanced Alert'}
+          </DialogTitle>
+        </DialogHeader>
+        {selectedAlert &&
+          (selectedAlert.isQuick ? (
+            <QuickAlertEditor
+              entity={{
+                type: selectedAlert.type,
+                identifier: selectedAlert.keyword,
+                label: selectedAlert.keyword,
+              }}
+              onSave={handleSave}
+              onCancel={handleCancel}
+            />
+          ) : (
+            <AlertBuilder entity={selectedAlert} onSave={handleAdvancedSave} />
           ))}
-        </Accordion>
-      ) : (
-        <div className="text-center py-16 border-2 border-dashed rounded-lg">
-          <h3 className="text-xl font-bold font-headline mb-2">No Active Alerts</h3>
-            <p className="text-muted-foreground text-sm mb-4">Create an alert to get started.</p>
-        </div>
-      )}
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

@@ -8,23 +8,10 @@ import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from "./ui/t
 import { Lock } from "lucide-react";
 import Link from "next/link";
 import { Button } from "./ui/button";
-import { useUser, useFirestore, useMemoFirebase, useDoc } from "@/firebase";
-import { doc } from "firebase/firestore";
-import { useTestUser } from "@/firebase/client-provider";
+import { useAuth } from "@/hooks/use-auth";
 
 const SettingsForm = () => {
-  const { user } = useUser();
-  const { isTestUser } = useTestUser();
-  const firestore = useFirestore();
-
-  const userDocRef = useMemoFirebase(() => {
-    if (!firestore || !user) return null;
-    return doc(firestore, 'users', user.uid);
-  }, [firestore, user]);
-
-  const { data: userData } = useDoc(userDocRef);
-
-  const isPro = isTestUser ? true : userData?.plan === 'pro';
+  const { isPro } = useAuth();
   
   return (
     <div className="space-y-8">
