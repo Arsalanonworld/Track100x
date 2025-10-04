@@ -30,7 +30,7 @@ export const HomePageCta = () => {
 
     const isPro = userData?.plan === 'pro';
     const activeAlertCount = alerts?.length ?? 0;
-    const freeAlertLimit = userData?.entitlements?.alerts?.maxActive ?? 3;
+    const freeAlertLimit = userData?.entitlements?.alerts?.maxActive ?? 1;
     const canCreateAlert = isPro || activeAlertCount < freeAlertLimit;
 
     return (

@@ -6,14 +6,16 @@ import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import React from 'react';
 import { Label } from './ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { Wallet, Tag } from 'lucide-react';
+import { Wallet, Tag, Sparkles } from 'lucide-react';
 import { Input } from './ui/input';
 import { Badge } from './ui/badge';
 import { Switch } from './ui/switch';
 import { DialogClose } from './ui/dialog';
 import { Button } from './ui/button';
 import { Loader2 } from 'lucide-react';
-import { useFirestore } from '@/firebase';
+import { useFirestore, useUser, useCollection, useMemoFirebase } from '@/firebase';
+import { Alert as AlertBox, AlertDescription, AlertTitle } from '@/components/ui/alert';
+
 
 export const QuickAlertConfigurator = ({ isPro, userId, onSubmitted }: { isPro: boolean; userId: string, onSubmitted?: () => void }) => {
   const [alertType, setAlertType] = React.useState<'wallet' | 'token'>('wallet');
@@ -21,8 +23,27 @@ export const QuickAlertConfigurator = ({ isPro, userId, onSubmitted }: { isPro: 
   const firestore = useFirestore();
   const { toast } = useToast();
 
+  const alertsRef = useMemoFirebase(() => {
+    if (!userId || !firestore) return null;
+    return collection(firestore, `users/${userId}/alerts`);
+  }, [userId, firestore]);
+  const { data: alerts } = useCollection(alertsRef);
+  
+  const freeAlertLimit = 1;
+  const canCreateAlert = isPro || (alerts?.length ?? 0) < freeAlertLimit;
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    if (!canCreateAlert) {
+       toast({
+          title: "Alert Limit Reached",
+          description: "Please upgrade to Pro to create more than one alert.",
+          variant: "destructive"
+       });
+       return;
+    }
+
     setIsSubmitting(true);
     const formData = new FormData(event.currentTarget);
     
@@ -40,8 +61,8 @@ export const QuickAlertConfigurator = ({ isPro, userId, onSubmitted }: { isPro: 
 
     try {
       if (!firestore || !userId) throw new Error("Firestore not available");
-      const alertsRef = collection(firestore, 'users', userId, 'alerts');
-      await addDoc(alertsRef, dataToSave);
+      const alertsCollectionRef = collection(firestore, 'users', userId, 'alerts');
+      await addDoc(alertsCollectionRef, dataToSave);
       toast({
         title: "Alert created!",
         description: "Your new alert has been saved.",
@@ -60,6 +81,19 @@ export const QuickAlertConfigurator = ({ isPro, userId, onSubmitted }: { isPro: 
       setIsSubmitting(false);
     }
   };
+
+  if (!canCreateAlert && !isPro) {
+    return (
+        <AlertBox className="bg-primary/5 border-primary/20 text-primary-foreground text-center">
+            <Sparkles className="h-4 w-4 text-primary" />
+            <AlertTitle className="text-primary">Free Alert Limit Reached</AlertTitle>
+            <AlertDescription>
+                You have used your alert on the free plan. {' '}
+                <a href="/upgrade" className="font-semibold hover:underline">Upgrade to Pro</a> for unlimited alerts.
+            </AlertDescription>
+        </AlertBox>
+    );
+  }
 
   const SubmitButton = () => (
     <Button type="submit" className="w-full" disabled={isSubmitting}>
@@ -167,8 +201,14 @@ export const QuickAlertConfigurator = ({ isPro, userId, onSubmitted }: { isPro: 
             <Label>Delivery Channel</Label>
             <div className="flex flex-col gap-2">
                 <div className="flex items-center justify-between rounded-md border p-3">
-                    <p className="text-sm font-medium">Email</p>
+                    <p className="text-sm font-medium">In-App</p>
                     <Switch defaultChecked disabled/>
+                </div>
+                <div className={`flex items-center justify-between rounded-md border p-3 ${!isPro ? 'bg-muted/50 opacity-60' : ''}`}>
+                    <div className="flex items-center gap-2">
+                        <p className="text-sm font-medium">Email</p>
+                    </div>
+                    <Switch disabled={!isPro}/>
                 </div>
                 <div className={`flex items-center justify-between rounded-md border p-3 ${!isPro ? 'bg-muted/50 opacity-60' : ''}`}>
                     <div className="flex items-center gap-2">
@@ -190,7 +230,7 @@ export const QuickAlertConfigurator = ({ isPro, userId, onSubmitted }: { isPro: 
                     <a href="/upgrade" className="text-primary hover:underline font-semibold">
                     Upgrade to Pro
                     </a>
-                    {' '} for Telegram & Discord notifications.
+                    {' '} for Email, Telegram & Discord notifications.
                 </p>
              )}
           </div>

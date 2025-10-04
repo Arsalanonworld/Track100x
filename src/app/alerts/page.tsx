@@ -13,6 +13,8 @@ import { ProFeatureLock } from '@/components/pro-feature-lock';
 import { useDoc } from '@/firebase/firestore/use-doc';
 import { doc } from 'firebase/firestore';
 import { Loader2 } from 'lucide-react';
+import { useCollection } from '@/firebase/firestore/use-collection';
+import { collection } from 'firebase/firestore';
 
 export default function AlertsPage() {
   const { user, isUserLoading } = useUser();
@@ -26,25 +28,18 @@ export default function AlertsPage() {
 
   const { data: userData, isLoading: isUserDataLoading } = useDoc(userDocRef);
 
-  const isLoading = isUserLoading || isUserDataLoading;
-  const isPro = userData?.plan === 'pro';
+  const alertsRef = useMemoFirebase(() => {
+    if (!user || !firestore) return null;
+    return collection(firestore, `users/${user.uid}/alerts`);
+  }, [user, firestore]);
+  const { data: alerts, isLoading: areAlertsLoading } = useCollection(alertsRef);
 
-  if (isLoading) {
-    return (
-        <>
-            <PageHeader
-              title="Alerts"
-              description="Track whales, wallets, and tokens in real-time. Never miss a big move."
-            />
-            <div className="flex justify-center items-center h-[calc(100vh-400px)]">
-              <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            </div>
-        </>
-    );
-  }
+  const isLoading = isUserLoading || isUserDataLoading || areAlertsLoading;
+  const isPro = userData?.plan === 'pro';
+  const freeAlertLimit = userData?.entitlements?.alerts?.maxActive ?? 1;
 
   const showLoginWall = !user;
-  const showUpgradeWall = user && !isPro;
+  const showUpgradeWall = user && !isPro && (alerts?.length ?? 0) >= freeAlertLimit;
 
   return (
       <div className="space-y-8">
@@ -66,18 +61,24 @@ export default function AlertsPage() {
                   </div>
               </div>
 
-              {showLoginWall && (
+              {isLoading && (
+                <div className="absolute inset-0 z-20 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                </div>
+              )}
+
+              {showLoginWall && !isLoading && (
                  <ProFeatureLock
                     title="Log In to Create Alerts"
-                    description="Create a free account to set up real-time notifications for your favorite wallets and tokens."
+                    description={`Create a free account to set up your first alert.`}
                     buttonText="Log In / Sign Up"
                     onButtonClick={() => setAuthDialogOpen(true)}
                   />
               )}
-               {showUpgradeWall && (
+               {showUpgradeWall && !isLoading && (
                  <ProFeatureLock
                     title="Unlock Unlimited Alerts & Advanced Features"
-                    description="Upgrade to Pro for unlimited alerts, multi-condition rules with the Advanced Builder, and instant Telegram/Discord notifications."
+                    description="You've reached your limit of 1 active alert on the free plan. Upgrade to Pro for unlimited alerts, multi-condition rules, and instant Telegram/Discord notifications."
                   />
               )}
           </div>

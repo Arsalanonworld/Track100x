@@ -66,11 +66,11 @@ export async function signup(prevState: any, formData: FormData) {
       createdAt: serverTimestamp(),
       entitlements: {
         alerts: {
-          maxActive: 3,
-          channels: ["email"]
+          maxActive: 1,
+          channels: ["in-app"]
         },
         feed: {
-          delayMinutes: 15
+          delayMinutes: 2
         },
         leaderboard: {
           topN: 10
@@ -78,7 +78,7 @@ export async function signup(prevState: any, formData: FormData) {
         apiAccess: false
       },
       quotas: {
-        exportsPerDay: 1
+        exportsPerDay: 0
       }
     });
 

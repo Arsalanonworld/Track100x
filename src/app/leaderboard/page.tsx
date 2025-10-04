@@ -37,6 +37,7 @@ import { doc } from 'firebase/firestore';
 import { useDoc } from '@/firebase/firestore/use-doc';
 import Link from 'next/link';
 import { ProFeatureLock } from '@/components/pro-feature-lock';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 export default function LeaderboardPage() {
   const [selectedWallet, setSelectedWallet] = useState<string | undefined>(
@@ -92,7 +93,7 @@ export default function LeaderboardPage() {
             <div className="flex-1">
               <CardTitle>Top Wallets</CardTitle>
               <CardDescription>
-                Discover the biggest players in the crypto space.
+                {isPro ? "The biggest players in the crypto space." : `Showing the top ${topNFree} wallets. Upgrade to Pro to see the full list.`}
               </CardDescription>
             </div>
             <div className="flex gap-2 flex-wrap">
@@ -117,17 +118,31 @@ export default function LeaderboardPage() {
                   <TableHead className="w-[80px]">Rank</TableHead>
                   <TableHead>Wallet</TableHead>
                   <TableHead>
-                    <Button variant="ghost" size="sm" className="-ml-4">
-                      Net Worth
-                      <ArrowUpDown className="ml-2 h-4 w-4" />
-                    </Button>
+                     <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button variant="ghost" size="sm" className="-ml-4" disabled={!isPro}>
+                              Net Worth
+                              <ArrowUpDown className="ml-2 h-4 w-4" />
+                            </Button>
+                           </TooltipTrigger>
+                           {!isPro && <TooltipContent>Sorting is a Pro feature.</TooltipContent>}
+                        </Tooltip>
+                      </TooltipProvider>
                   </TableHead>
                   <TableHead>Top Holding</TableHead>
                   <TableHead>
-                    <Button variant="ghost" size="sm" className="-ml-4">
-                      P&L (7d)
-                      <ArrowUpDown className="ml-2 h-4 w-4" />
-                    </Button>
+                    <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button variant="ghost" size="sm" className="-ml-4" disabled={!isPro}>
+                               P&L (7d)
+                              <ArrowUpDown className="ml-2 h-4 w-4" />
+                            </Button>
+                           </TooltipTrigger>
+                           {!isPro && <TooltipContent>Sorting is a Pro feature.</TooltipContent>}
+                        </Tooltip>
+                      </TooltipProvider>
                   </TableHead>
                   <TableHead className="text-center">7d Activity</TableHead>
                   <TableHead className="text-right">Actions</TableHead>

@@ -15,20 +15,43 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Input } from './ui/input';
-import { RefreshCw, Search, Filter } from 'lucide-react';
+import { RefreshCw, Search, Filter, Lock } from 'lucide-react';
 import { mockWhaleTxs } from '@/lib/mock-data';
 import { Button } from './ui/button';
 import TransactionCard from './transaction-card';
 import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
-
+import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
+import { doc } from 'firebase/firestore';
+import { Badge } from './ui/badge';
 
 export function WhaleFeed() {
+  const { user, isUserLoading } = useUser();
+  const firestore = useFirestore();
+  
+  const userDocRef = useMemoFirebase(() => {
+    if (!firestore || !user) return null;
+    return doc(firestore, 'users', user.uid);
+  }, [firestore, user]);
+  const { data: userData } = useDoc(userDocRef);
+  const isPro = userData?.plan === 'pro';
+
   const [currentPage, setCurrentPage] = useState(1);
+  const [tokenFilter, setTokenFilter] = useState('');
+  const [chainFilter, setChainFilter] = useState('all');
+  const [typeFilter, setTypeFilter] = useState('all');
+
   const transactionsPerPage = 10;
+  
+  const activeFilter = tokenFilter ? 'token' : chainFilter !== 'all' ? 'chain' : typeFilter !== 'all' ? 'type' : null;
 
   const handleNextPage = () => {
-    if (currentPage * transactionsPerPage < mockWhaleTxs.length) {
-      setCurrentPage(currentPage + 1);
+    if (isPro) {
+      if (currentPage * transactionsPerPage < mockWhaleTxs.length) {
+        setCurrentPage(currentPage + 1);
+      }
+    } else {
+      // Logic to show upgrade prompt for free users
+      // For now, we just disable the button
     }
   };
 
@@ -47,9 +70,24 @@ export function WhaleFeed() {
     <>
       <div className="relative w-full">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input placeholder="Filter by token..." className="pl-10 w-full" />
+        <Input 
+          placeholder="Filter by token..." 
+          className="pl-10 w-full" 
+          value={tokenFilter}
+          onChange={(e) => setTokenFilter(e.target.value)}
+          disabled={!isPro && activeFilter !== null && activeFilter !== 'token'}
+        />
+        {!isPro && activeFilter !== null && activeFilter !== 'token' && 
+          <div className="absolute inset-y-0 right-3 flex items-center">
+            <Badge variant="secondary">Pro</Badge>
+          </div>
+        }
       </div>
-      <Select>
+      <Select 
+        value={chainFilter} 
+        onValueChange={setChainFilter}
+        disabled={!isPro && activeFilter !== null && activeFilter !== 'chain'}
+      >
         <SelectTrigger className="w-full">
           <SelectValue placeholder="All Chains" />
         </SelectTrigger>
@@ -61,7 +99,11 @@ export function WhaleFeed() {
           <SelectItem value="polygon">Polygon</SelectItem>
         </SelectContent>
       </Select>
-      <Select>
+      <Select 
+        value={typeFilter}
+        onValueChange={setTypeFilter}
+        disabled={!isPro && activeFilter !== null && activeFilter !== 'type'}
+      >
         <SelectTrigger className="w-full">
           <SelectValue placeholder="All Types" />
         </SelectTrigger>
@@ -71,7 +113,38 @@ export function WhaleFeed() {
           <SelectItem value="swap">Swap</SelectItem>
         </SelectContent>
       </Select>
+      {!isPro && <p className="text-xs text-muted-foreground text-center md:text-left">Multi-filtering is a Pro feature. <a href="/upgrade" className="underline font-semibold">Upgrade</a> to unlock.</p>}
     </>
+  );
+
+  const PaginationControls = () => (
+     <div className="flex justify-center items-center gap-4 mt-6">
+        <Button 
+            variant="outline"
+            onClick={handlePrevPage}
+            disabled={currentPage === 1}
+        >
+            Previous
+        </Button>
+        <span className="text-sm text-muted-foreground">
+            Page {currentPage} of {isPro ? Math.ceil(mockWhaleTxs.length / transactionsPerPage) : 1}
+        </span>
+        {isPro ? (
+          <Button 
+              variant="outline"
+              onClick={handleNextPage}
+              disabled={currentPage * transactionsPerPage >= mockWhaleTxs.length}
+          >
+              Next
+          </Button>
+        ) : (
+          <Button asChild variant="outline">
+            <a href="/upgrade">
+              Next <Lock className="ml-2 h-3 w-3" />
+            </a>
+          </Button>
+        )}
+    </div>
   );
 
 
@@ -82,7 +155,7 @@ export function WhaleFeed() {
                   <CardTitle>Live Whale Transactions</CardTitle>
                   
                   {/* Desktop Filters */}
-                  <div className="hidden md:flex flex-row gap-2 w-full sm:w-auto">
+                  <div className="hidden md:flex flex-row gap-2 w-full sm:w-auto items-center">
                     <FilterControls />
                   </div>
 
@@ -116,26 +189,7 @@ export function WhaleFeed() {
                        <TransactionCard key={tx.id} tx={tx} />
                     ))}
                 </div>
-
-                <div className="flex justify-center items-center gap-4 mt-6">
-                    <Button 
-                        variant="outline"
-                        onClick={handlePrevPage}
-                        disabled={currentPage === 1}
-                    >
-                        Previous
-                    </Button>
-                    <span className="text-sm text-muted-foreground">
-                        Page {currentPage} of {Math.ceil(mockWhaleTxs.length / transactionsPerPage)}
-                    </span>
-                    <Button 
-                        variant="outline"
-                        onClick={handleNextPage}
-                        disabled={currentPage * transactionsPerPage >= mockWhaleTxs.length}
-                    >
-                        Next
-                    </Button>
-                </div>
+                <PaginationControls />
             </CardContent>
         </Card>
   );
