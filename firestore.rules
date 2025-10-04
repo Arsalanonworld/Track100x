@@ -1,151 +1,65 @@
 /**
- * @file Firebase Security Rules for Firestore.
+ * @file Firestore Security Rules
+ * @description This ruleset enforces a strict user-ownership model for private user data
+ * and allows public read access to leaderboard and whale feed data.
  *
- * @core_philosophy This ruleset enforces a strict user-ownership model for user profiles, wallets, alerts, and news feed items.
- *   Article recommendations are restricted to backend services. The leaderboard and whale feed collections from the original specification are not part of the new schema.
- * @data_structure
- *   - `/users/{userId}`: Stores user profile information, accessible only by the user.
- *   - `/users/{userId}/wallets/{walletId}`: Stores wallets owned by a specific user, accessible only by that user.
- *   - `/users/{userId}/wallets/{walletId}/transactions/{transactionId}`: Stores transactions for a specific wallet, accessible only by the wallet's owner (user).
- *   - `/users/{userId}/alerts/{alertId}`: Stores user-defined alerts, accessible only by the creating user.
- *   - `/news_feed_items/{newsFeedItemId}`: Stores news feed items, each tagged with a userId, accessible only to the specified user.
- *   - `/article_recommendations/{articleRecommendationId}`: Stores article recommendations, writable only by backend services.
- * @key_security_decisions
- *   - Users can only access their own profile data, wallets, transactions and alerts.
- *   - News feed items are user-specific.
- *   - Article recommendations are managed by backend services and are not directly writable by users.
- * @denormalization_for_authorization
- *   - `NewsFeedItem` documents include a `userId` field to simplify listing and ensure that users can only access news feed items intended for them.
+ * Data Structure:
+ * - /users/{userId}: Stores user profile information. Access is restricted to the user themselves.
+ * - /users/{userId}/alerts/{alertId}: Stores alerts created by a user. Access is restricted to the user.
+ * - /users/{userId}/watchlist/{walletId}: Stores wallets followed by a user. Access is restricted to the user.
+ * - /leaderboard/{leaderboardEntryId}: Stores public leaderboard data.
+ * - /whaleFeed/{whaleTransactionId}: Stores public whale feed data.
+ *
+ * Key Security Decisions:
+ * - User listing is disallowed to prevent unauthorized access to user emails.
+ * - Public read access is granted for the leaderboard and whale feed collections.
+ * - All write operations are protected by authorization checks to prevent unauthorized data modification.
+ *
+ * Denormalization for Authorization:
+ * - User-owned documents are nested under /users/{userId} to simplify ownership checks. The userId is used as a simple way to verify ownership of the data.
+ *
+ * Structural Segregation:
+ * - Private user data (alerts, watchlist) is stored in user-specific subcollections.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Grants access to user profile documents.
+     * @description Grants access to user profile information.
      * @path /users/{userId}
-     * @allow (create) User with uid 'user123' can create their profile if request.auth.uid == 'user123'.
-     * @allow (get) User with uid 'user123' can read their profile if request.auth.uid == 'user123'.
-     * @allow (update) User with uid 'user123' can update their profile if request.auth.uid == 'user123'.
-     * @allow (delete) User with uid 'user123' can delete their profile if request.auth.uid == 'user123'.
-     * @deny (create) User with uid 'user456' cannot create a profile for 'user123'.
-     * @deny (get) User with uid 'user456' cannot read the profile of 'user123'.
-     * @deny (update) User with uid 'user456' cannot update the profile of 'user123'.
-     * @deny (delete) User with uid 'user456' cannot delete the profile of 'user123'.
-     * @principle Enforces user-ownership: only the authenticated user can access their own profile.
+     * @allow (read, write) User with ID userId
+     * @deny (read, write) Other users
+     * @principle Enforces document ownership for writes.
      */
     match /users/{userId} {
-      function isSignedIn() {
-        return request.auth != null;
-      }
-
-      // Helper function to check if the authenticated user is the owner of the document.
       function isOwner(userId) {
-        return isSignedIn() && request.auth.uid == userId;
+        return request.auth != null && request.auth.uid == userId;
       }
-
-      // Helper function to check if the authenticated user is the existing owner of the document.
       function isExistingOwner(userId) {
         return isOwner(userId) && resource != null;
       }
-
       allow get: if isOwner(userId);
-      allow list: if false; // No listing of users
-
-      // Only allow a user to create their own profile.
-      allow create: if isOwner(userId);
-
-      // Enforce immutability of id on update
-      allow update: if isExistingOwner(userId);
-      allow delete: if isExistingOwner(userId);
-    }
-
-    /**
-     * @description Grants access to wallet documents within a user's profile.
-     * @path /users/{userId}/wallets/{walletId}
-     * @allow (create) User 'user123' can create a wallet under their profile.
-     * @allow (get) User 'user123' can read a wallet under their profile.
-     * @allow (update) User 'user123' can update a wallet under their profile.
-     * @allow (delete) User 'user123' can delete a wallet under their profile.
-     * @deny (create) User 'user456' cannot create a wallet under 'user123' profile.
-     * @deny (get) User 'user456' cannot read a wallet under 'user123' profile.
-     * @principle Enforces user-ownership: only the authenticated user can access their own wallets.
-     */
-    match /users/{userId}/wallets/{walletId} {
-      function isSignedIn() {
-        return request.auth != null;
-      }
-
-      function isOwner(userId) {
-        return isSignedIn() && request.auth.uid == userId;
-      }
-
-      function isExistingOwner(userId) {
-        return isOwner(userId) && resource != null;
-      }
-
-      allow get: if isOwner(userId);
-      allow list: if isOwner(userId);
+      allow list: if false;
       allow create: if isOwner(userId);
       allow update: if isExistingOwner(userId);
       allow delete: if isExistingOwner(userId);
     }
 
     /**
-     * @description Grants access to transaction documents within a user's wallet.
-     * @path /users/{userId}/wallets/{walletId}/transactions/{transactionId}
-     * @allow (create) User 'user123' can create a transaction for their wallet.
-     * @allow (get) User 'user123' can read a transaction for their wallet.
-     * @allow (update) User 'user123' can update a transaction for their wallet.
-     * @allow (delete) User 'user123' can delete a transaction for their wallet.
-     * @deny (create) User 'user456' cannot create a transaction under 'user123' profile.
-     * @deny (get) User 'user456' cannot read a transaction under 'user123' profile.
-     * @principle Enforces user-ownership: only the authenticated user can access their own transactions.
-     */
-    match /users/{userId}/wallets/{walletId}/transactions/{transactionId} {
-      function isSignedIn() {
-        return request.auth != null;
-      }
-
-      function isOwner(userId) {
-        return isSignedIn() && request.auth.uid == userId;
-      }
-
-      function isExistingOwner(userId) {
-        return isOwner(userId) && resource != null;
-      }
-
-      allow get: if isOwner(userId);
-      allow list: if isOwner(userId);
-      allow create: if isOwner(userId); // No owner check for create since parent path ensures ownership.
-      allow update: if isExistingOwner(userId); // No owner check for update since parent path ensures ownership.
-      allow delete: if isExistingOwner(userId); // No owner check for delete since parent path ensures ownership.
-    }
-
-    /**
-     * @description Grants access to alert documents within a user's profile.
+     * @description Grants access to alerts created by a user.
      * @path /users/{userId}/alerts/{alertId}
-     * @allow (create) User 'user123' can create an alert under their profile.
-     * @allow (get) User 'user123' can read an alert under their profile.
-     * @allow (update) User 'user123' can update an alert under their profile.
-     * @allow (delete) User 'user123' can delete an alert under their profile.
-     * @deny (create) User 'user456' cannot create an alert under 'user123' profile.
-     * @deny (get) User 'user456' cannot read an alert under 'user123' profile.
-     * @principle Enforces user-ownership: only the authenticated user can access their own alerts.
+     * @allow (read, write) User with ID userId
+     * @deny (read, write) Other users
+     * @principle Restricts access to a user's own alerts.
      */
     match /users/{userId}/alerts/{alertId} {
-      function isSignedIn() {
-        return request.auth != null;
-      }
-
       function isOwner(userId) {
-        return isSignedIn() && request.auth.uid == userId;
+        return request.auth != null && request.auth.uid == userId;
       }
-
-       function isExistingOwner(userId) {
+      function isExistingOwner(userId) {
         return isOwner(userId) && resource != null;
       }
-
       allow get: if isOwner(userId);
       allow list: if isOwner(userId);
       allow create: if isOwner(userId);
@@ -154,39 +68,49 @@ service cloud.firestore {
     }
 
     /**
-     * @description Grants access to news feed items, enforcing user-specific access.
-     * @path /news_feed_items/{newsFeedItemId}
-     * @allow (create) N/A - News feed items should be created by backend services.
-     * @allow (get) User can read a news feed item if news_feed_item.userId == request.auth.uid.
-     * @allow (list) User can list news feed items if news_feed_item.userId == request.auth.uid.
-     * @allow (update) N/A - News feed items should not be updated directly by users.
-     * @allow (delete) N/A - News feed items should not be deleted directly by users.
-     * @deny (get) User 'user456' cannot read a news feed item intended for 'user123'.
-     * @principle Enforces user-ownership: only the intended user can access a news feed item.
+     * @description Grants access to wallets followed by a user.
+     * @path /users/{userId}/watchlist/{walletId}
+     * @allow (read, write) User with ID userId
+     * @deny (read, write) Other users
+     * @principle Restricts access to a user's own watchlist.
      */
-    match /news_feed_items/{newsFeedItemId} {
-      function isSignedIn() {
-        return request.auth != null;
+    match /users/{userId}/watchlist/{walletId} {
+      function isOwner(userId) {
+        return request.auth != null && request.auth.uid == userId;
       }
+      function isExistingOwner(userId) {
+        return isOwner(userId) && resource != null;
+      }
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId);
+      allow update: if isExistingOwner(userId);
+      allow delete: if isExistingOwner(userId);
+    }
 
-      allow get: if isSignedIn() && resource.data.userId == request.auth.uid;
-      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+    /**
+     * @description Grants access to public leaderboard data.
+     * @path /leaderboard/{leaderboardEntryId}
+     * @allow (read) Any user
+     * @deny (write) Any user
+     * @principle Allows public read access, restricts writes.
+     */
+    match /leaderboard/{leaderboardEntryId} {
+      allow get: if true;
+      allow list: if true;
       allow create: if false;
       allow update: if false;
       allow delete: if false;
     }
 
     /**
-     * @description Restricts access to article recommendation documents to backend services.
-     * @path /article_recommendations/{articleRecommendationId}
-     * @allow (get) Any user (authenticated or not) can read article recommendations.
-     * @allow (list) Any user (authenticated or not) can list article recommendations.
-     * @deny (create) No one can create article recommendations through the client.
-     * @deny (update) No one can update article recommendations through the client.
-     * @deny (delete) No one can delete article recommendations through the client.
-     * @principle Restricts writes to backend services. Public read access.
+     * @description Grants access to public whale feed data.
+     * @path /whaleFeed/{whaleTransactionId}
+     * @allow (read) Any user
+     * @deny (write) Any user
+     * @principle Allows public read access, restricts writes.
      */
-    match /article_recommendations/{articleRecommendationId} {
+    match /whaleFeed/{whaleTransactionId} {
       allow get: if true;
       allow list: if true;
       allow create: if false;
