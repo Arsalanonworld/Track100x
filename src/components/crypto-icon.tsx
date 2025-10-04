@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { Badge } from './ui/badge';
 
 type CryptoIconProps = {
   token: 'BTC' | 'ETH' | 'SOL' | 'USDT' | 'USDC' | 'WIF' | string;
