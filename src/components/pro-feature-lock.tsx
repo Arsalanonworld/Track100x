@@ -22,17 +22,8 @@ export const ProFeatureLock = ({ title, description, buttonText = "Upgrade to Pr
             </p>
             {onButtonClick ? (
                 <AnimatedButton onClick={onButtonClick}>
-                     {buttonText !== "Upgrade to Pro" ? (
-                        <>
-                           <Sparkles className="mr-2 h-4 w-4" />
-                           {buttonText}
-                        </>
-                     ) : (
-                        <>
-                           <Sparkles className="mr-2 h-4 w-4" />
-                           {buttonText}
-                        </>
-                     )}
+                     <Sparkles className="mr-2 h-4 w-4" />
+                     {buttonText}
                 </AnimatedButton>
             ) : (
                 <AnimatedButton asChild>
