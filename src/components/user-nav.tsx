@@ -18,7 +18,7 @@ import { useRouter } from 'next/navigation';
 import { Skeleton } from './ui/skeleton';
 import { useAuthDialog } from '@/hooks/use-auth-dialog';
 import { doc } from 'firebase/firestore';
-import { Zap, Sparkles } from 'lucide-react';
+import { Zap } from 'lucide-react';
 import { AnimatedButton } from './ui/animated-button';
 
 export function UserNav() {
@@ -37,6 +37,10 @@ export function UserNav() {
 
   const isLoading = isUserLoading || isUserDataLoading;
 
+  const handleLogout = async () => {
+    await logout();
+  };
+
   if (isLoading) {
     return <Skeleton className="h-10 w-10 rounded-full" />;
   }
@@ -44,7 +48,7 @@ export function UserNav() {
   if (!user) {
     return (
       <div className="flex items-center gap-2">
-         <Button variant="ghost" onClick={() => router.push('/upgrade')}>
+        <Button variant="ghost" onClick={() => router.push('/upgrade')}>
           Pricing
         </Button>
         <Button variant="outline" onClick={() => setAuthDialogOpen(true)}>
@@ -85,11 +89,7 @@ export function UserNav() {
           <Link href="/account">Account</Link>
         </DropdownMenuItem>
         
-        {isPro ? (
-           <DropdownMenuItem asChild>
-              <Link href="/account">Manage Subscription</Link>
-          </DropdownMenuItem>
-        ) : (
+        {!isPro && (
           <DropdownMenuItem asChild>
             <Link href="/upgrade" className="flex items-center justify-between">
               Upgrade to Pro <Zap className="h-4 w-4 text-primary" />
@@ -98,7 +98,7 @@ export function UserNav() {
         )}
 
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => logout()}>
+        <DropdownMenuItem onClick={handleLogout}>
           Log out
         </DropdownMenuItem>
       </DropdownMenuContent>
