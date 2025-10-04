@@ -25,6 +25,7 @@ export type Alert = {
   title: string;
   description: string;
   enabled: boolean;
+  type: 'wallet' | 'token';
 };
 
 export const whaleTransactions: Transaction[] = [
@@ -145,7 +146,7 @@ export const walletLeaderboard: Wallet[] = [
 ];
 
 export const mockAlerts: Alert[] = [
-    { id: '1', title: 'Large ETH Transfer', description: 'Notify when a wallet moves more than 1,000 ETH.', enabled: true },
-    { id: '2', title: 'New Token Purchase', description: 'Notify when a top 100 wallet buys a new token.', enabled: true },
-    { id: '3', title: 'Solana DEX Activity', description: 'Notify for swaps over $100k on Solana DEXs.', enabled: false },
+    { id: '1', title: 'Vitalik Buterin Wallet', description: 'Transaction Value > $1,000,000', enabled: true, type: 'wallet' },
+    { id: '2', title: 'WIF Token', description: 'Price Change > 10%', enabled: true, type: 'token'},
+    { id: '3', title: 'Solana DEX Activity', description: 'Swaps > $100k on Solana DEXs.', enabled: false, type: 'wallet' },
 ];
