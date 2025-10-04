@@ -1,6 +1,7 @@
+
 'use client';
 import { useUser, useFirestore, useMemoFirebase, useDoc } from '@/firebase';
-import { doc } from 'firebase/firestore';
+import { doc, updateDoc } from 'firebase/firestore';
 import { useTestUser } from '@/firebase/client-provider';
 
 export function useAuth() {
@@ -18,5 +19,16 @@ export function useAuth() {
   const isPro = isTestUser ? true : userData?.plan === 'pro';
   const isLoading = isUserLoading || isUserDataLoading;
 
-  return { user, isPro, isLoading, isTestUser, authDialogOpen, setAuthDialogOpen };
+  const upgradeToPro = async () => {
+    if (!userDocRef) {
+      throw new Error("User document not found.");
+    }
+    // This is a placeholder for a real payment flow.
+    // In a real app, this would be handled on the backend after a successful payment.
+    await updateDoc(userDocRef, {
+      plan: 'pro'
+    });
+  }
+
+  return { user, isPro, isLoading, isTestUser, authDialogOpen, setAuthDialogOpen, upgradeToPro };
 }
