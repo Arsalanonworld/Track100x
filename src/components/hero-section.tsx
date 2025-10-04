@@ -1,6 +1,6 @@
 
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { BarChart, Bell, CheckCircle } from "lucide-react";
 import { WhaleIcon } from "./icons/whale-icon";
 
@@ -48,36 +48,64 @@ const features = [
 
 export default function HeroSection() {
     const [text, setText] = useState('');
-    const [phraseIndex, setPhraseIndex] = useState(0);
-    const [isDeleting, setIsDeleting] = useState(false);
+    const phraseIndex = useRef(0);
+    const isDeleting = useRef(false);
+    const lastUpdateTime = useRef(0);
+    const frameId = useRef<number>();
+
+    const typingSpeed = 100;
+    const deletingSpeed = 50;
+    const delayAfterTyping = 2000;
+    const [pauseTime, setPauseTime] = useState<number | null>(null);
 
     useEffect(() => {
-        const currentPhrase = phrases[phraseIndex];
-        const typingSpeed = 100;
-        const deletingSpeed = 50;
-        const delayAfterTyping = 2000;
+        const handleTyping = (currentTime: number) => {
+            if (!lastUpdateTime.current) {
+                lastUpdateTime.current = currentTime;
+            }
 
-        const handleTyping = () => {
-            if (isDeleting) {
-                if (text.length > 0) {
-                    setText(current => current.substring(0, current.length - 1));
+            const deltaTime = currentTime - lastUpdateTime.current;
+            const currentPhrase = phrases[phraseIndex.current];
+            
+            if (pauseTime && currentTime < pauseTime) {
+                frameId.current = requestAnimationFrame(handleTyping);
+                return;
+            }
+            setPauseTime(null);
+
+            const speed = isDeleting.current ? deletingSpeed : typingSpeed;
+
+            if (deltaTime > speed) {
+                lastUpdateTime.current = currentTime;
+                
+                if (isDeleting.current) {
+                    if (text.length > 0) {
+                        setText(current => current.substring(0, current.length - 1));
+                    } else {
+                        isDeleting.current = false;
+                        phraseIndex.current = (phraseIndex.current + 1) % phrases.length;
+                    }
                 } else {
-                    setIsDeleting(false);
-                    setPhraseIndex(current => (current + 1) % phrases.length);
-                }
-            } else {
-                if (text.length < currentPhrase.length) {
-                    setText(current => currentPhrase.substring(0, current.length + 1));
-                } else {
-                    setTimeout(() => setIsDeleting(true), delayAfterTyping);
+                    if (text.length < currentPhrase.length) {
+                        setText(current => currentPhrase.substring(0, current.length + 1));
+                    } else {
+                        setPauseTime(currentTime + delayAfterTyping);
+                        isDeleting.current = true;
+                    }
                 }
             }
+            
+            frameId.current = requestAnimationFrame(handleTyping);
         };
-
-        const typingTimeout = setTimeout(handleTyping, isDeleting ? deletingSpeed : typingSpeed);
-
-        return () => clearTimeout(typingTimeout);
-    }, [text, isDeleting, phraseIndex]);
+        
+        frameId.current = requestAnimationFrame(handleTyping);
+        
+        return () => {
+            if (frameId.current) {
+                cancelAnimationFrame(frameId.current);
+            }
+        };
+    }, [text]); // Only re-trigger when text state changes
 
     return (
         <section className="relative overflow-hidden bg-gradient-to-b from-card to-background flex flex-col items-center justify-center min-h-[280px] py-12 md:min-h-[320px]">
