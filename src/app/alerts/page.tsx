@@ -1,8 +1,7 @@
-
 'use client';
 import ActiveAlerts from '@/components/alerts/active-alerts';
 import AlertHistory from '@/components/alerts/alert-history';
-import AlertCreator from '@/components/alerts/alert-creator';
+import AlertCreatorCard from '@/components/alerts/alert-creator-card';
 import { useUser } from '@/firebase';
 import { Button } from '@/components/ui/button';
 import { Lock } from 'lucide-react';
@@ -25,7 +24,7 @@ export default function AlertsPage() {
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-start">
                 <div className="lg:col-span-2 space-y-8">
-                  <Skeleton className="h-96 w-full" />
+                  <Skeleton className="h-[700px] w-full" />
                 </div>
                 <div className="lg:col-span-3 space-y-8">
                   <Skeleton className="h-64 w-full" />
@@ -41,7 +40,7 @@ export default function AlertsPage() {
   return (
       <div className="space-y-8">
            <PageHeader
-            title="Your Alerts"
+            title="Alerts"
             description="Track whales, wallets, and tokens in real-time. Never miss a big move."
            />
 
@@ -49,7 +48,7 @@ export default function AlertsPage() {
               <div className={cn(showLoginWall && "blur-sm pointer-events-none")}>
                   <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-start">
                       <div className="lg:col-span-2 space-y-8">
-                        <AlertCreator />
+                        <AlertCreatorCard />
                       </div>
                       <div className="lg:col-span-3 space-y-8">
                         <ActiveAlerts />

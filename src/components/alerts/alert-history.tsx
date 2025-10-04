@@ -21,14 +21,14 @@ export default function AlertHistory() {
             </CardHeader>
             <CardContent>
                 <div className="space-y-4">
-                    {mockTriggeredAlerts.slice(0, 3).map((alert, index) => (
-                        <div key={alert.id} className="flex items-start gap-4 p-4 border-b last:border-b-0">
+                    {mockTriggeredAlerts.slice(0, 3).map((alert) => (
+                        <div key={alert.id} className="flex items-start gap-4 p-3 border-b last:border-b-0 -mx-3">
                              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-1">
                                 <Bell className="w-4 h-4 text-primary" />
                             </div>
                             <div className="flex-1">
                                <div className="flex justify-between items-start">
-                                    <div className="font-medium text-sm flex-1">
+                                    <div className="font-medium text-sm flex-1 leading-snug">
                                     <Link href="#" className="font-bold hover:underline">{alert.entity}</Link> triggered rule <Badge variant="secondary" className="mx-1">{alert.rule}</Badge>
                                     </div>
                                     <p className="text-xs text-muted-foreground mt-0.5 ml-2 shrink-0">{alert.time}</p>
@@ -46,9 +46,9 @@ export default function AlertHistory() {
                         </div>
                     )}
                 </div>
-                 <Button variant="link" size="sm" asChild className="w-full mt-4">
-                    <Link href="/alerts">View All Alerts</Link>
-                </Button>
+                 {mockTriggeredAlerts.length > 0 && <Button variant="link" size="sm" asChild className="w-full mt-4">
+                    <Link href="#">View All Alerts</Link>
+                </Button>}
             </CardContent>
         </Card>
     );

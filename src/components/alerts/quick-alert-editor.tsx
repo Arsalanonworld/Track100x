@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from "react";
@@ -26,19 +25,16 @@ export default function QuickAlertEditor({ entity, onSave, onCancel }: QuickAler
     const isWallet = entity.type === 'Wallet';
     const [ruleType, setRuleType] = useState<WalletRuleType | TokenRuleType>(isWallet ? 'transactionValue' : 'priceChange');
 
-    // State for all possible rule types
     const [value, setValue] = useState(1000000);
     const [direction, setDirection] = useState('both');
     const [token, setToken] = useState('');
     const [percentage, setPercentage] = useState(5);
     const [days, setDays] = useState(30);
-    const { toast } = useToast();
 
     const handleSave = () => {
         let ruleDescription = '';
 
         switch (ruleType) {
-            // Wallet Rules
             case 'transactionValue':
                 const directionText = direction === 'in' ? 'incoming' : direction === 'out' ? 'outgoing' : 'any';
                 ruleDescription = `Value of ${directionText} txn > $${(value / 1000000).toFixed(1)}M ${token ? `of ${token}` : ''}`;
@@ -49,14 +45,12 @@ export default function QuickAlertEditor({ entity, onSave, onCancel }: QuickAler
             case 'portfolioValueChange':
                 ruleDescription = `Portfolio value changes by > ${percentage}% in 24h`;
                 break;
-            case 'pnlChange':
+             case 'pnlChange':
                  ruleDescription = `7d PnL changes by > ${percentage}%`;
                  break;
             case 'dormancy':
                  ruleDescription = `Wallet is inactive for > ${days} days`;
                  break;
-
-            // Token Rules
             case 'priceChange':
                 ruleDescription = `Price of ${entity.label} changes by > ${percentage}% in 24h`;
                 break;
@@ -72,7 +66,7 @@ export default function QuickAlertEditor({ entity, onSave, onCancel }: QuickAler
     }
     
     const renderContent = () => {
-        if (isWallet) { // Rules for Wallet
+        if (isWallet) { 
             switch(ruleType as WalletRuleType) {
                 case 'transactionValue':
                     return (
@@ -177,7 +171,7 @@ export default function QuickAlertEditor({ entity, onSave, onCancel }: QuickAler
                     );
                 default: return null;
             }
-        } else { // Rules for Token
+        } else { 
             switch(ruleType as TokenRuleType) {
                 case 'priceChange':
                      return (
