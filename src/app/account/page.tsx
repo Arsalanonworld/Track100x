@@ -14,6 +14,7 @@ import { Badge } from '@/components/ui/badge';
 import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useAuthDialog } from '@/hooks/use-auth-dialog';
+import { AnimatedButton } from '@/components/ui/animated-button';
 
 
 export default function AccountPage() {
@@ -95,7 +96,7 @@ export default function AccountPage() {
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <div className="space-y-4 rounded-lg border bg-card-nested p-4">
+                    <div className="space-y-4 rounded-lg border bg-muted/50 p-4">
                         <div className="flex justify-between items-center">
                             <h4 className="text-lg font-semibold">Current Plan</h4>
                             <Badge variant={userData.plan === 'pro' ? 'default' : 'secondary'} className="capitalize">{userData.plan}</Badge>
@@ -105,9 +106,9 @@ export default function AccountPage() {
                                 <p className="text-muted-foreground">
                                     Upgrade to Pro to unlock unlimited alerts, real-time data, and advanced features.
                                 </p>
-                                <Button className="w-full" asChild>
+                                <AnimatedButton className="w-full" asChild>
                                     <Link href="/upgrade">Upgrade to Pro</Link>
-                                </Button>
+                                </AnimatedButton>
                             </>
                         )}
                         {userData.plan === 'pro' && (

@@ -14,6 +14,7 @@ import { Badge } from '@/components/ui/badge';
 import { useUser, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { useDoc } from '@/firebase/firestore/use-doc';
+import { AnimatedButton } from '@/components/ui/animated-button';
 
 
 const features = [
@@ -112,12 +113,9 @@ export default function UpgradePage() {
             Stop reacting to old news. Tack100x Pro gives you the real-time on-chain data and advanced tools you need to anticipate market moves before they happen.
           </p>
           <div className="mt-8">
-            <Button size="lg" className="group relative overflow-hidden transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-primary/40" onClick={handleUpgradeClick}>
-              <span className="absolute inset-[-1000%] animate-[shimmer_4s_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#ffffff15_0%,#ffffff30_50%,#ffffff15_100%)]" />
-              <span className="relative z-10 flex items-center">
-                  Upgrade to Pro Now <ArrowRight className="ml-2 h-4 w-4" />
-              </span>
-            </Button>
+            <AnimatedButton size="lg" onClick={handleUpgradeClick}>
+                Upgrade to Pro Now <ArrowRight className="ml-2 h-4 w-4" />
+            </AnimatedButton>
           </div>
         </div>
       </section>
@@ -249,7 +247,7 @@ export default function UpgradePage() {
                      ) : isPro ? (
                         <Button className="w-full" disabled>Your Current Plan</Button>
                     ) : (
-                        <Button className="w-full" onClick={handleUpgradeClick}>Upgrade to Pro</Button>
+                        <AnimatedButton className="w-full" onClick={handleUpgradeClick}>Upgrade to Pro</AnimatedButton>
                     )}
                 </CardFooter>
                 </Card>
@@ -293,12 +291,9 @@ export default function UpgradePage() {
                     Don't be the last to know. Upgrade to Pro today and start making data-driven decisions with confidence.
                 </p>
                  <div className="mt-8">
-                    <Button size="lg" className="group relative overflow-hidden transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-primary/40" onClick={handleUpgradeClick}>
-                         <span className="absolute inset-[-1000%] animate-[shimmer_4s_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#ffffff15_0%,#ffffff30_50%,#ffffff15_100%)]" />
-                         <span className="relative z-10 flex items-center">
-                            Upgrade and Unlock All Features <ArrowRight className="ml-2 h-4 w-4" />
-                         </span>
-                    </Button>
+                    <AnimatedButton size="lg" onClick={handleUpgradeClick}>
+                        Upgrade and Unlock All Features <ArrowRight className="ml-2 h-4 w-4" />
+                    </AnimatedButton>
                 </div>
             </div>
         </section>

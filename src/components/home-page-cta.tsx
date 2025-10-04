@@ -9,6 +9,7 @@ import { useCollection } from '@/firebase/firestore/use-collection';
 import { doc, collection } from 'firebase/firestore';
 import { useDoc } from '@/firebase/firestore/use-doc';
 import { useState } from 'react';
+import { AnimatedButton } from './ui/animated-button';
 
 export const HomePageCta = () => {
     const { user, isUserLoading } = useUser();
@@ -38,10 +39,10 @@ export const HomePageCta = () => {
             <p className="text-muted-foreground text-lg mb-6">Create a custom alert now and never miss a critical market move again.</p>
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogTrigger asChild>
-                    <Button size="lg">
+                    <AnimatedButton size="lg">
                         Create a Free Alert
                         <ArrowRight className="ml-2" />
-                    </Button>
+                    </AnimatedButton>
                 </DialogTrigger>
                 {user && !isUserLoading ? (
                     <CreateAlertModal isPro={isPro} canCreateAlert={canCreateAlert} userId={user.uid} onOpenChange={setIsDialogOpen} />
@@ -53,7 +54,7 @@ export const HomePageCta = () => {
                                 Create a free account to get started with up to {freeAlertLimit} custom alerts.
                             </DialogDescription>
                         </DialogHeader>
-                        <Button className="w-full" asChild><a href="/auth/login">Login / Sign Up</a></Button>
+                        <AnimatedButton className="w-full" asChild><a href="/auth/login">Login / Sign Up</a></AnimatedButton>
                     </DialogContent>
                 )}
             </Dialog>

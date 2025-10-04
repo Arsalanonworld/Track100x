@@ -10,6 +10,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import PageHeader from '@/components/page-header';
 import { useAuthDialog } from '@/hooks/use-auth-dialog';
+import { AnimatedButton } from '@/components/ui/animated-button';
 
 export default function AlertsPage() {
   const { user, isUserLoading } = useUser();
@@ -66,9 +67,9 @@ export default function AlertsPage() {
                          <p className="text-muted-foreground mb-4 max-w-sm">
                             Create a free account to set up real-time notifications for your favorite wallets and tokens.
                          </p>
-                         <Button size="lg" onClick={() => setAuthDialogOpen(true)}>
+                         <AnimatedButton size="lg" onClick={() => setAuthDialogOpen(true)}>
                              Log In / Sign Up
-                         </Button>
+                         </AnimatedButton>
                      </div>
                  </div>
               )}
