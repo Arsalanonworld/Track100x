@@ -13,9 +13,11 @@ import { useDoc } from '@/firebase/firestore/use-doc';
 import { Badge } from '@/components/ui/badge';
 import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
+import { useTestUser } from '@/firebase/client-provider';
 
 export default function AccountPage() {
   const { user, isUserLoading } = useUser();
+  const { isTestUser, setIsTestUser } = useTestUser();
   const router = useRouter();
   const firestore = useFirestore();
   
@@ -27,19 +29,35 @@ export default function AccountPage() {
   const { data: userData, isLoading: isUserDataLoading } = useDoc(userDocRef);
 
   useEffect(() => {
-    if (!isUserLoading && !user) {
+    if (!isUserLoading && !user && !isTestUser) {
       router.push('/auth/login');
     }
-  }, [user, isUserLoading, router]);
+  }, [user, isUserLoading, isTestUser, router]);
 
   const handleLogout = async () => {
-    await logout();
+    if (isTestUser) {
+        setIsTestUser(false);
+    } else {
+        await logout();
+    }
     router.push('/');
   };
   
   const isLoading = isUserLoading || isUserDataLoading;
+  
+  const displayUser = isTestUser ? {
+    email: 'test.user@example.com',
+    uid: 'test-user-uid',
+    displayName: 'Test User'
+  } : user;
 
-  if (isLoading) {
+  const displayUserData = isTestUser ? {
+    username: 'testuser',
+    plan: 'pro'
+  } : userData;
+
+
+  if (isLoading && !isTestUser) {
     return (
       <div className="flex justify-center items-center h-[calc(100vh-200px)]">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -47,7 +65,7 @@ export default function AccountPage() {
     );
   }
 
-  if (!user || !userData) {
+  if (!displayUser || !displayUserData) {
     return null;
   }
 
@@ -66,15 +84,15 @@ export default function AccountPage() {
                 <CardContent className="space-y-6">
                 <div className="flex items-center gap-4">
                     <p className="w-24 font-semibold text-muted-foreground">Email</p>
-                    <p className="text-primary-foreground">{user.email}</p>
+                    <p className="text-primary-foreground">{displayUser.email}</p>
                 </div>
                 <div className="flex items-center gap-4">
                     <p className="w-24 font-semibold text-muted-foreground">Username</p>
-                    <p className="text-primary-foreground">{userData.username}</p>
+                    <p className="text-primary-foreground">{displayUserData.username}</p>
                 </div>
                 <div className="flex items-center gap-4">
                     <p className="w-24 font-semibold text-muted-foreground">User ID</p>
-                    <p className="font-mono text-sm text-muted-foreground">{user.uid}</p>
+                    <p className="font-mono text-sm text-muted-foreground">{displayUser.uid}</p>
                 </div>
                 <Button variant="destructive" onClick={handleLogout}>
                     Log Out
@@ -87,16 +105,16 @@ export default function AccountPage() {
                 <CardHeader>
                     <CardTitle>Subscription</CardTitle>
                     <CardDescription>
-                        You are currently on the {userData.plan} plan.
+                        You are currently on the {displayUserData.plan} plan.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
                     <div className="space-y-4 rounded-lg border bg-card-nested p-4">
                         <div className="flex justify-between items-center">
                             <h4 className="text-lg font-semibold">Current Plan</h4>
-                            <Badge variant={userData.plan === 'pro' ? 'default' : 'secondary'} className="capitalize">{userData.plan}</Badge>
+                            <Badge variant={displayUserData.plan === 'pro' ? 'default' : 'secondary'} className="capitalize">{displayUserData.plan}</Badge>
                         </div>
-                        {userData.plan === 'free' && (
+                        {displayUserData.plan === 'free' && (
                             <>
                                 <p className="text-muted-foreground">
                                     Upgrade to Pro to unlock unlimited alerts, real-time data, and advanced features.
@@ -106,7 +124,7 @@ export default function AccountPage() {
                                 </Button>
                             </>
                         )}
-                        {userData.plan === 'pro' && (
+                        {displayUserData.plan === 'pro' && (
                              <p className="text-muted-foreground">
                                 You have access to all Pro features. Manage your subscription and billing details below.
                             </p>
@@ -119,5 +137,3 @@ export default function AccountPage() {
     </>
   );
 }
-
-    

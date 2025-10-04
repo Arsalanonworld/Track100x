@@ -16,21 +16,33 @@ import { useUser } from '@/firebase';
 import { logout } from '@/lib/actions';
 import { useRouter } from 'next/navigation';
 import { Skeleton } from './ui/skeleton';
+import { useTestUser } from '@/firebase/client-provider';
 
 export function UserNav() {
   const { user, isUserLoading } = useUser();
+  const { isTestUser, setIsTestUser } = useTestUser();
   const router = useRouter();
 
   const handleLogout = async () => {
-    await logout();
+    if (isTestUser) {
+        setIsTestUser(false);
+    } else {
+        await logout();
+    }
     router.push('/');
   };
 
-  if (isUserLoading) {
+  const displayUser = isTestUser ? {
+    email: 'test.user@example.com',
+    photoURL: '',
+    displayName: 'Test User'
+  } : user;
+
+  if (isUserLoading && !isTestUser) {
     return <Skeleton className="h-9 w-20 rounded-md" />;
   }
   
-  if (!user) {
+  if (!displayUser) {
     return (
       <Button asChild>
         <Link href="/auth/login">Log In</Link>
@@ -38,14 +50,14 @@ export function UserNav() {
     );
   }
 
-  const userInitial = user.email ? user.email.charAt(0).toUpperCase() : '?';
+  const userInitial = displayUser.email ? displayUser.email.charAt(0).toUpperCase() : '?';
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-10 w-10 rounded-full">
           <Avatar className="h-10 w-10">
-            <AvatarImage src={user.photoURL ?? ''} alt="User avatar" />
+            <AvatarImage src={displayUser.photoURL ?? ''} alt="User avatar" />
             <AvatarFallback>{userInitial}</AvatarFallback>
           </Avatar>
         </Button>
@@ -54,10 +66,10 @@ export function UserNav() {
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
             <p className="text-sm font-medium leading-none">
-              {user.displayName || 'User'}
+              {displayUser.displayName || 'User'}
             </p>
             <p className="text-xs leading-none text-muted-foreground">
-              {user.email}
+              {displayUser.email}
             </p>
           </div>
         </DropdownMenuLabel>
@@ -76,5 +88,3 @@ export function UserNav() {
     </DropdownMenu>
   );
 }
-
-    
