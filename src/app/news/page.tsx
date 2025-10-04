@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useTransition } from 'react';
@@ -14,16 +15,19 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Sparkles, Loader2 } from 'lucide-react';
+import { Sparkles, Loader2, Lock } from 'lucide-react';
 import { generateNewsFeedAction } from './actions';
 import type { AICuratedNewsFeedOutput } from '@/ai/flows/ai-curated-news-feed-for-pro-users';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
+import { useUser } from '@/firebase';
 
 export default function NewsPage() {
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
   const [feed, setFeed] = useState<AICuratedNewsFeedOutput | null>(null);
+  const { user, isUserLoading } = useUser();
+  const isPro = false; // Replace with actual user plan check
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -63,18 +67,33 @@ export default function NewsPage() {
     <>
       <PageHeader
         title="AI-Curated News"
-        description="A personalized news feed based on your interests."
+        description="A personalized news feed based on your interests and trending topics."
       />
-
-      <Alert className="mb-8 bg-primary/10 border-primary/20">
-        <Sparkles className="h-4 w-4 text-primary" />
-        <AlertTitle className="font-headline text-primary">
-          Pro Feature
-        </AlertTitle>
-        <AlertDescription>
-          This AI-curated news feed is an exclusive feature for our Pro members.
-        </AlertDescription>
-      </Alert>
+      
+      {!isPro && (
+        <Alert className="mb-8 bg-primary/10 border-primary/20 text-primary-foreground relative overflow-hidden">
+            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-background/80 backdrop-blur-sm">
+                <Lock className="h-10 w-10 text-primary mb-4" />
+                <h3 className="text-2xl font-bold font-headline mb-2">Unlock AI-Curated News</h3>
+                <p className="text-muted-foreground mb-4 max-w-xs text-center">
+                    This powerful, personalized news feed is an exclusive Pro feature.
+                </p>
+                <Button asChild>
+                    <Link href="/upgrade">
+                        <Sparkles className="mr-2 h-4 w-4" />
+                        Upgrade to Pro
+                    </Link>
+                </Button>
+            </div>
+          <Sparkles className="h-4 w-4 text-primary" />
+          <AlertTitle className="font-headline text-primary">
+            Exclusive Pro Feature
+          </AlertTitle>
+          <AlertDescription>
+            Our AI-powered news engine curates a feed tailored just for you.
+          </AlertDescription>
+        </Alert>
+      )}
 
       <div className="grid gap-8 md:grid-cols-3">
         <div className="md:col-span-1">
@@ -94,12 +113,12 @@ export default function NewsPage() {
                     name="userPreferences"
                     placeholder="e.g., Solana, NFTs, AI in crypto"
                     defaultValue="Solana, AI"
-                    disabled={isPending}
+                    disabled={!isPro || isPending}
                   />
                 </div>
               </CardContent>
               <CardFooter>
-                <Button type="submit" className="w-full" disabled={isPending}>
+                <Button type="submit" className="w-full" disabled={!isPro || isPending}>
                   {isPending ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -123,7 +142,7 @@ export default function NewsPage() {
           </h2>
           <div className="space-y-4">
             {isPending && (
-              <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center h-full">
+              <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center h-full min-h-[300px]">
                 <Loader2 className="h-8 w-8 animate-spin text-muted-foreground mb-4" />
                 <p className="text-muted-foreground">
                   Curating your personalized news...
@@ -131,9 +150,9 @@ export default function NewsPage() {
               </div>
             )}
             {!isPending && !feed && (
-              <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center h-full">
+              <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center h-full min-h-[300px]">
                 <p className="text-muted-foreground">
-                  Your personalized news feed will appear here.
+                  {isPro ? 'Generate your feed to see the latest stories.' : 'Upgrade to Pro to see your personalized news feed.'}
                 </p>
               </div>
             )}
