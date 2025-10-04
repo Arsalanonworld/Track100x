@@ -55,10 +55,14 @@ function AuthError({ error }: { error?: string | null }) {
 }
 
 const SubmitButton = ({ children, variant, formAction }: { children: React.ReactNode, variant?: any, formAction?: any }) => {
+    // This is a simplified pending state. `useFormStatus` is a more robust solution
+    // for pending states with server actions, but this works for simple cases.
     const [pending, setPending] = React.useState(false);
     
-    const handleClick = () => {
-        setPending(true);
+    const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+        if ((e.currentTarget.form as HTMLFormElement).checkValidity()) {
+            setPending(true);
+        }
     };
 
     return (
@@ -69,8 +73,8 @@ const SubmitButton = ({ children, variant, formAction }: { children: React.React
 };
 
 export function LoginForm() {
-  const [loginState, loginAction] = useActionState(login, null);
-  const [anonState, anonAction] = useActionState(anonymousLogin, null);
+  const [loginState, loginAction] = useActionState(login, { error: null });
+  const [anonState, anonAction] = useActionState(anonymousLogin, { error: null });
   const searchParams = useSearchParams();
   const next = searchParams.get('next') || '/';
 
@@ -83,7 +87,7 @@ export function LoginForm() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form className="space-y-4">
+        <form action={loginAction} className="space-y-4">
           <AuthError error={loginState?.error || anonState?.error} />
           <input type="hidden" name="next" value={next} />
           <div className="space-y-2">
@@ -100,7 +104,7 @@ export function LoginForm() {
             <Label htmlFor="password">Password</Label>
             <Input id="password" name="password" type="password" required />
           </div>
-          <SubmitButton formAction={loginAction}>Log In</SubmitButton>
+          <SubmitButton>Log In</SubmitButton>
           <div className="text-center text-sm">
             <Link href="/auth/reset-password" className="text-primary hover:underline">
               Forgot password?
@@ -118,7 +122,7 @@ export function LoginForm() {
         <form action={anonAction}>
             <input type="hidden" name="next" value={next} />
             <SubmitButton variant="secondary">
-                <User /> Login as Test User
+                <User className="mr-2" /> Login as Test User
             </SubmitButton>
         </form>
 
@@ -134,7 +138,7 @@ export function LoginForm() {
 }
 
 export function SignupForm() {
-    const [state, formAction] = useActionState(signup, null);
+    const [state, formAction] = useActionState(signup, { error: null });
     const searchParams = useSearchParams();
     const next = searchParams.get('next') || '/';
 
@@ -165,7 +169,7 @@ export function SignupForm() {
             <Input id="password" name="password" type="password" required minLength={6} />
             <p className="text-xs text-muted-foreground">Password must be at least 6 characters long.</p>
           </div>
-          <SubmitButton formAction={formAction}>Create Account</SubmitButton>
+          <SubmitButton>Create Account</SubmitButton>
         </form>
         <div className="mt-4 text-center text-sm">
           Already have an account?{' '}
@@ -180,7 +184,7 @@ export function SignupForm() {
 
 
 export function ResetPasswordForm() {
-    const [state, formAction] = useActionState(resetPassword, null);
+    const [state, formAction] = useActionState(resetPassword, { error: null, message: null });
   
     return (
       <Card>
@@ -209,7 +213,7 @@ export function ResetPasswordForm() {
                   required
                 />
               </div>
-              <SubmitButton formAction={formAction}>Send Reset Link</SubmitButton>
+              <SubmitButton>Send Reset Link</SubmitButton>
             </form>
           )}
            <div className="mt-4 text-center text-sm">

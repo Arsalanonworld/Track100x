@@ -10,7 +10,7 @@ import {
 } from 'firebase/auth';
 import { firebaseConfig } from '@/firebase/config';
 import { initializeApp, getApps } from 'firebase/app';
-import { getFirestore, doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { getFirestore, doc, setDoc, serverTimestamp, getDoc } from 'firebase/firestore';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 
@@ -52,21 +52,24 @@ export async function anonymousLogin(prevState: any, formData: FormData) {
         const user = userCredential.user;
 
         const userRef = doc(firestore, "users", user.uid);
-        await setDoc(userRef, {
-            id: user.uid,
-            email: `anon-${user.uid.slice(0,5)}@example.com`,
-            username: `anon-${user.uid.slice(0,5)}`,
-            plan: "free",
-            createdAt: serverTimestamp(),
-            entitlements: {
-                alerts: { maxActive: 3, channels: ["email"] },
-                feed: { delayMinutes: 15 },
-                leaderboard: { topN: 10 },
-                apiAccess: false,
-            },
-            quotas: { exportsPerDay: 1 },
-        }, { merge: true }); // Use merge to avoid overwriting if user already exists
+        const userDoc = await getDoc(userRef);
 
+        if (!userDoc.exists()) {
+            await setDoc(userRef, {
+                id: user.uid,
+                email: `anon-${user.uid.slice(0,5)}@example.com`,
+                username: `anon-${user.uid.slice(0,5)}`,
+                plan: "free",
+                createdAt: serverTimestamp(),
+                entitlements: {
+                    alerts: { maxActive: 3, channels: ["email"] },
+                    feed: { delayMinutes: 15 },
+                    leaderboard: { topN: 10 },
+                    apiAccess: false,
+                },
+                quotas: { exportsPerDay: 1 },
+            });
+        }
     } catch (error: any) {
         return { error: error.message };
     }
