@@ -53,8 +53,8 @@ export default function HeroSection() {
     const lastUpdateTime = useRef(0);
     const frameId = useRef<number>();
 
-    const typingSpeed = 120;
-    const deletingSpeed = 70;
+    const typingSpeed = 150;
+    const deletingSpeed = 100;
     const delayAfterTyping = 2000;
     const [pauseTime, setPauseTime] = useState<number | null>(null);
 
@@ -105,6 +105,7 @@ export default function HeroSection() {
                 cancelAnimationFrame(frameId.current);
             }
         };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [text]); // Only re-trigger when text state changes
 
     return (
@@ -113,7 +114,7 @@ export default function HeroSection() {
             <div className="container mx-auto px-4 text-center relative">
                 <h1 className="relative text-3xl font-extrabold tracking-tighter sm:text-5xl lg:text-6xl text-foreground inline-flex items-center justify-center h-16 sm:h-20">
                     <span>{text}</span>
-                    <span className="animate-blinking-cursor w-1.5 h-full ml-1 bg-primary"></span>
+                    <span className="animate-blinking-cursor w-1 sm:w-1.5 h-8 sm:h-12 ml-1 bg-primary"></span>
                 </h1>
                  <p className="max-w-2xl mx-auto mt-4 text-lg text-muted-foreground">
                     The ultimate wallet intelligence platform. Track whale transactions and get real-time smart alerts.
@@ -130,4 +131,3 @@ export default function HeroSection() {
         </section>
     );
 }
-
