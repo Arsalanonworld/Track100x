@@ -3,6 +3,7 @@
 import React from 'react';
 import Header from './header';
 import { TickerBar } from './ticker-bar';
+import { Footer } from './footer';
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -14,6 +15,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
             {children}
         </div>
       </main>
+      <Footer />
     </div>
   );
 }

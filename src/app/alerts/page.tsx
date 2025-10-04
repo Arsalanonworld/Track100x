@@ -1,4 +1,3 @@
-
 'use client';
 
 import PageHeader from '@/components/page-header';
@@ -12,7 +11,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Bell, Plus, Sparkles, Edit, Trash2, Lock, Wallet, Tag, History, CheckCircle, PauseCircle, PlayCircle, MoreVertical, Loader2 } from 'lucide-react';
+import { Bell, Plus, Sparkles, Edit, Trash2, Lock, Wallet, Tag, History, CheckCircle, PauseCircle, PlayCircle, MoreVertical, Loader2, ArrowRight } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import {
   Select,
@@ -60,6 +59,7 @@ const QuickAlertConfigurator = ({ isPro, userId }: { isPro: boolean; userId: str
       createdAt: serverTimestamp(),
       walletId: formData.get('walletId') || null,
       token: formData.get('token') || null,
+      rule: formData.get('rule') || null,
     };
 
     try {
@@ -418,64 +418,74 @@ export default function AlertsPage() {
                         </AlertDescription>
                     </Alert>
                  )}
-              <Accordion type="single" collapsible className="space-y-4">
-                {user && alerts && alerts.map((alert) => (
-                    <AccordionItem value={alert.id} key={alert.id} className="border-b-0">
-                         <Card className="overflow-hidden">
-                            <div className="flex items-center p-4">
-                                <div className="flex-shrink-0">
-                                {alert.alertType === 'wallet' ? <Wallet className="h-6 w-6 text-accent-foreground"/> : <Tag className="h-6 w-6 text-accent-foreground"/>}
-                                </div>
-                                <div className="flex-grow mx-4">
-                                    <p className="font-semibold">{alert.title}</p>
-                                    <p className="text-sm text-muted-foreground">
-                                        {`Notify when ${alert.alertType} ${alert.rule} > $${alert.threshold}`}
-                                    </p>
-                                </div>
-                                <div className="flex items-center gap-2 ml-4">
-                                <Badge variant={alert.enabled ? 'default' : 'secondary'}>{alert.enabled ? 'Active' : 'Paused'}</Badge>
-                                    <AccordionTrigger className="p-2 hover:bg-accent rounded-md [&[data-state=open]>svg]:rotate-90">
-                                        <MoreVertical className="h-4 w-4"/>
-                                    </AccordionTrigger>
-                                </div>
-                            </div>
-                            <AccordionContent>
-                                <div className="bg-muted/50 px-4 py-3 border-t">
-                                    <div className="flex justify-between items-center text-sm">
-                                        <div className="text-muted-foreground">
-                                            <p>Last triggered: <span className="text-foreground">Never</span></p>
-                                            <p>Created on: <span className="text-foreground">{alert.createdAt ? new Date(alert.createdAt.seconds * 1000).toLocaleDateString() : 'N/A'}</span></p>
+              
+                {user && alerts && alerts.length > 0 ? (
+                    <Accordion type="single" collapsible className="space-y-4">
+                        {alerts.map((alert) => (
+                            <AccordionItem value={alert.id} key={alert.id} className="border-b-0">
+                                <Card className="overflow-hidden">
+                                    <div className="flex items-center p-4">
+                                        <div className="flex-shrink-0">
+                                        {alert.alertType === 'wallet' ? <Wallet className="h-6 w-6 text-accent-foreground"/> : <Tag className="h-6 w-6 text-accent-foreground"/>}
                                         </div>
-                                        <div className="flex gap-2">
-                                            <Button variant="ghost" size="sm" onClick={() => handleToggleAlert(alert.id, alert.enabled)}>
-                                                {alert.enabled ? <PauseCircle className="mr-2" /> : <PlayCircle className="mr-2" />}
-                                                {alert.enabled ? 'Pause' : 'Resume'}
-                                            </Button>
-                                             <Button variant="ghost" size="sm" disabled>
-                                                <Edit className="mr-2"/>
-                                                Edit
-                                            </Button>
-                                            <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive" onClick={() => handleDeleteAlert(alert.id)}>
-                                                <Trash2 className="mr-2"/>
-                                                Delete
-                                            </Button>
+                                        <div className="flex-grow mx-4">
+                                            <p className="font-semibold">{alert.title}</p>
+                                            <p className="text-sm text-muted-foreground">
+                                                {`Notify when ${alert.alertType} ${alert.rule} > $${alert.threshold}`}
+                                            </p>
+                                        </div>
+                                        <div className="flex items-center gap-2 ml-4">
+                                        <Badge variant={alert.enabled ? 'default' : 'secondary'}>{alert.enabled ? 'Active' : 'Paused'}</Badge>
+                                            <AccordionTrigger className="p-2 hover:bg-accent rounded-md [&[data-state=open]>svg]:rotate-90">
+                                                <MoreVertical className="h-4 w-4"/>
+                                            </AccordionTrigger>
                                         </div>
                                     </div>
-                                </div>
-                            </AccordionContent>
-                        </Card>
-                  </AccordionItem>
-                ))}
-                 {(!user || activeAlertCount === 0) && (
-                    <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed p-12 text-center h-full">
-                        <Bell className="h-10 w-10 text-muted-foreground mb-4"/>
-                        <h3 className="text-xl font-semibold mb-2">{user ? 'No Active Alerts' : 'Login to See Alerts'}</h3>
-                        <p className="text-muted-foreground">
-                        {user ? 'Create your first alert to start monitoring on-chain activity.' : 'Sign up for a free account to create alerts.'}
-                        </p>
-                  </div>
+                                    <AccordionContent>
+                                        <div className="bg-muted/50 px-4 py-3 border-t">
+                                            <div className="flex justify-between items-center text-sm">
+                                                <div className="text-muted-foreground">
+                                                    <p>Last triggered: <span className="text-foreground">Never</span></p>
+                                                    <p>Created on: <span className="text-foreground">{alert.createdAt ? new Date(alert.createdAt.seconds * 1000).toLocaleDateString() : 'N/A'}</span></p>
+                                                </div>
+                                                <div className="flex gap-2">
+                                                    <Button variant="ghost" size="sm" onClick={() => handleToggleAlert(alert.id, alert.enabled)}>
+                                                        {alert.enabled ? <PauseCircle className="mr-2" /> : <PlayCircle className="mr-2" />}
+                                                        {alert.enabled ? 'Pause' : 'Resume'}
+                                                    </Button>
+                                                    <Button variant="ghost" size="sm" disabled>
+                                                        <Edit className="mr-2"/>
+                                                        Edit
+                                                    </Button>
+                                                    <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive" onClick={() => handleDeleteAlert(alert.id)}>
+                                                        <Trash2 className="mr-2"/>
+                                                        Delete
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </AccordionContent>
+                                </Card>
+                        </AccordionItem>
+                        ))}
+                    </Accordion>
+                 ) : (
+                    <div className="text-center py-16">
+                        <h2 className="text-4xl font-bold font-headline mb-2">Your Market Edge is One Alert Away.</h2>
+                        <p className="text-muted-foreground text-lg mb-6">Create a custom alert now and never miss a critical market move again.</p>
+                        <Dialog>
+                            <DialogTrigger asChild>
+                                <Button size="lg">
+                                    Create a Free Alert
+                                    <ArrowRight className="ml-2" />
+                                </Button>
+                            </DialogTrigger>
+                            {user && (
+                                <CreateAlertModal isPro={isPro} canCreateAlert={canCreateAlert} userId={user.uid} />
+                            )}
+                        </Dialog>
+                    </div>
                 )}
-              </Accordion>
             </div>
 
             <div>

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Sun } from "lucide-react";
 import Link from "next/link";
 
-const LogoIcon = () => (
+export const LogoIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-7 w-7 text-primary">
         <path d="M12.378 1.602a.75.75 0 00-.756 0L3.34 6.324a.75.75 0 00.341 1.353l8.038-2.922a.75.75 0 01.756 0l8.038 2.922a.75.75 0 00.341-1.353L12.378 1.602z" />
         <path fillRule="evenodd" d="M12 21a.75.75 0 01-.75-.75v-8.69l-7.756-2.82a.75.75 0 01-.341-1.353L12 1.602l8.815 6.784a.75.75 0 01-.341 1.353L12.75 6.938v8.691c-.001.202-.07.39-.188.53l-4.5 5.25a.75.75 0 01-1.125 0l-4.5-5.25a.75.75 0 01.938-1.124l4.062 4.74v-7.19l-4.756-1.73a.75.75 0 01.682-1.306L12 9.363l4.756-1.731a.75.75 0 01.682 1.306l-4.756 1.73v7.19l4.062-4.74a.75.75 0 11.937 1.125l-4.5 5.25a.75.75 0 01-.563.27z" clipRule="evenodd" />
