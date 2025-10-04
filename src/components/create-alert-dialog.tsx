@@ -53,7 +53,7 @@ export const CreateAlertDialog = ({ isPro, canCreateAlert, userId, onOpenChange 
           </TabsContent>
           <TabsContent value="advanced" className="pt-6">
             {isPro ? (
-                <AlertBuilder onSave={() => onOpenChange(false)} />
+                <AlertBuilder onSave={() => onOpenChange(false)} isPro={isPro} />
             ) : (
                 <Card className="relative overflow-hidden border-dashed border-2">
                     <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-background/80 backdrop-blur-sm p-8 text-center">

@@ -1,3 +1,4 @@
+
 'use client';
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
@@ -7,6 +8,7 @@ import { Checkbox } from '../ui/checkbox';
 import { Label } from '../ui/label';
 import { Plus, Trash2 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { Badge } from '../ui/badge';
 
 const triggerTypes = [
   { value: "Large Transaction", pro: false },
@@ -58,7 +60,7 @@ const Condition = ({ index, onRemove }: { index: number, onRemove: (index: numbe
 };
 
 
-export default function AlertBuilder({ onSave }: { onSave: () => void }) {
+export default function AlertBuilder({ onSave, isPro }: { onSave: () => void, isPro: boolean }) {
     const [conditions, setConditions] = useState([{}]);
 
     const addCondition = () => {
@@ -117,12 +119,12 @@ export default function AlertBuilder({ onSave }: { onSave: () => void }) {
                         <Label htmlFor="in-app">In-App Notification</Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                        <Checkbox id="telegram" disabled/>
-                        <Label htmlFor="telegram" className="text-muted-foreground">Telegram</Label>
+                        <Checkbox id="telegram" />
+                        <Label htmlFor="telegram">Telegram</Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                        <Checkbox id="discord" disabled/>
-                        <Label htmlFor="discord" className="text-muted-foreground">Discord</Label>
+                        <Checkbox id="discord" />
+                        <Label htmlFor="discord">Discord</Label>
                     </div>
                 </div>
             </div>

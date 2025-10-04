@@ -62,7 +62,7 @@ export default function AlertCreatorCard() {
             <QuickAlertConfigurator isPro={isPro} userId={userId} />
           </TabsContent>
           <TabsContent value="advanced" className="pt-6">
-            <AlertBuilder onSave={() => {}} />
+            <AlertBuilder onSave={() => {}} isPro={isPro} />
           </TabsContent>
         </Tabs>
       </CardContent>

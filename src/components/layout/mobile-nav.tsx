@@ -1,3 +1,4 @@
+
 'use client'
 
 import * as React from "react"
@@ -9,6 +10,8 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetTrigger } from "@/components/ui/sheet"
 import { LogoIcon } from "./header"
+import { useUser, useFirestore, useMemoFirebase, useDoc } from "@/firebase"
+import { doc } from "firebase/firestore"
 
 const navItems = [
     { href: '/leaderboard', label: 'Leaderboard', icon: BarChart },
@@ -18,7 +21,16 @@ const navItems = [
 ];
 
 export function MobileNav() {
-  const [open, setOpen] = React.useState(false)
+  const [open, setOpen] = React.useState(false);
+  const { user } = useUser();
+  const firestore = useFirestore();
+
+  const userDocRef = useMemoFirebase(() => {
+    if (!firestore || !user) return null;
+    return doc(firestore, 'users', user.uid);
+  }, [firestore, user]);
+  const { data: userData } = useDoc(userDocRef);
+  const isPro = userData?.plan === 'pro';
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -57,13 +69,15 @@ export function MobileNav() {
               {item.label}
             </MobileLink>
           ))}
-          <MobileLink
-            href="/upgrade"
-            onOpenChange={setOpen}
-            className="text-primary"
-          >
-            Upgrade
-          </MobileLink>
+          {!isPro && (
+            <MobileLink
+              href="/upgrade"
+              onOpenChange={setOpen}
+              className="text-primary"
+            >
+              Upgrade
+            </MobileLink>
+          )}
         </div>
       </SheetContent>
     </Sheet>

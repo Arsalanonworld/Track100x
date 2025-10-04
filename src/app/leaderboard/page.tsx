@@ -21,7 +21,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { walletLeaderboard } from '@/lib/mock-data';
-import { ArrowUpDown, Zap, Lock, Loader2, Star, ArrowRight } from 'lucide-react';
+import { ArrowUpDown, Zap, Star, Loader2, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   Select,
@@ -35,7 +35,6 @@ import { QuickAlertModal } from '@/components/quick-alert-modal';
 import { useUser, useFirestore, useMemoFirebase, useDoc, useCollection } from '@/firebase';
 import { doc, setDoc, deleteDoc, serverTimestamp, collection } from 'firebase/firestore';
 import Link from 'next/link';
-import { ProFeatureLock } from '@/components/pro-feature-lock';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useToast } from '@/hooks/use-toast';
 import { useAuthDialog } from '@/hooks/use-auth-dialog';
@@ -72,7 +71,6 @@ export default function LeaderboardPage() {
   }, [isPro, user, userData]);
   
   const leaderboardData = useMemo(() => walletLeaderboard.slice(0, topN), [topN]);
-  const lockedData = useMemo(() => walletLeaderboard.slice(topN, topN + 3), [topN]);
   const showProLock = !isPro && walletLeaderboard.length > topN;
 
 
@@ -99,10 +97,10 @@ export default function LeaderboardPage() {
         toast({ title: "Could not unfollow wallet.", variant: "destructive" });
       }
     } else {
-      if (!isPro && followedAddresses.size >= 1) {
+      if (!isPro && followedAddresses.size >= 3) {
         toast({
           title: "Free Limit Reached",
-          description: "Upgrade to Pro to follow more than one wallet.",
+          description: "Upgrade to Pro to follow more than 3 wallets.",
           variant: "destructive",
         });
         return;
@@ -271,24 +269,9 @@ export default function LeaderboardPage() {
                   </TableRow>
                 ))}
                  {showProLock && (
-                  <>
-                    {lockedData.map((wallet) => (
-                      <TableRow key={wallet.rank} className="relative blur-sm pointer-events-none">
-                        <TableCell className="font-medium text-lg text-center">{wallet.rank}</TableCell>
-                        <TableCell><Badge variant="secondary" className="font-mono">{wallet.address.slice(0, 6)}...</Badge></TableCell>
-                        <TableCell>${(wallet.netWorth / 1_000_000).toFixed(2)}M</TableCell>
-                        <TableCell>...</TableCell>
-                        <TableCell>...</TableCell>
-                        <TableCell>...</TableCell>
-                        <TableCell className="text-right">
-                          <Button variant="ghost" size="icon" disabled><Star className="h-4 w-4" /></Button>
-                          <Button variant="ghost" size="icon" disabled><Zap className="h-4 w-4" /></Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
                     <TableRow>
-                      <TableCell colSpan={7} className="text-center p-0">
-                         <div className="p-4">
+                      <TableCell colSpan={7} className="p-0">
+                         <div className="p-4 text-center bg-muted/50">
                             <h3 className="font-semibold">Unlock the rest of the Top 100 whales</h3>
                             <p className="text-muted-foreground text-sm mb-4">Upgrade to Pro to get full access to the leaderboard and advanced analytics.</p>
                             <AnimatedButton asChild>
@@ -300,7 +283,6 @@ export default function LeaderboardPage() {
                           </div>
                       </TableCell>
                     </TableRow>
-                  </>
                 )}
               </TableBody>
             </Table>

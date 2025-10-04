@@ -1,3 +1,4 @@
+
 'use client'
 
 import * as React from "react"
@@ -5,6 +6,8 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Zap, Bell, BarChart, FileText, Star } from "lucide-react"
+import { useUser, useFirestore, useMemoFirebase, useDoc } from "@/firebase"
+import { doc } from "firebase/firestore"
 
 const navItems = [
     { href: '/leaderboard', label: 'Leaderboard', icon: BarChart },
@@ -15,6 +18,15 @@ const navItems = [
 
 export function MainNav() {
     const pathname = usePathname()
+    const { user } = useUser();
+    const firestore = useFirestore();
+
+    const userDocRef = useMemoFirebase(() => {
+        if (!firestore || !user) return null;
+        return doc(firestore, 'users', user.uid);
+    }, [firestore, user]);
+    const { data: userData } = useDoc(userDocRef);
+    const isPro = userData?.plan === 'pro';
 
   return (
     <nav className="hidden md:flex items-center space-x-6 text-sm font-medium">
@@ -31,15 +43,17 @@ export function MainNav() {
                 {item.label}
             </Link>
         ))}
-         <Link
-            href="/upgrade"
-            className={cn(
-                "flex items-center gap-2 transition-colors text-primary font-semibold hover:text-primary/90",
-            )}
-        >
-            <Zap className="h-4 w-4" />
-            Upgrade
-        </Link>
+        {!isPro && (
+             <Link
+                href="/upgrade"
+                className={cn(
+                    "flex items-center gap-2 transition-colors text-primary font-semibold hover:text-primary/90",
+                )}
+            >
+                <Zap className="h-4 w-4" />
+                Upgrade
+            </Link>
+        )}
     </nav>
   )
 }
