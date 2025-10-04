@@ -41,7 +41,6 @@ export default function AccountPage() {
 
   const handleLogout = async () => {
     await logout();
-    router.push('/');
   };
 
   const handleManageSubscription = async () => {
