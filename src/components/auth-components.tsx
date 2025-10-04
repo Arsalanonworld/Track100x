@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useFormState } from 'react-dom';
+import { useActionState } from 'react';
 import {
   login,
   signup,
@@ -68,7 +68,7 @@ const SubmitButton = ({ children }: { children: React.ReactNode }) => {
 };
 
 export function LoginForm() {
-  const [state, formAction] = useFormState(login, null);
+  const [state, formAction] = useActionState(login, null);
   const searchParams = useSearchParams();
   const next = searchParams.get('next') || '/';
 
@@ -117,7 +117,7 @@ export function LoginForm() {
 }
 
 export function SignupForm() {
-    const [state, formAction] = useFormState(signup, null);
+    const [state, formAction] = useActionState(signup, null);
     const searchParams = useSearchParams();
     const next = searchParams.get('next') || '/';
 
@@ -163,7 +163,7 @@ export function SignupForm() {
 
 
 export function ResetPasswordForm() {
-    const [state, formAction] = useFormState(resetPassword, null);
+    const [state, formAction] = useActionState(resetPassword, null);
   
     return (
       <Card>
