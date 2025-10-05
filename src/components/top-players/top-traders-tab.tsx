@@ -35,15 +35,21 @@ const mockTraders = [
 export default function TopTradersTab({ isPro }: { isPro: boolean }) {
     if (!isPro) {
         return (
-            <Card className="relative overflow-hidden">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 blur-sm">
-                   {mockTraders.slice(0, 3).map((trader) => (
-                    <Card key={trader.rank} className="p-4">
-                        <div className="flex justify-between items-start">
-                            <p className="text-lg font-bold">#{trader.rank}</p>
-                            <p className="font-bold text-lg text-primary">{trader.alias}</p>
+            <div className="relative">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 blur-sm">
+                   {mockTraders.map((trader) => (
+                    <Card key={trader.rank} className="p-4 flex flex-col h-full">
+                        <div className="flex justify-between items-start mb-4">
+                            <p className="text-lg font-bold text-muted-foreground">#{trader.rank}</p>
+                            <Button variant="ghost" size="icon" disabled className="h-8 w-8"><Star className="h-4 w-4 text-muted-foreground" /></Button>
                         </div>
-                        <div className="mt-4 space-y-2 text-sm">
+                        <div className="text-center my-auto flex-grow">
+                            <p className="font-bold text-xl text-primary">{trader.alias}</p>
+                            <div className="flex gap-2 justify-center mt-2 flex-wrap">
+                            {trader.tags.map(tag => <Badge key={tag} variant="secondary">{tag}</Badge>)}
+                            </div>
+                        </div>
+                        <div className="space-y-2 text-sm mt-4">
                             <div className="flex justify-between">
                                 <span className="text-muted-foreground">7d P&L</span>
                                 <span className="font-medium text-green-500">+{trader.pnl}%</span>
@@ -52,20 +58,16 @@ export default function TopTradersTab({ isPro }: { isPro: boolean }) {
                                 <span className="text-muted-foreground">Win Rate</span>
                                 <span className="font-medium">{trader.winRate}%</span>
                             </div>
-                             <div className="flex justify-between">
+                            <div className="flex justify-between">
                                 <span className="text-muted-foreground">Top Token</span>
                                 <span className="font-medium">{trader.topToken}</span>
                             </div>
                         </div>
-                        <Button className="w-full mt-4" variant="outline" disabled>
-                           <Star className="h-4 w-4 mr-2" />
-                            Track
-                        </Button>
                     </Card>
                 ))}
                 </div>
-                 <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/80">
-                    <div className="text-center p-8 space-y-4">
+                 <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/80 rounded-lg">
+                    <div className="text-center p-8 space-y-4 bg-card/95 border rounded-lg shadow-2xl">
                         <Lock className="w-8 h-8 text-primary mx-auto" />
                         <h3 className="text-2xl font-bold">Unlock Top Traders</h3>
                         <p className="text-muted-foreground max-w-sm">
@@ -76,7 +78,7 @@ export default function TopTradersTab({ isPro }: { isPro: boolean }) {
                         </Button>
                     </div>
                 </div>
-            </Card>
+            </div>
         );
     }
 
