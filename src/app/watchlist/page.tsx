@@ -6,7 +6,7 @@ import PageHeader from '@/components/page-header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Trash2, EyeOff, BellPlus } from 'lucide-react';
+import { Trash2, EyeOff, BellPlus, ArrowRight } from 'lucide-react';
 import { useUser, useCollection, useFirestore } from '@/firebase';
 import { collection, query, doc, deleteDoc } from 'firebase/firestore';
 import type { WatchlistItem } from '@/lib/types';
@@ -31,26 +31,25 @@ import { FeatureLock } from '@/components/feature-lock';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { CreateAlertDialog } from '@/components/create-alert-dialog';
+import Link from 'next/link';
 
 
 function WatchlistSkeleton() {
     return (
-        <div className="space-y-4">
+        <div className="divide-y border-t">
             {[...Array(3)].map((_, i) => (
-                <Card key={i}>
-                    <CardContent className="p-4 flex items-center justify-between">
-                         <div className="flex items-center gap-4">
-                            <div className="space-y-2">
-                                <Skeleton className="h-6 w-48 rounded-md" />
-                                <Skeleton className="h-4 w-32 rounded-md" />
-                            </div>
+                <div key={i} className="p-4 flex items-center justify-between">
+                     <div className="flex items-center gap-4">
+                        <div className="space-y-2">
+                            <Skeleton className="h-6 w-48 rounded-md" />
+                            <Skeleton className="h-4 w-32 rounded-md" />
                         </div>
-                         <div className="flex items-center gap-2">
-                            <Skeleton className="h-10 w-10 rounded-md" />
-                            <Skeleton className="h-10 w-10 rounded-md" />
-                        </div>
-                    </CardContent>
-                </Card>
+                    </div>
+                     <div className="flex items-center gap-2">
+                        <Skeleton className="h-10 w-10 rounded-md" />
+                        <Skeleton className="h-10 w-10 rounded-md" />
+                    </div>
+                </div>
             ))}
         </div>
     )
@@ -113,7 +112,6 @@ export default function WatchlistPage() {
                     description="Monitor the wallets you are tracking."
                 />
 
-                {isLoading ? <WatchlistSkeleton /> : (
                 <Card>
                     <CardHeader>
                     <CardTitle>Tracked Wallets</CardTitle>
@@ -121,62 +119,62 @@ export default function WatchlistPage() {
                         You are watching {watchlist?.length || 0} wallet(s).
                     </CardDescription>
                     </CardHeader>
-                    <CardContent>
-                        {watchlist && watchlist.length > 0 ? (
-                            <div className="space-y-4">
+                    <CardContent className="p-0">
+                        {isLoading ? <WatchlistSkeleton /> : watchlist && watchlist.length > 0 ? (
+                            <div className="divide-y border-t">
                                 {watchlist.map((item) => (
-                                    <Card key={item.id} className="hover:shadow-sm transition-shadow">
-                                        <CardContent className="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                                            <div className="flex-1">
-                                                <Badge variant="secondary" className="font-mono text-sm">
-                                                    {item.walletAddress}
-                                                </Badge>
-                                                <p className="text-xs text-muted-foreground mt-1">
-                                                    Added on: {item.createdAt?.toDate().toLocaleDateString() ?? 'N/A'}
-                                                </p>
-                                            </div>
-                                            <div className="flex items-center gap-1 shrink-0">
-                                                <DialogTrigger asChild>
-                                                    <Button variant="ghost" size="icon" onClick={() => handleOpenAlertEditor(item)}>
-                                                        <BellPlus className="h-4 w-4" />
+                                    <div key={item.id} className="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                                        <div className="flex-1">
+                                            <Badge variant="secondary" className="font-mono text-sm">
+                                                {item.walletAddress}
+                                            </Badge>
+                                            <p className="text-xs text-muted-foreground mt-1">
+                                                Added on: {item.createdAt?.toDate().toLocaleDateString() ?? 'N/A'}
+                                            </p>
+                                        </div>
+                                        <div className="flex items-center gap-1 shrink-0">
+                                            <DialogTrigger asChild>
+                                                <Button variant="ghost" size="icon" onClick={() => handleOpenAlertEditor(item)}>
+                                                    <BellPlus className="h-4 w-4" />
+                                                </Button>
+                                            </DialogTrigger>
+                                            <AlertDialog>
+                                                <AlertDialogTrigger asChild>
+                                                    <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
+                                                        <Trash2 className="h-4 w-4" />
                                                     </Button>
-                                                </DialogTrigger>
-                                                <AlertDialog>
-                                                    <AlertDialogTrigger asChild>
-                                                        <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
-                                                            <Trash2 className="h-4 w-4" />
-                                                        </Button>
-                                                    </AlertDialogTrigger>
-                                                    <AlertDialogContent>
-                                                        <AlertDialogHeader>
-                                                        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                                                        <AlertDialogDescription>
-                                                            This will permanently remove the wallet <span className='font-mono bg-muted p-1 rounded-sm'>{item.walletAddress.slice(0, 6)}...${item.walletAddress.slice(-4)}</span> from your watchlist.
-                                                        </AlertDialogDescription>
-                                                        </AlertDialogHeader>
-                                                        <AlertDialogFooter>
-                                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                        <AlertDialogAction onClick={() => handleRemove(item)} className="bg-destructive hover:bg-destructive/90">Remove</AlertDialogAction>
-                                                        </AlertDialogFooter>
-                                                    </AlertDialogContent>
-                                                </AlertDialog>
-                                            </div>
-                                        </CardContent>
-                                    </Card>
+                                                </AlertDialogTrigger>
+                                                <AlertDialogContent>
+                                                    <AlertDialogHeader>
+                                                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                                    <AlertDialogDescription>
+                                                        This will permanently remove the wallet <span className='font-mono bg-muted p-1 rounded-sm'>{item.walletAddress.slice(0, 6)}...${item.walletAddress.slice(-4)}</span> from your watchlist.
+                                                    </AlertDialogDescription>
+                                                    </AlertDialogHeader>
+                                                    <AlertDialogFooter>
+                                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                    <AlertDialogAction onClick={() => handleRemove(item)} className="bg-destructive hover:bg-destructive/90">Remove</AlertDialogAction>
+                                                    </AlertDialogFooter>
+                                                </AlertDialogContent>
+                                            </AlertDialog>
+                                        </div>
+                                    </div>
                                 ))}
                             </div>
                         ) : (
-                            <div className="flex flex-col items-center justify-center text-center text-muted-foreground p-8 border-2 border-dashed rounded-lg">
+                           <div className="flex flex-col items-center justify-center text-center text-muted-foreground p-8 border-t">
                                 <EyeOff className="h-10 w-10 mb-4" />
                                 <p className="font-semibold">Your watchlist is empty.</p>
-                                <p className="text-sm">
-                                    Add wallets from the Top Players page to start tracking.
+                                <p className="text-sm max-w-xs mx-auto">
+                                    Add wallets from the Leaderboard or Whale Feed to start tracking their activity.
                                 </p>
+                                <Button asChild className='mt-4'>
+                                    <Link href="/leaderboard">Go to Leaderboard <ArrowRight className="h-4 w-4 ml-2" /></Link>
+                                </Button>
                             </div>
                         )}
                     </CardContent>
                 </Card>
-                )}
             </div>
             
             {selectedWatchlistItem && (
