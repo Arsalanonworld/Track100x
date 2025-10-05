@@ -1,6 +1,6 @@
 
 'use client';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
@@ -8,11 +8,12 @@ import { Checkbox } from '../ui/checkbox';
 import { Label } from '../ui/label';
 import { Plus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import type { Alert } from '@/lib/types';
-import { useUser, useFirestore } from '@/firebase';
-import { doc, updateDoc, addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import type { Alert, WatchlistItem } from '@/lib/types';
+import { useUser, useFirestore, useCollection } from '@/firebase';
+import { doc, updateDoc, addDoc, collection, serverTimestamp, query } from 'firebase/firestore';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
+import { Combobox } from '../ui/combobox';
 
 const triggerTypes = [
   { value: "Large Transaction", pro: false },
@@ -69,6 +70,25 @@ export default function AlertBuilder({ onSave, onCancel, alert, entity }: { onSa
     const { user } = useUser();
     const firestore = useFirestore();
     const { toast } = useToast();
+    const [identifier, setIdentifier] = useState(alert?.walletId || alert?.token || entity?.identifier || '');
+    const [alertType, setAlertType] = useState<'wallet' | 'token'>(alert?.alertType || entity?.type || 'wallet');
+
+    const watchlistQuery = useMemo(() => {
+        if (user && firestore) {
+          return query(collection(firestore, `users/${user.uid}/watchlist`));
+        }
+        return null;
+      }, [user, firestore]);
+    
+    const { data: watchlistItems } = useCollection<WatchlistItem>(watchlistQuery);
+
+    const walletOptions = useMemo(() => {
+        return watchlistItems?.map(item => ({
+            value: item.walletAddress,
+            label: item.name ? `${item.name} (${item.walletAddress.slice(0, 6)}...${item.walletAddress.slice(-4)})` : item.walletAddress,
+        })) || [];
+    }, [watchlistItems]);
+
 
     const addCondition = () => {
         setConditions([...conditions, {}]);
@@ -80,18 +100,28 @@ export default function AlertBuilder({ onSave, onCancel, alert, entity }: { onSa
     
     const handleSave = () => {
         if (!user || !firestore) return;
-
-        const linkedIdentifier = alert ? (alert.walletId || alert.token) : entity?.identifier;
+        if(!identifier) {
+            toast({
+                variant: 'destructive',
+                title: 'Missing Information',
+                description: 'Please select or enter a wallet address or token.'
+            });
+            return;
+        }
 
         const newOrUpdatedAlert: any = {
-            alertType: alert?.alertType || entity?.type || 'wallet',
-            walletId: alert?.alertType === 'wallet' ? linkedIdentifier : (entity?.type === 'wallet' ? linkedIdentifier : undefined),
-            token: alert?.alertType === 'token' ? linkedIdentifier : (entity?.type === 'token' ? linkedIdentifier : undefined),
+            alertType: alertType,
             rule: 'Advanced Rule',
             threshold: 1000000,
             enabled: true,
             userId: user.uid,
         };
+
+        if (alertType === 'wallet') {
+            newOrUpdatedAlert.walletId = identifier;
+        } else {
+            newOrUpdatedAlert.token = identifier;
+        }
         
         if (alert) { // Update existing alert
             const alertRef = doc(firestore, `users/${user.uid}/alerts`, alert.id);
@@ -133,11 +163,23 @@ export default function AlertBuilder({ onSave, onCancel, alert, entity }: { onSa
         }
     }
 
-    const linkedIdentifier = alert ? (alert.walletId || alert.token) : entity?.identifier;
-
+    const linkedIdentifier = alert?.walletId || alert?.token || entity?.identifier;
 
     return (
         <div className="space-y-6">
+            {!linkedIdentifier && (
+                <div className="space-y-2">
+                    <Label>Target Wallet or Token</Label>
+                    <Combobox
+                        options={walletOptions}
+                        value={identifier}
+                        onChange={setIdentifier}
+                        placeholder="Select from watchlist or paste address..."
+                        emptyMessage="No wallets in watchlist."
+                    />
+                </div>
+            )}
+
             {linkedIdentifier && (
                 <div>
                     <h3 className="font-semibold text-sm text-muted-foreground">Linked Entity</h3>
