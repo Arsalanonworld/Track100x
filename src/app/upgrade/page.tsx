@@ -177,12 +177,14 @@ export default function UpgradePage() {
         </section>
 
         <section id="features" className="py-24">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-center">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {featureHighlights.map((feature, index) => (
-                    <div key={index} className="p-6 bg-card border rounded-lg">
-                        {feature.icon}
-                        <h3 className="text-lg font-bold mt-4">{feature.title}</h3>
-                        <p className="text-muted-foreground mt-2 text-sm">{feature.description}</p>
+                    <div key={index} className="flex items-start gap-4">
+                        <div className="flex-shrink-0">{feature.icon}</div>
+                        <div>
+                            <h3 className="text-lg font-bold">{feature.title}</h3>
+                            <p className="text-muted-foreground mt-1 text-sm">{feature.description}</p>
+                        </div>
                     </div>
                 ))}
             </div>
