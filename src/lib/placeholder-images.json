@@ -41,6 +41,24 @@
       "description": "Insight article image",
       "imageUrl": "https://images.unsplash.com/photo-1745509267945-b25cbb4d50ef?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxmaW5hbmNpYWwlMjBjaGFydHxlbnwwfHx8fDE3NTk1MDAxNTJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "financial chart"
+    },
+    {
+      "id": "insight-4",
+      "description": "Insight article image",
+      "imageUrl": "https://images.unsplash.com/photo-1677756119517-756a188d2d94?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxBSSUyMGFuZCUyMGRhdGF8ZW58MHx8fHwxNzU5NjU5MzY4fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "AI data"
+    },
+    {
+      "id": "insight-5",
+      "description": "Insight article image",
+      "imageUrl": "https://images.unsplash.com/photo-1599420186946-7b6fb4e297f0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxpZGVhJTIwYnVsfGVufDB8fHx8MTc1OTY1OTQwN3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "idea bulb"
+    },
+    {
+      "id": "insight-6",
+      "description": "Insight article image",
+      "imageUrl": "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxjcnlwdG8lMjBhaXJkcm9wfGVufDB8fHx8MTc1OTY1OTQzM3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "crypto airdrop"
     }
   ]
 }

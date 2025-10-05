@@ -36,4 +36,31 @@ export const mockArticles: Article[] = [
         href: "#",
         imageSlug: "insight-3",
     },
-]
+    {
+        id: "4",
+        title: "AI & Crypto: How Machine Learning is Revolutionizing Trading Strategies",
+        description: "Explore the intersection of artificial intelligence and cryptocurrency, and how AI-powered tools are giving traders a new edge in the market.",
+        category: "Technology",
+        date: "Sep 5, 2024",
+        href: "#",
+        imageSlug: "insight-4",
+    },
+    {
+        id: "5",
+        title: "The Next Narrative: Identifying Trends Before They Happen",
+        description: "A deep dive into the art of narrative trading, using on-chain data to spot emerging trends and position yourself ahead of the curve.",
+        category: "Strategy",
+        date: "Aug 29, 2024",
+        href: "#",
+        imageSlug: "insight-5",
+    },
+    {
+        id: "6",
+        title: "Airdrop Farming: Maximizing Your Yield in 2024",
+        description: "Our comprehensive guide to airdrop farming, with tips and strategies for identifying opportunities and maximizing your returns.",
+        category: "DeFi",
+        date: "Aug 21, 2024",
+        href: "#",
+        imageSlug: "insight-6",
+    }
+];
