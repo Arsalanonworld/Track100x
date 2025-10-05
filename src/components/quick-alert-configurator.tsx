@@ -16,12 +16,18 @@ import { useUser, useFirestore } from '@/firebase';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 
 
-export const QuickAlertConfigurator = ({ onSubmitted }: { onSubmitted?: () => void }) => {
-  const [alertType, setAlertType] = React.useState<'wallet' | 'token'>('wallet');
+export const QuickAlertConfigurator = ({ onSubmitted, entity }: { onSubmitted?: () => void, entity?: { type: 'wallet' | 'token', identifier: string } }) => {
+  const [alertType, setAlertType] = React.useState<'wallet' | 'token'>(entity?.type || 'wallet');
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const { toast } = useToast();
   const { user, claims } = useUser();
   const firestore = useFirestore();
+
+  React.useEffect(() => {
+    if (entity?.type) {
+      setAlertType(entity.type);
+    }
+  }, [entity]);
 
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -81,7 +87,7 @@ export const QuickAlertConfigurator = ({ onSubmitted }: { onSubmitted?: () => vo
     <form onSubmit={handleSubmit} className="space-y-6">
         <div className="space-y-2">
             <Label>Alert Type</Label>
-            <Select onValueChange={(v: 'wallet' | 'token') => setAlertType(v)} defaultValue="wallet" name="alertType">
+            <Select onValueChange={(v: 'wallet' | 'token') => setAlertType(v)} defaultValue={alertType} name="alertType" disabled={!!entity}>
                 <SelectTrigger>
                     <SelectValue placeholder="Select alert type..." />
                 </SelectTrigger>
@@ -105,6 +111,8 @@ export const QuickAlertConfigurator = ({ onSubmitted }: { onSubmitted?: () => vo
                 name="walletId"
                 placeholder="e.g., 0x... or vitalik.eth"
                 required
+                defaultValue={entity?.type === 'wallet' ? entity.identifier : ''}
+                readOnly={!!(entity?.type === 'wallet')}
               />
             </div>
              <div className="space-y-2">
@@ -155,6 +163,8 @@ export const QuickAlertConfigurator = ({ onSubmitted }: { onSubmitted?: () => vo
                 name="token"
                 placeholder="e.g., WIF, PEPE"
                 required
+                defaultValue={entity?.type === 'token' ? entity.identifier : ''}
+                readOnly={!!(entity?.type === 'token')}
               />
             </div>
              <div className="space-y-2">

@@ -18,9 +18,8 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from '../ui/dialog';
-import QuickAlertEditor from './quick-alert-editor';
-import AlertBuilder from './alert-builder';
 import { cn } from '@/lib/utils';
 import type { Alert } from '@/lib/types';
 import { useUser, useFirestore, useCollection } from '@/firebase';
@@ -36,6 +35,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import { CreateAlertDialog } from '../create-alert-dialog';
 
 
 const iconMap = {
@@ -61,21 +61,15 @@ export default function ActiveAlerts() {
     
     const isPro = claims?.plan === 'pro';
 
-    const handleSave = () => {
-        // Toast is handled within the editor components now
-        setIsEditorOpen(false);
-        setSelectedAlert(null);
-    };
-
-    const handleCancel = () => {
-        setIsEditorOpen(false);
-        setSelectedAlert(null);
-    };
-
     const handleEdit = (alert: Alert) => {
         setSelectedAlert(alert);
         setIsEditorOpen(true);
     };
+
+    const handleCloseEditor = () => {
+        setSelectedAlert(null);
+        setIsEditorOpen(false);
+    }
 
     async function toggleAlert(alertToToggle: Alert) {
         if (!firestore || !user) return;
@@ -151,9 +145,11 @@ export default function ActiveAlerts() {
                                 onCheckedChange={() => toggleAlert(alert)}
                                 aria-label="Toggle alert"
                             />
-                            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleEdit(alert)}>
-                                <Pencil className="h-4 w-4" />
-                            </Button>
+                            <DialogTrigger asChild>
+                                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleEdit(alert)}>
+                                    <Pencil className="h-4 w-4" />
+                                </Button>
+                            </DialogTrigger>
                             <AlertDialog>
                               <AlertDialogTrigger asChild>
                                 <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive">
@@ -194,23 +190,15 @@ export default function ActiveAlerts() {
                 </div>
                 </CardContent>
             </Card>
-            <DialogContent className="sm:max-w-xl">
-                <DialogHeader>
-                <DialogTitle>
-                    Edit Alert
-                </DialogTitle>
-                </DialogHeader>
-                {selectedAlert && ( isPro ? ( 
-                    <AlertBuilder onSave={handleSave} onCancel={handleCancel} isPro={true} alert={selectedAlert}/>
-                ) : (
-                    <QuickAlertEditor
-                        alert={selectedAlert}
-                        onSave={handleSave}
-                        onCancel={handleCancel}
-                    />
-                ))}
-            </DialogContent>
+            {selectedAlert && (
+                <CreateAlertDialog 
+                    onOpenChange={setIsEditorOpen} 
+                    entity={{ 
+                        type: selectedAlert.alertType, 
+                        identifier: selectedAlert.walletId || selectedAlert.token || ''
+                    }}
+                />
+            )}
         </Dialog>
     );
 }
-

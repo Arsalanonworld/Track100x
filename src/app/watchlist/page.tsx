@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Trash2, EyeOff, BellPlus } from 'lucide-react';
 import { useUser, useCollection, useFirestore } from '@/firebase';
 import { collection, query, doc, deleteDoc } from 'firebase/firestore';
-import type { WatchlistItem } from '@/lib/types';
+import type { WatchlistItem, Alert } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -27,14 +27,12 @@ import {
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { FeatureLock } from '@/components/feature-lock';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
-import QuickAlertEditor from '@/components/alerts/quick-alert-editor';
+import { CreateAlertDialog } from '@/components/create-alert-dialog';
 
 
 function WatchlistSkeleton() {
@@ -80,14 +78,6 @@ export default function WatchlistPage() {
   const handleCloseAlertEditor = () => {
     setSelectedWatchlistItem(null);
     setIsAlertEditorOpen(false);
-  }
-
-  const handleSaveAlert = () => {
-    toast({
-        title: "Alert created!",
-        description: `You'll be notified for activity on ${selectedWatchlistItem?.walletAddress.slice(0, 6)}...`
-    });
-    handleCloseAlertEditor();
   }
 
   const handleRemove = (item: WatchlistItem) => {
@@ -151,9 +141,11 @@ export default function WatchlistPage() {
                                             {item.createdAt?.toDate().toLocaleDateString() ?? 'N/A'}
                                         </TableCell>
                                         <TableCell className="text-right">
-                                            <Button variant="ghost" size="icon" onClick={() => handleOpenAlertEditor(item)}>
-                                                <BellPlus className="h-4 w-4" />
-                                            </Button>
+                                            <DialogTrigger asChild>
+                                                <Button variant="ghost" size="icon" onClick={() => handleOpenAlertEditor(item)}>
+                                                    <BellPlus className="h-4 w-4" />
+                                                </Button>
+                                            </DialogTrigger>
                                             <AlertDialog>
                                                 <AlertDialogTrigger asChild>
                                                     <Button variant="ghost" size="icon">
@@ -193,20 +185,10 @@ export default function WatchlistPage() {
             </div>
             
             {selectedWatchlistItem && (
-                 <DialogContent className="sm:max-w-md">
-                    <DialogHeader>
-                    <DialogTitle>Create Quick Alert</DialogTitle>
-                    </DialogHeader>
-                    <QuickAlertEditor 
-                        entity={{
-                            type: 'Wallet',
-                            identifier: selectedWatchlistItem.walletAddress,
-                            label: selectedWatchlistItem.walletAddress
-                        }}
-                        onSave={handleSaveAlert}
-                        onCancel={handleCloseAlertEditor}
-                    />
-                </DialogContent>
+                <CreateAlertDialog 
+                    onOpenChange={setIsAlertEditorOpen} 
+                    entity={{ type: 'wallet', identifier: selectedWatchlistItem.walletAddress }}
+                />
             )}
         </div>
     </Dialog>
