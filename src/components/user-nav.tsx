@@ -56,7 +56,7 @@ export function UserNav() {
             </Button>
             <Link href="/upgrade" passHref>
               <AnimatedButton>
-                  Sign Up & Upgrade
+                  Upgrade
               </AnimatedButton>
             </Link>
         </div>
