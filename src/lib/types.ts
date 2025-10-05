@@ -29,7 +29,9 @@ export type Alert = {
 export type WatchlistItem = {
     id:string;
     walletAddress: string;
+    name?: string;
     createdAt: any; // Firebase Timestamp
     userId: string;
 };
+
 
