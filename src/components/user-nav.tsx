@@ -113,9 +113,11 @@ export function UserNav() {
 
       {isFree && (
         <AnimatedButton asChild>
-          <Link href="/upgrade" className="flex items-center gap-2">
-            <Zap className="h-4 w-4" />
-            Upgrade
+          <Link href="/upgrade">
+            <div className="flex items-center gap-2">
+                <Zap className="h-4 w-4" />
+                Upgrade
+            </div>
           </Link>
         </AnimatedButton>
       )}
