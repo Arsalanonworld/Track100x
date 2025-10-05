@@ -4,7 +4,7 @@
 import * as React from "react"
 import Link, { type LinkProps } from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { Menu, BarChart, Bell, FileText } from "lucide-react"
+import { Menu, BarChart, Bell, FileText, Eye } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -13,6 +13,7 @@ import { LogoIcon } from "./header"
 
 const navItems = [
     { href: '/leaderboard', label: 'Leaderboard', icon: BarChart },
+    { href: '/watchlist', label: 'Watchlist', icon: Eye },
     { href: '/alerts', label: 'Alerts', icon: Bell },
     { href: '/insights', label: 'Insights', icon: FileText },
 ];

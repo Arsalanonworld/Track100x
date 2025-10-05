@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -19,17 +20,28 @@ import {
 } from '@/components/ui/select';
 import { Button } from './ui/button';
 import { useEffect, useState } from 'react';
+import { useToast } from '@/hooks/use-toast';
 
 type QuickAlertModalProps = {
-  walletAddress?: string;
+  walletAddress: string;
+  onOpenChange: (isOpen: boolean) => void;
 };
 
-export const QuickAlertModal = ({ walletAddress }: QuickAlertModalProps) => {
+export const QuickAlertModal = ({ walletAddress, onOpenChange }: QuickAlertModalProps) => {
     const [address, setAddress] = useState(walletAddress || '');
+    const { toast } = useToast();
 
     useEffect(() => {
         setAddress(walletAddress || '');
     }, [walletAddress]);
+    
+    const handleSave = () => {
+        toast({
+            title: "Alert created!",
+            description: `You'll be notified for activity on ${address.slice(0, 6)}...${address.slice(-4)}`
+        });
+        onOpenChange(false);
+    }
 
     if (!walletAddress) return null;
 
@@ -102,9 +114,7 @@ export const QuickAlertModal = ({ walletAddress }: QuickAlertModalProps) => {
         <DialogClose asChild>
           <Button variant="outline">Cancel</Button>
         </DialogClose>
-        <DialogClose asChild>
-          <Button>Save Alert</Button>
-        </DialogClose>
+        <Button onClick={handleSave}>Save Alert</Button>
       </div>
     </DialogContent>
   );

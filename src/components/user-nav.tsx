@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -11,7 +12,7 @@ import {
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import { LogOut, User, DollarSign, Star } from 'lucide-react';
+import { LogOut, User, DollarSign, Star, Eye } from 'lucide-react';
 import { AnimatedButton } from './ui/animated-button';
 import { useUser } from '@/firebase';
 import { useState, useEffect } from 'react';
@@ -25,8 +26,6 @@ export function UserNav() {
   const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
   const plan = claims?.plan || 'free';
 
-  // This state helps prevent hydration mismatch by ensuring the UI doesn't
-  // change until after the initial client-side render.
   const [isClient, setIsClient] = useState(false);
   useEffect(() => {
     setIsClient(true);
@@ -80,10 +79,16 @@ export function UserNav() {
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem asChild>
+           <DropdownMenuItem asChild>
               <Link href="/account">
                 <User className="mr-2 h-4 w-4" />
                 <span>Account</span>
+              </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+              <Link href="/watchlist">
+                <Eye className="mr-2 h-4 w-4" />
+                <span>Watchlist</span>
               </Link>
           </DropdownMenuItem>
           {plan === 'pro' && (

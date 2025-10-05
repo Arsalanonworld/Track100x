@@ -20,8 +20,8 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { walletLeaderboard } from '@/lib/mock-data';
-import { ArrowUpDown, Zap } from 'lucide-react';
+import { walletLeaderboard, type Wallet } from '@/lib/mock-data';
+import { ArrowUpDown, Zap, Eye } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   Select,
@@ -33,11 +33,65 @@ import {
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { QuickAlertModal } from '@/components/quick-alert-modal';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useToast } from '@/hooks/use-toast';
+import { useUser } from '@/firebase';
+
+
+type SortKey = 'netWorth' | 'pnlPercent';
 
 export default function LeaderboardPage() {
   const [selectedWallet, setSelectedWallet] = useState<string | undefined>(undefined);
-  
-  const leaderboardData = useMemo(() => walletLeaderboard, []);
+  const [chainFilter, setChainFilter] = useState('all');
+  const [sortConfig, setSortConfig] = useState<{ key: SortKey; direction: 'asc' | 'desc' } | null>(null);
+  const { toast } = useToast();
+  const { user } = useUser();
+
+  const handleAddToWatchlist = (walletAddress: string) => {
+    if (!user) {
+      toast({
+        variant: 'destructive',
+        title: 'Authentication Required',
+        description: 'Please log in to add wallets to your watchlist.',
+      });
+      return;
+    }
+    // Firestore logic would go here
+    toast({
+      title: 'Added to Watchlist',
+      description: `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)} is now being watched.`,
+    });
+  };
+
+  const sortedAndFilteredData = useMemo(() => {
+    let data: Wallet[] = [...walletLeaderboard];
+
+    if (chainFilter !== 'all') {
+      data = data.filter(w => w.blockchain.toLowerCase() === chainFilter);
+    }
+
+    if (sortConfig !== null) {
+      data.sort((a, b) => {
+        if (a[sortConfig.key] < b[sortConfig.key]) {
+          return sortConfig.direction === 'asc' ? -1 : 1;
+        }
+        if (a[sortConfig.key] > b[sortConfig.key]) {
+          return sortConfig.direction === 'asc' ? 1 : -1;
+        }
+        return 0;
+      });
+    }
+
+    return data;
+  }, [chainFilter, sortConfig]);
+
+  const requestSort = (key: SortKey) => {
+    let direction: 'asc' | 'desc' = 'desc';
+    if (sortConfig && sortConfig.key === key && sortConfig.direction === 'desc') {
+      direction = 'asc';
+    }
+    setSortConfig({ key, direction });
+  };
+
 
   return (
     <Dialog onOpenChange={(isOpen) => !isOpen && setSelectedWallet(undefined)}>
@@ -56,7 +110,7 @@ export default function LeaderboardPage() {
               </CardDescription>
             </div>
             <div className="flex gap-2 flex-wrap">
-              <Select>
+              <Select value={chainFilter} onValueChange={setChainFilter}>
                 <SelectTrigger className="w-full sm:w-[160px]">
                   <SelectValue placeholder="All Chains" />
                 </SelectTrigger>
@@ -64,6 +118,7 @@ export default function LeaderboardPage() {
                   <SelectItem value="all">All Chains</SelectItem>
                   <SelectItem value="ethereum">Ethereum</SelectItem>
                   <SelectItem value="solana">Solana</SelectItem>
+                  <SelectItem value="bitcoin">Bitcoin</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -77,36 +132,24 @@ export default function LeaderboardPage() {
                   <TableHead className="w-[80px]">Rank</TableHead>
                   <TableHead>Wallet</TableHead>
                   <TableHead>
-                     <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button variant="ghost" size="sm" className="-ml-4">
-                              Net Worth
-                              <ArrowUpDown className="ml-2 h-4 w-4" />
-                            </Button>
-                           </TooltipTrigger>
-                        </Tooltip>
-                      </TooltipProvider>
+                    <Button variant="ghost" size="sm" className="-ml-4" onClick={() => requestSort('netWorth')}>
+                      Net Worth
+                      <ArrowUpDown className="ml-2 h-4 w-4" />
+                    </Button>
                   </TableHead>
                   <TableHead>Top Holding</TableHead>
                   <TableHead>
-                    <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button variant="ghost" size="sm" className="-ml-4">
-                               P&L (7d)
-                              <ArrowUpDown className="ml-2 h-4 w-4" />
-                            </Button>
-                           </TooltipTrigger>
-                        </Tooltip>
-                      </TooltipProvider>
+                    <Button variant="ghost" size="sm" className="-ml-4" onClick={() => requestSort('pnlPercent')}>
+                       P&L (7d)
+                      <ArrowUpDown className="ml-2 h-4 w-4" />
+                    </Button>
                   </TableHead>
                   <TableHead className="text-center">7d Activity</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {leaderboardData.map((wallet) => (
+                {sortedAndFilteredData.map((wallet) => (
                   <TableRow key={wallet.rank} className="hover:shadow-md">
                     <TableCell className="font-medium text-lg text-center">
                       {wallet.rank}
@@ -136,25 +179,51 @@ export default function LeaderboardPage() {
                         'dark:text-green-500 dark:text-red-500'
                       )}
                     >
-                      {wallet.pnl >= 0 ? '+' : '-'}
+                      {wallet.pnl >= 0 ? '+' : ''}
                       {wallet.pnlPercent}%
                     </TableCell>
                     <TableCell className="text-center">
                       {wallet.activity} txns
                     </TableCell>
                     <TableCell className="text-right">
-                      <DialogTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => {
-                              setSelectedWallet(wallet.address);
-                          }}
-                        >
-                          <Zap className="h-4 w-4" />
-                          <span className="sr-only">Create Quick Alert</span>
-                        </Button>
-                      </DialogTrigger>
+                       <TooltipProvider>
+                         <div className='flex justify-end gap-1'>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => handleAddToWatchlist(wallet.address)}
+                                >
+                                  <Eye className="h-4 w-4" />
+                                  <span className="sr-only">Add to Watchlist</span>
+                                </Button>
+                              </TooltipTrigger>
+                               <TooltipContent>
+                                <p>Add to Watchlist</p>
+                              </TooltipContent>
+                            </Tooltip>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                  <DialogTrigger asChild>
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      onClick={() => {
+                                          setSelectedWallet(wallet.address);
+                                      }}
+                                    >
+                                      <Zap className="h-4 w-4" />
+                                      <span className="sr-only">Create Quick Alert</span>
+                                    </Button>
+                                  </DialogTrigger>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Create Quick Alert</p>
+                              </TooltipContent>
+                            </Tooltip>
+                         </div>
+                      </TooltipProvider>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -163,7 +232,7 @@ export default function LeaderboardPage() {
           </div>
         </CardContent>
       </Card>
-      <QuickAlertModal walletAddress={selectedWallet} />
+      {selectedWallet && <QuickAlertModal walletAddress={selectedWallet} onOpenChange={(isOpen) => !isOpen && setSelectedWallet(undefined)}/>}
     </Dialog>
   );
 }
