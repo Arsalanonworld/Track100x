@@ -21,7 +21,8 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { walletLeaderboard, type Wallet } from '@/lib/mock-data';
-import { ArrowUpDown, Zap, Eye } from 'lucide-react';
+import { ArrowUpDown, Zap, Eye, Lock, ArrowRight } from 'lucide-react';
+import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import {
   Select,
@@ -34,9 +35,8 @@ import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { QuickAlertModal } from '@/components/quick-alert-modal';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useToast } from '@/hooks/use-toast';
-import { useUser, useFirestore } from '@/firebase';
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
-
+import { useUser, useFirestore, useCollection } from '@/firebase';
+import { addDoc, collection, serverTimestamp, query, where } from 'firebase/firestore';
 
 type SortKey = 'netWorth' | 'pnlPercent';
 
@@ -45,8 +45,17 @@ export default function LeaderboardPage() {
   const [chainFilter, setChainFilter] = useState('all');
   const [sortConfig, setSortConfig] = useState<{ key: SortKey; direction: 'asc' | 'desc' } | null>(null);
   const { toast } = useToast();
-  const { user } = useUser();
+  const { user, claims } = useUser();
   const firestore = useFirestore();
+  const isPro = claims?.plan === 'pro';
+
+  const watchlistQuery = useMemo(() => {
+    if (!user || !firestore) return null;
+    return query(collection(firestore, `users/${user.uid}/watchlist`));
+  }, [user, firestore]);
+
+  const { data: watchlist, loading: watchlistLoading } = useCollection(watchlistQuery);
+  const watchedAddresses = useMemo(() => new Set(watchlist?.map(item => item.walletAddress)), [watchlist]);
 
   const handleAddToWatchlist = async (walletAddress: string) => {
     if (!user || !firestore) {
@@ -54,6 +63,15 @@ export default function LeaderboardPage() {
         variant: 'destructive',
         title: 'Authentication Required',
         description: 'Please log in to add wallets to your watchlist.',
+      });
+      return;
+    }
+    
+    if (watchedAddresses.has(walletAddress)) {
+      toast({
+        variant: 'default',
+        title: 'Already Watched',
+        description: `This wallet is already in your watchlist.`,
       });
       return;
     }
@@ -78,8 +96,10 @@ export default function LeaderboardPage() {
     }
   };
 
+  const walletsToShow = isPro ? walletLeaderboard : walletLeaderboard.slice(0, 10);
+
   const sortedAndFilteredData = useMemo(() => {
-    let data: Wallet[] = [...walletLeaderboard];
+    let data: Wallet[] = [...walletsToShow];
 
     if (chainFilter !== 'all') {
       data = data.filter(w => w.blockchain.toLowerCase() === chainFilter || w.blockchain === 'All');
@@ -98,7 +118,7 @@ export default function LeaderboardPage() {
     }
 
     return data;
-  }, [chainFilter, sortConfig]);
+  }, [chainFilter, sortConfig, walletsToShow]);
 
   const requestSort = (key: SortKey) => {
     let direction: 'asc' | 'desc' = 'desc';
@@ -122,7 +142,7 @@ export default function LeaderboardPage() {
             <div className="flex-1">
               <CardTitle>Top Wallets</CardTitle>
               <CardDescription>
-                The biggest players in the crypto space.
+                {isPro ? 'The biggest players in the crypto space.' : 'Top 10 wallets. Upgrade to Pro to see the full list.'}
               </CardDescription>
             </div>
             <div className="flex gap-2 flex-wrap">
@@ -210,13 +230,14 @@ export default function LeaderboardPage() {
                                   variant="ghost"
                                   size="icon"
                                   onClick={() => handleAddToWatchlist(wallet.address)}
+                                  disabled={watchlistLoading || watchedAddresses.has(wallet.address)}
                                 >
                                   <Eye className="h-4 w-4" />
                                   <span className="sr-only">Add to Watchlist</span>
                                 </Button>
                               </TooltipTrigger>
                                <TooltipContent>
-                                <p>Add to Watchlist</p>
+                                <p>{watchedAddresses.has(wallet.address) ? 'Already in Watchlist' : 'Add to Watchlist'}</p>
                               </TooltipContent>
                             </Tooltip>
                             <Tooltip>
@@ -254,6 +275,18 @@ export default function LeaderboardPage() {
               </TableBody>
             </Table>
           </div>
+          {!isPro && (
+            <div className="text-center p-6 border-t">
+              <Lock className="mx-auto h-8 w-8 text-muted-foreground mb-2" />
+              <h3 className="font-semibold text-lg">Unlock the Full Leaderboard</h3>
+              <p className="text-muted-foreground text-sm max-w-md mx-auto mt-1 mb-4">
+                See the top 100 wallets, get access to advanced filters, and more.
+              </p>
+              <Button asChild>
+                <Link href="/upgrade">Upgrade to Pro <ArrowRight className="ml-2 h-4 w-4"/></Link>
+              </Button>
+            </div>
+          )}
         </CardContent>
       </Card>
       {selectedWallet && <QuickAlertModal walletAddress={selectedWallet} onOpenChange={(isOpen) => !isOpen && setSelectedWallet(undefined)}/>}

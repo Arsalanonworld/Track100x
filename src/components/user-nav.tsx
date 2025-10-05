@@ -24,7 +24,7 @@ export function UserNav() {
   const { user, claims, loading } = useUser();
   const logout = useLogout();
   const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
-  const plan = claims?.plan || 'free';
+  const isPro = claims?.plan === 'pro';
 
   const [isClient, setIsClient] = useState(false);
   useEffect(() => {
@@ -32,25 +32,35 @@ export function UserNav() {
   }, []);
 
   if (!isClient || loading) {
-    return <Skeleton className="h-10 w-28 rounded-md" />;
+    return (
+        <div className="flex items-center gap-2">
+            <Skeleton className="h-10 w-24 rounded-md" />
+            <Skeleton className="h-10 w-10 rounded-full" />
+        </div>
+    );
   }
 
   // Guest State
   if (!user) {
     return (
-      <>
-        <Button onClick={() => setIsAuthDialogOpen(true)}>
-          Login / Sign Up
-        </Button>
+        <>
+        <div className="flex items-center gap-2">
+            <Button variant="ghost" onClick={() => setIsAuthDialogOpen(true)}>
+                Login
+            </Button>
+            <AnimatedButton onClick={() => setIsAuthDialogOpen(true)}>
+                Sign Up
+            </AnimatedButton>
+        </div>
         <AuthDialog open={isAuthDialogOpen} onOpenChange={setIsAuthDialogOpen} />
-      </>
+        </>
     );
   }
 
   // Logged-in State
   return (
-    <div className="flex items-center gap-4">
-      {plan === 'free' && (
+    <div className="flex items-center gap-2">
+      {!isPro && (
         <Link href="/upgrade" passHref>
           <AnimatedButton>
             <Star className="mr-2 h-4 w-4" />
@@ -85,13 +95,7 @@ export function UserNav() {
                 <span>Account</span>
               </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-              <Link href="/watchlist">
-                <Eye className="mr-2 h-4 w-4" />
-                <span>Watchlist</span>
-              </Link>
-          </DropdownMenuItem>
-          {plan === 'pro' && (
+          {isPro && (
             <DropdownMenuItem disabled>
               <DollarSign className="mr-2 h-4 w-4" />
               <span>Manage Subscription</span>

@@ -28,14 +28,14 @@ export const LogoIcon = () => (
 
 
 export default function Header() {
-    const { user } = useUser();
+    const { user, claims } = useUser();
 
     return (
         <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur-sm">
             <div className="container flex h-16 items-center justify-between">
                 <div className="flex items-center">
                     <MobileNav />
-                    <Link href="/" className="mr-6 flex items-center space-x-2">
+                     <Link href="/" className="mr-6 flex items-center space-x-2">
                         <LogoIcon />
                         <span className="hidden font-bold sm:inline-block">Track100x</span>
                     </Link>

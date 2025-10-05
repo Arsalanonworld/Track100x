@@ -10,16 +10,20 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetTrigger } from "@/components/ui/sheet"
 import { LogoIcon } from "./header"
-
-const navItems = [
-    { href: '/leaderboard', label: 'Leaderboard', icon: BarChart },
-    { href: '/watchlist', label: 'Watchlist', icon: Eye },
-    { href: '/alerts', label: 'Alerts', icon: Bell },
-    { href: '/insights', label: 'Insights', icon: FileText },
-];
+import { useUser } from "@/firebase"
 
 export function MobileNav() {
   const [open, setOpen] = React.useState(false);
+  const { user } = useUser();
+
+  const navItems = [
+      { href: '/leaderboard', label: 'Leaderboard', icon: BarChart, visible: true },
+      { href: '/watchlist', label: 'Watchlist', icon: Eye, visible: !!user },
+      { href: '/alerts', label: 'Alerts', icon: Bell, visible: true },
+      { href: '/insights', label: 'Insights', icon: FileText, visible: true },
+  ];
+
+  const visibleItems = navItems.filter(item => item.visible);
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -49,7 +53,7 @@ export function MobileNav() {
             </SheetDescription>
         </SheetHeader>
         <div className="flex flex-col gap-4 pl-6 mt-4 text-lg font-medium flex-1">
-          {navItems.map((item) => (
+          {visibleItems.map((item) => (
             <MobileLink
               key={item.href}
               href={item.href}
