@@ -29,9 +29,9 @@ export function LeaderboardPreview() {
   return (
     <section>
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-2xl font-bold">Top Wallets</h2>
+        <h2 className="text-2xl font-bold">Top Players</h2>
         <Button variant="ghost" asChild>
-          <Link href="/leaderboard">
+          <Link href="/top-players">
             View Full Leaderboard
             <ArrowRight className="ml-2 h-4 w-4" />
           </Link>

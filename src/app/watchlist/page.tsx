@@ -59,20 +59,14 @@ export default function WatchlistPage() {
 
   const handleRemove = async (item: WatchlistItem) => {
     if (!firestore || !user) return;
-    try {
-        await deleteDoc(doc(firestore, `users/${user.uid}/watchlist`, item.id));
-        toast({
-            title: "Wallet Removed",
-            description: `${item.walletAddress.slice(0, 6)}...${item.walletAddress.slice(-4)} removed from watchlist.`
-        })
-    } catch(e) {
-        console.error("Error removing document: ", e);
-        toast({
-            variant: 'destructive',
-            title: "Error",
-            description: "Could not remove wallet from watchlist."
-        })
-    }
+    const docRef = doc(firestore, `users/${user.uid}/watchlist`, item.id);
+    await deleteDoc(docRef).catch(async (e) => {
+      console.error(e)
+    });
+    toast({
+        title: "Wallet Removed",
+        description: `${item.walletAddress.slice(0, 6)}...${item.walletAddress.slice(-4)} removed from watchlist.`
+    });
   }
 
   const isLoading = userLoading || (user && watchlistLoading);
@@ -145,7 +139,7 @@ export default function WatchlistPage() {
                             <EyeOff className="h-10 w-10 mb-4" />
                             <p className="font-semibold">Your watchlist is empty.</p>
                             <p className="text-sm">
-                                Add wallets from the leaderboard to start tracking.
+                                Add wallets from the Top Players page to start tracking.
                             </p>
                         </div>
                     )}

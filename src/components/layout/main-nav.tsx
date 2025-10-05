@@ -12,7 +12,7 @@ export function MainNav() {
     const { user } = useUser();
 
     const navItems = [
-        { href: '/leaderboard', label: 'Leaderboard', visible: true },
+        { href: '/top-players', label: 'Top Players', visible: true },
         { href: '/watchlist', label: 'Watchlist', visible: !!user },
         { href: '/alerts', label: 'Alerts', visible: true },
         { href: '/insights', label: 'Insights', visible: true },
@@ -29,7 +29,7 @@ export function MainNav() {
                     href={item.href}
                     className={cn(
                         "transition-colors hover:text-foreground",
-                        pathname === item.href ? "text-foreground" : "text-foreground/60"
+                        pathname.startsWith(item.href) ? "text-foreground" : "text-foreground/60"
                     )}
                 >
                     {item.label}
