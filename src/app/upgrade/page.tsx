@@ -1,4 +1,3 @@
-
 'use client';
 import { Check, X, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -10,6 +9,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/firebase';
 import React from 'react';
+import { Faq } from '@/components/faq';
 
 const features = [
   {
@@ -198,6 +198,15 @@ export default function UpgradePage() {
                     </div>
                 </div>
             </div>
+        </section>
+        
+        <section className="mt-24 max-w-3xl mx-auto">
+          <div className="text-center mb-12">
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl font-headline">
+                    Frequently Asked Questions
+                </h2>
+            </div>
+            <Faq />
         </section>
     </div>
   );

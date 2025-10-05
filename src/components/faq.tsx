@@ -15,7 +15,7 @@ const faqs = [
   },
   {
     question: 'What happens if I hit my alert limit on the Free plan?',
-    answer: 'On the Free plan, you can create up to 3 active alerts. If you reach this limit, you will need to upgrade to Pro to create more alerts. You can also delete an existing alert to free up a slot.',
+    answer: 'On the Free plan, you can create up to 1 active alert. If you reach this limit, you will need to upgrade to Pro to create more alerts. You can also delete an existing alert to free up a slot.',
   },
   {
     question: 'What blockchains do you support?',
@@ -23,7 +23,7 @@ const faqs = [
   },
   {
     question: 'How "real-time" is the data?',
-    answer: 'Our Pro plan offers a feed with near-zero latency, pulling data directly as transactions are confirmed on-chain. The Free plan feed has a delay of up to 15 minutes.',
+    answer: 'Our Pro plan offers a feed with near-zero latency, pulling data directly as transactions are confirmed on-chain. The Free plan feed has a delay of up to 1-2 minutes.',
   },
    {
     question: 'Can I use Track100x for commercial purposes?',
