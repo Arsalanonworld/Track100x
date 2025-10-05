@@ -12,7 +12,7 @@ import {
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import { LogOut, User, DollarSign, Star, Home, BarChart, Eye, Bell, Newspaper } from 'lucide-react';
+import { LogOut, User, DollarSign, Star, Eye } from 'lucide-react';
 import { AnimatedButton } from './ui/animated-button';
 import { useUser } from '@/firebase';
 import { useState, useEffect } from 'react';
@@ -54,9 +54,11 @@ export function UserNav() {
             <Button variant="ghost" onClick={() => openAuthDialog('login')}>
                 Login
             </Button>
-            <AnimatedButton onClick={() => openAuthDialog('signup')}>
-                Sign Up
-            </AnimatedButton>
+            <Link href="/upgrade" passHref>
+              <AnimatedButton>
+                  Sign Up & Upgrade
+              </AnimatedButton>
+            </Link>
         </div>
         <AuthDialog 
             open={isAuthDialogOpen} 
