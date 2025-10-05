@@ -57,12 +57,13 @@ const SubmitButton = ({
 
 const LoginTab = ({ closeDialog }: { closeDialog: () => void }) => {
   const [state, formAction, pending] = useActionState(login, { error: null });
-  const [showReset, setShowReset] = useState(false);
   const searchParams = useSearchParams();
   const next = searchParams.get('next') || '/';
 
-  if (showReset) {
-    return <ResetPasswordTab onBack={() => setShowReset(false)} />;
+  const action = searchParams.get('action');
+
+  if (action === 'reset-password') {
+    return <ResetPasswordTab />;
   }
 
   return (
@@ -82,13 +83,12 @@ const LoginTab = ({ closeDialog }: { closeDialog: () => void }) => {
       <div className="space-y-2">
          <div className="flex items-center justify-between">
             <Label htmlFor="password">Password</Label>
-             <button
-                type="button"
-                onClick={() => setShowReset(true)}
+             <a
+                href="/auth/reset-password"
                 className="text-xs text-primary hover:underline"
             >
                 Forgot password?
-            </button>
+            </a>
         </div>
         <Input id="password" name="password" type="password" required />
       </div>
@@ -126,7 +126,7 @@ const SignUpTab = ({ closeDialog }: { closeDialog: () => void }) => {
   );
 };
 
-const ResetPasswordTab = ({ onBack }: { onBack: () => void }) => {
+const ResetPasswordTab = () => {
   const [state, formAction, pending] = useActionState(resetPassword, { error: null, message: null });
 
   return (
@@ -150,9 +150,9 @@ const ResetPasswordTab = ({ onBack }: { onBack: () => void }) => {
             </form>
         )}
 
-        <Button variant="link" onClick={onBack} className="w-full">
+        <a href="/auth/login" className="inline-block w-full text-center text-sm text-primary hover:underline">
           Back to Log In
-        </Button>
+        </a>
     </div>
   );
 };
@@ -173,23 +173,36 @@ export default function AuthDialog() {
     }
   }, [action]);
 
+  const CurrentTab = () => {
+      if(action === 'reset-password') {
+          return <ResetPasswordTab />
+      }
+      if(activeTab === 'signup') {
+          return <SignUpTab closeDialog={() => setAuthDialogOpen(false)} />
+      }
+      return <LoginTab closeDialog={() => setAuthDialogOpen(false)} />
+  }
+
   return (
     <Dialog open={authDialogOpen} onOpenChange={setAuthDialogOpen}>
       <DialogContent className="sm:max-w-md">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="login">Log In</TabsTrigger>
-            <TabsTrigger value="signup">Sign Up</TabsTrigger>
-          </TabsList>
-          <TabsContent value="login" className="pt-4">
-            <LoginTab closeDialog={() => setAuthDialogOpen(false)} />
-          </TabsContent>
-          <TabsContent value="signup" className="pt-4">
-            <SignUpTab closeDialog={() => setAuthDialogOpen(false)} />
-          </TabsContent>
-        </Tabs>
+        {action === 'reset-password' ? (
+            <CurrentTab />
+        ) : (
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="login">Log In</TabsTrigger>
+                <TabsTrigger value="signup">Sign Up</TabsTrigger>
+            </TabsList>
+            <TabsContent value="login" className="pt-4">
+                <LoginTab closeDialog={() => setAuthDialogOpen(false)} />
+            </TabsContent>
+            <TabsContent value="signup" className="pt-4">
+                <SignUpTab closeDialog={() => setAuthDialogOpen(false)} />
+            </TabsContent>
+            </Tabs>
+        )}
       </DialogContent>
     </Dialog>
   );
 }
-
