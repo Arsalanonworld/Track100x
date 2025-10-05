@@ -1,7 +1,6 @@
-
 'use client';
-import React, { useState, useEffect } from 'react';
-import { CheckCircle, XCircle, Star, ArrowRight, TrendingUp, Bell, Zap, Trophy, ShieldQuestion, BrainCircuit, Users, BarChart, Newspaper, Eye } from 'lucide-react';
+import React, { useState } from 'react';
+import { CheckCircle, XCircle, Star, ArrowRight, TrendingUp, Bell, Zap, Trophy, ShieldQuestion, BrainCircuit, Users, Newspaper, Eye, BarChart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
@@ -15,6 +14,7 @@ import { useUser } from '@/firebase';
 import { AuthDialog } from '@/components/auth/auth-dialog';
 import { AnimatedButton } from '@/components/ui/animated-button';
 import { Faq } from '@/components/faq';
+
 
 const features = [
   {
@@ -129,7 +129,7 @@ export default function UpgradePage() {
   const [isAuthDialogOpen, setAuthDialogOpen] = useState(false);
   const isPro = claims?.plan === 'pro';
 
-  useEffect(() => {
+  React.useEffect(() => {
     // If user is already pro, redirect them to account page
     if (!loading && isPro) {
       router.push('/account');
