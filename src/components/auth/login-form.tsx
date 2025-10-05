@@ -7,9 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Loader2 } from 'lucide-react';
-import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, UserCredential } from 'firebase/auth';
-import { doc, setDoc, getDoc, serverTimestamp, getFirestore } from 'firebase/firestore';
-import type { UserProfile } from '@/lib/types';
+import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 
 
 function GoogleIcon(props: any) {
@@ -66,6 +64,7 @@ export function LoginForm() {
     const provider = new GoogleAuthProvider();
     try {
       await signInWithPopup(auth, provider);
+      // On success, the useUser hook will create the profile if it's the first time
     } catch (error: any) {
       setError(error.message);
     }

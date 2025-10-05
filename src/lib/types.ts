@@ -1,5 +1,6 @@
 
 
+
 import type { Timestamp } from "firebase/firestore";
 
 export type UserPlan = 'free' | 'pro';
@@ -10,7 +11,7 @@ export type UserProfile = {
   displayName: string | null;
   photoURL: string | null;
   plan: UserPlan;
-  createdAt: Timestamp;
+  createdAt: any; // Can be Timestamp or FieldValue
 };
 
 
@@ -33,5 +34,6 @@ export type WatchlistItem = {
     createdAt: any; // Firebase Timestamp
     userId: string;
 };
+
 
 

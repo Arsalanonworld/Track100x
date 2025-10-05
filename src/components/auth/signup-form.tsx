@@ -25,7 +25,7 @@ function GoogleIcon(props: any) {
         strokeWidth="2"
       >
         <path d="M21.328 11.408c0-.75-.065-1.48-.19-2.182h-8.83v4.135h5.16a4.575 4.575 0 0 1-1.995 3.035v2.71h3.48c2.04-1.875 3.21-4.73 3.21-7.698Z" />
-        <path d="M12.308 21.75c2.445 0 4.49-.805 5.985-2.18l-3.48-2.71a5.45 5.45 0 0 1-2.505.655 5.42 5.42 0 0 1-5.11-3.73H3.788v2.8a10.01 10.01 0 0 0 8.52 4.965Z" />
+        <path d="M12.308 21.75c2.445 0 4.49-.805 5.985-2.18l-3.48-2.71a5.45 5.45 0 0 1-2.505.655 5.42 5.42-0 0 1-5.11-3.73H3.788v2.8a10.01 10.01 0 0 0 8.52 4.965Z" />
         <path d="M7.198 12.985a5.95 5.95 0 0 1 0-3.97v-2.8H3.788a10.05 10.05 0 0 0 0 9.57l3.41-2.8Z" />
         <path d="M12.308 6.49a5.3 5.3 0 0 1 3.74 1.465l3.08-3.08A9.76 9.76 0 0 0 12.308 2.25a10.01 10.01 0 0 0-8.52 4.965l3.41 2.8a5.42 5.42 0 0 1 5.11-3.525Z" />
       </g>
@@ -56,7 +56,7 @@ export function SignupForm() {
     try {
       const auth = getAuth();
       await createUserWithEmailAndPassword(auth, email, password);
-      // On success, the useUser hook will handle user creation
+      // On success, the useUser hook will handle user profile creation
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -69,7 +69,7 @@ export function SignupForm() {
     const provider = new GoogleAuthProvider();
     try {
       await signInWithPopup(auth, provider);
-      // On success, the useUser hook will handle user creation
+      // On success, the useUser hook will handle user profile creation
     } catch (error: any) {
       setError(error.message);
     }
