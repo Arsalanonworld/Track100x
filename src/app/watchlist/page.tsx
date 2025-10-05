@@ -203,10 +203,10 @@ export default function WatchlistPage() {
                             <EyeOff className="h-10 w-10 mb-4" />
                             <p className="font-semibold">Your watchlist is empty.</p>
                             <p className="text-sm max-w-xs mx-auto">
-                                Add wallets from the Leaderboard or Whale Feed to start tracking their activity.
+                                Add wallets from the Top Players page or Whale Feed to start tracking their activity.
                             </p>
                             <Button asChild className='mt-4'>
-                                <Link href="/leaderboard">Go to Leaderboard <ArrowRight className="h-4 w-4 ml-2" /></Link>
+                                <Link href="/top-players">Go to Top Players <ArrowRight className="h-4 w-4 ml-2" /></Link>
                             </Button>
                         </div>
                     )}
