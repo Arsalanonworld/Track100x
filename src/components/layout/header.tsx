@@ -36,7 +36,7 @@ export default function Header() {
                     <MobileNav />
                     <Link href="/" className="mr-6 flex items-center space-x-2">
                         <LogoIcon />
-                        <span className="hidden font-bold sm:inline-block">Tack100x</span>
+                        <span className="hidden font-bold sm:inline-block">WhaleWatch100x</span>
                     </Link>
                     <MainNav />
                 </div>

@@ -22,7 +22,7 @@ export function AuthDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Welcome to Tack100x</DialogTitle>
+          <DialogTitle>Welcome to WhaleWatch100x</DialogTitle>
           <DialogDescription>
             Log in or create an account to unlock all features.
           </DialogDescription>

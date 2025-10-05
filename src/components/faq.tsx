@@ -27,7 +27,7 @@ const faqs = [
   },
    {
     question: 'Do you offer a free trial for the Pro plan?',
-    answer: "We do not offer a time-based free trial. However, our Free plan is a great way to experience the core functionality of Track100x. You can upgrade to Pro at any time to unlock all features.",
+    answer: "We do not offer a time-based free trial. However, our Free plan is a great way to experience the core functionality of WhaleWatch100x. You can upgrade to Pro at any time to unlock all features.",
   },
 ];
 

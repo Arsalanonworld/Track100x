@@ -15,12 +15,12 @@ export default function TermsOfServicePage() {
 
         <h2>1. Acceptance of Terms</h2>
         <p>
-          By accessing or using Tack100x (the "Service"), you agree to be bound by these Terms of Service. If you disagree with any part of the terms, you may not access the Service.
+          By accessing or using WhaleWatch100x (the "Service"), you agree to be bound by these Terms of Service. If you disagree with any part of the terms, you may not access the Service.
         </p>
 
         <h2>2. Description of Service</h2>
         <p>
-          Tack100x provides a platform for monitoring on-chain cryptocurrency data, including whale transactions, wallet leaderboards, and customizable alerts. The information provided is for informational purposes only and does not constitute financial advice.
+          WhaleWatch100x provides a platform for monitoring on-chain cryptocurrency data, including whale transactions, wallet leaderboards, and customizable alerts. The information provided is for informational purposes only and does not constitute financial advice.
         </p>
 
         <h2>3. User Accounts</h2>
