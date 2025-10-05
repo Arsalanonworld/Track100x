@@ -1,17 +1,20 @@
 
 'use client';
-import { Check, X, Star, Zap, BarChart, Bell, Eye, Newspaper, ArrowRight } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { CheckCircle, XCircle, Star, ArrowRight, TrendingUp, Bell, Zap, Trophy, ShieldQuestion, BrainCircuit, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { Switch } from '@/components/ui/switch';
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
 import { useUser } from '@/firebase';
-import React from 'react';
-import { Faq } from '@/components/faq';
+import { AuthDialog } from '@/components/auth/auth-dialog';
 import { AnimatedButton } from '@/components/ui/animated-button';
+import { Faq } from '@/components/faq';
 
 const features = [
   {
@@ -104,7 +107,7 @@ const PricingCard = ({
              <ul className="space-y-3">
                 {features.map((feature: any, index: number) => (
                     <li key={index} className="flex items-center gap-3">
-                        <Check className="h-5 w-5 text-green-500 shrink-0" />
+                        <CheckCircle className="h-5 w-5 text-green-500 shrink-0" />
                         <span>{feature}</span>
                     </li>
                 ))}
@@ -123,17 +126,19 @@ export default function UpgradePage() {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('yearly');
   const { user, loading, claims } = useUser();
   const router = useRouter();
+  const [isAuthDialogOpen, setAuthDialogOpen] = useState(false);
+  const isPro = claims?.plan === 'pro';
 
   useEffect(() => {
     // If user is already pro, redirect them to account page
-    if (!loading && claims?.plan === 'pro') {
+    if (!loading && isPro) {
       router.push('/account');
     }
-  }, [user, loading, claims, router]);
+  }, [user, loading, isPro, router]);
 
   const handleUpgradeClick = () => {
     if (!user) {
-        router.push('/login');
+        setAuthDialogOpen(true);
     } else {
         router.push('/checkout');
     }
@@ -143,7 +148,7 @@ export default function UpgradePage() {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
   };
   
-  if (loading || claims?.plan === 'pro') {
+  if (loading || isPro) {
     return (
         <div className="flex items-center justify-center min-h-[60vh]">
             {/* You can add a loading spinner here */}
@@ -152,10 +157,11 @@ export default function UpgradePage() {
   }
 
   return (
+    <>
     <div className="container mx-auto px-4 py-12 sm:py-16">
         <section className="text-center max-w-4xl mx-auto">
              <h1 className="text-4xl font-extrabold tracking-tighter sm:text-5xl lg:text-6xl font-headline">
-                Unlock the Full Power of Track100x 🚀
+                Unlock the Full Power of WhaleWatch100x 🚀
             </h1>
             <p className="max-w-2xl mx-auto mt-6 text-lg text-muted-foreground">
                 Go Pro to access real-time feeds, unlimited advanced alerts, and ad-free tracking.
@@ -208,8 +214,8 @@ export default function UpgradePage() {
                     price="$0"
                     description="Get a feel for our platform with essential tracking tools."
                     features={["Delayed Whale Feed", "Top 10 Leaderboard", "1 Active Alert", "Ad-supported"]}
-                    ctaText="Continue with Free"
-                    ctaAction={() => router.push('/')}
+                    ctaText={user ? "Your Current Plan" : "Get Started Free"}
+                    ctaAction={() => !user && router.push('/')}
                 />
                  <PricingCard 
                     plan="Pro"
@@ -262,12 +268,12 @@ export default function UpgradePage() {
                                                 <td className="py-4 px-3 font-medium">{item.name}</td>
                                                 <td className="py-4 px-3 text-center text-muted-foreground">
                                                     {typeof item.free === 'boolean' ? (
-                                                        item.free ? <Check className="h-5 w-5 text-green-500 mx-auto" /> : <X className="h-5 w-5 text-red-500 mx-auto" />
+                                                        item.free ? <CheckCircle className="h-5 w-5 text-green-500 mx-auto" /> : <XCircle className="h-5 w-5 text-red-500 mx-auto" />
                                                     ) : item.free}
                                                 </td>
                                                 <td className="py-4 px-3 text-center font-semibold bg-primary/5">
                                                     {typeof item.pro === 'boolean' ? (
-                                                         item.pro ? <Check className="h-5 w-5 text-green-500 mx-auto" /> : <X className="h-5 w-5 text-red-500 mx-auto" />
+                                                         item.pro ? <CheckCircle className="h-5 w-5 text-green-500 mx-auto" /> : <XCircle className="h-5 w-5 text-red-500 mx-auto" />
                                                     ) : item.pro}
                                                 </td>
                                             </tr>
@@ -290,5 +296,9 @@ export default function UpgradePage() {
             <Faq />
         </section>
     </div>
+    <AuthDialog open={isAuthDialogOpen} onOpenChange={setAuthDialogOpen} />
+    </>
   );
 }
+
+    
