@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -14,9 +15,11 @@ import { SignupForm } from './signup-form';
 export function AuthDialog({
   open,
   onOpenChange,
+  initialTab = 'login',
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  initialTab?: 'login' | 'signup';
 }) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -27,7 +30,7 @@ export function AuthDialog({
             Log in or create an account to unlock all features.
           </DialogDescription>
         </DialogHeader>
-        <Tabs defaultValue="login" className="w-full">
+        <Tabs defaultValue={initialTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="login">Login</TabsTrigger>
             <TabsTrigger value="signup">Sign Up</TabsTrigger>
