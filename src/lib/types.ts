@@ -1,5 +1,19 @@
 
 
+import type { Timestamp } from "firebase/firestore";
+
+export type UserPlan = 'free' | 'pro';
+
+export type UserProfile = {
+  uid: string;
+  email: string | null;
+  displayName: string | null;
+  photoURL: string | null;
+  plan: UserPlan;
+  createdAt: Timestamp;
+};
+
+
 export type Alert = {
     id: string;
     alertType: 'wallet' | 'token';
@@ -13,7 +27,9 @@ export type Alert = {
 };
 
 export type WatchlistItem = {
-    id: string;
+    id:string;
     walletAddress: string;
     createdAt: any; // Firebase Timestamp
+    userId: string;
 };
+

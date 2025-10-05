@@ -1,6 +1,21 @@
 
 {
   "entities": {
+    "UserProfile": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "UserProfile",
+      "type": "object",
+      "description": "Represents a user's profile information.",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string", "format": "uri" },
+        "plan": { "type": "string", "enum": ["free", "pro"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "plan", "createdAt"]
+    },
     "LeaderboardEntry": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "LeaderboardEntry",
@@ -24,30 +39,60 @@
         "timestamp": { "type": "string", "format": "date-time" }
       },
       "required": ["transactionId", "timestamp"]
+    },
+    "Alert": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Alert",
+      "type": "object",
+      "description": "Represents a user-defined alert.",
+      "properties": {
+        "alertType": { "type": "string", "enum": ["wallet", "token"] },
+        "walletId": { "type": "string" },
+        "token": { "type": "string" },
+        "rule": { "type": "string" },
+        "threshold": { "type": "number" },
+        "enabled": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "userId": { "type": "string" }
+      },
+      "required": ["alertType", "rule", "enabled", "createdAt", "userId"]
+    },
+    "WatchlistItem": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "WatchlistItem",
+      "type": "object",
+      "description": "Represents a wallet on a user's watchlist.",
+      "properties": {
+        "walletAddress": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "userId": { "type": "string" }
+      },
+      "required": ["walletAddress", "createdAt", "userId"]
     }
   },
+  "auth": {
+    "providers": ["email", "google"]
+  },
   "firestore": {
-    "structure": [
-      {
-        "path": "/leaderboard/{leaderboardEntryId}",
-        "definition": {
-          "entityName": "LeaderboardEntry",
-          "schema": {
-            "$ref": "#/backend/entities/LeaderboardEntry"
-          },
-          "description": "Stores the public leaderboard data."
-        }
-      },
-      {
-        "path": "/whaleFeed/{whaleTransactionId}",
-        "definition": {
-          "entityName": "WhaleFeedTransaction",
-          "schema": {
-            "$ref": "#/backend/entities/WhaleFeedTransaction"
-          },
-          "description": "Stores the public whale feed data."
-        }
-      }
-    ]
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "Stores public user profile information."
+    },
+    "/users/{userId}/alerts/{alertId}": {
+      "schema": { "$ref": "#/entities/Alert" },
+      "description": "Stores alerts created by a user."
+    },
+    "/users/{userId}/watchlist/{watchlistItemId}": {
+      "schema": { "$ref": "#/entities/WatchlistItem" },
+      "description": "Stores wallets a user is watching."
+    },
+    "/leaderboard/{leaderboardEntryId}": {
+      "schema": { "$ref": "#/entities/LeaderboardEntry" },
+      "description": "Stores the public leaderboard data."
+    },
+    "/whaleFeed/{whaleTransactionId}": {
+      "schema": { "$ref": "#/entities/WhaleFeedTransaction" },
+      "description": "Stores the public whale feed data."
+    }
   }
 }
