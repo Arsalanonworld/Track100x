@@ -4,6 +4,7 @@
 
 
 
+
 export type WhaleTransaction = {
   id: string;
   token: {
@@ -678,18 +679,16 @@ export type Alert = {
 
 
 export const topPlayersData: Player[] = [
-  { id: '17', rank: 1, alias: 'Satoshi', address: '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa', netWorth: 75000000000, pnl: 3000000, pnlPercent: 0.1, winRate: 99, topToken: 'BTC', tags: ['OG', 'Legend'], blockchain: 'Bitcoin' },
-  { id: '12', rank: 2, alias: 'Binance', address: '0xf977814e90da44bfa03b6295a0616a897441acec', netWorth: 18000000000, pnl: 1200000, pnlPercent: 0.1, winRate: 99, topToken: 'BNB', tags: ['CEX'], blockchain: 'All' },
-  { id: '15', rank: 3, alias: 'Coinbase', address: '0x75e89d5979e4f6fba9f97c104c2f0afb3f1dcb88', netWorth: 5400000000, pnl: 1800000, pnlPercent: 0.1, winRate: 98, topToken: 'USDC', tags: ['CEX'], blockchain: 'All' },
-  { id: '6', rank: 4, alias: 'a16z', address: '0x05e206b53a495a630d896a203f39a455a572a153', netWorth: 2100000000, pnl: 470000, pnlPercent: 0.8, winRate: 95, topToken: 'UNI', tags: ['VC', 'Fund'], blockchain: 'All' },
-  { id: '9', rank: 5, alias: 'Paradigm', address: '0x43b55d5b635f6e812554c7521151644124838634', netWorth: 1850000000, pnl: 50000, pnlPercent: 0.2, winRate: 95, topToken: 'ETH', tags: ['VC', 'Fund'], blockchain: 'All' },
-  { id: '1', rank: 6, alias: 'vitalik.eth', address: '0xd8da6bf26964af9d7eed9e03e53415d37aa96045', netWorth: 1250000000, pnl: 2500000, pnlPercent: 2.1, winRate: 78, topToken: 'ETH', tags: ['OG', 'Builder'], blockchain: 'Ethereum' },
-  { id: '2', rank: 7, alias: 'justinsun.eth', address: '0x3ddfa8ec3052539b6c9549f12cea2c295cff5296', netWorth: 981000000, pnl: -1200000, pnlPercent: -0.8, winRate: 55, topToken: 'TRX', tags: ['OG', 'CEX'], blockchain: 'Ethereum' },
-  { id: '3', rank: 8, alias: 'Wintermute', address: '0xdbf5e9c5206d0db70a90108bf936da60221dc080', netWorth: 828000000, pnl: 850000, pnlPercent: 1.6, winRate: 88, topToken: 'USDC', tags: ['Market Maker', 'Institution'], blockchain: 'All' },
-  { id: '4', rank: 9, alias: 'GSR', address: '0x53463cd0b07455a524748a39b3a372138c207914', netWorth: 792000000, pnl: 2300000, pnlPercent: 2.5, winRate: 85, topToken: 'USDT', tags: ['Market Maker', 'Institution'], blockchain: 'All' },
+  { id: '17', rank: 1, alias: 'Satoshi', address: '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa', netWorth: 75000000000, pnl: 3000000, pnlPercent: 5.1, winRate: 99, topToken: 'BTC', tags: ['OG', 'Legend'], blockchain: 'Bitcoin' },
+  { id: '12', rank: 2, alias: 'Binance', address: '0xf977814e90da44bfa03b6295a0616a897441acec', netWorth: 18000000000, pnl: 1200000, pnlPercent: 7.2, winRate: 99, topToken: 'BNB', tags: ['CEX'], blockchain: 'All' },
+  { id: '15', rank: 3, alias: 'Coinbase', address: '0x75e89d5979e4f6fba9f97c104c2f0afb3f1dcb88', netWorth: 5400000000, pnl: 1800000, pnlPercent: 6.5, winRate: 98, topToken: 'USDC', tags: ['CEX'], blockchain: 'All' },
+  { id: '6', rank: 4, alias: 'a16z', address: '0x05e206b53a495a630d896a203f39a455a572a153', netWorth: 2100000000, pnl: 470000, pnlPercent: 8.8, winRate: 95, topToken: 'UNI', tags: ['VC', 'Fund'], blockchain: 'All' },
+  { id: '9', rank: 5, alias: 'Paradigm', address: '0x43b55d5b635f6e812554c7521151644124838634', netWorth: 1850000000, pnl: 50000, pnlPercent: 5.2, winRate: 95, topToken: 'ETH', tags: ['VC', 'Fund'], blockchain: 'All' },
+  { id: '1', rank: 6, alias: 'vitalik.eth', address: '0xd8da6bf26964af9d7eed9e03e53415d37aa96045', netWorth: 1250000000, pnl: 2500000, pnlPercent: 12.1, winRate: 78, topToken: 'ETH', tags: ['OG', 'Builder'], blockchain: 'Ethereum' },
+  { id: '2', rank: 7, alias: 'justinsun.eth', address: '0x3ddfa8ec3052539b6c9549f12cea2c295cff5296', netWorth: 981000000, pnl: -1200000, pnlPercent: -8.8, winRate: 55, topToken: 'TRX', tags: ['OG', 'CEX'], blockchain: 'Ethereum' },
+  { id: '3', rank: 8, alias: 'Wintermute', address: '0xdbf5e9c5206d0db70a90108bf936da60221dc080', netWorth: 828000000, pnl: 850000, pnlPercent: 11.6, winRate: 88, topToken: 'USDC', tags: ['Market Maker', 'Institution'], blockchain: 'All' },
+  { id: '4', rank: 9, alias: 'GSR', address: '0x53463cd0b07455a524748a39b3a372138c207914', netWorth: 792000000, pnl: 2300000, pnlPercent: 12.5, winRate: 85, topToken: 'USDT', tags: ['Market Maker', 'Institution'], blockchain: 'All' },
   { id: '16', rank: 10, alias: 'Lido Staking', address: '0x016...LSTPioneer', netWorth: 522000000, pnl: 2100000, pnlPercent: 10.6, winRate: 88, topToken: 'LDO', tags: ['Liquid Staking', 'Protocol'], blockchain: 'Ethereum' },
-  { id: '5', rank: 11, alias: 'PEPE Whale', address: '0x005...GasWizard', netWorth: 48700000, pnl: 1500000, pnlPercent: 20.8, winRate: 90, topToken: 'PEPE', tags: ['Memes', 'Whale'], blockchain: 'Ethereum' },
-  { id: '7', rank: 12, alias: 'pranksy.eth', address: '0x007...NFTShark', netWorth: 15300000, pnl: -300000, pnlPercent: -1.9, winRate: 68, topToken: 'PUNKS', tags: ['NFTs', 'Collector'], blockchain: 'Ethereum' },
 ];
 
 
@@ -895,3 +894,5 @@ export const mockAlerts: Alert[] = [
     { id: '4', title: 'PEPE Whale', description: 'Balance Change > 1B PEPE', enabled: true, type: 'wallet' },
     { id: '5', title: 'BTC', description: 'Price crosses $70,000', enabled: true, type: 'token' }
 ];
+
+    
