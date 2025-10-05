@@ -9,6 +9,7 @@ import { Loader2, Star } from "lucide-react";
 import { AuthDialog } from "./auth/auth-dialog";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 
 export const TrackButton = ({ walletAddress }: { walletAddress: string }) => {
     const { user, loading: userLoading } = useUser();
@@ -58,7 +59,8 @@ export const TrackButton = ({ walletAddress }: { walletAddress: string }) => {
         checkIfTracked();
     }, [watchlistQuery, userLoading, user]);
 
-    const handleToggleTrack = async () => {
+    const handleToggleTrack = async (e: React.MouseEvent) => {
+        e.stopPropagation();
         if (!user) {
             setAuthDialogOpen(true);
             return;
@@ -114,18 +116,27 @@ export const TrackButton = ({ walletAddress }: { walletAddress: string }) => {
     }
     
     if (checking || userLoading) {
-        return <Button variant="ghost" size="icon" disabled><Loader2 className="h-4 w-4 animate-spin"/></Button>
+        return <Button variant="ghost" size="icon" disabled className="h-8 w-8"><Loader2 className="h-4 w-4 animate-spin"/></Button>
     }
 
     return (
         <>
-            <Button onClick={handleToggleTrack} variant="ghost" size="icon" disabled={isSubmitting}>
-                {isSubmitting ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                    <Star className={cn("h-4 w-4", isTracking ? "fill-primary text-primary" : "text-muted-foreground")} />
-                )}
-            </Button>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                    <Button onClick={handleToggleTrack} variant="ghost" size="icon" disabled={isSubmitting} className="h-8 w-8 shrink-0">
+                        {isSubmitting ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                            <Star className={cn("h-4 w-4", isTracking ? "fill-primary text-primary" : "text-muted-foreground")} />
+                        )}
+                    </Button>
+                </TooltipTrigger>
+                <TooltipContent onClick={(e) => e.stopPropagation()}>
+                  <p>{isTracking ? 'Remove from watchlist' : 'Add to watchlist'}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
             <AuthDialog open={isAuthDialogOpen} onOpenChange={setAuthDialogOpen} />
         </>
     )

@@ -36,7 +36,6 @@ const WalletIdentifier = ({ address, shortAddress, tags, network, label }: { add
      <div className="space-y-1">
          <div className="flex items-center gap-2">
             <span className="text-sm text-muted-foreground font-semibold w-12">{label}</span>
-            <TrackButton walletAddress={address} />
             <Link href={getExplorerUrl(network, address, 'address')} target="_blank" rel="noopener noreferrer" className="font-mono text-sm hover:underline truncate">{address}</Link>
             <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleCopy(address, `${label} Address`)}><Copy className="h-3 w-3"/></Button>
          </div>
@@ -88,12 +87,12 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
                                     </div>
                                     
                                     {/* --- Center Column (From/To) --- */}
-                                    <div className="flex-grow flex items-center gap-2 pl-1 sm:pl-0 sm:justify-center">
+                                     <div className="flex-grow flex items-center gap-2 pl-1 sm:pl-0 sm:justify-center">
                                        <div className="font-mono text-sm flex items-center gap-2 truncate">
-                                           <span className="font-sans text-muted-foreground">From</span>
+                                           <TrackButton walletAddress={tx.from} />
                                            <Link href={getExplorerUrl(tx.network, tx.from, 'address')} target="_blank" rel="noopener noreferrer" className="hover:underline text-primary truncate">{tx.fromShort}</Link>
                                            <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0" />
-                                           <span className="font-sans text-muted-foreground">To</span>
+                                           <TrackButton walletAddress={tx.to} />
                                            <Link href={getExplorerUrl(tx.network, tx.to, 'address')} target="_blank" rel="noopener noreferrer" className="hover:underline text-primary truncate">{tx.toShort}</Link>
                                        </div>
                                     </div>
