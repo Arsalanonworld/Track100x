@@ -15,7 +15,7 @@ export const AnimatedButton = React.forwardRef<HTMLButtonElement, AnimatedButton
     return (
         <Button
             className={cn(
-                "group relative overflow-hidden transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-primary/40",
+                "group relative overflow-hidden transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-primary/40",
                 className
             )}
             ref={ref}
