@@ -1,11 +1,15 @@
+
 'use client';
-import { Check, X, Star, Lock } from 'lucide-react';
+import { Check, X, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { Switch } from '@/components/ui/switch';
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useUser } from '@/firebase';
+import React from 'react';
 
 const features = [
   {
@@ -85,6 +89,17 @@ const PricingCard = ({
 
 export default function UpgradePage() {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
+  const { user, loading } = useUser();
+  const router = useRouter();
+
+  const handleUpgradeClick = () => {
+    if (!user) {
+        // You might want to open your login modal here
+        router.push('/login');
+    } else {
+        router.push('/checkout');
+    }
+  };
 
   return (
     <div className="container mx-auto px-4 py-12">
@@ -114,7 +129,7 @@ export default function UpgradePage() {
                 description="Get a feel for our platform with essential tracking tools."
                 features={["Delayed Whale Feed", "Top 10 Leaderboard", "1 Active Alert", "Ad-supported"]}
                 ctaText="Continue with Free"
-                ctaAction={() => {}}
+                ctaAction={() => router.push('/')}
             />
              <PricingCard 
                 plan="Pro"
@@ -123,7 +138,7 @@ export default function UpgradePage() {
                 description="Unlimited access to every tool for the serious on-chain analyst."
                 features={["Real-time Whale Feed", "Full Leaderboard Access", "Unlimited Advanced Alerts", "Ad-Free Experience"]}
                 ctaText="Upgrade to Pro"
-                ctaAction={() => {}}
+                ctaAction={handleUpgradeClick}
                 highlight
             />
         </section>
