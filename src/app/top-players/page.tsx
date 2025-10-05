@@ -30,13 +30,25 @@ export default function TopPlayersPage() {
       <div className="container">
         <Tabs defaultValue="top-wallets" className="w-full">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-            <TabsList className="grid grid-cols-2 w-full md:w-auto">
-              <TabsTrigger value="top-wallets">Top Wallets</TabsTrigger>
-              <TabsTrigger value="top-traders">Top Traders</TabsTrigger>
-            </TabsList>
-            <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
-              <Select defaultValue="all">
-                <SelectTrigger className="w-full">
+            <div className="flex items-center gap-2">
+              <TabsList className="grid grid-cols-2">
+                <TabsTrigger value="top-wallets">Top Wallets</TabsTrigger>
+                <TabsTrigger value="top-traders">Top Traders</TabsTrigger>
+              </TabsList>
+               <Select defaultValue="all">
+                <SelectTrigger className="w-[150px] hidden sm:flex">
+                  <SelectValue placeholder="All Chains" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Chains</SelectItem>
+                  <SelectItem value="ethereum">Ethereum</SelectItem>
+                  <SelectItem value="solana">Solana</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex gap-2">
+               <Select defaultValue="all">
+                <SelectTrigger className="w-full sm:hidden">
                   <SelectValue placeholder="All Chains" />
                 </SelectTrigger>
                 <SelectContent>
@@ -46,7 +58,7 @@ export default function TopPlayersPage() {
                 </SelectContent>
               </Select>
                <Select defaultValue="net-worth">
-                <SelectTrigger className="w-full">
+                <SelectTrigger className="w-full sm:w-[180px]">
                   <SelectValue placeholder="Sort by" />
                 </SelectTrigger>
                 <SelectContent>
