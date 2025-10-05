@@ -273,17 +273,17 @@ export default function UpgradePage() {
       <div className="container mx-auto px-4 py-12 sm:py-16">
         <section className="text-center max-w-4xl mx-auto">
           <h1 className="text-4xl font-extrabold tracking-tighter sm:text-5xl lg:text-6xl font-headline">
-            Unlock the Full Power of WhaleWatch100x 🚀
+            Go Pro. Get Your Edge.
           </h1>
           <p className="max-w-2xl mx-auto mt-6 text-lg text-muted-foreground">
-            Go Pro to access real-time feeds, unlimited advanced alerts, and ad-free tracking.
+            Get real-time data, unlimited alerts, and advanced tools. Upgrade to Track100x Pro.
           </p>
           <div className="flex items-center justify-center gap-4 mt-8">
             <Button size="lg" onClick={() => scrollTo('pricing')}>
-              Upgrade to Pro <ArrowRight className="ml-2 h-4 w-4" />
+              Upgrade Now <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
             <Button variant="ghost" size="lg" onClick={() => scrollTo('comparison')}>
-              See All Features
+              Compare Plans
             </Button>
           </div>
         </section>
