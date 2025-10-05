@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import Link from "next/link";
-import { Lock, ArrowRight } from "lucide-react";
+import { Lock, ArrowRight, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const mockTraders = [
@@ -39,7 +39,10 @@ export default function TopTradersTab({ isPro }: { isPro: boolean }) {
                                 <span className="font-medium">{trader.topToken}</span>
                             </div>
                         </div>
-                        <Button className="w-full mt-4" variant="outline">Track</Button>
+                        <Button className="w-full mt-4" variant="outline" disabled>
+                           <Star className="h-4 w-4 mr-2" />
+                            Track
+                        </Button>
                     </Card>
                 ))}
                 </div>
@@ -86,7 +89,10 @@ export default function TopTradersTab({ isPro }: { isPro: boolean }) {
                             <span className="font-medium">{trader.topToken}</span>
                         </div>
                     </div>
-                    <Button className="w-full mt-4" variant="outline">Track</Button>
+                    <Button className="w-full mt-4" variant="outline">
+                        <Star className="h-4 w-4 mr-2" />
+                        Track
+                    </Button>
                 </Card>
             ))}
         </div>
