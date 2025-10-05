@@ -16,6 +16,7 @@ import { firebaseConfig } from './config';
 import { FirebaseProvider, useFirebase, useFirebaseApp, useAuth, useFirestore } from './provider';
 import { useUser } from './auth/use-user';
 import { useCollection } from './firestore/use-collection';
+import { useDoc } from './firestore/use-doc';
 
 
 let app: FirebaseApp;
@@ -47,4 +48,5 @@ export {
   useFirestore,
   useAuth,
   useCollection,
+  useDoc,
 };
