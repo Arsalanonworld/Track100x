@@ -4,7 +4,7 @@ import { LogoIcon } from './header';
 
 const footerLinks = {
   platform: [
-    { label: 'Top Players', href: '/top-players' },
+    { label: 'Leaderboard', href: '/leaderboard' },
     { label: 'Alerts', href: '/alerts' },
     { label: 'Insights', href: '/insights' },
     { label: 'Upgrade', href: '/upgrade' },
