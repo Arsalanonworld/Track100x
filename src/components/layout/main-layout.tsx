@@ -8,25 +8,6 @@ import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
 
-function MainLayoutContent({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
-  const isHomePage = pathname === '/';
-
-  return (
-    <>
-      <TickerBar />
-      <Header />
-      <main className="flex-1">
-        <div className={cn(!isHomePage && "container py-8 sm:py-12")}>
-            {children}
-        </div>
-      </main>
-      <Footer />
-    </>
-  );
-}
-
-
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isHomePage = pathname === '/';
