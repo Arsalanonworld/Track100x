@@ -1,4 +1,3 @@
-
 'use client';
 
 import {
@@ -15,13 +14,14 @@ import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { LogOut, User, DollarSign, Star } from 'lucide-react';
 import { AnimatedButton } from './ui/animated-button';
 import { useUser } from '@/firebase';
-import { logout } from '@/app/auth/actions';
 import { useState } from 'react';
 import { AuthDialog } from './auth/auth-dialog';
 import { Skeleton } from './ui/skeleton';
+import { useLogout } from './auth/auth-actions';
 
 export function UserNav() {
   const { user, claims, loading } = useUser();
+  const logout = useLogout();
   const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
   const plan = claims?.plan || 'free';
 
@@ -86,7 +86,7 @@ export function UserNav() {
             </DropdownMenuItem>
           )}
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => logout()}>
+          <DropdownMenuItem onClick={async () => await logout()}>
             <LogOut className="mr-2 h-4 w-4" />
             <span>Log out</span>
           </DropdownMenuItem>
