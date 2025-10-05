@@ -6,7 +6,7 @@ import PageHeader from '@/components/page-header';
 import { topPlayersData, Player } from '@/lib/mock-data';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { BellPlus, Search } from 'lucide-react';
+import { BellPlus, Search, ExternalLink } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
@@ -15,6 +15,7 @@ import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { CreateAlertDialog } from '@/components/create-alert-dialog';
 import { cn } from '@/lib/utils';
 import { Card } from '@/components/ui/card';
+import Link from 'next/link';
 
 
 const allTags = Array.from(new Set(topPlayersData.flatMap(p => p.tags)));
@@ -71,6 +72,28 @@ const TopPlayerRow = ({ player, rank }: { player: Player; rank: number }) => {
         </Dialog>
     )
 }
+
+const SponsoredBanner = () => (
+    <div className="mt-8">
+        <Card className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 p-6 border-primary/20">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                <div className='text-center md:text-left'>
+                    <p className="font-bold text-primary">Sponsored</p>
+                    <h3 className="text-xl font-bold mt-1">Trade Like the Whales on Binance</h3>
+                    <p className="text-muted-foreground mt-1 max-w-lg">The world's largest crypto exchange. Instantly trade the tokens you see here and discover new opportunities.</p>
+                </div>
+                <div className="shrink-0">
+                    <Button asChild size="lg">
+                        <Link href="#" target="_blank" rel="noopener noreferrer">
+                            Get Started on Binance
+                            <ExternalLink className="w-4 h-4 ml-2" />
+                        </Link>
+                    </Button>
+                </div>
+            </div>
+        </Card>
+    </div>
+);
 
 
 export default function TopPlayersPage() {
@@ -191,7 +214,8 @@ export default function TopPlayersPage() {
               <p>Try adjusting your search or category filters.</p>
           </div>
       )}
-
+      
+      <SponsoredBanner />
     </div>
   );
 }

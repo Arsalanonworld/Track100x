@@ -6,6 +6,7 @@ export type Article = {
     date: string;
     href: string;
     imageSlug: string;
+    sponsored?: boolean;
 };
 
 export const mockArticles: Article[] = [
@@ -28,6 +29,16 @@ export const mockArticles: Article[] = [
         imageSlug: "insight-2",
     },
     {
+        id: "s1",
+        title: "Sponsored: Why KuCoin is the Top Platform for Altcoin Gems",
+        description: "Discover how KuCoin's expansive token listings and advanced trading features can help you find the next 100x altcoin before it hits the mainstream.",
+        category: "Exchanges",
+        date: "Sep 25, 2024",
+        href: "#",
+        imageSlug: "insight-4",
+        sponsored: true,
+    },
+    {
         id: "3",
         title: "Understanding On-Chain Data: A Beginner's Guide to Tracking Smart Money",
         description: "New to on-chain analysis? This guide will walk you through the basics of reading blockchain data to identify patterns and follow the moves of influential wallets.",
@@ -44,6 +55,16 @@ export const mockArticles: Article[] = [
         date: "Sep 5, 2024",
         href: "#",
         imageSlug: "insight-4",
+    },
+    {
+        id: "s2",
+        title: "Sponsored: A Deep Dive into Binance's Earn Program",
+        description: "Learn how you can maximize your crypto yields safely and securely using Binance's comprehensive suite of staking and lending products.",
+        category: "DeFi",
+        date: "Sep 1, 2024",
+        href: "#",
+        imageSlug: "insight-1",
+        sponsored: true,
     },
     {
         id: "5",

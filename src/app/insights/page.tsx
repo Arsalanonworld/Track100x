@@ -5,13 +5,15 @@ import { useState, useMemo } from 'react';
 import ArticleCard from '@/components/article-card';
 import { mockArticles as allArticles, type Article } from '@/lib/insights-data';
 import { Input } from '@/components/ui/input';
-import { Search, Lock, ArrowRight } from 'lucide-react';
+import { Search, Lock, ArrowRight, Newspaper } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useUser } from '@/firebase';
 import Link from 'next/link';
 
-const allCategories = ['All', ...Array.from(new Set(allArticles.map(a => a.category)))];
+const organicArticles = allArticles.filter(a => !a.sponsored);
+const sponsoredArticles = allArticles.filter(a => a.sponsored);
+const allCategories = ['All', ...Array.from(new Set(organicArticles.map(a => a.category)))];
 
 export default function InsightsPage() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -19,7 +21,7 @@ export default function InsightsPage() {
   const { user, claims } = useUser();
   const isPro = claims?.plan === 'pro';
 
-  const articlesToShow = isPro ? allArticles : allArticles.slice(0, 3);
+  const articlesToShow = isPro ? organicArticles : organicArticles.slice(0, 3);
 
   const filteredArticles = useMemo(() => {
     return articlesToShow.filter(article => {
@@ -97,6 +99,22 @@ export default function InsightsPage() {
             )}
         </div>
       </section>
+
+      {sponsoredArticles.length > 0 && (
+        <section className="mt-16">
+          <div className="flex items-center mb-8">
+              <Newspaper className="h-6 w-6 text-muted-foreground" />
+              <h2 className="text-2xl font-bold tracking-tighter ml-3">
+                  Sponsored Insights
+              </h2>
+          </div>
+           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {sponsoredArticles.map((article) => (
+                <ArticleCard key={article.id} article={article} />
+              ))}
+          </div>
+        </section>
+      )}
     </>
   );
 }
