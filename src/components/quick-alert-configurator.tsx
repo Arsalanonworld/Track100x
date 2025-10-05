@@ -33,6 +33,8 @@ const walletRules: Rule[] = [
   { value: 'balance-change', label: 'Token Balance Change', thresholdType: 'VALUE' },
   { value: 'pnl-change', label: '7d PnL Change', thresholdType: 'PERCENTAGE' },
   { value: 'dormancy', label: 'Dormancy Status', thresholdType: 'NONE' },
+  { value: 'new-protocol-interaction', label: 'Interacts with New Protocol', thresholdType: 'NONE' },
+  { value: 'first-token-purchase', label: 'First Time Buying a Token', thresholdType: 'NONE' },
 ];
 
 const tokenRules: Rule[] = [
