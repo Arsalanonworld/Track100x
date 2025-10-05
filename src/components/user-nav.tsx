@@ -35,10 +35,11 @@ export function UserNav() {
   }, [firestore, user]);
 
   const { data: userData, isLoading: isUserDataLoading } = useDoc(userDocRef);
+  
+  const isLoading = isUserLoading || isUserDataLoading;
   const isPro = userData?.plan === 'pro';
   const isFree = user && !isPro;
 
-  const isLoading = isUserLoading || isUserDataLoading;
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
