@@ -5,13 +5,12 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { walletLeaderboard } from '@/lib/mock-data'
 import { cn } from "@/lib/utils"
-import { useUser, useFirestore, useDoc } from "@/firebase";
-import { collection, addDoc, serverTimestamp, query, where, getDocs, doc } from 'firebase/firestore';
+import { useUser, useFirestore } from "@/firebase";
+import { collection, addDoc, serverTimestamp, query, where, getDocs } from 'firebase/firestore';
 import { useToast } from "@/hooks/use-toast";
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Loader2, Check } from "lucide-react";
 import { AuthDialog } from "../auth/auth-dialog";
-import type { WatchlistItem } from "@/lib/types";
 
 const TrackButton = ({ walletAddress }: { walletAddress: string }) => {
     const { user, loading: userLoading } = useUser();
@@ -32,7 +31,7 @@ const TrackButton = ({ walletAddress }: { walletAddress: string }) => {
     const [isTracking, setIsTracking] = useState(false);
     const [checking, setChecking] = useState(true);
 
-    React.useEffect(() => {
+    useEffect(() => {
         const checkIfTracked = async () => {
             if (watchlistQuery) {
                 const querySnapshot = await getDocs(watchlistQuery);
