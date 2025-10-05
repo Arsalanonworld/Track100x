@@ -15,10 +15,16 @@ import { addDoc, collection, doc, serverTimestamp, updateDoc } from 'firebase/fi
 import type { Alert } from '@/lib/types';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
+import { Combobox } from './ui/combobox';
+import { mockWhaleTxs } from '@/lib/mock-data';
+
+const uniqueTokens = Array.from(new Set(mockWhaleTxs.map(tx => tx.token.symbol.toUpperCase())));
+const tokenOptions = uniqueTokens.map(symbol => ({ label: symbol, value: symbol }));
 
 
 export const QuickAlertConfigurator = ({ onSubmitted, entity, alert }: { onSubmitted?: () => void, entity?: { type: 'wallet' | 'token', identifier: string }, alert?: Alert }) => {
   const [alertType, setAlertType] = React.useState<'wallet' | 'token'>(entity?.type || alert?.alertType || 'wallet');
+  const [tokenValue, setTokenValue] = React.useState(entity?.identifier || alert?.token || '');
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const { toast } = useToast();
   const { user } = useUser();
@@ -28,6 +34,15 @@ export const QuickAlertConfigurator = ({ onSubmitted, entity, alert }: { onSubmi
     const newType = entity?.type || alert?.alertType;
     if (newType) {
       setAlertType(newType);
+    }
+  }, [entity, alert]);
+
+  React.useEffect(() => {
+    if (entity?.type === 'token') {
+      setTokenValue(entity.identifier);
+    }
+     if (alert?.token) {
+      setTokenValue(alert.token);
     }
   }, [entity, alert]);
 
@@ -54,7 +69,7 @@ export const QuickAlertConfigurator = ({ onSubmitted, entity, alert }: { onSubmi
     if (data.alertType === 'wallet') {
         alertData.walletId = data.walletId;
     } else {
-        alertData.token = data.token;
+        alertData.token = tokenValue;
     }
 
     if (alert) {
@@ -107,6 +122,7 @@ export const QuickAlertConfigurator = ({ onSubmitted, entity, alert }: { onSubmi
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+        <input type="hidden" name="token" value={tokenValue} />
         <div className="space-y-2">
             <Label>Alert Type</Label>
             <Select onValueChange={(v: 'wallet' | 'token') => setAlertType(v)} defaultValue={alertType} name="alertType" disabled={!!entity || !!alert}>
@@ -180,14 +196,13 @@ export const QuickAlertConfigurator = ({ onSubmitted, entity, alert }: { onSubmi
             <>
             <div className="space-y-2">
               <Label htmlFor="token-symbol">Token Symbol</Label>
-              <Input
-                id="token-symbol"
-                name="token"
-                placeholder="e.g., WIF, PEPE"
-                required
-                defaultValue={entity?.identifier || alert?.token || ''}
-                readOnly={!!(entity || alert)}
-              />
+               <Combobox
+                  options={tokenOptions}
+                  value={tokenValue}
+                  onChange={setTokenValue}
+                  placeholder="Select token..."
+                  emptyMessage="No tokens found."
+                />
             </div>
              <div className="space-y-2">
               <Label htmlFor="token-rule">Rule</Label>
