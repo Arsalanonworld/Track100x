@@ -87,7 +87,7 @@ function CheckoutForm() {
                   <span className="font-semibold">${total.toFixed(2)}</span>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  Billed {plan} at ${price}/month.
+                  Billed {billingCycle}.
                 </p>
               </div>
               <Separator />

@@ -247,7 +247,7 @@ export default function UpgradePage() {
     if (!user) {
       setAuthDialogOpen(true);
     } else {
-      router.push('/checkout');
+      router.push(`/checkout?plan=${billingCycle}`);
     }
   };
 
