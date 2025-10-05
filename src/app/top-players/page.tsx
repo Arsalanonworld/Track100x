@@ -6,7 +6,7 @@ import PageHeader from '@/components/page-header';
 import { topPlayersData, Player } from '@/lib/mock-data';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { BellPlus, Search, ExternalLink } from 'lucide-react';
+import { BellPlus, Search, ExternalLink, Filter } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
@@ -16,6 +16,14 @@ import { CreateAlertDialog } from '@/components/create-alert-dialog';
 import { cn } from '@/lib/utils';
 import { Card } from '@/components/ui/card';
 import Link from 'next/link';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet';
 
 
 const allTags = Array.from(new Set(topPlayersData.flatMap(p => p.tags)));
@@ -105,7 +113,6 @@ export default function TopPlayersPage() {
     const filteredAndSortedPlayers = useMemo(() => {
         let players = [...topPlayersData];
 
-        // Filter by search term (alias or address)
         if (searchTerm) {
             players = players.filter(p => 
                 p.alias.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -113,17 +120,14 @@ export default function TopPlayersPage() {
             );
         }
 
-        // Filter by chain
         if (selectedChain !== 'all') {
             players = players.filter(p => p.blockchain.toLowerCase() === selectedChain);
         }
 
-        // Filter by tag
         if (selectedTag !== 'all') {
             players = players.filter(p => p.tags.includes(selectedTag));
         }
 
-        // Sort players
         players.sort((a, b) => {
             switch (sortBy) {
                 case 'pnlPercent':
@@ -139,6 +143,45 @@ export default function TopPlayersPage() {
         return players;
     }, [searchTerm, selectedChain, selectedTag, sortBy]);
 
+    const FilterControls = () => (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input 
+                  placeholder="Search by alias or address..."
+                  className="pl-10"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+              />
+          </div>
+          <Select value={selectedChain} onValueChange={setSelectedChain}>
+              <SelectTrigger><SelectValue placeholder="All Chains" /></SelectTrigger>
+              <SelectContent>
+                  <SelectItem value="all">All Chains</SelectItem>
+                  <SelectItem value="ethereum">Ethereum</SelectItem>
+                  <SelectItem value="solana">Solana</SelectItem>
+                  <SelectItem value="bitcoin">Bitcoin</SelectItem>
+                  <SelectItem value="polygon">Polygon</SelectItem>
+              </SelectContent>
+          </Select>
+          <Select value={selectedTag} onValueChange={setSelectedTag}>
+              <SelectTrigger><SelectValue placeholder="All Tags" /></SelectTrigger>
+              <SelectContent>
+                  <SelectItem value="all">All Tags</SelectItem>
+                  {allTags.map(tag => <SelectItem key={tag} value={tag}>{tag}</SelectItem>)}
+              </SelectContent>
+          </Select>
+          <Select value={sortBy} onValueChange={setSortBy}>
+              <SelectTrigger><SelectValue placeholder="Sort by..." /></SelectTrigger>
+              <SelectContent>
+                  <SelectItem value="netWorth">Sort by: Net Worth</SelectItem>
+                  <SelectItem value="pnlPercent">Sort by: 7d P&L %</SelectItem>
+                  <SelectItem value="winRate">Sort by: Win Rate</SelectItem>
+              </SelectContent>
+          </Select>
+      </div>
+    );
+
   return (
     <div className="space-y-8">
       <PageHeader
@@ -147,42 +190,32 @@ export default function TopPlayersPage() {
       />
 
       {/* Filter and Sort Controls */}
-      <div className="p-4 bg-card border rounded-lg space-y-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input 
-                    placeholder="Search by alias or address..."
-                    className="pl-10"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                />
-            </div>
-            <Select value={selectedChain} onValueChange={setSelectedChain}>
-                <SelectTrigger><SelectValue placeholder="All Chains" /></SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="all">All Chains</SelectItem>
-                    <SelectItem value="ethereum">Ethereum</SelectItem>
-                    <SelectItem value="solana">Solana</SelectItem>
-                    <SelectItem value="bitcoin">Bitcoin</SelectItem>
-                    <SelectItem value="polygon">Polygon</SelectItem>
-                </SelectContent>
-            </Select>
-            <Select value={selectedTag} onValueChange={setSelectedTag}>
-                <SelectTrigger><SelectValue placeholder="All Tags" /></SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="all">All Tags</SelectItem>
-                    {allTags.map(tag => <SelectItem key={tag} value={tag}>{tag}</SelectItem>)}
-                </SelectContent>
-            </Select>
-            <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger><SelectValue placeholder="Sort by..." /></SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="netWorth">Sort by: Net Worth</SelectItem>
-                    <SelectItem value="pnlPercent">Sort by: 7d P&L %</SelectItem>
-                    <SelectItem value="winRate">Sort by: Win Rate</SelectItem>
-                </SelectContent>
-            </Select>
+      <div className="flex justify-between items-center p-4 bg-card border rounded-lg">
+        {/* Desktop Filters */}
+        <div className="hidden md:flex w-full">
+            <FilterControls />
+        </div>
+        {/* Mobile Filter Button */}
+        <div className="md:hidden w-full flex justify-end">
+            <Sheet>
+                <SheetTrigger asChild>
+                    <Button variant="outline">
+                        <Filter className="h-4 w-4 mr-2" />
+                        Filters & Sort
+                    </Button>
+                </SheetTrigger>
+                <SheetContent side="bottom" className="rounded-t-lg">
+                    <SheetHeader className="text-left">
+                        <SheetTitle>Filters</SheetTitle>
+                        <SheetDescription>
+                            Refine the leaderboard to find what you're looking for.
+                        </SheetDescription>
+                    </SheetHeader>
+                    <div className="py-4">
+                        <FilterControls />
+                    </div>
+                </SheetContent>
+            </Sheet>
         </div>
       </div>
       
