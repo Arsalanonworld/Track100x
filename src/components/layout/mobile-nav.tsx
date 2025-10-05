@@ -41,7 +41,7 @@ export function MobileNav() {
                     onOpenChange={setOpen}
                     >
                     <LogoIcon />
-                    <span className="ml-2 font-bold">WhaleWatch100x</span>
+                    <span className="ml-2 font-bold">Track100x</span>
                 </MobileLink>
             </SheetTitle>
             <SheetDescription className="sr-only">

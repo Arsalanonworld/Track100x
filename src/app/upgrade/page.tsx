@@ -116,7 +116,7 @@ const faqs = [
   {
     question: 'Do you offer a free trial for the Pro plan?',
     answer:
-      'We do not offer a time-based free trial. However, our Free plan is a great way to experience the core functionality of WhaleWatch100x. You can upgrade to Pro at any time to unlock all features.',
+      'We do not offer a time-based free trial. However, our Free plan is a great way to experience the core functionality of Track100x. You can upgrade to Pro at any time to unlock all features.',
   },
 ];
 
@@ -270,7 +270,7 @@ export default function UpgradePage() {
             Follow the Whales. Find the Alpha.
           </h1>
           <p className="max-w-2xl mx-auto mt-6 text-lg text-muted-foreground">
-            Get real-time data, unlimited alerts, and advanced tools. Upgrade to WhaleWatch100x Pro.
+            Get real-time data, unlimited alerts, and advanced tools. Upgrade to Track100x Pro.
           </p>
           <div className="flex items-center justify-center gap-4 mt-8">
             <Button size="lg" onClick={() => scrollTo('pricing')}>

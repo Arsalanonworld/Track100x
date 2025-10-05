@@ -4,13 +4,13 @@ export default function AboutPage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        title="About WhaleWatch100x"
+        title="About Track100x"
         description="The story behind the ultimate wallet intelligence platform."
       />
 
       <div className="max-w-2xl mx-auto text-muted-foreground space-y-6">
         <p>
-          WhaleWatch100x was founded on a simple principle: on-chain data should be accessible to everyone, not just data scientists or elite trading firms. We saw a gap in the market for a tool that was both powerful enough for professional analysts and intuitive enough for everyday crypto enthusiasts.
+          Track100x was founded on a simple principle: on-chain data should be accessible to everyone, not just data scientists or elite trading firms. We saw a gap in the market for a tool that was both powerful enough for professional analysts and intuitive enough for everyday crypto enthusiasts.
         </p>
         <p>
           Our mission is to decode the complexity of the blockchain. We provide real-time, actionable insights by tracking the most significant players in the crypto space—the "whales." By monitoring their movements, we help our users anticipate market trends, discover new opportunities, and make more informed decisions.

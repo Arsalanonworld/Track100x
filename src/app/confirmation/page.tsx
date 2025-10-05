@@ -16,7 +16,7 @@ export default function ConfirmationPage() {
           </div>
           <CardTitle className="mt-4">Upgrade Successful!</CardTitle>
           <CardDescription>
-            Welcome to WhaleWatch100x Pro. You now have unlimited access to all features.
+            Welcome to Track100x Pro. You now have unlimited access to all features.
           </CardDescription>
         </CardHeader>
         <CardContent>

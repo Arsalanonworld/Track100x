@@ -83,7 +83,7 @@ function CheckoutForm() {
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <div className="flex justify-between">
-                  <span>WhaleWatch100x Pro - {planName}</span>
+                  <span>Track100x Pro - {planName}</span>
                   <span className="font-semibold">${total.toFixed(2)}</span>
                 </div>
                 <p className="text-sm text-muted-foreground">
