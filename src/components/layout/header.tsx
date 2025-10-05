@@ -1,10 +1,13 @@
 
+'use client';
 import { MainNav } from "@/components/layout/main-nav";
 import { UserNav } from "@/components/user-nav";
 import { ThemeToggle } from "@/components/theme-toggle";
 import Link from "next/link";
 import NotificationBell from "./notification-bell";
 import { MobileNav } from "./mobile-nav";
+import { AuthDialog } from "../auth/auth-dialog";
+import { useState } from "react";
 
 export const LogoIcon = () => (
     <svg
@@ -26,6 +29,8 @@ export const LogoIcon = () => (
 
 
 export default function Header() {
+    const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
+
     return (
         <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur-sm">
             <div className="container flex h-16 items-center justify-between">
@@ -40,10 +45,11 @@ export default function Header() {
 
                 <div className="flex items-center space-x-2">
                     <NotificationBell />
-                    <UserNav />
+                    <UserNav onLoginClick={() => setIsAuthDialogOpen(true)} />
                     <ThemeToggle />
                 </div>
             </div>
+             <AuthDialog open={isAuthDialogOpen} onOpenChange={setIsAuthDialogOpen} />
         </header>
     );
 }

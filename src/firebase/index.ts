@@ -12,6 +12,9 @@ import {
 } from 'firebase/firestore';
 import { getAuth, Auth } from 'firebase/auth';
 import { firebaseConfig } from './config';
+import { FirebaseProvider, useFirebase, useFirebaseApp, useAuth, useFirestore } from './provider';
+import { useUser } from './auth/use-user';
+
 
 let app: FirebaseApp;
 let auth: Auth;
@@ -35,4 +38,10 @@ function initializeFirebase() {
 
 export {
   initializeFirebase,
+  FirebaseProvider,
+  useUser,
+  useFirebase,
+  useFirebaseApp,
+  useFirestore,
+  useAuth,
 };

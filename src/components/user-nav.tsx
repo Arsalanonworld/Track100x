@@ -11,35 +11,37 @@ import {
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import { LogOut, User, DollarSign } from 'lucide-react';
+import { LogOut, User, DollarSign, Star } from 'lucide-react';
 import { AnimatedButton } from './ui/animated-button';
+import { useUser } from '@/firebase';
+import { logout } from '@/app/auth/actions';
 
-export function UserNav() {
-  const user = null; // Placeholder for user state
-  const plan = 'free'; // Placeholder for user plan
+export function UserNav({ onLoginClick }: { onLoginClick: () => void }) {
+  const { user, claims, loading } = useUser();
+  const plan = claims?.plan || 'free';
+
+  if (loading) {
+    return <div className="h-10 w-24 rounded-md bg-muted animate-pulse" />;
+  }
 
   // Guest State
   if (!user) {
     return (
-      <div className="flex items-center gap-2">
-        <Button variant="ghost" asChild>
-          <Link href="/login">Log In</Link>
-        </Button>
-        <Button asChild>
-          <Link href="/login">Sign Up</Link>
-        </Button>
-      </div>
+      <Button onClick={onLoginClick}>
+        Login / Sign Up
+      </Button>
     );
   }
 
   // Logged-in State
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-4">
       {plan === 'free' && (
-         <Link href="/upgrade" passHref>
-            <AnimatedButton>
-              Upgrade
-            </AnimatedButton>
+        <Link href="/upgrade" passHref>
+          <AnimatedButton>
+            <Star className="mr-2 h-4 w-4" />
+            Upgrade
+          </AnimatedButton>
         </Link>
       )}
       <DropdownMenu>
@@ -63,18 +65,22 @@ export function UserNav() {
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>
-            <User className="mr-2 h-4 w-4" />
-            <span>Account</span>
+          <DropdownMenuItem asChild>
+            <Link href="/account">
+              <User className="mr-2 h-4 w-4" />
+              <span>Account</span>
+            </Link>
           </DropdownMenuItem>
           {plan === 'pro' && (
-            <DropdownMenuItem>
-              <DollarSign className="mr-2 h-4 w-4" />
-              <span>Manage Subscription</span>
+            <DropdownMenuItem asChild>
+                 <Link href="/account/billing">
+                    <DollarSign className="mr-2 h-4 w-4" />
+                    <span>Manage Subscription</span>
+                </Link>
             </DropdownMenuItem>
           )}
           <DropdownMenuSeparator />
-          <DropdownMenuItem>
+          <DropdownMenuItem onClick={() => logout()}>
             <LogOut className="mr-2 h-4 w-4" />
             <span>Log out</span>
           </DropdownMenuItem>

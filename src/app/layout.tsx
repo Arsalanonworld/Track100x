@@ -4,6 +4,7 @@ import { Toaster } from '@/components/ui/toaster';
 import MainLayout from '@/components/layout/main-layout';
 import { cn } from '@/lib/utils';
 import { ThemeProvider } from '@/components/theme-provider';
+import { FirebaseProvider } from '@/firebase';
 
 export const metadata: Metadata = {
   title: 'Tack100x',
@@ -30,9 +31,11 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <FirebaseProvider>
             <MainLayout>
               {children}
             </MainLayout>
+          </FirebaseProvider>
           <Toaster />
         </ThemeProvider>
       </body>
