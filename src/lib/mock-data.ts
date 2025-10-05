@@ -1,5 +1,6 @@
 
 
+
 export type WhaleTransaction = {
   id: string;
   token: {
@@ -649,6 +650,21 @@ export type Wallet = {
   };
 };
 
+export type Player = {
+    id: string;
+    rank: number;
+    alias: string;
+    address: string;
+    netWorth: number;
+    pnl: number;
+    pnlPercent: number;
+    winRate: number;
+    topToken: string;
+    tags: string[];
+    blockchain: 'Ethereum' | 'Solana' | 'All' | 'Bitcoin' | 'Polygon';
+};
+
+
 export type Alert = {
   id: string;
   title: string;
@@ -656,6 +672,31 @@ export type Alert = {
   enabled: boolean;
   type: 'wallet' | 'token';
 };
+
+
+export const topPlayersData: Player[] = [
+  { id: '1', rank: 1, alias: 'Meme Master', address: '0x001...MemeMaster', netWorth: 12500000, pnl: 2500000, pnlPercent: 25.0, winRate: 65, topToken: 'PEPE', tags: ['NFT Flipper', 'Memes'], blockchain: 'Ethereum' },
+  { id: '2', rank: 2, alias: 'DeFi Degen', address: '0x002...DeFiDegen', netWorth: 48100000, pnl: -1200000, pnlPercent: -2.4, winRate: 72, topToken: 'AAVE', tags: ['Yield Farmer'], blockchain: 'Ethereum' },
+  { id: '3', rank: 3, alias: 'Solana Surfer', address: '0x003...SolanaSurfer', netWorth: 32800000, pnl: 850000, pnlPercent: 2.6, winRate: 58, topToken: 'WIF', tags: ['Solana Eco'], blockchain: 'Solana' },
+  { id: '4', rank: 4, alias: 'Alpha Hunter', address: '0x004...AlphaHunter', netWorth: 29200000, pnl: 2300000, pnlPercent: 8.5, winRate: 80, topToken: 'RNDR', tags: ['AI Coins'], blockchain: 'All' },
+  { id: '5', rank: 5, alias: 'Gas Wizard', address: '0x005...GasWizard', netWorth: 8700000, pnl: 1500000, pnlPercent: 20.8, winRate: 90, topToken: 'ETH', tags: ['Layer 2'], blockchain: 'Ethereum' },
+  { id: '6', rank: 6, alias: 'Airdrop King', address: '0x006...AirdropKing', netWorth: 6100000, pnl: 470000, pnlPercent: 7.8, winRate: 55, topToken: 'JUP', tags: ['Airdrop Farmer'], blockchain: 'Solana' },
+  { id: '7', rank: 7, alias: 'NFT Shark', address: '0x007...NFTShark', netWorth: 15300000, pnl: -300000, pnlPercent: -1.9, winRate: 68, topToken: 'PUNKS', tags: ['NFTs'], blockchain: 'Ethereum' },
+  { id: '8', rank: 8, alias: 'The Oracle', address: '0x008...TheOracle', netWorth: 11900000, pnl: 1500000, pnlPercent: 12.8, winRate: 75, topToken: 'LINK', tags: ['Oracles', 'Infrastructure'], blockchain: 'All' },
+  { id: '9', rank: 9, alias: 'Stable Genius', address: '0x009...StableGenius', netWorth: 25000000, pnl: 50000, pnlPercent: 0.2, winRate: 95, topToken: 'USDC', tags: ['Low Risk'], blockchain: 'All' },
+  { id: '10', rank: 10, alias: 'Chain Hopper', address: '0x010...ChainHopper', netWorth: 4500000, pnl: 280000, pnlPercent: 6.2, winRate: 62, topToken: 'ATOM', tags: ['Interoperability'], blockchain: 'All' },
+  { id: '11', rank: 11, alias: 'Token Sniper', address: '0x011...TokenSniper', netWorth: 3800000, pnl: 1100000, pnlPercent: 40.7, winRate: 50, topToken: 'BONK', tags: ['New Listings'], blockchain: 'Solana' },
+  { id: '12', rank: 12, alias: 'Liquidity Baron', address: '0x012...LiquidityBaron', netWorth: 18000000, pnl: 1200000, pnlPercent: 7.1, winRate: 85, topToken: 'UNI', tags: ['LP Provider'], blockchain: 'Ethereum' },
+  { id: '13', rank: 13, alias: 'The Contrarian', address: '0x013...TheContrarian', netWorth: 9800000, pnl: -2000000, pnlPercent: -16.9, winRate: 59, topToken: 'MKR', tags: [], blockchain: 'Ethereum' },
+  { id: '14', rank: 14, alias: 'Gaming Guilder', address: '0x014...GamingGuilder', netWorth: 7200000, pnl: 950000, pnlPercent: 15.2, winRate: 66, topToken: 'AXS', tags: ['GameFi'], blockchain: 'Polygon' },
+  { id: '15', rank: 15, alias: 'Based Bagger', address: '0x015...BasedBagger', netWorth: 5400000, pnl: 1800000, pnlPercent: 50.0, winRate: 70, topToken: 'AERO', tags: ['Base Chain'], blockchain: 'All' },
+  { id: '16', rank: 16, alias: 'LST Pioneer', address: '0x016...LSTPioneer', netWorth: 22000000, pnl: 2100000, pnlPercent: 10.6, winRate: 88, topToken: 'LDO', tags: ['Liquid Staking'], blockchain: 'Ethereum' },
+  { id: '17', rank: 17, alias: 'The Accumulator', address: '0x017...TheAccumulator', netWorth: 45000000, pnl: 3000000, pnlPercent: 7.1, winRate: 92, topToken: 'BTC', tags: ['Long Term'], blockchain: 'Bitcoin' },
+  { id: '18', rank: 18, alias: 'Runes Raider', address: '0x018...RunesRaider', netWorth: 2100000, pnl: 820000, pnlPercent: 64.0, winRate: 48, topToken: 'DOG', tags: ['Runes'], blockchain: 'Bitcoin' },
+  { id: '19', rank: 19, alias: 'Points Pro', address: '0x019...PointsPro', netWorth: 1200000, pnl: 790000, pnlPercent: 192.7, winRate: 78, topToken: 'ETH', tags: ['Points Farming'], blockchain: 'Ethereum' },
+  { id: '20', rank: 20, alias: 'Diamond Hand', address: '0x020...DiamondHand', netWorth: 18000000, pnl: 750000, pnlPercent: 4.3, winRate: 60, topToken: 'GME', tags: ['Memes'], blockchain: 'Solana' },
+];
+
 
 
 export const walletLeaderboard: Wallet[] = [
