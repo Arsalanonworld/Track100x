@@ -3,6 +3,7 @@ import PageHeader from '@/components/page-header';
 import { PlaceHolderImagesById } from '@/lib/placeholder-images';
 import { BarChart, Search, Target, Users } from 'lucide-react';
 import Image from 'next/image';
+import { Card } from '@/components/ui/card';
 
 const teamMembers = [
   { name: 'Alex Johnson', role: 'Co-Founder & CEO', avatarId: 'avatar-01' },
@@ -43,13 +44,17 @@ export default function AboutPage() {
       />
 
       {/* Stats Section */}
-      <section className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         {stats.map((stat, index) => (
-            <div key={index} className="bg-card p-6 rounded-lg border flex flex-col items-center gap-2">
-                {stat.icon}
-                <p className="text-3xl font-bold text-primary">{stat.value}</p>
-                <p className="text-muted-foreground text-sm">{stat.label}</p>
-            </div>
+            <Card key={index} className="p-6">
+                <div className="flex items-center gap-4">
+                    {stat.icon}
+                    <div>
+                        <p className="text-3xl font-bold text-primary">{stat.value}</p>
+                        <p className="text-muted-foreground text-sm">{stat.label}</p>
+                    </div>
+                </div>
+            </Card>
         ))}
       </section>
 
@@ -81,25 +86,27 @@ export default function AboutPage() {
         <p className="max-w-2xl mx-auto text-muted-foreground mb-12">
             A passionate group of developers, data scientists, and crypto-enthusiasts dedicated to financial transparency.
         </p>
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
             {teamMembers.map((member) => {
                  const avatar = PlaceHolderImagesById[member.avatarId];
                 return(
-                    <div key={member.name} className="flex flex-col items-center">
-                    {avatar && (
-                        <div className="relative h-24 w-24 rounded-full overflow-hidden mb-4">
-                            <Image
-                                src={avatar.imageUrl}
-                                alt={member.name}
-                                fill
-                                className="object-cover"
-                                data-ai-hint={avatar.imageHint}
-                            />
-                        </div>
-                    )}
-                    <h3 className="font-semibold">{member.name}</h3>
-                    <p className="text-sm text-primary">{member.role}</p>
-                    </div>
+                    <Card key={member.name} className="pt-6">
+                      {avatar && (
+                          <div className="relative h-24 w-24 rounded-full overflow-hidden mb-4 mx-auto">
+                              <Image
+                                  src={avatar.imageUrl}
+                                  alt={member.name}
+                                  fill
+                                  className="object-cover"
+                                  data-ai-hint={avatar.imageHint}
+                              />
+                          </div>
+                      )}
+                      <div className="p-4 border-t">
+                        <h3 className="font-semibold">{member.name}</h3>
+                        <p className="text-sm text-primary">{member.role}</p>
+                      </div>
+                    </Card>
                 );
             })}
         </div>
