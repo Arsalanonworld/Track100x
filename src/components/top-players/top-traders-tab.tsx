@@ -10,9 +10,26 @@ import { cn } from "@/lib/utils";
 import { TrackButton } from "../track-button";
 
 const mockTraders = [
-    { rank: 1, alias: 'Meme Master', pnl: 20, winRate: 65, topToken: 'SHIB', tags: ['NFT Flipper'], address: '0x000...MemeMaster' },
-    { rank: 2, alias: 'DeFi Degen', pnl: 15, winRate: 72, topToken: 'AAVE', tags: ['Yield Farmer'], address: '0x000...DeFiDegen' },
-    { rank: 3, alias: 'Solana Surfer', pnl: 35, winRate: 58, topToken: 'WIF', tags: [], address: '0x000...SolanaSurfer' },
+    { rank: 1, alias: 'Meme Master', pnl: 205, winRate: 65, topToken: 'PEPE', tags: ['NFT Flipper', 'Memes'], address: '0x001...MemeMaster' },
+    { rank: 2, alias: 'DeFi Degen', pnl: 180, winRate: 72, topToken: 'AAVE', tags: ['Yield Farmer'], address: '0x002...DeFiDegen' },
+    { rank: 3, alias: 'Solana Surfer', pnl: 175, winRate: 58, topToken: 'WIF', tags: ['Solana Eco'], address: '0x003...SolanaSurfer' },
+    { rank: 4, alias: 'Alpha Hunter', pnl: 160, winRate: 80, topToken: 'RNDR', tags: ['AI Coins'], address: '0x004...AlphaHunter' },
+    { rank: 5, alias: 'Gas Wizard', pnl: 155, winRate: 90, topToken: 'ETH', tags: ['Layer 2'], address: '0x005...GasWizard' },
+    { rank: 6, alias: 'Airdrop King', pnl: 142, winRate: 55, topToken: 'JUP', tags: ['Airdrop Farmer'], address: '0x006...AirdropKing' },
+    { rank: 7, alias: 'NFT Shark', pnl: 138, winRate: 68, topToken: 'PUNKS', tags: ['NFTs'], address: '0x007...NFTShark' },
+    { rank: 8, alias: 'The Oracle', pnl: 135, winRate: 75, topToken: 'LINK', tags: ['Oracles', 'Infrastructure'], address: '0x008...TheOracle' },
+    { rank: 9, alias: 'Stable Genius', pnl: 121, winRate: 95, topToken: 'USDC', tags: ['Low Risk'], address: '0x009...StableGenius' },
+    { rank: 10, alias: 'Chain Hopper', pnl: 115, winRate: 62, topToken: 'ATOM', tags: ['Interoperability'], address: '0x010...ChainHopper' },
+    { rank: 11, alias: 'Token Sniper', pnl: 110, winRate: 50, topToken: 'BONK', tags: ['New Listings'], address: '0x011...TokenSniper' },
+    { rank: 12, alias: 'Liquidity Baron', pnl: 105, winRate: 85, topToken: 'UNI', tags: ['LP Provider'], address: '0x012...LiquidityBaron' },
+    { rank: 13, alias: 'The Contrarian', pnl: 98, winRate: 59, topToken: 'MKR', tags: [], address: '0x013...TheContrarian' },
+    { rank: 14, alias: 'Gaming Guilder', pnl: 95, winRate: 66, topToken: 'AXS', tags: ['GameFi'], address: '0x014...GamingGuilder' },
+    { rank: 15, alias: 'Based Bagger', pnl: 92, winRate: 70, topToken: 'AERO', tags: ['Base Chain'], address: '0x015...BasedBagger' },
+    { rank: 16, alias: 'LST Pioneer', pnl: 88, winRate: 88, topToken: 'LDO', tags: ['Liquid Staking'], address: '0x016...LSTPioneer' },
+    { rank: 17, alias: 'The Accumulator', pnl: 85, winRate: 92, topToken: 'BTC', tags: ['Long Term'], address: '0x017...TheAccumulator' },
+    { rank: 18, alias: 'Runes Raider', pnl: 82, winRate: 48, topToken: 'DOG', tags: ['Runes'], address: '0x018...RunesRaider' },
+    { rank: 19, alias: 'Points Pro', pnl: 79, winRate: 78, topToken: 'ETH', tags: ['Points Farming'], address: '0x019...PointsPro' },
+    { rank: 20, alias: 'Diamond Hand', pnl: 75, winRate: 60, topToken: 'GME', tags: ['Memes'], address: '0x020...DiamondHand' },
 ];
 
 export default function TopTradersTab({ isPro }: { isPro: boolean }) {
@@ -20,7 +37,7 @@ export default function TopTradersTab({ isPro }: { isPro: boolean }) {
         return (
             <Card className="relative overflow-hidden">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 blur-sm">
-                   {mockTraders.map((trader) => (
+                   {mockTraders.slice(0, 3).map((trader) => (
                     <Card key={trader.rank} className="p-4">
                         <div className="flex justify-between items-start">
                             <p className="text-lg font-bold">#{trader.rank}</p>
@@ -64,7 +81,7 @@ export default function TopTradersTab({ isPro }: { isPro: boolean }) {
     }
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {mockTraders.map((trader) => (
                  <Card key={trader.rank} className="p-4 flex flex-col h-full">
                     <div className="flex justify-between items-start mb-4">
@@ -73,7 +90,7 @@ export default function TopTradersTab({ isPro }: { isPro: boolean }) {
                     </div>
                      <div className="text-center my-auto flex-grow">
                         <p className="font-bold text-xl text-primary">{trader.alias}</p>
-                         <div className="flex gap-2 justify-center mt-2">
+                         <div className="flex gap-2 justify-center mt-2 flex-wrap">
                            {trader.tags.map(tag => <Badge key={tag} variant="secondary">{tag}</Badge>)}
                         </div>
                      </div>

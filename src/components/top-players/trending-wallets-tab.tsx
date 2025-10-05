@@ -11,9 +11,16 @@ import { CreateAlertDialog } from "../create-alert-dialog";
 import { useState } from "react";
 
 const mockTrending = [
-    { rank: 1, address: '0x456...7890', volume: '10M', activity: 50 },
-    { rank: 2, address: '0xabc...def0', volume: '8.5M', activity: 120 },
-    { rank: 3, address: '0x1a2...b3c4', volume: '7.2M', activity: 88 },
+    { rank: 1, address: '0x456a...7890', volume: '10M', activity: 50 },
+    { rank: 2, address: '0xabcd...def0', volume: '8.5M', activity: 120 },
+    { rank: 3, address: '0x1a2b...b3c4', volume: '7.2M', activity: 88 },
+    { rank: 4, address: '0x5e6f...g7h8', volume: '6.8M', activity: 210 },
+    { rank: 5, address: '0x9i0j...k1l2', volume: '6.5M', activity: 75 },
+    { rank: 6, address: '0x3m4n...o5p6', volume: '5.9M', activity: 150 },
+    { rank: 7, address: '0x7q8r...s9t0', volume: '5.2M', activity: 95 },
+    { rank: 8, address: '0x1u2v...w3x4', volume: '4.8M', activity: 300 },
+    { rank: 9, address: '0x5y6z...a7b8', volume: '4.5M', activity: 60 },
+    { rank: 10, address: '0x9c0d...e1f2', volume: '4.1M', activity: 180 },
 ];
 
 
