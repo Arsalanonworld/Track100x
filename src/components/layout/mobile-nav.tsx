@@ -17,7 +17,7 @@ export function MobileNav() {
   const { user } = useUser();
 
   const navItems = [
-      { href: '/top-players', label: 'Top Players', icon: Users, visible: true },
+      { href: '/top-players', label: 'Leaderboard', icon: Users, visible: true },
       { href: '/watchlist', label: 'Watchlist', icon: Eye, visible: !!user },
       { href: '/alerts', label: 'Alerts', icon: Bell, visible: true },
       { href: '/insights', label: 'Insights', icon: FileText, visible: true },

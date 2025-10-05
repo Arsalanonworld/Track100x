@@ -12,7 +12,7 @@ export function MainNav() {
     const { user } = useUser();
 
     const navItems = [
-        { href: '/top-players', label: 'Top Players', visible: true },
+        { href: '/top-players', label: 'Leaderboard', visible: true },
         { href: '/watchlist', label: 'Watchlist', visible: !!user },
         { href: '/alerts', label: 'Alerts', visible: true },
         { href: '/insights', label: 'Insights', visible: true },

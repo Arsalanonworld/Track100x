@@ -70,7 +70,7 @@ export default function InsightsPage() {
         </div>
       
         <div className="relative">
-            {!isPro && (
+            {!isPro && organicArticles.length > 3 && (
                 <div className="absolute inset-0 z-10 flex items-center justify-center -bottom-1/3">
                     <div className='absolute inset-0 bg-gradient-to-t from-background via-background/90 to-transparent'></div>
                     <div className="relative text-center p-8 space-y-4 rounded-lg bg-card border shadow-lg">
