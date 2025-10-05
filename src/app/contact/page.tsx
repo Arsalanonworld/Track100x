@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { Mail, MessageSquare, Briefcase, Bot, Twitter, Linkedin, Github } from 'lucide-react';
+import { Mail, MessageSquare, Twitter, Linkedin, Github } from 'lucide-react';
 import Link from 'next/link';
 
 const socialLinks = [
@@ -15,9 +15,7 @@ const socialLinks = [
 ];
 
 const contactInfo = [
-    { icon: <Mail className="h-5 w-5 text-primary" />, title: 'General Inquiries', value: 'hello@track100x.com'},
-    { icon: <Briefcase className="h-5 w-5 text-primary" />, title: 'Partnerships', value: 'partners@track100x.com'},
-    { icon: <Bot className="h-5 w-5 text-primary" />, title: 'Support', value: 'support@track100x.com'},
+    { icon: <Mail className="h-5 w-5 text-primary" />, title: 'Support & Inquiries', value: 'support@track100x.com'},
 ]
 
 export default function ContactPage() {
