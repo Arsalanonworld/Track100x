@@ -25,6 +25,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { FeatureLock } from '@/components/feature-lock';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 
 function WatchlistSkeleton() {
@@ -57,16 +59,23 @@ export default function WatchlistPage() {
   const { data: watchlist, loading: watchlistLoading } = useCollection<WatchlistItem>(watchlistQuery);
   const { toast } = useToast();
 
-  const handleRemove = async (item: WatchlistItem) => {
+  const handleRemove = (item: WatchlistItem) => {
     if (!firestore || !user) return;
     const docRef = doc(firestore, `users/${user.uid}/watchlist`, item.id);
-    await deleteDoc(docRef).catch(async (e) => {
-      console.error(e)
-    });
-    toast({
-        title: "Wallet Removed",
-        description: `${item.walletAddress.slice(0, 6)}...${item.walletAddress.slice(-4)} removed from watchlist.`
-    });
+    deleteDoc(docRef)
+      .then(() => {
+        toast({
+            title: "Wallet Removed",
+            description: `${item.walletAddress.slice(0, 6)}...${item.walletAddress.slice(-4)} removed from watchlist.`
+        });
+      })
+      .catch(async (serverError) => {
+        const permissionError = new FirestorePermissionError({
+          path: docRef.path,
+          operation: 'delete',
+        });
+        errorEmitter.emit('permission-error', permissionError);
+      });
   }
 
   const isLoading = userLoading || (user && watchlistLoading);
@@ -107,7 +116,7 @@ export default function WatchlistPage() {
                                         </Badge>
                                     </TableCell>
                                     <TableCell>
-                                        {item.createdAt.toDate().toLocaleDateString()}
+                                        {item.createdAt?.toDate().toLocaleDateString() ?? 'N/A'}
                                     </TableCell>
                                     <TableCell className="text-right">
                                     <AlertDialog>
