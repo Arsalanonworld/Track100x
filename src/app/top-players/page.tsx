@@ -14,6 +14,7 @@ import { TrackButton } from '@/components/track-button';
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { CreateAlertDialog } from '@/components/create-alert-dialog';
 import { cn } from '@/lib/utils';
+import { Card } from '@/components/ui/card';
 
 
 const allTags = Array.from(new Set(topPlayersData.flatMap(p => p.tags)));
