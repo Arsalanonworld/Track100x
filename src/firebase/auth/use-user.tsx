@@ -63,9 +63,8 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   }, [auth]);
 
   useEffect(() => {
-    // If the user is logged in and on the login page, redirect them to the home page.
     if (!loading && user && pathname === '/login') {
-      router.push('/');
+      router.push('/account');
     }
   }, [user, loading, pathname, router]);
 
