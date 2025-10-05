@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -50,7 +50,13 @@ export default function ActiveAlerts() {
     const { user, claims } = useUser();
     const firestore = useFirestore();
 
-    const alertsQuery = user && firestore ? query(collection(firestore, `users/${user.uid}/alerts`)) : null;
+    const alertsQuery = useMemo(() => {
+        if (user && firestore) {
+            return query(collection(firestore, `users/${user.uid}/alerts`));
+        }
+        return null;
+    }, [user, firestore]);
+    
     const { data: alerts, loading } = useCollection<Alert>(alertsQuery);
     
     const isPro = claims?.plan === 'pro';

@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import PageHeader from '@/components/page-header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -46,7 +46,14 @@ function WatchlistSkeleton() {
 export default function WatchlistPage() {
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
-  const watchlistQuery = user && firestore ? query(collection(firestore, `users/${user.uid}/watchlist`)) : null;
+  
+  const watchlistQuery = useMemo(() => {
+    if (user && firestore) {
+      return query(collection(firestore, `users/${user.uid}/watchlist`));
+    }
+    return null;
+  }, [user, firestore]);
+
   const { data: watchlist, loading: watchlistLoading } = useCollection<WatchlistItem>(watchlistQuery);
   const { toast } = useToast();
 
