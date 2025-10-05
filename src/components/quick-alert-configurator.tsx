@@ -13,21 +13,23 @@ import { Button } from './ui/button';
 import { Loader2 } from 'lucide-react';
 import { Alert as AlertBox, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useUser, useFirestore } from '@/firebase';
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { addDoc, collection, doc, serverTimestamp, updateDoc } from 'firebase/firestore';
+import type { Alert } from '@/lib/types';
 
 
-export const QuickAlertConfigurator = ({ onSubmitted, entity }: { onSubmitted?: () => void, entity?: { type: 'wallet' | 'token', identifier: string } }) => {
-  const [alertType, setAlertType] = React.useState<'wallet' | 'token'>(entity?.type || 'wallet');
+export const QuickAlertConfigurator = ({ onSubmitted, entity, alert }: { onSubmitted?: () => void, entity?: { type: 'wallet' | 'token', identifier: string }, alert?: Alert }) => {
+  const [alertType, setAlertType] = React.useState<'wallet' | 'token'>(entity?.type || alert?.alertType || 'wallet');
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const { toast } = useToast();
   const { user, claims } = useUser();
   const firestore = useFirestore();
 
   React.useEffect(() => {
-    if (entity?.type) {
-      setAlertType(entity.type);
+    const newType = entity?.type || alert?.alertType;
+    if (newType) {
+      setAlertType(newType);
     }
-  }, [entity]);
+  }, [entity, alert]);
 
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -47,7 +49,6 @@ export const QuickAlertConfigurator = ({ onSubmitted, entity }: { onSubmitted?: 
         threshold: data.threshold ? Number(data.threshold) : null,
         enabled: true,
         userId: user.uid,
-        createdAt: serverTimestamp(),
     };
 
     if (data.alertType === 'wallet') {
@@ -57,20 +58,31 @@ export const QuickAlertConfigurator = ({ onSubmitted, entity }: { onSubmitted?: 
     }
 
     try {
-        await addDoc(collection(firestore, `users/${user.uid}/alerts`), alertData);
-        toast({
-            title: "Alert created!",
-            description: "Your new alert has been saved.",
-        });
+        if (alert) {
+            const alertRef = doc(firestore, `users/${user.uid}/alerts`, alert.id);
+            await updateDoc(alertRef, alertData);
+            toast({
+                title: "Alert updated!",
+                description: "Your alert has been saved.",
+            });
+        } else {
+            alertData.createdAt = serverTimestamp();
+            await addDoc(collection(firestore, `users/${user.uid}/alerts`), alertData);
+            toast({
+                title: "Alert created!",
+                description: "Your new alert has been saved.",
+            });
+        }
+
         if (onSubmitted) {
             onSubmitted();
         }
     } catch (e) {
-        console.error("Error creating alert:", e);
+        console.error("Error saving alert:", e);
         toast({
             variant: 'destructive',
             title: 'Error',
-            description: 'Could not create the alert.'
+            description: 'Could not save the alert.'
         });
     } finally {
         setIsSubmitting(false);
@@ -79,7 +91,7 @@ export const QuickAlertConfigurator = ({ onSubmitted, entity }: { onSubmitted?: 
 
   const SubmitButton = () => (
     <Button type="submit" className="w-full" disabled={isSubmitting || !user}>
-        {isSubmitting ? <Loader2 className="animate-spin" /> : "Create Alert"}
+        {isSubmitting ? <Loader2 className="animate-spin" /> : alert ? "Save Changes" : "Create Alert"}
     </Button>
   );
 
@@ -87,7 +99,7 @@ export const QuickAlertConfigurator = ({ onSubmitted, entity }: { onSubmitted?: 
     <form onSubmit={handleSubmit} className="space-y-6">
         <div className="space-y-2">
             <Label>Alert Type</Label>
-            <Select onValueChange={(v: 'wallet' | 'token') => setAlertType(v)} defaultValue={alertType} name="alertType" disabled={!!entity}>
+            <Select onValueChange={(v: 'wallet' | 'token') => setAlertType(v)} defaultValue={alertType} name="alertType" disabled={!!entity || !!alert}>
                 <SelectTrigger>
                     <SelectValue placeholder="Select alert type..." />
                 </SelectTrigger>
@@ -111,13 +123,13 @@ export const QuickAlertConfigurator = ({ onSubmitted, entity }: { onSubmitted?: 
                 name="walletId"
                 placeholder="e.g., 0x... or vitalik.eth"
                 required
-                defaultValue={entity?.type === 'wallet' ? entity.identifier : ''}
-                readOnly={!!(entity?.type === 'wallet')}
+                defaultValue={entity?.identifier || alert?.walletId || ''}
+                readOnly={!!(entity || alert)}
               />
             </div>
              <div className="space-y-2">
               <Label htmlFor="wallet-rule">Rule</Label>
-               <Select name="rule" required>
+               <Select name="rule" required defaultValue={alert?.rule}>
                 <SelectTrigger id="wallet-rule">
                   <SelectValue placeholder="Select a rule..." />
                 </SelectTrigger>
@@ -137,7 +149,7 @@ export const QuickAlertConfigurator = ({ onSubmitted, entity }: { onSubmitted?: 
             </div>
              <div className="space-y-2">
               <Label htmlFor="wallet-threshold">Threshold</Label>
-               <Select name="threshold">
+               <Select name="threshold" defaultValue={alert?.threshold?.toString()}>
                 <SelectTrigger id="wallet-threshold">
                   <SelectValue placeholder="Select a threshold..." />
                 </SelectTrigger>
@@ -163,13 +175,13 @@ export const QuickAlertConfigurator = ({ onSubmitted, entity }: { onSubmitted?: 
                 name="token"
                 placeholder="e.g., WIF, PEPE"
                 required
-                defaultValue={entity?.type === 'token' ? entity.identifier : ''}
-                readOnly={!!(entity?.type === 'token')}
+                defaultValue={entity?.identifier || alert?.token || ''}
+                readOnly={!!(entity || alert)}
               />
             </div>
              <div className="space-y-2">
               <Label htmlFor="token-rule">Rule</Label>
-               <Select name="rule" required>
+               <Select name="rule" required defaultValue={alert?.rule}>
                 <SelectTrigger id="token-rule">
                   <SelectValue placeholder="Select a rule..." />
                 </SelectTrigger>
