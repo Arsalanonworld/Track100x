@@ -10,27 +10,30 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import TopPlayersHero from '@/components/top-players/top-players-hero';
 import TopWalletsTab from '@/components/top-players/top-wallets-tab';
 import TopTradersTab from '@/components/top-players/top-traders-tab';
 import TrendingWalletsTab from '@/components/top-players/trending-wallets-tab';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import PageHeader from '@/components/page-header';
 
 export default function TopPlayersPage() {
   const { claims } = useUser();
   const isPro = claims?.plan === 'pro';
 
   return (
-    <div className="space-y-8 -mt-8 sm:-mt-12">
-      <TopPlayersHero />
+    <div className="space-y-8">
+      <PageHeader
+        title="Top Players in Crypto"
+        description="Track the biggest movers and shakers in real-time. Set alerts to stay ahead!"
+      />
 
       <div className="container">
         <Tabs defaultValue="top-wallets" className="w-full">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
             <TabsList className="grid grid-cols-3 w-full md:w-auto">
               <TabsTrigger value="top-wallets">Top Wallets</TabsTrigger>
-              <TabsTrigger value="top-traders" disabled={!isPro}>Top Traders</TabsTrigger>
+              <TabsTrigger value="top-traders">Top Traders</TabsTrigger>
               <TabsTrigger value="trending-wallets">Trending</TabsTrigger>
             </TabsList>
             <div className="flex gap-2 w-full md:w-auto">
