@@ -57,8 +57,33 @@ export default function AccountPage() {
         description="Manage your profile, settings, and subscription."
       />
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div className="md:col-span-2">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-1">
+          <Card>
+            <CardHeader>
+              <CardTitle>Profile</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4 text-sm">
+                <div className="flex items-center gap-4">
+                    <Avatar className="h-16 w-16">
+                        <AvatarImage src={user.photoURL ?? ''} alt="User avatar" />
+                        <AvatarFallback>
+                            {user.displayName ? user.displayName.charAt(0).toUpperCase() : user.email?.charAt(0).toUpperCase()}
+                        </AvatarFallback>
+                    </Avatar>
+                    <div>
+                        <p className="font-semibold">{user.displayName || 'User'}</p>
+                        <p className="text-muted-foreground">{user.email}</p>
+                    </div>
+                </div>
+                <div>
+                    <p className="font-semibold text-muted-foreground">User ID</p>
+                    <p className="font-mono text-xs break-all">{user.uid}</p>
+                </div>
+            </CardContent>
+          </Card>
+        </div>
+        <div className="lg:col-span-2">
           <Card>
             <CardHeader>
               <CardTitle>Subscription Plan</CardTitle>
@@ -90,31 +115,6 @@ export default function AccountPage() {
                   </Button>
                 </div>
               )}
-            </CardContent>
-          </Card>
-        </div>
-        <div className="md:col-span-1">
-          <Card>
-            <CardHeader>
-              <CardTitle>Profile</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4 text-sm">
-                <div className="flex items-center gap-4">
-                    <Avatar className="h-16 w-16">
-                        <AvatarImage src={user.photoURL ?? ''} alt="User avatar" />
-                        <AvatarFallback>
-                            {user.displayName ? user.displayName.charAt(0).toUpperCase() : user.email?.charAt(0).toUpperCase()}
-                        </AvatarFallback>
-                    </Avatar>
-                    <div>
-                        <p className="font-semibold">{user.displayName || 'User'}</p>
-                        <p className="text-muted-foreground">{user.email}</p>
-                    </div>
-                </div>
-                <div>
-                    <p className="font-semibold text-muted-foreground">User ID</p>
-                    <p className="font-mono text-xs break-all">{user.uid}</p>
-                </div>
             </CardContent>
           </Card>
         </div>

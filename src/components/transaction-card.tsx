@@ -73,7 +73,7 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
                     <CollapsibleTrigger asChild>
                         <div className="cursor-pointer">
                             <CardContent className="p-3 sm:p-4">
-                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                                <div className="flex flex-col xs:flex-row xs:items-center xs:justify-between gap-3">
                                     {/* --- Left Column (Token Info) --- */}
                                     <div className="flex items-center gap-3 min-w-0">
                                         <Avatar className='h-10 w-10 text-sm font-bold'>
@@ -98,7 +98,7 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
                                     </div>
 
                                     {/* --- Right Column (Actions) --- */}
-                                    <div className="flex items-center justify-end sm:justify-end gap-1 sm:gap-2">
+                                    <div className="flex items-center self-end xs:self-center justify-end gap-1 sm:gap-2">
                                         <Badge variant="outline" className="text-xs">{tx.network}</Badge>
                                         <div className="text-xs text-muted-foreground whitespace-nowrap">{tx.time}</div>
                                         <TooltipProvider>

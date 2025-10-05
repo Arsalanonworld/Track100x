@@ -178,7 +178,7 @@ export function WhaleFeed() {
                               Refine the whale feed to find what you're looking for.
                             </SheetDescription>
                           </SheetHeader>
-                          <Collapsible className="py-4">
+                          <Collapsible className="py-4" defaultOpen={true}>
                             <CollapsibleTrigger className="flex justify-between w-full font-semibold text-sm items-center pb-2 border-b">
                               <span>Show Filters</span>
                               <ChevronsUpDown className="h-4 w-4"/>
