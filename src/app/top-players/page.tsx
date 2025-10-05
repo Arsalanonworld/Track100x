@@ -5,12 +5,62 @@ import { useState, useMemo } from 'react';
 import PageHeader from '@/components/page-header';
 import { topPlayersData, Player } from '@/lib/mock-data';
 import { Input } from '@/components/ui/input';
-import { Search } from 'lucide-react';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import PlayerCard from '@/components/top-players/player-card';
+import { BellPlus, Search, Trophy, ArrowUpRight, Percent, Star } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
+import { TrackButton } from '@/components/track-button';
+import { Dialog, DialogTrigger } from '@/components/ui/dialog';
+import { CreateAlertDialog } from '@/components/create-alert-dialog';
+import { cn } from '@/lib/utils';
+
 
 const allTags = Array.from(new Set(topPlayersData.flatMap(p => p.tags)));
+
+const TopPlayerRow = ({ player, rank }: { player: Player; rank: number }) => {
+    const [isAlertEditorOpen, setIsAlertEditorOpen] = useState(false);
+
+    return (
+        <Dialog open={isAlertEditorOpen} onOpenChange={setIsAlertEditorOpen}>
+            <TableRow>
+                <TableCell className="font-medium text-muted-foreground text-center">{rank}</TableCell>
+                <TableCell>
+                    <div className="flex flex-col">
+                        <span className="font-semibold text-primary">{player.alias}</span>
+                        <span className="font-mono text-xs text-muted-foreground">{player.address}</span>
+                    </div>
+                </TableCell>
+                <TableCell>
+                    <div className="flex flex-wrap gap-1">
+                        {player.tags.map(tag => <Badge key={tag} variant="secondary">{tag}</Badge>)}
+                        {player.tags.length === 0 && <Badge variant="outline">N/A</Badge>}
+                    </div>
+                </TableCell>
+                <TableCell className="text-right font-medium">${(player.netWorth / 1_000_000).toFixed(2)}M</TableCell>
+                 <TableCell className={cn("text-right font-medium", player.pnlPercent > 0 ? "text-green-500" : "text-red-500")}>
+                    {player.pnlPercent > 0 ? '+' : ''}{player.pnlPercent.toFixed(1)}%
+                </TableCell>
+                 <TableCell className="text-right font-medium">{player.winRate}%</TableCell>
+                <TableCell>
+                    <div className="flex items-center justify-end gap-1">
+                        <TrackButton walletAddress={player.address} />
+                        <DialogTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setIsAlertEditorOpen(true)}>
+                                <BellPlus className="h-4 w-4" />
+                            </Button>
+                        </DialogTrigger>
+                    </div>
+                </TableCell>
+            </TableRow>
+             {isAlertEditorOpen && <CreateAlertDialog 
+                onOpenChange={setIsAlertEditorOpen} 
+                entity={{ type: 'wallet', identifier: player.address }}
+            />}
+        </Dialog>
+    )
+}
+
 
 export default function TopPlayersPage() {
     const [searchTerm, setSearchTerm] = useState('');
@@ -102,12 +152,27 @@ export default function TopPlayersPage() {
         </div>
       </div>
       
-      {/* Player Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {filteredAndSortedPlayers.map(player => (
-            <PlayerCard key={player.id} player={player} />
-        ))}
-      </div>
+      {/* Player Table */}
+      <Card>
+        <Table>
+            <TableHeader>
+                <TableRow>
+                    <TableHead className='text-center'>Rank</TableHead>
+                    <TableHead>Player</TableHead>
+                    <TableHead>Tags</TableHead>
+                    <TableHead className='text-right'>Net Worth</TableHead>
+                    <TableHead className='text-right'>7d P&L</TableHead>
+                    <TableHead className='text-right'>Win Rate</TableHead>
+                    <TableHead className='text-right'>Actions</TableHead>
+                </TableRow>
+            </TableHeader>
+            <TableBody>
+                {filteredAndSortedPlayers.map((player, index) => (
+                    <TopPlayerRow key={player.id} player={player} rank={index + 1} />
+                ))}
+            </TableBody>
+        </Table>
+      </Card>
 
        {filteredAndSortedPlayers.length === 0 && (
           <div className="text-center py-16 text-muted-foreground col-span-full">
