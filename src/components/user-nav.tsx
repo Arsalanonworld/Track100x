@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -15,9 +16,12 @@ import { LogOut, User, DollarSign, Star } from 'lucide-react';
 import { AnimatedButton } from './ui/animated-button';
 import { useUser } from '@/firebase';
 import { logout } from '@/app/auth/actions';
+import { useState } from 'react';
+import { AuthDialog } from './auth/auth-dialog';
 
-export function UserNav({ onLoginClick }: { onLoginClick: () => void }) {
+export function UserNav() {
   const { user, claims, loading } = useUser();
+  const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
   const plan = claims?.plan || 'free';
 
   if (loading) {
@@ -27,9 +31,12 @@ export function UserNav({ onLoginClick }: { onLoginClick: () => void }) {
   // Guest State
   if (!user) {
     return (
-      <Button onClick={onLoginClick}>
-        Login / Sign Up
-      </Button>
+      <>
+        <Button onClick={() => setIsAuthDialogOpen(true)}>
+          Login / Sign Up
+        </Button>
+        <AuthDialog open={isAuthDialogOpen} onOpenChange={setIsAuthDialogOpen} />
+      </>
     );
   }
 
