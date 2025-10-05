@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState } from 'react';
@@ -193,8 +192,6 @@ const PricingCard = ({
 );
 
 const ProFeatures = () => {
-    const extendedFeatures = [...featureHighlights, ...featureHighlights];
-
     return (
         <section className="py-16 sm:py-24">
              <div className="text-center mb-12">
@@ -207,7 +204,7 @@ const ProFeatures = () => {
             </div>
             <div className="relative w-full overflow-hidden">
                 <div className="flex animate-scroll-horizontal">
-                    {extendedFeatures.map((feature, index) => (
+                    {[...featureHighlights, ...featureHighlights].map((feature, index) => (
                         <div key={index} className="flex-shrink-0 w-80 p-4">
                             <div className="bg-card border rounded-xl p-6 h-full flex flex-col items-center text-center">
                                 <div className="flex-shrink-0">{feature.icon}</div>
