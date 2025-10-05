@@ -64,7 +64,7 @@ const Condition = ({ index, onRemove }: { index: number, onRemove: (index: numbe
 };
 
 
-export default function AlertBuilder({ onSave, onCancel, alert }: { onSave: () => void, onCancel?: () => void, alert?: Alert }) {
+export default function AlertBuilder({ onSave, onCancel, alert, entity }: { onSave: () => void, onCancel?: () => void, alert?: Alert, entity?: { type: 'wallet' | 'token', identifier: string } }) {
     const [conditions, setConditions] = useState([{}]);
     const { user } = useUser();
     const firestore = useFirestore();
@@ -81,12 +81,12 @@ export default function AlertBuilder({ onSave, onCancel, alert }: { onSave: () =
     const handleSave = () => {
         if (!user || !firestore) return;
 
-        // In a real implementation, you would construct the alert object
-        // from the state of the builder's conditions and inputs.
-        // For this mock, we'll just save a placeholder advanced alert.
+        const linkedIdentifier = alert ? (alert.walletId || alert.token) : entity?.identifier;
+
         const newOrUpdatedAlert: any = {
-            alertType: alert?.alertType || 'wallet',
-            walletId: alert?.walletId || '0xAdvancedBuilder...',
+            alertType: alert?.alertType || entity?.type || 'wallet',
+            walletId: alert?.alertType === 'wallet' ? linkedIdentifier : (entity?.type === 'wallet' ? linkedIdentifier : undefined),
+            token: alert?.alertType === 'token' ? linkedIdentifier : (entity?.type === 'token' ? linkedIdentifier : undefined),
             rule: 'Advanced Rule',
             threshold: 1000000,
             enabled: true,
@@ -133,12 +133,17 @@ export default function AlertBuilder({ onSave, onCancel, alert }: { onSave: () =
         }
     }
 
+    const linkedIdentifier = alert ? (alert.walletId || alert.token) : entity?.identifier;
+
+
     return (
         <div className="space-y-6">
-            <div>
-                <h3 className="font-semibold text-sm text-muted-foreground">Linked Entity</h3>
-                <p className="text-foreground text-sm">{alert?.walletId || alert?.token || "Build custom rule"}</p>
-            </div>
+            {linkedIdentifier && (
+                <div>
+                    <h3 className="font-semibold text-sm text-muted-foreground">Linked Entity</h3>
+                    <p className="text-foreground text-sm font-mono bg-muted px-2 py-1 rounded-md mt-1 inline-block">{linkedIdentifier}</p>
+                </div>
+            )}
             
             <div className="space-y-4">
                 {conditions.map((_, index) => (

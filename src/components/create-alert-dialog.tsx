@@ -46,7 +46,7 @@ export const CreateAlertDialog = ({ onOpenChange, entity, alert }: { onOpenChang
             <QuickAlertConfigurator onSubmitted={handleSubmitted} entity={finalEntity} alert={alert} />
           </TabsContent>
           <TabsContent value="advanced" className="pt-6">
-            <AlertBuilder onSave={handleSubmitted} alert={alert}/>
+            <AlertBuilder onSave={handleSubmitted} alert={alert} entity={finalEntity}/>
           </TabsContent>
         </Tabs>
     </DialogContent>

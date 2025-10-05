@@ -2,7 +2,7 @@
 'use client';
 
 import { useToast } from '@/hooks/use-toast';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Label } from './ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Wallet, Tag } from 'lucide-react';
@@ -10,9 +10,9 @@ import { Input } from './ui/input';
 import { Switch } from './ui/switch';
 import { Button } from './ui/button';
 import { Loader2 } from 'lucide-react';
-import { useUser, useFirestore } from '@/firebase';
-import { addDoc, collection, doc, serverTimestamp, updateDoc } from 'firebase/firestore';
-import type { Alert } from '@/lib/types';
+import { useUser, useFirestore, useCollection } from '@/firebase';
+import { addDoc, collection, doc, serverTimestamp, updateDoc, query } from 'firebase/firestore';
+import type { Alert, WatchlistItem } from '@/lib/types';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { Combobox } from './ui/combobox';
@@ -24,26 +24,46 @@ const tokenOptions = uniqueTokens.map(symbol => ({ label: symbol, value: symbol 
 
 export const QuickAlertConfigurator = ({ onSubmitted, entity, alert }: { onSubmitted?: () => void, entity?: { type: 'wallet' | 'token', identifier: string }, alert?: Alert }) => {
   const [alertType, setAlertType] = React.useState<'wallet' | 'token'>(entity?.type || alert?.alertType || 'wallet');
-  const [tokenValue, setTokenValue] = React.useState(entity?.identifier || alert?.token || '');
+  const [targetIdentifier, setTargetIdentifier] = React.useState(entity?.identifier || alert?.walletId || alert?.token || '');
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+
   const { toast } = useToast();
   const { user } = useUser();
   const firestore = useFirestore();
 
-  React.useEffect(() => {
-    const newType = entity?.type || alert?.alertType;
-    if (newType) {
-      setAlertType(newType);
+  const watchlistQuery = useMemo(() => {
+    if (user && firestore) {
+      return query(collection(firestore, `users/${user.uid}/watchlist`));
     }
-  }, [entity, alert]);
+    return null;
+  }, [user, firestore]);
+
+  const { data: watchlistItems } = useCollection<WatchlistItem>(watchlistQuery);
+
+  const walletOptions = useMemo(() => {
+    const items = watchlistItems?.map(item => ({
+      value: item.walletAddress,
+      label: item.name ? `${item.name} (${item.walletAddress.slice(0, 6)}...${item.walletAddress.slice(-4)})` : item.walletAddress,
+    })) || [];
+    
+    // Add the current entity if it's not in the list, to handle cases where it's a new wallet
+    if (entity?.type === 'wallet' && !items.some(i => i.value === entity.identifier)) {
+        items.unshift({ value: entity.identifier, label: entity.identifier });
+    } else if (alert?.walletId && !items.some(i => i.value === alert.walletId)) {
+        items.unshift({ value: alert.walletId, label: alert.walletId });
+    }
+
+    return items;
+  }, [watchlistItems, entity, alert]);
+
 
   React.useEffect(() => {
-    if (entity?.type === 'token') {
-      setTokenValue(entity.identifier);
-    }
-     if (alert?.token) {
-      setTokenValue(alert.token);
-    }
+    const newType = entity?.type || alert?.alertType;
+    if (newType) setAlertType(newType);
+    
+    const newIdentifier = entity?.identifier || alert?.walletId || alert?.token;
+    if (newIdentifier) setTargetIdentifier(newIdentifier);
+
   }, [entity, alert]);
 
 
@@ -67,9 +87,9 @@ export const QuickAlertConfigurator = ({ onSubmitted, entity, alert }: { onSubmi
     };
 
     if (data.alertType === 'wallet') {
-        alertData.walletId = data.walletId;
+        alertData.walletId = targetIdentifier;
     } else {
-        alertData.token = tokenValue;
+        alertData.token = targetIdentifier;
     }
 
     if (alert) {
@@ -122,7 +142,7 @@ export const QuickAlertConfigurator = ({ onSubmitted, entity, alert }: { onSubmi
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-        <input type="hidden" name="token" value={tokenValue} />
+        <input type="hidden" name="identifier" value={targetIdentifier} />
         <div className="space-y-2">
             <Label>Alert Type</Label>
             <Select onValueChange={(v: 'wallet' | 'token') => setAlertType(v)} defaultValue={alertType} name="alertType" disabled={!!entity || !!alert}>
@@ -143,15 +163,14 @@ export const QuickAlertConfigurator = ({ onSubmitted, entity, alert }: { onSubmi
         {alertType === 'wallet' && (
           <>
             <div className="space-y-2">
-              <Label htmlFor="wallet-address">Wallet Address or ENS</Label>
-              <Input
-                id="wallet-address"
-                name="walletId"
-                placeholder="e.g., 0x... or vitalik.eth"
-                required
-                defaultValue={entity?.identifier || alert?.walletId || ''}
-                readOnly={!!(entity || alert)}
-              />
+              <Label htmlFor="wallet-address">Wallet Address or Alias</Label>
+              <Combobox
+                  options={walletOptions}
+                  value={targetIdentifier}
+                  onChange={setTargetIdentifier}
+                  placeholder="Select or paste a wallet..."
+                  emptyMessage="No wallets in watchlist. Paste an address."
+                />
             </div>
              <div className="space-y-2">
               <Label htmlFor="wallet-rule">Rule</Label>
@@ -198,8 +217,8 @@ export const QuickAlertConfigurator = ({ onSubmitted, entity, alert }: { onSubmi
               <Label htmlFor="token-symbol">Token Symbol</Label>
                <Combobox
                   options={tokenOptions}
-                  value={tokenValue}
-                  onChange={setTokenValue}
+                  value={targetIdentifier}
+                  onChange={setTargetIdentifier}
                   placeholder="Select token..."
                   emptyMessage="No tokens found."
                 />
