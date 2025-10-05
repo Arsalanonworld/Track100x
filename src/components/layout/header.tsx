@@ -5,6 +5,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import Link from "next/link";
 import NotificationBell from "./notification-bell";
 import { MobileNav } from "./mobile-nav";
+import { useUser } from "@/firebase";
 
 export const LogoIcon = () => (
     <svg
@@ -26,6 +27,8 @@ export const LogoIcon = () => (
 
 
 export default function Header() {
+    const { user } = useUser();
+
     return (
         <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur-sm">
             <div className="container flex h-16 items-center justify-between">
@@ -39,7 +42,7 @@ export default function Header() {
                 </div>
 
                 <div className="flex items-center space-x-2">
-                    <NotificationBell />
+                    {user && <NotificationBell />}
                     <UserNav />
                     <ThemeToggle />
                 </div>
