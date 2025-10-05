@@ -7,9 +7,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { QuickAlertConfigurator } from './quick-alert-configurator';
-import AlertBuilder from './alerts/alert-builder';
 import type { Alert } from '@/lib/types';
 
 
@@ -22,33 +20,22 @@ export const CreateAlertDialog = ({ onOpenChange, entity, alert }: { onOpenChang
     const finalEntity = alert ? { type: alert.alertType, identifier: alert.walletId || alert.token || '' } : entity;
     
     return (
-    <DialogContent className="max-w-2xl">
+    <DialogContent className="max-w-xl">
         <DialogHeader>
-            <DialogTitle>{alert ? 'Edit Alert' : 'Create a New Alert'}</DialogTitle>
+            <DialogTitle>{alert ? 'Edit Quick Alert' : 'Create Quick Alert'}</DialogTitle>
             <DialogDescription>
                 {finalEntity ? (
                     <>
-                    Set up a notification for: <span className='font-mono text-foreground'>{finalEntity.identifier}</span>
+                    Set up a quick notification for: <span className='font-mono text-foreground'>{finalEntity.identifier}</span>
                     </>
                 ) : (
-                    "Build a custom alert from scratch to track on-chain activity."
+                    "Create a quick alert from scratch to track on-chain activity."
                 )}
             </DialogDescription>
         </DialogHeader>
-        <Tabs defaultValue="quick" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="quick">Quick Alert</TabsTrigger>
-            <TabsTrigger value="advanced">
-                Advanced Builder
-            </TabsTrigger>
-          </TabsList>
-          <TabsContent value="quick" className="pt-6">
+        <div className='pt-6'>
             <QuickAlertConfigurator onSubmitted={handleSubmitted} entity={finalEntity} alert={alert} />
-          </TabsContent>
-          <TabsContent value="advanced" className="pt-6">
-            <AlertBuilder onSave={handleSubmitted} alert={alert} entity={finalEntity}/>
-          </TabsContent>
-        </Tabs>
+        </div>
     </DialogContent>
     )
 };
