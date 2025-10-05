@@ -34,7 +34,8 @@ import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { QuickAlertModal } from '@/components/quick-alert-modal';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useToast } from '@/hooks/use-toast';
-import { useUser } from '@/firebase';
+import { useUser, useFirestore } from '@/firebase';
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 
 
 type SortKey = 'netWorth' | 'pnlPercent';
@@ -45,9 +46,10 @@ export default function LeaderboardPage() {
   const [sortConfig, setSortConfig] = useState<{ key: SortKey; direction: 'asc' | 'desc' } | null>(null);
   const { toast } = useToast();
   const { user } = useUser();
+  const firestore = useFirestore();
 
-  const handleAddToWatchlist = (walletAddress: string) => {
-    if (!user) {
+  const handleAddToWatchlist = async (walletAddress: string) => {
+    if (!user || !firestore) {
       toast({
         variant: 'destructive',
         title: 'Authentication Required',
@@ -55,18 +57,32 @@ export default function LeaderboardPage() {
       });
       return;
     }
-    // Firestore logic would go here
-    toast({
-      title: 'Added to Watchlist',
-      description: `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)} is now being watched.`,
-    });
+    
+    try {
+        await addDoc(collection(firestore, `users/${user.uid}/watchlist`), {
+            walletAddress: walletAddress,
+            createdAt: serverTimestamp(),
+            userId: user.uid,
+        });
+        toast({
+          title: 'Added to Watchlist',
+          description: `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)} is now being watched.`,
+        });
+    } catch(e) {
+        console.error("Error adding document: ", e);
+        toast({
+            variant: 'destructive',
+            title: 'Error',
+            description: 'Could not add wallet to watchlist.'
+        })
+    }
   };
 
   const sortedAndFilteredData = useMemo(() => {
     let data: Wallet[] = [...walletLeaderboard];
 
     if (chainFilter !== 'all') {
-      data = data.filter(w => w.blockchain.toLowerCase() === chainFilter);
+      data = data.filter(w => w.blockchain.toLowerCase() === chainFilter || w.blockchain === 'All');
     }
 
     if (sortConfig !== null) {
@@ -210,6 +226,14 @@ export default function LeaderboardPage() {
                                       variant="ghost"
                                       size="icon"
                                       onClick={() => {
+                                          if (!user) {
+                                              toast({
+                                                  variant: 'destructive',
+                                                  title: 'Authentication Required',
+                                                  description: 'Please log in to create alerts.',
+                                              });
+                                              return;
+                                          }
                                           setSelectedWallet(wallet.address);
                                       }}
                                     >

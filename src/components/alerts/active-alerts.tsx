@@ -23,7 +23,19 @@ import QuickAlertEditor from './quick-alert-editor';
 import AlertBuilder from './alert-builder';
 import { cn } from '@/lib/utils';
 import type { Alert } from '@/lib/types';
-import { mockAlerts } from '@/lib/mock-data';
+import { useUser, useFirestore, useCollection } from '@/firebase';
+import { collection, query, doc, updateDoc, deleteDoc } from 'firebase/firestore';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 
 const iconMap = {
@@ -35,7 +47,13 @@ export default function ActiveAlerts() {
     const { toast } = useToast();
     const [isEditorOpen, setIsEditorOpen] = useState(false);
     const [selectedAlert, setSelectedAlert] = useState<Alert | null>(null);
-    const [alerts, setAlerts] = useState(mockAlerts);
+    const { user, claims } = useUser();
+    const firestore = useFirestore();
+
+    const alertsQuery = user && firestore ? query(collection(firestore, `users/${user.uid}/alerts`)) : null;
+    const { data: alerts, loading } = useCollection<Alert>(alertsQuery);
+    
+    const isPro = claims?.plan === 'pro';
 
     const handleSave = () => {
         if (selectedAlert) {
@@ -53,9 +71,43 @@ export default function ActiveAlerts() {
         setSelectedAlert(null);
     };
 
+    const handleEdit = (alert: Alert) => {
+        setSelectedAlert(alert);
+        setIsEditorOpen(true);
+    };
 
     async function toggleAlert(alertToToggle: Alert) {
-        setAlerts(currentAlerts => currentAlerts.map(a => a.id === alertToToggle.id ? {...a, enabled: !a.enabled} : a));
+        if (!firestore || !user) return;
+        const alertRef = doc(firestore, `users/${user.uid}/alerts`, alertToToggle.id);
+        try {
+            await updateDoc(alertRef, { enabled: !alertToToggle.enabled });
+        } catch (error) {
+            console.error("Error toggling alert:", error);
+            toast({
+                variant: 'destructive',
+                title: 'Error',
+                description: 'Could not update the alert status.'
+            });
+        }
+    }
+    
+    async function deleteAlert(alertToDelete: Alert) {
+        if (!firestore || !user) return;
+        const alertRef = doc(firestore, `users/${user.uid}/alerts`, alertToDelete.id);
+        try {
+            await deleteDoc(alertRef);
+            toast({
+                title: 'Alert Deleted',
+                description: 'The alert has been removed.'
+            });
+        } catch (error) {
+            console.error("Error deleting alert:", error);
+             toast({
+                variant: 'destructive',
+                title: 'Error',
+                description: 'Could not delete the alert.'
+            });
+        }
     }
 
     return (
@@ -64,11 +116,12 @@ export default function ActiveAlerts() {
                 <CardHeader>
                   <CardTitle>Your Active Alerts</CardTitle>
                   <CardDescription>
-                      Manage your saved alerts.
+                      Manage your saved alerts. You have {alerts?.length || 0} active alerts.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                 <div className="space-y-4">
+                    {loading && <p>Loading alerts...</p>}
                     {alerts && alerts.length > 0 ? (
                     alerts.map(alert => (
                         <div
@@ -78,30 +131,55 @@ export default function ActiveAlerts() {
                             !alert.enabled && 'bg-muted/50'
                         )}
                         >
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-3 flex-1 min-w-0">
                             <div className="p-2 bg-secondary rounded-md">
-                                {iconMap[alert.type]}
+                                {iconMap[alert.alertType]}
                             </div>
-                            <div>
-                                <p className="font-semibold text-sm">{alert.title}</p>
-                                <p className="text-xs text-muted-foreground">
-                                    {alert.description}
+                            <div className='min-w-0'>
+                                <p className="font-semibold text-sm truncate">{alert.walletId || alert.token}</p>
+                                <p className="text-xs text-muted-foreground truncate">
+                                    Rule: {alert.rule}
                                 </p>
                             </div>
                         </div>
                         <div className="flex items-center justify-end gap-1">
-                            <div className='flex items-center gap-1 mr-2'>
-                                <p className='text-sm font-medium'>{alert.enabled ? "Active" : "Inactive"}</p>
-                                <Switch
-                                    checked={alert.enabled}
-                                    onCheckedChange={() => toggleAlert(alert)}
-                                    aria-label="Toggle alert"
-                                />
-                            </div>
+                             <Switch
+                                checked={alert.enabled}
+                                onCheckedChange={() => toggleAlert(alert)}
+                                aria-label="Toggle alert"
+                            />
+                            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleEdit(alert)}>
+                                <Pencil className="h-4 w-4" />
+                            </Button>
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive">
+                                    <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    This action cannot be undone. This will permanently delete your alert.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                  <AlertDialogAction
+                                    onClick={() => deleteAlert(alert)}
+                                    className="bg-destructive hover:bg-destructive/90"
+                                  >
+                                    Delete
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+
                         </div>
                         </div>
                     ))
-                    ) : (
+                    ) : !loading && (
                     <div className="flex flex-col items-center justify-center text-center text-muted-foreground p-8 border-2 border-dashed rounded-lg">
                         <Bell className="h-10 w-10 mb-4" />
                         <p className="font-semibold">No active alerts found.</p>
@@ -119,15 +197,11 @@ export default function ActiveAlerts() {
                     Edit Alert
                 </DialogTitle>
                 </DialogHeader>
-                {selectedAlert && ( true ? ( 
-                    <AlertBuilder onSave={handleSave} isPro={true}/>
+                {selectedAlert && ( isPro ? ( 
+                    <AlertBuilder onSave={handleSave} isPro={true} alert={selectedAlert}/>
                 ) : (
                     <QuickAlertEditor
-                        entity={{
-                            type: selectedAlert.type === 'wallet' ? 'Wallet' : 'Token',
-                            identifier: selectedAlert.title || '',
-                            label: selectedAlert.title || ''
-                        }}
+                        alert={selectedAlert}
                         onSave={handleSave}
                         onCancel={handleCancel}
                     />

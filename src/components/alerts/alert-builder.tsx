@@ -1,6 +1,6 @@
 
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
@@ -8,7 +8,9 @@ import { Checkbox } from '../ui/checkbox';
 import { Label } from '../ui/label';
 import { Plus, Trash2 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
-import { Badge } from '../ui/badge';
+import type { Alert } from '@/lib/types';
+import { useUser, useFirestore } from '@/firebase';
+import { doc, updateDoc } from 'firebase/firestore';
 
 const triggerTypes = [
   { value: "Large Transaction", pro: false },
@@ -60,7 +62,7 @@ const Condition = ({ index, onRemove }: { index: number, onRemove: (index: numbe
 };
 
 
-export default function AlertBuilder({ onSave, isPro }: { onSave: () => void, isPro: boolean }) {
+export default function AlertBuilder({ onSave, isPro, alert }: { onSave: () => void, isPro: boolean, alert?: Alert }) {
     const [conditions, setConditions] = useState([{}]);
 
     const addCondition = () => {
@@ -72,9 +74,11 @@ export default function AlertBuilder({ onSave, isPro }: { onSave: () => void, is
     }
     
     const handleSave = () => {
+        // Here you would normally gather all the form data and save it.
+        // For now, we just show a toast and call the parent onSave.
         toast({
-            title: 'Alert Saved',
-            description: 'Your new alert has been created.'
+            title: alert ? 'Alert Updated' : 'Alert Saved',
+            description: alert ? 'Your alert has been updated.' : 'Your new alert has been created.'
         })
         onSave();
     }
@@ -83,7 +87,7 @@ export default function AlertBuilder({ onSave, isPro }: { onSave: () => void, is
         <div className="space-y-6">
             <div>
                 <h3 className="font-semibold text-sm text-muted-foreground">Linked Entity</h3>
-                <p className="text-foreground text-sm">Build custom rule</p>
+                <p className="text-foreground text-sm">{alert?.walletId || alert?.token || "Build custom rule"}</p>
             </div>
             
             <div className="space-y-4">

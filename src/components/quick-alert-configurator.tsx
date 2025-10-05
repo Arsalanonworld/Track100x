@@ -12,19 +12,46 @@ import { Switch } from './ui/switch';
 import { Button } from './ui/button';
 import { Loader2 } from 'lucide-react';
 import { Alert as AlertBox, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { useUser, useFirestore } from '@/firebase';
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 
 
 export const QuickAlertConfigurator = ({ onSubmitted }: { onSubmitted?: () => void }) => {
   const [alertType, setAlertType] = React.useState<'wallet' | 'token'>('wallet');
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const { toast } = useToast();
+  const { user, claims } = useUser();
+  const firestore = useFirestore();
 
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (!user || !firestore) {
+        toast({ variant: 'destructive', title: 'Not logged in', description: 'You must be logged in to create an alert.' });
+        return;
+    }
+
     setIsSubmitting(true);
-    // Mock submission
-    setTimeout(() => {
+    const formData = new FormData(event.currentTarget);
+    const data = Object.fromEntries(formData.entries());
+
+    const alertData: any = {
+        alertType: data.alertType,
+        rule: data.rule,
+        threshold: data.threshold ? Number(data.threshold) : null,
+        enabled: true,
+        userId: user.uid,
+        createdAt: serverTimestamp(),
+    };
+
+    if (data.alertType === 'wallet') {
+        alertData.walletId = data.walletId;
+    } else {
+        alertData.token = data.token;
+    }
+
+    try {
+        await addDoc(collection(firestore, `users/${user.uid}/alerts`), alertData);
         toast({
             title: "Alert created!",
             description: "Your new alert has been saved.",
@@ -32,12 +59,20 @@ export const QuickAlertConfigurator = ({ onSubmitted }: { onSubmitted?: () => vo
         if (onSubmitted) {
             onSubmitted();
         }
+    } catch (e) {
+        console.error("Error creating alert:", e);
+        toast({
+            variant: 'destructive',
+            title: 'Error',
+            description: 'Could not create the alert.'
+        });
+    } finally {
         setIsSubmitting(false);
-    }, 1000);
+    }
   };
 
   const SubmitButton = () => (
-    <Button type="submit" className="w-full" disabled={isSubmitting}>
+    <Button type="submit" className="w-full" disabled={isSubmitting || !user}>
         {isSubmitting ? <Loader2 className="animate-spin" /> : "Create Alert"}
     </Button>
   );
@@ -69,11 +104,12 @@ export const QuickAlertConfigurator = ({ onSubmitted }: { onSubmitted?: () => vo
                 id="wallet-address"
                 name="walletId"
                 placeholder="e.g., 0x... or vitalik.eth"
+                required
               />
             </div>
              <div className="space-y-2">
               <Label htmlFor="wallet-rule">Rule</Label>
-               <Select name="rule">
+               <Select name="rule" required>
                 <SelectTrigger id="wallet-rule">
                   <SelectValue placeholder="Select a rule..." />
                 </SelectTrigger>
@@ -118,11 +154,12 @@ export const QuickAlertConfigurator = ({ onSubmitted }: { onSubmitted?: () => vo
                 id="token-symbol"
                 name="token"
                 placeholder="e.g., WIF, PEPE"
+                required
               />
             </div>
              <div className="space-y-2">
               <Label htmlFor="token-rule">Rule</Label>
-               <Select name="rule">
+               <Select name="rule" required>
                 <SelectTrigger id="token-rule">
                   <SelectValue placeholder="Select a rule..." />
                 </SelectTrigger>
@@ -145,23 +182,26 @@ export const QuickAlertConfigurator = ({ onSubmitted }: { onSubmitted?: () => vo
                     <p className="text-sm font-medium">In-App</p>
                     <Switch defaultChecked disabled/>
                 </div>
-                <div className={`flex items-center justify-between rounded-md border p-3`}>
+                <div className={`flex items-center justify-between rounded-md border p-3 ${claims?.plan !== 'pro' && 'bg-muted/50'}`}>
                     <div className="flex items-center gap-2">
                         <p className="text-sm font-medium">Email</p>
+                         {claims?.plan !== 'pro' && <Badge variant="secondary">Pro</Badge>}
                     </div>
-                    <Switch />
+                    <Switch disabled={claims?.plan !== 'pro'}/>
                 </div>
-                <div className={`flex items-center justify-between rounded-md border p-3`}>
+                <div className={`flex items-center justify-between rounded-md border p-3 ${claims?.plan !== 'pro' && 'bg-muted/50'}`}>
                     <div className="flex items-center gap-2">
                         <p className="text-sm font-medium">Telegram</p>
+                         {claims?.plan !== 'pro' && <Badge variant="secondary">Pro</Badge>}
                     </div>
-                    <Switch />
+                    <Switch disabled={claims?.plan !== 'pro'}/>
                 </div>
-                <div className={`flex items-center justify-between rounded-md border p-3`}>
+                <div className={`flex items-center justify-between rounded-md border p-3 ${claims?.plan !== 'pro' && 'bg-muted/50'}`}>
                     <div className="flex items-center gap-2">
                        <p className="text-sm font-medium">Discord</p>
+                        {claims?.plan !== 'pro' && <Badge variant="secondary">Pro</Badge>}
                     </div>
-                    <Switch />
+                    <Switch disabled={claims?.plan !== 'pro'}/>
                 </div>
              </div>
           </div>

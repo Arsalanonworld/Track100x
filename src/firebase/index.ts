@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -14,6 +15,7 @@ import { getAuth, Auth } from 'firebase/auth';
 import { firebaseConfig } from './config';
 import { FirebaseProvider, useFirebase, useFirebaseApp, useAuth, useFirestore } from './provider';
 import { useUser } from './auth/use-user';
+import { useCollection } from './firestore/use-collection';
 
 
 let app: FirebaseApp;
@@ -44,4 +46,5 @@ export {
   useFirebaseApp,
   useFirestore,
   useAuth,
+  useCollection,
 };

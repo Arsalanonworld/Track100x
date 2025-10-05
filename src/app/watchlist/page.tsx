@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Trash2, EyeOff } from 'lucide-react';
 import { useUser, useCollection } from '@/firebase';
-import { collection, query, where } from 'firebase/firestore';
+import { collection, query, where, doc, deleteDoc } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
 import type { WatchlistItem } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -25,14 +25,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-
-
-// Mock data for display purposes
-const mockWatchlist = [
-  { id: '1', walletAddress: '0x1234567890abcdef1234567890abcdef12345678', createdAt: { toDate: () => new Date() } },
-  { id: '2', walletAddress: 'So11111111111111111111111111111111111111112', createdAt: { toDate: () => new Date(Date.now() - 86400000) } },
-  { id: '3', walletAddress: '0xab12cd34ef56ab12cd34ef56ab12cd34ef56ab12', createdAt: { toDate: () => new Date(Date.now() - 172800000) } },
-];
 
 
 function WatchlistSkeleton() {
@@ -54,19 +46,26 @@ function WatchlistSkeleton() {
 export default function WatchlistPage() {
   const { user, loading: userLoading } = useUser();
   const firestore = useFirestore();
-//   const watchlistQuery = user && firestore ? query(collection(firestore, `users/${user.uid}/watchlist`)) : null;
-//   const { data: watchlist, loading: watchlistLoading } = useCollection<WatchlistItem>(watchlistQuery);
+  const watchlistQuery = user && firestore ? query(collection(firestore, `users/${user.uid}/watchlist`)) : null;
+  const { data: watchlist, loading: watchlistLoading } = useCollection<WatchlistItem>(watchlistQuery);
   const { toast } = useToast();
 
-  const watchlist = mockWatchlist;
-  const watchlistLoading = false;
-
-  const handleRemove = (item: WatchlistItem) => {
-    // This would be firestore.deleteDoc(doc(firestore, `path`));
-    toast({
-        title: "Wallet Removed",
-        description: `${item.walletAddress.slice(0, 6)}...${item.walletAddress.slice(-4)} removed from watchlist.`
-    })
+  const handleRemove = async (item: WatchlistItem) => {
+    if (!firestore || !user) return;
+    try {
+        await deleteDoc(doc(firestore, `users/${user.uid}/watchlist`, item.id));
+        toast({
+            title: "Wallet Removed",
+            description: `${item.walletAddress.slice(0, 6)}...${item.walletAddress.slice(-4)} removed from watchlist.`
+        })
+    } catch(e) {
+        console.error("Error removing document: ", e);
+        toast({
+            variant: 'destructive',
+            title: "Error",
+            description: "Could not remove wallet from watchlist."
+        })
+    }
   }
 
   if (userLoading || watchlistLoading) {
@@ -139,7 +138,7 @@ export default function WatchlistPage() {
                                     <AlertDialogHeader>
                                       <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                                       <AlertDialogDescription>
-                                        This will permanently remove the wallet <span className='font-mono bg-muted p-1 rounded-sm'>{item.walletAddress.slice(0, 6)}...{item.walletAddress.slice(-4)}</span> from your watchlist.
+                                        This will permanently remove the wallet <span className='font-mono bg-muted p-1 rounded-sm'>{item.walletAddress.slice(0, 6)}...${item.walletAddress.slice(-4)}</span> from your watchlist.
                                       </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
@@ -167,4 +166,3 @@ export default function WatchlistPage() {
     </div>
   );
 }
-
