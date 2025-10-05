@@ -200,29 +200,14 @@ const ProFeatures = () => {
                     Here's what you unlock with a Pro membership.
                 </p>
             </div>
-            <div className="relative w-full overflow-hidden">
-                <div className="flex animate-scroll-horizontal">
-                    {[...featureHighlights, ...featureHighlights].map((feature, index) => (
-                        <div key={index} className="flex-shrink-0 w-80 p-4">
-                            <div className="bg-card border rounded-xl p-6 h-full flex flex-col items-center text-center">
-                                <div className="flex-shrink-0">{feature.icon}</div>
-                                <h3 className="text-lg font-bold mt-4 mb-2">{feature.title}</h3>
-                                <p className="text-muted-foreground text-sm flex-1">{feature.description}</p>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-                <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-background to-transparent"></div>
-                <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-background to-transparent"></div>
-                 <style jsx>{`
-                    @keyframes scroll-horizontal {
-                      from { transform: translateX(0); }
-                      to { transform: translateX(-50%); }
-                    }
-                    .animate-scroll-horizontal {
-                      animation: scroll-horizontal 40s linear infinite;
-                    }
-                `}</style>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+                {featureHighlights.map((feature, index) => (
+                    <div key={index} className="bg-card border rounded-xl p-6 flex flex-col items-center text-center">
+                        <div className="flex-shrink-0">{feature.icon}</div>
+                        <h3 className="text-lg font-bold mt-4 mb-2">{feature.title}</h3>
+                        <p className="text-muted-foreground text-sm flex-1">{feature.description}</p>
+                    </div>
+                ))}
             </div>
         </section>
     );
