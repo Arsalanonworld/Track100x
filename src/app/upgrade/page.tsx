@@ -15,7 +15,8 @@ const features = [
   {
     category: "Core Features",
     items: [
-      { name: "Live Whale Feed", free: "Delayed (5 mins)", pro: "Real-time" },
+      { name: "Live Whale Feed", free: "Delayed (1-2 mins)", pro: "Real-time" },
+      { name: "Whale Feed Ads", free: true, pro: false },
       { name: "Leaderboard Access", free: "Top 10 Wallets", pro: "Top 100 Wallets" },
       { name: "Watchlist", free: "3 Wallets", pro: "Unlimited" },
       { name: "Insights & Articles", free: "Previews Only", pro: "Full Access" },
@@ -94,7 +95,6 @@ export default function UpgradePage() {
 
   const handleUpgradeClick = () => {
     if (!user) {
-        // You might want to open your login modal here
         router.push('/login');
     } else {
         router.push('/checkout');
