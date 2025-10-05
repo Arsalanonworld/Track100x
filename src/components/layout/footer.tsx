@@ -7,10 +7,11 @@ const footerLinks = {
     { label: 'Leaderboard', href: '/leaderboard' },
     { label: 'Alerts', href: '/alerts' },
     { label: 'Insights', href: '/insights' },
+    { label: 'Upgrade', href: '/upgrade' },
   ],
   company: [
-    { label: 'About', href: '#' },
-    { label: 'Contact', href: '#' },
+    { label: 'About', href: '/about' },
+    { label: 'Contact', href: '/contact' },
   ],
   social: [
     { label: 'Twitter / X', href: '#' },
@@ -18,8 +19,8 @@ const footerLinks = {
     { label: 'Discord', href: '#' },
   ],
   legal: [
-    { label: 'Terms of Service', href: '#' },
-    { label: 'Privacy Policy', href: '#' },
+    { label: 'Terms of Service', href: '/terms-of-service' },
+    { label: 'Privacy Policy', href: '/privacy-policy' },
   ],
 };
 
@@ -37,7 +38,7 @@ export function Footer() {
               The Wallet Intelligence Platform. Monitor on-chain data, track wallets, and get real-time smart alerts.
             </p>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 text-sm md:col-span-3">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 text-sm md:col-span-3">
             <div>
               <h3 className="font-semibold text-foreground mb-4">Platform</h3>
               <ul className="space-y-3">
@@ -66,6 +67,18 @@ export function Footer() {
               <h3 className="font-semibold text-foreground mb-4">Social</h3>
               <ul className="space-y-3">
                 {footerLinks.social.map((link) => (
+                  <li key={link.label}>
+                    <Link href={link.href} className="text-muted-foreground hover:text-foreground transition-colors">
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+             <div>
+              <h3 className="font-semibold text-foreground mb-4">Legal</h3>
+              <ul className="space-y-3">
+                {footerLinks.legal.map((link) => (
                   <li key={link.label}>
                     <Link href={link.href} className="text-muted-foreground hover:text-foreground transition-colors">
                       {link.label}

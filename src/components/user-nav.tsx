@@ -18,6 +18,7 @@ import { useUser } from '@/firebase';
 import { logout } from '@/app/auth/actions';
 import { useState } from 'react';
 import { AuthDialog } from './auth/auth-dialog';
+import { Skeleton } from './ui/skeleton';
 
 export function UserNav() {
   const { user, claims, loading } = useUser();
@@ -25,7 +26,7 @@ export function UserNav() {
   const plan = claims?.plan || 'free';
 
   if (loading) {
-    return <div className="h-10 w-24 rounded-md bg-muted animate-pulse" />;
+    return <Skeleton className="h-10 w-28 rounded-md" />;
   }
 
   // Guest State
@@ -72,16 +73,16 @@ export function UserNav() {
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem disabled>
-              <User className="mr-2 h-4 w-4" />
-              <span>Account</span>
+          <DropdownMenuItem asChild>
+              <Link href="/account">
+                <User className="mr-2 h-4 w-4" />
+                <span>Account</span>
+              </Link>
           </DropdownMenuItem>
           {plan === 'pro' && (
             <DropdownMenuItem disabled>
-                 <Link href="/account/billing">
-                    <DollarSign className="mr-2 h-4 w-4" />
-                    <span>Manage Subscription</span>
-                </Link>
+              <DollarSign className="mr-2 h-4 w-4" />
+              <span>Manage Subscription</span>
             </DropdownMenuItem>
           )}
           <DropdownMenuSeparator />
