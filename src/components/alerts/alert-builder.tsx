@@ -1,16 +1,18 @@
 
 'use client';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from '../ui/checkbox';
 import { Label } from '../ui/label';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import type { Alert } from '@/lib/types';
 import { useUser, useFirestore } from '@/firebase';
 import { doc, updateDoc, addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 const triggerTypes = [
   { value: "Large Transaction", pro: false },
@@ -62,9 +64,10 @@ const Condition = ({ index, onRemove }: { index: number, onRemove: (index: numbe
 };
 
 
-export default function AlertBuilder({ onSave, onCancel, isPro, alert }: { onSave: () => void, onCancel?: () => void, isPro: boolean, alert?: Alert }) {
+export default function AlertBuilder({ onSave, onCancel, alert }: { onSave: () => void, onCancel?: () => void, alert?: Alert }) {
     const [conditions, setConditions] = useState([{}]);
-    const { user, firestore } = useUser();
+    const { user } = useUser();
+    const firestore = useFirestore();
     const { toast } = useToast();
 
     const addCondition = () => {
@@ -75,7 +78,7 @@ export default function AlertBuilder({ onSave, onCancel, isPro, alert }: { onSav
         setConditions(conditions.filter((_, i) => i !== index));
     }
     
-    const handleSave = async () => {
+    const handleSave = () => {
         if (!user || !firestore) return;
 
         // In a real implementation, you would construct the alert object
@@ -90,29 +93,42 @@ export default function AlertBuilder({ onSave, onCancel, isPro, alert }: { onSav
             userId: user.uid,
         };
         
-        try {
-            if (alert) { // Update existing alert
-                const alertRef = doc(firestore, `users/${user.uid}/alerts`, alert.id);
-                await updateDoc(alertRef, newOrUpdatedAlert);
-                 toast({
+        if (alert) { // Update existing alert
+            const alertRef = doc(firestore, `users/${user.uid}/alerts`, alert.id);
+            updateDoc(alertRef, newOrUpdatedAlert)
+            .then(() => {
+                toast({
                     title: 'Alert Updated',
                     description: 'Your advanced alert has been updated.'
                 });
-            } else { // Create new alert
-                const alertsCol = collection(firestore, `users/${user.uid}/alerts`);
-                await addDoc(alertsCol, { ...newOrUpdatedAlert, createdAt: serverTimestamp() });
+                onSave();
+            })
+            .catch(async (serverError) => {
+                const permissionError = new FirestorePermissionError({
+                    path: alertRef.path,
+                    operation: 'update',
+                    requestResourceData: newOrUpdatedAlert,
+                });
+                errorEmitter.emit('permission-error', permissionError);
+            });
+
+        } else { // Create new alert
+            const alertsCol = collection(firestore, `users/${user.uid}/alerts`);
+            addDoc(alertsCol, { ...newOrUpdatedAlert, createdAt: serverTimestamp() })
+            .then(() => {
                 toast({
                     title: 'Alert Saved',
                     description: 'Your new advanced alert has been created.'
                 });
-            }
-            onSave();
-        } catch(e) {
-            console.error("Error saving advanced alert:", e);
-            toast({
-                variant: 'destructive',
-                title: 'Error',
-                description: 'Could not save the alert.'
+                onSave();
+            })
+            .catch(async (serverError) => {
+                const permissionError = new FirestorePermissionError({
+                    path: alertsCol.path,
+                    operation: 'create',
+                    requestResourceData: { ...newOrUpdatedAlert, createdAt: 'Server-side timestamp' },
+                });
+                errorEmitter.emit('permission-error', permissionError);
             });
         }
     }

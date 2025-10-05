@@ -49,7 +49,7 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
 
     const AlertButton = () => (
       <DialogTrigger asChild>
-        <Button variant="ghost" size="icon" className="h-8 w-8 relative shrink-0" onClick={(e) => e.stopPropagation()} aria-label="Set quick alert">
+        <Button variant="ghost" size="icon" className="h-8 w-8 relative shrink-0" onClick={(e) => { e.stopPropagation(); setIsAlertEditorOpen(true); }} aria-label="Set quick alert">
             <BellPlus className="h-4 w-4 text-muted-foreground hover:text-primary" />
         </Button>
       </DialogTrigger>

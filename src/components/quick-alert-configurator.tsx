@@ -5,23 +5,23 @@ import { useToast } from '@/hooks/use-toast';
 import React from 'react';
 import { Label } from './ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { Wallet, Tag, Sparkles } from 'lucide-react';
+import { Wallet, Tag } from 'lucide-react';
 import { Input } from './ui/input';
-import { Badge } from './ui/badge';
 import { Switch } from './ui/switch';
 import { Button } from './ui/button';
 import { Loader2 } from 'lucide-react';
-import { Alert as AlertBox, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useUser, useFirestore } from '@/firebase';
 import { addDoc, collection, doc, serverTimestamp, updateDoc } from 'firebase/firestore';
 import type { Alert } from '@/lib/types';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 
 export const QuickAlertConfigurator = ({ onSubmitted, entity, alert }: { onSubmitted?: () => void, entity?: { type: 'wallet' | 'token', identifier: string }, alert?: Alert }) => {
   const [alertType, setAlertType] = React.useState<'wallet' | 'token'>(entity?.type || alert?.alertType || 'wallet');
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const { toast } = useToast();
-  const { user, claims } = useUser();
+  const { user } = useUser();
   const firestore = useFirestore();
 
   React.useEffect(() => {
@@ -57,35 +57,45 @@ export const QuickAlertConfigurator = ({ onSubmitted, entity, alert }: { onSubmi
         alertData.token = data.token;
     }
 
-    try {
-        if (alert) {
-            const alertRef = doc(firestore, `users/${user.uid}/alerts`, alert.id);
-            await updateDoc(alertRef, alertData);
+    if (alert) {
+        const alertRef = doc(firestore, `users/${user.uid}/alerts`, alert.id);
+        updateDoc(alertRef, alertData)
+        .then(() => {
             toast({
                 title: "Alert updated!",
                 description: "Your alert has been saved.",
             });
-        } else {
-            alertData.createdAt = serverTimestamp();
-            await addDoc(collection(firestore, `users/${user.uid}/alerts`), alertData);
+            if (onSubmitted) onSubmitted();
+        })
+        .catch(async (serverError) => {
+            const permissionError = new FirestorePermissionError({
+                path: alertRef.path,
+                operation: 'update',
+                requestResourceData: alertData,
+            });
+            errorEmitter.emit('permission-error', permissionError);
+        })
+        .finally(() => setIsSubmitting(false));
+    } else {
+        alertData.createdAt = serverTimestamp();
+        const collectionRef = collection(firestore, `users/${user.uid}/alerts`);
+        addDoc(collectionRef, alertData)
+        .then(() => {
             toast({
                 title: "Alert created!",
                 description: "Your new alert has been saved.",
             });
-        }
-
-        if (onSubmitted) {
-            onSubmitted();
-        }
-    } catch (e) {
-        console.error("Error saving alert:", e);
-        toast({
-            variant: 'destructive',
-            title: 'Error',
-            description: 'Could not save the alert.'
-        });
-    } finally {
-        setIsSubmitting(false);
+            if (onSubmitted) onSubmitted();
+        })
+        .catch(async (serverError) => {
+             const permissionError = new FirestorePermissionError({
+                path: collectionRef.path,
+                operation: 'create',
+                requestResourceData: { ...alertData, createdAt: 'Server-side timestamp' },
+            });
+            errorEmitter.emit('permission-error', permissionError);
+        })
+        .finally(() => setIsSubmitting(false));
     }
   };
 
@@ -136,13 +146,13 @@ export const QuickAlertConfigurator = ({ onSubmitted, entity, alert }: { onSubmi
                 <SelectContent>
                   <SelectItem value="tx-value">Transaction Value</SelectItem>
                   <SelectItem value="balance-change">
-                    <div className="flex items-center justify-between w-full"><span>Token Balance Change</span></div>
+                    Token Balance Change
                   </SelectItem>
                    <SelectItem value="pnl-change">
-                    <div className="flex items-center justify-between w-full"><span>7d PnL Change</span></div>
+                    7d PnL Change
                   </SelectItem>
                    <SelectItem value="dormancy">
-                    <div className="flex items-center justify-between w-full"><span>Dormancy Status</span></div>
+                    Dormancy Status
                   </SelectItem>
                 </SelectContent>
               </Select>
@@ -158,7 +168,7 @@ export const QuickAlertConfigurator = ({ onSubmitted, entity, alert }: { onSubmi
                   <SelectItem value="50000">Exceeds $50,000</SelectItem>
                   <SelectItem value="100000">Exceeds $100,000</SelectItem>
                   <SelectItem value="1000000">
-                    <div className="flex items-center justify-between w-full"><span>Exceeds $1,000,000</span></div>
+                    Exceeds $1,000,000
                   </SelectItem>
                 </SelectContent>
               </Select>
@@ -189,7 +199,7 @@ export const QuickAlertConfigurator = ({ onSubmitted, entity, alert }: { onSubmi
                   <SelectItem value="price-change">Price Change %</SelectItem>
                   <SelectItem value="new-whale-tx">New Whale Transaction</SelectItem>
                   <SelectItem value="liquidity-shift">
-                     <div className="flex items-center justify-between w-full"><span>Liquidity Shift %</span></div>
+                    Liquidity Shift %
                   </SelectItem>
                 </SelectContent>
               </Select>
@@ -204,26 +214,17 @@ export const QuickAlertConfigurator = ({ onSubmitted, entity, alert }: { onSubmi
                     <p className="text-sm font-medium">In-App</p>
                     <Switch defaultChecked disabled/>
                 </div>
-                <div className={`flex items-center justify-between rounded-md border p-3 ${claims?.plan !== 'pro' && 'bg-muted/50'}`}>
-                    <div className="flex items-center gap-2">
-                        <p className="text-sm font-medium">Email</p>
-                         {claims?.plan !== 'pro' && <Badge variant="secondary">Pro</Badge>}
-                    </div>
-                    <Switch disabled={claims?.plan !== 'pro'}/>
+                <div className="flex items-center justify-between rounded-md border p-3">
+                    <p className="text-sm font-medium">Email</p>
+                    <Switch />
                 </div>
-                <div className={`flex items-center justify-between rounded-md border p-3 ${claims?.plan !== 'pro' && 'bg-muted/50'}`}>
-                    <div className="flex items-center gap-2">
-                        <p className="text-sm font-medium">Telegram</p>
-                         {claims?.plan !== 'pro' && <Badge variant="secondary">Pro</Badge>}
-                    </div>
-                    <Switch disabled={claims?.plan !== 'pro'}/>
+                <div className="flex items-center justify-between rounded-md border p-3">
+                    <p className="text-sm font-medium">Telegram</p>
+                    <Switch />
                 </div>
-                <div className={`flex items-center justify-between rounded-md border p-3 ${claims?.plan !== 'pro' && 'bg-muted/50'}`}>
-                    <div className="flex items-center gap-2">
-                       <p className="text-sm font-medium">Discord</p>
-                        {claims?.plan !== 'pro' && <Badge variant="secondary">Pro</Badge>}
-                    </div>
-                    <Switch disabled={claims?.plan !== 'pro'}/>
+                <div className="flex items-center justify-between rounded-md border p-3">
+                    <p className="text-sm font-medium">Discord</p>
+                    <Switch />
                 </div>
              </div>
           </div>
