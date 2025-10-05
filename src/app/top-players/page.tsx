@@ -6,7 +6,7 @@ import PageHeader from '@/components/page-header';
 import { topPlayersData, Player } from '@/lib/mock-data';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { BellPlus, Search, Trophy, ArrowUpRight, Percent, Star } from 'lucide-react';
+import { BellPlus, Search } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
@@ -21,6 +21,16 @@ const allTags = Array.from(new Set(topPlayersData.flatMap(p => p.tags)));
 
 const TopPlayerRow = ({ player, rank }: { player: Player; rank: number }) => {
     const [isAlertEditorOpen, setIsAlertEditorOpen] = useState(false);
+
+    const formatNetWorth = (value: number) => {
+        if (value >= 1_000_000_000) {
+            return `$${(value / 1_000_000_000).toFixed(2)}B`;
+        }
+        if (value >= 1_000_000) {
+            return `$${(value / 1_000_000).toFixed(2)}M`;
+        }
+        return `$${value.toLocaleString()}`;
+    };
 
     return (
         <Dialog open={isAlertEditorOpen} onOpenChange={setIsAlertEditorOpen}>
@@ -38,7 +48,7 @@ const TopPlayerRow = ({ player, rank }: { player: Player; rank: number }) => {
                         {player.tags.length === 0 && <Badge variant="outline">N/A</Badge>}
                     </div>
                 </TableCell>
-                <TableCell className="text-right font-medium">${(player.netWorth / 1_000_000).toFixed(2)}M</TableCell>
+                <TableCell className="text-right font-medium">{formatNetWorth(player.netWorth)}</TableCell>
                  <TableCell className={cn("text-right font-medium", player.pnlPercent > 0 ? "text-green-500" : "text-red-500")}>
                     {player.pnlPercent > 0 ? '+' : ''}{player.pnlPercent.toFixed(1)}%
                 </TableCell>
@@ -185,4 +195,3 @@ export default function TopPlayersPage() {
     </div>
   );
 }
-
