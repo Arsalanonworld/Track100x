@@ -109,8 +109,8 @@ export default function TopPlayersPage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        title="Top Players"
-        description="Discover and track the most influential wallets and skilled traders in crypto."
+        title="Leaderboard"
+        description="Discover and track the most influential wallets, traders, and institutions in crypto."
       />
 
       {/* Filter and Sort Controls */}
@@ -185,3 +185,4 @@ export default function TopPlayersPage() {
     </div>
   );
 }
+
