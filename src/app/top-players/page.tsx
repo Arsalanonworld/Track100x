@@ -12,7 +12,6 @@ import {
 } from '@/components/ui/select';
 import TopWalletsTab from '@/components/top-players/top-wallets-tab';
 import TopTradersTab from '@/components/top-players/top-traders-tab';
-import TrendingWalletsTab from '@/components/top-players/trending-wallets-tab';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import PageHeader from '@/components/page-header';
@@ -31,10 +30,9 @@ export default function TopPlayersPage() {
       <div className="container">
         <Tabs defaultValue="top-wallets" className="w-full">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-            <TabsList className="grid grid-cols-3 w-full md:w-auto">
+            <TabsList className="grid grid-cols-2 w-full md:w-auto">
               <TabsTrigger value="top-wallets">Top Wallets</TabsTrigger>
               <TabsTrigger value="top-traders">Top Traders</TabsTrigger>
-              <TabsTrigger value="trending-wallets">Trending</TabsTrigger>
             </TabsList>
             <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
               <Select defaultValue="all">
@@ -47,13 +45,14 @@ export default function TopPlayersPage() {
                   <SelectItem value="solana">Solana</SelectItem>
                 </SelectContent>
               </Select>
-               <Select defaultValue="7d">
+               <Select defaultValue="net-worth">
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Timeframe" />
+                  <SelectValue placeholder="Sort by" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="24h">24h</SelectItem>
-                  <SelectItem value="7d">7d</SelectItem>
+                  <SelectItem value="net-worth">Sort by: Net Worth</SelectItem>
+                  <SelectItem value="pnl">Sort by: 7d P&L</SelectItem>
+                  <SelectItem value="volume">Sort by: 7d Volume</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -64,9 +63,6 @@ export default function TopPlayersPage() {
           </TabsContent>
           <TabsContent value="top-traders">
             <TopTradersTab isPro={isPro}/>
-          </TabsContent>
-          <TabsContent value="trending-wallets">
-            <TrendingWalletsTab />
           </TabsContent>
         </Tabs>
       </div>
