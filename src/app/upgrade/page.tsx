@@ -274,7 +274,7 @@ export default function UpgradePage() {
             Get real-time data, unlimited alerts, and advanced tools. Upgrade to Track100x Pro.
           </p>
           <div className="flex items-center justify-center gap-4 mt-8">
-            <Button size="lg" onClick={() => scrollTo('pricing')}>
+            <Button size="lg" onClick={handleUpgradeClick}>
               Upgrade Now <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
             <Button variant="ghost" size="lg" onClick={() => scrollTo('comparison')}>
