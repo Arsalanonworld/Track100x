@@ -12,7 +12,7 @@ import {
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import { LogOut, User, DollarSign, Star, Eye } from 'lucide-react';
+import { LogOut, User, DollarSign, Star, Home, BarChart, Eye, Bell, Newspaper } from 'lucide-react';
 import { AnimatedButton } from './ui/animated-button';
 import { useUser } from '@/firebase';
 import { useState, useEffect } from 'react';
@@ -24,12 +24,18 @@ export function UserNav() {
   const { user, claims, loading } = useUser();
   const logout = useLogout();
   const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
+  const [initialAuthTab, setInitialAuthTab] = useState<'login' | 'signup'>('login');
   const isPro = claims?.plan === 'pro';
 
   const [isClient, setIsClient] = useState(false);
   useEffect(() => {
     setIsClient(true);
   }, []);
+
+  const openAuthDialog = (tab: 'login' | 'signup') => {
+    setInitialAuthTab(tab);
+    setIsAuthDialogOpen(true);
+  };
 
   if (!isClient || loading) {
     return (
@@ -45,14 +51,18 @@ export function UserNav() {
     return (
         <>
         <div className="flex items-center gap-2">
-            <Button variant="ghost" onClick={() => setIsAuthDialogOpen(true)}>
+            <Button variant="ghost" onClick={() => openAuthDialog('login')}>
                 Login
             </Button>
-            <AnimatedButton onClick={() => setIsAuthDialogOpen(true)}>
+            <AnimatedButton onClick={() => openAuthDialog('signup')}>
                 Sign Up
             </AnimatedButton>
         </div>
-        <AuthDialog open={isAuthDialogOpen} onOpenChange={setIsAuthDialogOpen} />
+        <AuthDialog 
+            open={isAuthDialogOpen} 
+            onOpenChange={setIsAuthDialogOpen} 
+            initialTab={initialAuthTab}
+        />
         </>
     );
   }
@@ -95,6 +105,12 @@ export function UserNav() {
                 <span>Account</span>
               </Link>
           </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+             <Link href="/watchlist">
+                <Eye className="mr-2 h-4 w-4" />
+                <span>Watchlist</span>
+            </Link>
+            </DropdownMenuItem>
           {isPro && (
             <DropdownMenuItem disabled>
               <DollarSign className="mr-2 h-4 w-4" />
