@@ -67,16 +67,17 @@ export default function TopTradersTab({ isPro }: { isPro: boolean }) {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {mockTraders.map((trader) => (
                  <Card key={trader.rank} className="p-4 flex flex-col h-full">
-                    <div className="flex justify-between items-start">
+                    <div className="flex justify-between items-start mb-4">
                         <p className="text-lg font-bold text-muted-foreground">#{trader.rank}</p>
-                        <div className="flex gap-2">
+                         <TrackButton walletAddress={trader.address} />
+                    </div>
+                     <div className="text-center my-auto flex-grow">
+                        <p className="font-bold text-xl text-primary">{trader.alias}</p>
+                         <div className="flex gap-2 justify-center mt-2">
                            {trader.tags.map(tag => <Badge key={tag} variant="secondary">{tag}</Badge>)}
                         </div>
-                    </div>
-                     <div className="text-center my-4 flex-grow">
-                        <p className="font-bold text-xl text-primary">{trader.alias}</p>
                      </div>
-                    <div className="space-y-2 text-sm">
+                    <div className="space-y-2 text-sm mt-4">
                         <div className="flex justify-between">
                             <span className="text-muted-foreground">7d P&L</span>
                             <span className="font-medium text-green-500">+{trader.pnl}%</span>
@@ -89,9 +90,6 @@ export default function TopTradersTab({ isPro }: { isPro: boolean }) {
                             <span className="text-muted-foreground">Top Token</span>
                             <span className="font-medium">{trader.topToken}</span>
                         </div>
-                    </div>
-                    <div className="text-center mt-4">
-                        <TrackButton walletAddress={trader.address} />
                     </div>
                 </Card>
             ))}
