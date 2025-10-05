@@ -6,10 +6,10 @@ import { Button } from "@/components/ui/button"
 import { walletLeaderboard } from '@/lib/mock-data'
 import { cn } from "@/lib/utils"
 import { useUser, useFirestore } from "@/firebase";
-import { collection, addDoc, serverTimestamp, query, where, getDocs } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, query, where, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { useToast } from "@/hooks/use-toast";
 import { useState, useMemo, useEffect } from "react";
-import { Loader2, Check } from "lucide-react";
+import { Loader2, Star } from "lucide-react";
 import { AuthDialog } from "../auth/auth-dialog";
 
 const TrackButton = ({ walletAddress }: { walletAddress: string }) => {
@@ -18,32 +18,44 @@ const TrackButton = ({ walletAddress }: { walletAddress: string }) => {
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isAuthDialogOpen, setAuthDialogOpen] = useState(false);
+    const [isTracking, setIsTracking] = useState(false);
+    const [docId, setDocId] = useState<string | null>(null);
+    const [checking, setChecking] = useState(true);
 
-    // Create a query to find if this wallet is already in the watchlist
     const watchlistQuery = useMemo(() => {
         if (!user || !firestore) return null;
-        // This is a bit of a workaround since we don't have the doc ID.
-        // A better structure might be to use the wallet address as the document ID.
         return query(collection(firestore, `users/${user.uid}/watchlist`), where("walletAddress", "==", walletAddress));
     }, [user, firestore, walletAddress]);
 
-    // We use getDocs once to check, not real-time listening for this button.
-    const [isTracking, setIsTracking] = useState(false);
-    const [checking, setChecking] = useState(true);
-
     useEffect(() => {
+        if (userLoading) return;
+        setChecking(true);
         const checkIfTracked = async () => {
             if (watchlistQuery) {
-                const querySnapshot = await getDocs(watchlistQuery);
-                setIsTracking(!querySnapshot.empty);
+                try {
+                    const querySnapshot = await getDocs(watchlistQuery);
+                    if (!querySnapshot.empty) {
+                        setIsTracking(true);
+                        setDocId(querySnapshot.docs[0].id);
+                    } else {
+                        setIsTracking(false);
+                        setDocId(null);
+                    }
+                } catch (error) {
+                    console.error("Error checking watchlist:", error);
+                    setIsTracking(false);
+                    setDocId(null);
+                }
+            } else {
+                setIsTracking(false);
+                setDocId(null);
             }
             setChecking(false);
         };
         checkIfTracked();
-    }, [watchlistQuery]);
+    }, [watchlistQuery, userLoading]);
 
-
-    const handleTrack = async () => {
+    const handleToggleTrack = async () => {
         if (!user) {
             setAuthDialogOpen(true);
             return;
@@ -52,42 +64,64 @@ const TrackButton = ({ walletAddress }: { walletAddress: string }) => {
 
         setIsSubmitting(true);
 
-        try {
-            const watchlistCol = collection(firestore, `users/${user.uid}/watchlist`);
-            await addDoc(watchlistCol, {
-                walletAddress: walletAddress,
-                createdAt: serverTimestamp(),
-                userId: user.uid,
-            });
-            toast({
-                title: "Wallet Added!",
-                description: "You are now tracking this wallet on your watchlist.",
-            });
-            setIsTracking(true);
-        } catch (error) {
-            console.error("Error adding to watchlist: ", error);
-            toast({
-                variant: 'destructive',
-                title: "Error",
-                description: "Could not add wallet to watchlist.",
-            });
-        } finally {
-            setIsSubmitting(false);
+        if (isTracking && docId) {
+            // Untrack
+            try {
+                const docRef = doc(firestore, `users/${user.uid}/watchlist`, docId);
+                await deleteDoc(docRef);
+                toast({
+                    title: "Wallet Unwatched",
+                    description: "This wallet has been removed from your watchlist.",
+                });
+                setIsTracking(false);
+                setDocId(null);
+            } catch (error) {
+                console.error("Error removing from watchlist: ", error);
+                toast({
+                    variant: 'destructive',
+                    title: "Error",
+                    description: "Could not remove wallet from watchlist.",
+                });
+            }
+        } else {
+            // Track
+            try {
+                const watchlistCol = collection(firestore, `users/${user.uid}/watchlist`);
+                const newDocRef = await addDoc(watchlistCol, {
+                    walletAddress: walletAddress,
+                    createdAt: serverTimestamp(),
+                    userId: user.uid,
+                });
+                toast({
+                    title: "Wallet Watched!",
+                    description: "You are now tracking this wallet on your watchlist.",
+                });
+                setIsTracking(true);
+                setDocId(newDocRef.id);
+            } catch (error) {
+                console.error("Error adding to watchlist: ", error);
+                toast({
+                    variant: 'destructive',
+                    title: "Error",
+                    description: "Could not add wallet to watchlist.",
+                });
+            }
         }
+        setIsSubmitting(false);
     }
     
     if (checking || userLoading) {
-        return <Button variant="outline" size="sm" disabled><Loader2 className="h-4 w-4 animate-spin"/></Button>
-    }
-
-    if (isTracking) {
-        return <Button variant="outline" size="sm" disabled><Check className="h-4 w-4 mr-2"/> Tracking</Button>
+        return <Button variant="ghost" size="icon" disabled><Loader2 className="h-4 w-4 animate-spin"/></Button>
     }
 
     return (
         <>
-            <Button onClick={handleTrack} variant="outline" size="sm" disabled={isSubmitting}>
-                {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Track"}
+            <Button onClick={handleToggleTrack} variant="ghost" size="icon" disabled={isSubmitting}>
+                {isSubmitting ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                    <Star className={cn("h-4 w-4", isTracking ? "fill-primary text-primary" : "text-muted-foreground")} />
+                )}
             </Button>
             <AuthDialog open={isAuthDialogOpen} onOpenChange={setAuthDialogOpen} />
         </>
