@@ -14,20 +14,20 @@ const faqs = [
     answer: 'Yes, you can cancel your subscription at any time from your account page. You will retain Pro access until the end of your current billing period.',
   },
   {
-    question: 'What happens if I hit my alert limit on the Free plan?',
-    answer: 'On the Free plan, you can create up to 1 active alert. If you reach this limit, you will need to upgrade to Pro to create more alerts. You can also delete an existing alert to free up a slot.',
+    question: 'What happens to my data and alerts if I downgrade to Free?',
+    answer: 'Your alerts and watchlist items will not be deleted, but they will be deactivated if you exceed the Free plan limits (1 active alert, 3 watched wallets). You can re-activate them if you upgrade again or reduce your usage to fit within the limits.',
   },
   {
-    question: 'What blockchains do you support?',
-    answer: 'We currently support real-time data from Ethereum, Solana, and Bitcoin. We are constantly working on adding support for more chains, which will be available to Pro users first.',
+    question: 'What payment methods do you accept?',
+    answer: 'We accept all major credit cards. All payments are processed securely through our payment provider, Stripe.',
   },
   {
     question: 'How "real-time" is the data?',
     answer: 'Our Pro plan offers a feed with near-zero latency, pulling data directly as transactions are confirmed on-chain. The Free plan feed has a delay of up to 1-2 minutes.',
   },
    {
-    question: 'Can I use Track100x for commercial purposes?',
-    answer: 'Our Pro plan includes a license for individual commercial use (e.g., for your own trading). For team or enterprise-level access and API usage, please contact us for a custom plan.',
+    question: 'Do you offer a free trial for the Pro plan?',
+    answer: "We do not offer a time-based free trial. However, our Free plan is a great way to experience the core functionality of Track100x. You can upgrade to Pro at any time to unlock all features.",
   },
 ];
 

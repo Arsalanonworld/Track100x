@@ -1,15 +1,17 @@
+
 'use client';
-import { Check, X, Star } from 'lucide-react';
+import { Check, X, Star, Zap, BarChart, Bell, Eye, Newspaper, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { Switch } from '@/components/ui/switch';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/firebase';
 import React from 'react';
 import { Faq } from '@/components/faq';
+import { AnimatedButton } from '@/components/ui/animated-button';
 
 const features = [
   {
@@ -39,6 +41,35 @@ const features = [
     ]
   }
 ];
+
+const featureHighlights = [
+    {
+        icon: <Zap className="h-8 w-8 text-primary" />,
+        title: "Real-Time Whale Feed",
+        description: "See whale moves instantly as they happen on-chain, with zero delays.",
+    },
+    {
+        icon: <Bell className="h-8 w-8 text-primary" />,
+        title: "Unlimited Smart Alerts",
+        description: "Set advanced rules and get notified via Email, Telegram, or Discord.",
+    },
+    {
+        icon: <BarChart className="h-8 w-8 text-primary" />,
+        title: "Top 100 Leaderboard",
+        description: "Gain an edge by tracking the most profitable wallets in crypto.",
+    },
+     {
+        icon: <Newspaper className="h-8 w-8 text-primary" />,
+        title: "Full Insights Access",
+        description: "Read exclusive, in-depth research and market analysis from our experts.",
+    },
+    {
+        icon: <Eye className="h-8 w-8 text-primary" />,
+        title: "Ad-Free Experience",
+        description: "Enjoy a clean, focused interface with no distractions or affiliate links.",
+    },
+];
+
 
 const PricingCard = ({
     plan,
@@ -80,18 +111,25 @@ const PricingCard = ({
             </ul>
         </CardContent>
         <CardFooter>
-            <Button className="w-full" size="lg" onClick={ctaAction} variant={highlight ? 'default' : 'outline'}>
+             <AnimatedButton className="w-full" size="lg" onClick={ctaAction} variant={highlight ? 'default' : 'default'}>
                 {ctaText}
-            </Button>
+            </AnimatedButton>
         </CardFooter>
     </Card>
 );
 
 
 export default function UpgradePage() {
-  const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
-  const { user, loading } = useUser();
+  const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('yearly');
+  const { user, loading, claims } = useUser();
   const router = useRouter();
+
+  useEffect(() => {
+    // If user is already pro, redirect them to account page
+    if (!loading && claims?.plan === 'pro') {
+      router.push('/account');
+    }
+  }, [user, loading, claims, router]);
 
   const handleUpgradeClick = () => {
     if (!user) {
@@ -101,49 +139,92 @@ export default function UpgradePage() {
     }
   };
 
+  const scrollTo = (id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+  };
+  
+  if (loading || claims?.plan === 'pro') {
+    return (
+        <div className="flex items-center justify-center min-h-[60vh]">
+            {/* You can add a loading spinner here */}
+        </div>
+    );
+  }
+
   return (
-    <div className="container mx-auto px-4 py-12">
-        <section className="text-center max-w-3xl mx-auto">
+    <div className="container mx-auto px-4 py-12 sm:py-16">
+        <section className="text-center max-w-4xl mx-auto">
              <h1 className="text-4xl font-extrabold tracking-tighter sm:text-5xl lg:text-6xl font-headline">
-                Unlock Your On-Chain Edge
+                Unlock the Full Power of Track100x 🚀
             </h1>
             <p className="max-w-2xl mx-auto mt-6 text-lg text-muted-foreground">
-                Go Pro to get unlimited real-time data, advanced alerts, and an ad-free experience. Stop guessing, start tracking.
+                Go Pro to access real-time feeds, unlimited advanced alerts, and ad-free tracking.
             </p>
             <div className="flex items-center justify-center gap-4 mt-8">
+                <AnimatedButton size="lg" onClick={() => scrollTo('pricing')}>
+                    Upgrade to Pro <ArrowRight className="ml-2 h-4 w-4"/>
+                </AnimatedButton>
+                 <Button variant="ghost" size="lg" onClick={() => scrollTo('comparison')}>
+                    See All Features
+                </Button>
+            </div>
+        </section>
+
+        <section id="features" className="py-24">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-center">
+                {featureHighlights.map((feature, index) => (
+                    <div key={index} className="p-6 bg-card border rounded-lg">
+                        {feature.icon}
+                        <h3 className="text-lg font-bold mt-4">{feature.title}</h3>
+                        <p className="text-muted-foreground mt-2 text-sm">{feature.description}</p>
+                    </div>
+                ))}
+            </div>
+        </section>
+        
+        <section id="pricing" className="mt-12">
+             <div className="text-center mb-12">
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl font-headline">
+                    Simple, Clear Pricing
+                </h2>
+                <p className="max-w-xl mx-auto mt-4 text-muted-foreground">
+                   Choose the plan that fits your strategy.
+                </p>
+            </div>
+             <div className="flex items-center justify-center gap-4 mt-8">
                 <span className={cn("font-medium", billingCycle === 'monthly' && 'text-primary')}>Monthly</span>
                 <Switch 
                     checked={billingCycle === 'yearly'}
                     onCheckedChange={(checked) => setBillingCycle(checked ? 'yearly' : 'monthly')}
+                    aria-label="Toggle billing cycle"
                 />
                 <span className={cn("font-medium", billingCycle === 'yearly' && 'text-primary')}>
                     Yearly <span className="text-green-500 font-bold ml-1">(Save 20%)</span>
                 </span>
             </div>
-        </section>
-        
-        <section className="mt-16 grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-4xl mx-auto items-start">
-            <PricingCard 
-                plan="Free"
-                price="$0"
-                description="Get a feel for our platform with essential tracking tools."
-                features={["Delayed Whale Feed", "Top 10 Leaderboard", "1 Active Alert", "Ad-supported"]}
-                ctaText="Continue with Free"
-                ctaAction={() => router.push('/')}
-            />
-             <PricingCard 
-                plan="Pro"
-                price={billingCycle === 'monthly' ? '$29' : '$23'}
-                pricePeriod="/ month"
-                description="Unlimited access to every tool for the serious on-chain analyst."
-                features={["Real-time Whale Feed", "Full Leaderboard Access", "Unlimited Advanced Alerts", "Ad-Free Experience"]}
-                ctaText="Upgrade to Pro"
-                ctaAction={handleUpgradeClick}
-                highlight
-            />
+             <div className="mt-12 grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-4xl mx-auto items-start">
+                <PricingCard 
+                    plan="Free"
+                    price="$0"
+                    description="Get a feel for our platform with essential tracking tools."
+                    features={["Delayed Whale Feed", "Top 10 Leaderboard", "1 Active Alert", "Ad-supported"]}
+                    ctaText="Continue with Free"
+                    ctaAction={() => router.push('/')}
+                />
+                 <PricingCard 
+                    plan="Pro"
+                    price={billingCycle === 'monthly' ? '$29' : '$23'}
+                    pricePeriod="/ month"
+                    description="Unlimited access to every tool for the serious on-chain analyst."
+                    features={["Real-time Whale Feed", "Full Leaderboard Access", "Unlimited Advanced Alerts", "Ad-Free Experience"]}
+                    ctaText="Upgrade to Pro"
+                    ctaAction={handleUpgradeClick}
+                    highlight
+                />
+            </div>
         </section>
 
-        <section className="mt-24">
+        <section id="comparison" className="mt-24">
              <div className="text-center mb-12">
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl font-headline">
                     Feature Comparison
@@ -200,7 +281,7 @@ export default function UpgradePage() {
             </div>
         </section>
         
-        <section className="mt-24 max-w-3xl mx-auto">
+        <section id="faq" className="mt-24 max-w-3xl mx-auto">
           <div className="text-center mb-12">
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl font-headline">
                     Frequently Asked Questions

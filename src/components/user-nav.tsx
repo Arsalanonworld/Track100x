@@ -72,14 +72,12 @@ export function UserNav() {
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem asChild>
-            <Link href="/account">
+          <DropdownMenuItem disabled>
               <User className="mr-2 h-4 w-4" />
               <span>Account</span>
-            </Link>
           </DropdownMenuItem>
           {plan === 'pro' && (
-            <DropdownMenuItem asChild>
+            <DropdownMenuItem disabled>
                  <Link href="/account/billing">
                     <DollarSign className="mr-2 h-4 w-4" />
                     <span>Manage Subscription</span>
