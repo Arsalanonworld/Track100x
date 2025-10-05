@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import type { WhaleTransaction } from "@/lib/mock-data";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import Link from "next/link";
-import { ArrowRight, Copy, ChevronDown, BellPlus, ArrowDown, Star } from "lucide-react";
+import { ArrowRight, Copy, ChevronDown, BellPlus } from "lucide-react";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { cn } from "@/lib/utils";
@@ -25,29 +25,39 @@ interface TransactionCardProps {
     tx: WhaleTransaction;
 }
 
-const WalletIdentifier = ({ address, shortAddress, tags, network }: { address: string, shortAddress: string, tags?: string[], network: string }) => (
-    <div className="flex items-center gap-2 min-w-0">
-        <TrackButton walletAddress={address} />
-        <Link
-            href={getExplorerUrl(network, address, 'address')}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={(e) => e.stopPropagation()}
-            className="font-mono text-sm hover:underline truncate"
-        >
-            {shortAddress}
-        </Link>
-        <div className="flex items-center gap-1 flex-wrap">
-            {tags?.map(tag => <Badge key={tag} variant="secondary" className="text-xs font-normal">{tag}</Badge>)}
-        </div>
+const WalletIdentifier = ({ address, shortAddress, tags, network, label }: { address: string, shortAddress: string, tags?: string[], network: string, label: string }) => {
+    const { toast } = useToast();
+    const handleCopy = (text: string, entity: string) => {
+        navigator.clipboard.writeText(text);
+        toast({ title: `${entity} Copied!`, description: text });
+    };
+    
+    return (
+     <div className="space-y-1">
+         <div className="flex items-center gap-2">
+            <span className="text-sm text-muted-foreground font-semibold w-12">{label}</span>
+            <TrackButton walletAddress={address} />
+            <Link href={getExplorerUrl(network, address, 'address')} target="_blank" rel="noopener noreferrer" className="font-mono text-sm hover:underline truncate">{address}</Link>
+            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleCopy(address, `${label} Address`)}><Copy className="h-3 w-3"/></Button>
+         </div>
+         {tags && tags.length > 0 && (
+             <div className="flex items-center gap-1 pl-14">
+                {tags.map(tag => <Badge key={tag} variant="secondary" className="text-xs font-normal">{tag}</Badge>)}
+            </div>
+         )}
     </div>
-);
+)};
 
 
 const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
     const [isOpen, setIsOpen] = useState(false);
     const { toast } = useToast();
     const [isAlertEditorOpen, setIsAlertEditorOpen] = useState(false);
+
+    const handleCopy = (text: string, entity: string) => {
+        navigator.clipboard.writeText(text);
+        toast({ title: `${entity} Copied!`, description: text });
+    };
 
     const AlertButton = () => (
       <DialogTrigger asChild>
@@ -64,59 +74,34 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
                     <CollapsibleTrigger asChild>
                         <div className="cursor-pointer">
                             <CardContent className="p-3 sm:p-4">
-                                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-                                    {/* Mobile: Top Row / Desktop: Left Column */}
-                                    <div className="flex justify-between items-center md:flex-none md:w-1/4">
-                                        <div className="flex items-center gap-3 min-w-0">
-                                            <Avatar className='h-10 w-10 text-sm font-bold'>
-                                                {tx.token.icon && <AvatarImage src={tx.token.icon} alt={tx.token.symbol} data-ai-hint="token logo" />}
-                                                <AvatarFallback>{tx.token.symbol.charAt(0)}</AvatarFallback>
-                                            </Avatar>
-                                            <div className="min-w-0">
-                                                <div className="font-bold text-base truncate">{tx.value}</div>
-                                                <div className="text-sm text-muted-foreground truncate">{tx.token.symbol}</div>
-                                            </div>
-                                        </div>
-                                         <div className="flex items-center gap-0.5 md:hidden">
-                                            <Badge variant="outline">{tx.network}</Badge>
-                                            <TooltipProvider>
-                                                <Tooltip>
-                                                    <TooltipTrigger asChild>
-                                                        <AlertButton />
-                                                    </TooltipTrigger>
-                                                    <TooltipContent>
-                                                        <p>Create quick alert</p>
-                                                    </TooltipContent>
-                                                </Tooltip>
-                                            </TooltipProvider>
-                                            <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0 data-[state=open]:bg-muted" aria-label="Toggle transaction details">
-                                                <ChevronDown className={cn("h-4 w-4 transition-transform", isOpen && "rotate-180")} />
-                                            </Button>
+                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                                    {/* --- Left Column (Token Info) --- */}
+                                    <div className="flex items-center gap-3 min-w-0">
+                                        <Avatar className='h-10 w-10 text-sm font-bold'>
+                                            {tx.token.icon && <AvatarImage src={tx.token.icon} alt={tx.token.symbol} data-ai-hint="token logo" />}
+                                            <AvatarFallback>{tx.token.symbol.charAt(0)}</AvatarFallback>
+                                        </Avatar>
+                                        <div className="min-w-0">
+                                            <div className="font-bold text-base truncate">{tx.value}</div>
+                                            <div className="text-sm text-muted-foreground truncate">{tx.token.symbol}</div>
                                         </div>
                                     </div>
                                     
-                                    {/* Mobile: Middle Area / Desktop: Center Column */}
-                                    <div className="flex md:flex-grow md:justify-center items-center gap-2">
-                                        <div className="flex flex-col md:flex-row items-start md:items-center gap-2 w-full">
-                                            <div className="w-full md:w-auto">
-                                                <WalletIdentifier address={tx.from} shortAddress={tx.fromShort} tags={tx.fromTags} network={tx.network} />
-                                            </div>
-
-                                            <div className="pl-1 md:pl-0">
-                                                <ArrowDown className="h-4 w-4 text-muted-foreground md:hidden" />
-                                                <ArrowRight className="h-4 w-4 text-muted-foreground hidden md:block" />
-                                            </div>
-
-                                            <div className="w-full md:w-auto">
-                                                <WalletIdentifier address={tx.to} shortAddress={tx.toShort} tags={tx.toTags} network={tx.network} />
-                                            </div>
-                                        </div>
+                                    {/* --- Center Column (From/To) --- */}
+                                    <div className="flex-grow flex items-center gap-2 pl-1 sm:pl-0 sm:justify-center">
+                                       <div className="font-mono text-sm flex items-center gap-2 truncate">
+                                           <span className="font-sans text-muted-foreground">From</span>
+                                           <Link href={getExplorerUrl(tx.network, tx.from, 'address')} target="_blank" rel="noopener noreferrer" className="hover:underline text-primary truncate">{tx.fromShort}</Link>
+                                           <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0" />
+                                           <span className="font-sans text-muted-foreground">To</span>
+                                           <Link href={getExplorerUrl(tx.network, tx.to, 'address')} target="_blank" rel="noopener noreferrer" className="hover:underline text-primary truncate">{tx.toShort}</Link>
+                                       </div>
                                     </div>
 
-                                    {/* Desktop: Right column */}
-                                    <div className="hidden md:flex items-center justify-end gap-1 sm:gap-2 md:w-1/4">
-                                        <Badge variant="outline" className="hidden sm:block">{tx.network}</Badge>
-                                        <div className="hidden lg:block text-sm text-muted-foreground whitespace-nowrap">{tx.time}</div>
+                                    {/* --- Right Column (Actions) --- */}
+                                    <div className="flex items-center justify-end sm:justify-end gap-1 sm:gap-2">
+                                        <Badge variant="outline" className="text-xs">{tx.network}</Badge>
+                                        <div className="text-xs text-muted-foreground whitespace-nowrap">{tx.time}</div>
                                         <TooltipProvider>
                                           <Tooltip>
                                             <TooltipTrigger asChild>
@@ -136,7 +121,17 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
                         </div>
                     </CollapsibleTrigger>
                     <CollapsibleContent>
-                        <TransactionDetails tx={tx} />
+                       <div className="p-4 border-t bg-muted/30">
+                            <div className="space-y-2">
+                                <WalletIdentifier address={tx.from} shortAddress={tx.fromShort} tags={tx.fromTags} network={tx.network} label="From" />
+                                <WalletIdentifier address={tx.to} shortAddress={tx.toShort} tags={tx.toTags} network={tx.network} label="To" />
+                                <div className="flex items-center gap-2 pt-2">
+                                    <span className="text-sm text-muted-foreground font-semibold w-12">Tx Hash</span>
+                                    <Link href={getExplorerUrl(tx.network, tx.txHash, 'tx')} target="_blank" rel="noopener noreferrer" className="font-mono text-sm hover:underline truncate">{tx.txHash}</Link>
+                                    <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleCopy(tx.txHash, "Hash")}><Copy className="h-3 w-3"/></Button>
+                                </div>
+                            </div>
+                        </div>
                     </CollapsibleContent>
                 </Card>
             </Collapsible>
@@ -150,50 +145,6 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
         </Dialog>
     );
 };
-
-
-const TransactionDetails = ({ tx }: { tx: WhaleTransaction }) => {
-    const { toast } = useToast();
-    const handleCopy = (text: string, entity: string) => {
-        navigator.clipboard.writeText(text);
-        toast({ title: `${entity} Copied!`, description: text });
-    };
-
-    return (
-        <div className="p-4 border-t bg-muted/30">
-            <div className="space-y-2">
-                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
-                     <span className="text-sm text-muted-foreground font-semibold">From</span>
-                     <div className="flex items-center gap-1">
-                        <Link href={getExplorerUrl(tx.network, tx.from, 'address')} target="_blank" rel="noopener noreferrer" className="font-mono text-sm hover:underline truncate">{tx.from}</Link>
-                        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleCopy(tx.from, "From Address")}><Copy className="h-3 w-3"/></Button>
-                     </div>
-                </div>
-                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
-                     <span className="text-sm text-muted-foreground font-semibold">To</span>
-                     <div className="flex items-center gap-1">
-                        <Link href={getExplorerUrl(tx.network, tx.to, 'address')} target="_blank" rel="noopener noreferrer" className="font-mono text-sm hover:underline truncate">{tx.to}</Link>
-                        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleCopy(tx.to, "To Address")}><Copy className="h-3 w-3"/></Button>
-                     </div>
-                </div>
-                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
-                     <span className="text-sm text-muted-foreground font-semibold">Transaction Hash</span>
-                     <div className="flex items-center gap-1">
-                        <Link href={getExplorerUrl(tx.network, tx.txHash, 'tx')} target="_blank" rel="noopener noreferrer" className="font-mono text-sm hover:underline truncate">{tx.txHash}</Link>                        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleCopy(tx.txHash, "Hash")}><Copy className="h-3 w-3"/></Button>
-                     </div>
-                </div>
-                 <div className="flex justify-between items-center">
-                     <span className="text-sm text-muted-foreground font-semibold">Gas Fee</span>
-                     <span className="font-mono text-sm">{tx.gasFee}</span>
-                </div>
-                 <div className="flex justify-between items-center">
-                     <span className="text-sm text-muted-foreground font-semibold">Price Impact</span>
-                     <span className="font-mono text-sm">{tx.priceImpact}</span>
-                </div>
-            </div>
-        </div>
-    );
-}
 
 
 export default TransactionCard;

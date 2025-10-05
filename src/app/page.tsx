@@ -12,14 +12,12 @@ export default function HomePage() {
       {/* Hero Section */}
       <HeroSection />
 
-      {/* Whale Feed Section - Full width on mobile */}
-      <div id="whale-feed">
-          <WhaleFeed />
-      </div>
-
-      {/* Other sections with container for padding */}
+      {/* Whale Feed Section & Other sections with container for padding */}
       <div className="container">
           <div className="space-y-8 md:space-y-12">
+            <div id="whale-feed">
+                <WhaleFeed />
+            </div>
             <LeaderboardPreview />
             <HomePageCta />
           </div>

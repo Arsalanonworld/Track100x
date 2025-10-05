@@ -15,11 +15,16 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Input } from './ui/input';
-import { Search, Filter } from 'lucide-react';
+import { Search, Filter, ChevronsUpDown } from 'lucide-react';
 import { mockWhaleTxs } from '@/lib/mock-data';
 import { Button } from './ui/button';
 import TransactionCard from './transaction-card';
 import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible"
 
 export function WhaleFeed() {
   
@@ -75,17 +80,21 @@ export function WhaleFeed() {
           placeholder="Filter by token..." 
           className="pl-10 w-full" 
           value={tokenFilter}
-          onChange={(e) => setTokenFilter(e.target.value)}
+          onChange={(e) => {
+            setTokenFilter(e.target.value);
+            setCurrentPage(1); // Reset to first page on filter change
+          }}
         />
       </div>
       <Select 
         value={chainFilter} 
-        onValueChange={setChainFilter}
+        onValueChange={(value) => {
+          setChainFilter(value);
+          setCurrentPage(1);
+        }}
       >
         <SelectTrigger className="w-full">
-          <div className="flex justify-between items-center w-full">
-            <SelectValue placeholder="All Chains" />
-          </div>
+          <SelectValue placeholder="All Chains" />
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">All Chains</SelectItem>
@@ -97,12 +106,13 @@ export function WhaleFeed() {
       </Select>
       <Select 
         value={typeFilter}
-        onValueChange={setTypeFilter}
+        onValueChange={(value) => {
+          setTypeFilter(value);
+          setCurrentPage(1);
+        }}
       >
         <SelectTrigger className="w-full">
-           <div className="flex justify-between items-center w-full">
-              <SelectValue placeholder="All Types" />
-           </div>
+           <SelectValue placeholder="All Types" />
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">All Types</SelectItem>
@@ -152,20 +162,29 @@ export function WhaleFeed() {
                   <div className="md:hidden w-full flex justify-end">
                      <Sheet>
                         <SheetTrigger asChild>
-                           <Button variant="outline" size="icon">
-                             <Filter className="h-4 w-4" />
+                           <Button variant="outline">
+                             <Filter className="h-4 w-4 mr-2" />
+                             Filters
                            </Button>
                         </SheetTrigger>
-                        <SheetContent side="bottom">
-                          <SheetHeader>
+                        <SheetContent side="bottom" className="rounded-t-lg">
+                          <SheetHeader className="text-left">
                             <SheetTitle>Filter Transactions</SheetTitle>
                             <SheetDescription>
                               Refine the whale feed to find what you're looking for.
                             </SheetDescription>
                           </SheetHeader>
-                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 py-4">
-                            <FilterControls />
-                          </div>
+                          <Collapsible className="py-4">
+                            <CollapsibleTrigger className="flex justify-between w-full font-semibold text-sm items-center pb-2 border-b">
+                              <span>Show Filters</span>
+                              <ChevronsUpDown className="h-4 w-4"/>
+                            </CollapsibleTrigger>
+                            <CollapsibleContent>
+                              <div className="grid grid-cols-1 gap-4 pt-4">
+                                <FilterControls />
+                              </div>
+                            </CollapsibleContent>
+                          </Collapsible>
                         </SheetContent>
                       </Sheet>
                   </div>
@@ -174,11 +193,18 @@ export function WhaleFeed() {
             </CardHeader>
             <CardContent>
                 <div className="space-y-3">
-                    {currentTransactions.map((tx) => (
-                       <TransactionCard key={tx.id} tx={tx} />
-                    ))}
+                    {currentTransactions.length > 0 ? (
+                      currentTransactions.map((tx) => (
+                        <TransactionCard key={tx.id} tx={tx} />
+                      ))
+                    ) : (
+                      <div className="text-center py-16 text-muted-foreground">
+                        <p className="text-lg font-semibold">No transactions found.</p>
+                        <p>Try adjusting your search or category filters.</p>
+                      </div>
+                    )}
                 </div>
-                <PaginationControls />
+                {filteredTransactions.length > transactionsPerPage && <PaginationControls />}
             </CardContent>
         </Card>
   );

@@ -24,8 +24,8 @@ export default function TopPlayersPage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        title="Top Players in Crypto"
-        description="Track the biggest movers and shakers in real-time. Set alerts to stay ahead!"
+        title="Top Players"
+        description="Track the biggest movers and shakers in real-time."
       />
 
       <div className="container">
@@ -36,7 +36,7 @@ export default function TopPlayersPage() {
               <TabsTrigger value="top-traders">Top Traders</TabsTrigger>
               <TabsTrigger value="trending-wallets">Trending</TabsTrigger>
             </TabsList>
-            <div className="flex gap-2 w-full md:w-auto">
+            <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
               <Select defaultValue="all">
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="All Chains" />
