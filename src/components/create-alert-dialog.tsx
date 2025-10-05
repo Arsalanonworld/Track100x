@@ -6,6 +6,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
+  DialogClose,
 } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { QuickAlertConfigurator } from './quick-alert-configurator';
@@ -13,6 +14,10 @@ import AlertBuilder from './alerts/alert-builder';
 
 
 export const CreateAlertDialog = ({ onOpenChange }: { onOpenChange: (open: boolean) => void }) => {
+    
+    const handleSubmitted = () => {
+        onOpenChange(false);
+    }
     
     return (
     <DialogContent className="max-w-2xl">
@@ -32,10 +37,12 @@ export const CreateAlertDialog = ({ onOpenChange }: { onOpenChange: (open: boole
             </TabsTrigger>
           </TabsList>
           <TabsContent value="quick" className="pt-6">
-            <QuickAlertConfigurator onSubmitted={() => onOpenChange(false)} />
+            <QuickAlertConfigurator onSubmitted={handleSubmitted} />
           </TabsContent>
           <TabsContent value="advanced" className="pt-6">
-            <AlertBuilder onSave={() => onOpenChange(false)} isPro={true} />
+            <DialogClose asChild>
+                <AlertBuilder onSave={handleSubmitted} isPro={true} />
+            </DialogClose>
           </TabsContent>
         </Tabs>
     </DialogContent>

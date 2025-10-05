@@ -32,7 +32,7 @@ export default function AlertCreatorCard() {
             </TabsTrigger>
           </TabsList>
           <TabsContent value="quick" className="pt-6">
-            <QuickAlertConfigurator onSubmitted={() => {}} />
+            <QuickAlertConfigurator />
           </TabsContent>
           <TabsContent value="advanced" className="pt-6">
             <AlertBuilder onSave={() => {}} isPro={true} />

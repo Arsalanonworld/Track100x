@@ -9,7 +9,6 @@ import { Wallet, Tag, Sparkles } from 'lucide-react';
 import { Input } from './ui/input';
 import { Badge } from './ui/badge';
 import { Switch } from './ui/switch';
-import { DialogClose } from './ui/dialog';
 import { Button } from './ui/button';
 import { Loader2 } from 'lucide-react';
 import { Alert as AlertBox, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -166,13 +165,7 @@ export const QuickAlertConfigurator = ({ onSubmitted }: { onSubmitted?: () => vo
                 </div>
              </div>
           </div>
-          {onSubmitted ? (
-            <DialogClose asChild>
-                <SubmitButton />
-            </DialogClose>
-          ) : (
-            <SubmitButton />
-          )}
+        <SubmitButton />
     </form>
   );
 };
