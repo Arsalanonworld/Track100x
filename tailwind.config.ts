@@ -19,7 +19,6 @@ export default {
     extend: {
       fontFamily: {
         sans: ['"Inter"', 'sans-serif'],
-        headline: ['"Space Grotesk"', 'sans-serif'],
       },
       colors: {
         background: 'hsl(var(--background))',

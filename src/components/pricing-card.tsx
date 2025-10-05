@@ -29,7 +29,7 @@ export const PricingCard = ({
 }: PricingCardProps) => (
     <Card className={cn('flex flex-col text-left', highlight && 'border-primary ring-2 ring-primary shadow-lg')}>
         <CardHeader>
-            <CardTitle className="font-headline text-2xl">{plan}</CardTitle>
+            <CardTitle className="text-2xl">{plan}</CardTitle>
             <CardDescription>{description}</CardDescription>
             <div className="flex items-baseline pt-4">
                 <span className="text-4xl font-bold tracking-tight">{price}</span>

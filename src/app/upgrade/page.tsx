@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState } from 'react';
@@ -148,14 +149,14 @@ const PricingCard = ({
     <CardHeader>
       {highlight && (
         <div className="flex justify-between items-center">
-          <CardTitle className="font-headline text-2xl">{plan}</CardTitle>
+          <CardTitle className="text-2xl">{plan}</CardTitle>
           <div className="flex items-center gap-2 text-sm font-bold text-primary">
             <Star className="h-5 w-5" />
             Most Popular
           </div>
         </div>
       )}
-      {!highlight && <CardTitle className="font-headline text-2xl">{plan}</CardTitle>}
+      {!highlight && <CardTitle className="text-2xl">{plan}</CardTitle>}
 
       <div className="flex items-baseline pt-4">
         <span className="text-4xl font-bold tracking-tight">{price}</span>
@@ -192,7 +193,7 @@ const ProFeatures = () => {
     return (
         <section className="py-16 sm:py-24">
              <div className="text-center mb-12">
-                <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl font-headline">
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">
                     An Unfair Advantage is Waiting
                 </h2>
                 <p className="max-w-2xl mx-auto mt-4 text-muted-foreground">
@@ -266,7 +267,7 @@ export default function UpgradePage() {
     <>
       <div className="container mx-auto px-4 py-12 sm:py-16">
         <section className="text-center max-w-4xl mx-auto">
-          <h1 className="text-4xl font-extrabold tracking-tighter sm:text-5xl lg:text-6xl font-headline">
+          <h1 className="text-4xl font-extrabold tracking-tighter sm:text-5xl lg:text-6xl">
             Follow the Whales. Find the Alpha.
           </h1>
           <p className="max-w-2xl mx-auto mt-6 text-lg text-muted-foreground">
@@ -286,7 +287,7 @@ export default function UpgradePage() {
 
         <section id="pricing" className="mt-12">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl font-headline">
+            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">
               Simple, Clear Pricing
             </h2>
             <p className="max-w-xl mx-auto mt-4 text-muted-foreground">
@@ -335,7 +336,7 @@ export default function UpgradePage() {
 
         <section id="comparison" className="mt-24">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl font-headline">
+            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">
               Feature Comparison
             </h2>
             <p className="max-w-xl mx-auto mt-4 text-muted-foreground">
@@ -415,7 +416,7 @@ export default function UpgradePage() {
 
         <section id="faq" className="mt-24 max-w-3xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl font-headline">
+            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">
               Frequently Asked Questions
             </h2>
           </div>

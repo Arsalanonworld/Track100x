@@ -28,7 +28,7 @@ export default function InsightsPage() {
   return (
     <>
       <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline">
+        <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl">
             Insights & Research
         </h1>
         <p className="max-w-2xl mx-auto mt-4 text-lg text-muted-foreground">

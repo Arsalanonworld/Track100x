@@ -29,7 +29,7 @@ export function LeaderboardPreview() {
   return (
     <section>
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-2xl font-bold font-headline">Top Wallets</h2>
+        <h2 className="text-2xl font-bold">Top Wallets</h2>
         <Button variant="ghost" asChild>
           <Link href="/leaderboard">
             View Full Leaderboard
