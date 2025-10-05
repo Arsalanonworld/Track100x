@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { useToast } from "@/hooks/use-toast";
 import type { Alert } from "@/lib/types";
 import { useUser, useFirestore } from '@/firebase';
-import { doc, updateDoc, setDoc, serverTimestamp, collection } from 'firebase/firestore';
+import { doc, updateDoc, setDoc, serverTimestamp, collection, addDoc } from 'firebase/firestore';
 
 type WalletRuleType = 'transactionValue' | 'tokenBalanceChange' | 'portfolioValueChange' | 'pnlChange' | 'dormancy';
 type TokenRuleType = 'priceChange' | 'newWhaleTransaction' | 'liquidityShift';
