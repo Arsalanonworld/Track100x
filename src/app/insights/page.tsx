@@ -11,15 +11,16 @@ import { cn } from '@/lib/utils';
 import { useUser } from '@/firebase';
 import Link from 'next/link';
 
-const organicArticles = allArticles.filter(a => !a.sponsored);
-const sponsoredArticles = allArticles.filter(a => a.sponsored);
-const allCategories = ['All', ...Array.from(new Set(organicArticles.map(a => a.category)))];
+const allCategories = ['All', ...Array.from(new Set(allArticles.filter(a => !a.sponsored).map(a => a.category)))];
 
 export default function InsightsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const { user, claims } = useUser();
   const isPro = claims?.plan === 'pro';
+
+  const organicArticles = useMemo(() => allArticles.filter(a => !a.sponsored), []);
+  const sponsoredArticles = useMemo(() => allArticles.filter(a => a.sponsored), []);
 
   const articlesToShow = isPro ? organicArticles : organicArticles.slice(0, 3);
 
