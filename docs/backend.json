@@ -1,182 +1,6 @@
 
 {
   "entities": {
-    "User": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "User",
-      "type": "object",
-      "description": "Represents a user of the Tack100x application.",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the User entity."
-        },
-        "email": {
-          "type": "string",
-          "description": "Email address of the user.",
-          "format": "email"
-        },
-        "username": {
-          "type": "string",
-          "description": "Username of the user."
-        },
-        "plan": {
-          "type": "string",
-          "description": "The user's subscription plan.",
-          "enum": ["free", "pro", "enterprise"]
-        },
-        "entitlements": {
-          "type": "object",
-          "description": "Feature access rights for the user.",
-          "properties": {
-            "alerts": {
-              "type": "object",
-              "properties": {
-                "maxActive": { "type": "number" },
-                "channels": { "type": "array", "items": { "type": "string" } }
-              }
-            },
-            "feed": {
-              "type": "object",
-              "properties": {
-                "delayMinutes": { "type": "number" }
-              }
-            },
-            "leaderboard": {
-              "type": "object",
-              "properties": {
-                "topN": { "type": "number" }
-              }
-            },
-            "apiAccess": { "type": "boolean" }
-          }
-        },
-        "quotas": {
-          "type": "object",
-          "description": "Usage limits for the user.",
-          "properties": {
-            "exportsPerDay": { "type": "number" }
-          }
-        }
-      },
-      "required": [
-        "id",
-        "email",
-        "username",
-        "plan"
-      ]
-    },
-    "Wallet": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "Wallet",
-      "type": "object",
-      "description": "Represents a cryptocurrency wallet.",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the Wallet entity."
-        },
-        "address": {
-          "type": "string",
-          "description": "The wallet's address on the blockchain."
-        },
-        "blockchain": {
-          "type": "string",
-          "description": "The blockchain the wallet belongs to (e.g., Ethereum, Bitcoin)."
-        },
-        "userId": {
-          "type": "string",
-          "description": "Reference to User. (Relationship: User 1:N Wallet)"
-        }
-      },
-      "required": [
-        "id",
-        "address",
-        "blockchain",
-        "userId"
-      ]
-    },
-    "Transaction": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "Transaction",
-      "type": "object",
-      "description": "Represents a cryptocurrency transaction.",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the Transaction entity."
-        },
-        "walletId": {
-          "type": "string",
-          "description": "Reference to Wallet. (Relationship: Wallet 1:N Transaction)"
-        },
-        "token": {
-          "type": "string",
-          "description": "The token involved in the transaction (e.g., ETH, BTC)."
-        },
-        "amount": {
-          "type": "number",
-          "description": "The amount of the token transferred."
-        },
-        "transactionType": {
-          "type": "string",
-          "description": "The type of transaction (e.g., deposit, withdrawal, transfer)."
-        },
-        "timestamp": {
-          "type": "string",
-          "description": "The timestamp of the transaction.",
-          "format": "date-time"
-        }
-      },
-      "required": [
-        "id",
-        "walletId",
-        "token",
-        "amount",
-        "transactionType",
-        "timestamp"
-      ]
-    },
-    "Alert": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "Alert",
-      "type": "object",
-      "description": "Represents a user-defined alert for wallet activity.",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the Alert entity."
-        },
-        "userId": {
-          "type": "string",
-          "description": "Reference to User. (Relationship: User 1:N Alert)"
-        },
-        "walletId": {
-          "type": "string",
-          "description": "Reference to Wallet. (Relationship: Wallet 1:N Alert)"
-        },
-        "alertType": {
-          "type": "string",
-          "description": "The type of alert (e.g., large transaction, unusual activity)."
-        },
-        "threshold": {
-          "type": "number",
-          "description": "The threshold that triggers the alert (e.g., transaction amount)."
-        },
-        "enabled": {
-          "type": "boolean",
-          "description": "Indicates whether the alert is currently enabled."
-        }
-      },
-      "required": [
-        "id",
-        "userId",
-        "walletId",
-        "alertType",
-        "threshold",
-        "enabled"
-      ]
-    },
     "LeaderboardEntry": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "LeaderboardEntry",
@@ -184,7 +8,7 @@
       "description": "Represents a single entry in the leaderboard.",
       "properties": {
         "rank": { "type": "number" },
-        "walletId": { "type": "string", "$ref": "#/entities/Wallet" },
+        "walletId": { "type": "string" },
         "pnl": { "type": "number" },
         "netWorth": { "type": "number" }
       },
@@ -196,56 +20,14 @@
       "type": "object",
       "description": "Represents a transaction in the whale feed.",
       "properties": {
-        "transactionId": { "type": "string", "$ref": "#/entities/Transaction" },
+        "transactionId": { "type": "string" },
         "timestamp": { "type": "string", "format": "date-time" }
       },
       "required": ["transactionId", "timestamp"]
-    },
-    "Watchlist": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "Watchlist",
-      "type": "object",
-      "description": "Represents a user's followed wallet.",
-      "properties": {
-        "walletAddress": { "type": "string" },
-        "createdAt": { "type": "string", "format": "date-time" }
-      },
-      "required": ["walletAddress", "createdAt"]
     }
-  },
-  "auth": {
-    "providers": [
-      "password"
-    ]
   },
   "firestore": {
     "structure": [
-      {
-        "path": "/users/{userId}",
-        "definition": {
-          "entityName": "User",
-          "schema": {
-            "$ref": "#/backend/entities/User"
-          },
-          "description": "Stores user profile information. Follows path-based ownership for private user data."
-        }
-      },
-      {
-        "path": "/users/{userId}/alerts/{alertId}",
-        "definition": {
-          "entityName": "Alert",
-          "schema": { "$ref": "#/backend/entities/Alert" },
-          "description": "Stores alerts created by a user."
-        }
-      },
-      {
-        "path": "/users/{userId}/watchlist/{walletId}",
-        "definition": {
-            "entityName": "Watchlist",
-            "schema": { "$ref": "#/backend/entities/Watchlist" },
-            "description": "Stores wallets followed by a user."
-        }
-      },
       {
         "path": "/leaderboard/{leaderboardEntryId}",
         "definition": {

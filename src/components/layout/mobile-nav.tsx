@@ -4,36 +4,21 @@
 import * as React from "react"
 import Link, { type LinkProps } from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { Menu, BarChart, Bell, FileText, Zap, Star } from "lucide-react"
+import { Menu, BarChart, Bell, FileText } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetTrigger } from "@/components/ui/sheet"
 import { LogoIcon } from "./header"
-import { useUser, useFirestore, useMemoFirebase, useDoc } from "@/firebase"
-import { doc } from "firebase/firestore"
-import { AnimatedButton } from "../ui/animated-button"
 
 const navItems = [
-    { href: '/leaderboard', label: 'Leaderboard', icon: BarChart, guest: true },
-    { href: '/watchlist', label: 'Watchlist', icon: Star, guest: false },
-    { href: '/alerts', label: 'Alerts', icon: Bell, guest: false },
-    { href: '/insights', label: 'Insights', icon: FileText, guest: true },
+    { href: '/leaderboard', label: 'Leaderboard', icon: BarChart },
+    { href: '/alerts', label: 'Alerts', icon: Bell },
+    { href: '/insights', label: 'Insights', icon: FileText },
 ];
 
 export function MobileNav() {
   const [open, setOpen] = React.useState(false);
-  const { user } = useUser();
-  const firestore = useFirestore();
-
-  const userDocRef = useMemoFirebase(() => {
-    if (!firestore || !user) return null;
-    return doc(firestore, 'users', user.uid);
-  }, [firestore, user]);
-  const { data: userData } = useDoc(userDocRef);
-  const isPro = userData?.plan === 'pro';
-
-  const visibleNavItems = navItems.filter(item => user || item.guest);
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -63,7 +48,7 @@ export function MobileNav() {
             </SheetDescription>
         </SheetHeader>
         <div className="flex flex-col gap-4 pl-6 mt-4 text-lg font-medium flex-1">
-          {visibleNavItems.map((item) => (
+          {navItems.map((item) => (
             <MobileLink
               key={item.href}
               href={item.href}
@@ -73,20 +58,6 @@ export function MobileNav() {
             </MobileLink>
           ))}
         </div>
-        {!isPro && (
-            <div className="p-6 border-t">
-                <AnimatedButton className="w-full" asChild>
-                    <MobileLink
-                        href="/upgrade"
-                        onOpenChange={setOpen}
-                        className="flex items-center gap-2"
-                        >
-                        <Zap className="h-4 w-4" />
-                        Upgrade to Pro
-                    </MobileLink>
-                </AnimatedButton>
-            </div>
-        )}
       </SheetContent>
     </Sheet>
   )

@@ -22,10 +22,8 @@ import {
 import QuickAlertEditor from './quick-alert-editor';
 import AlertBuilder from './alert-builder';
 import { cn } from '@/lib/utils';
-import Link from 'next/link';
-import { useUser, useFirestore, useCollection, useMemoFirebase, updateDocumentNonBlocking, deleteDocumentNonBlocking, useDoc } from '@/firebase';
-import { collection, doc } from 'firebase/firestore';
-import { type Alert } from '@/lib/types';
+import type { Alert } from '@/lib/types';
+import { mockAlerts } from '@/lib/mock-data';
 
 
 const iconMap = {
@@ -34,40 +32,10 @@ const iconMap = {
 };
 
 export default function ActiveAlerts() {
-    const { user } = useUser();
-    const firestore = useFirestore();
     const { toast } = useToast();
     const [isEditorOpen, setIsEditorOpen] = useState(false);
     const [selectedAlert, setSelectedAlert] = useState<Alert | null>(null);
-
-    const userDocRef = useMemoFirebase(() => {
-      if (!firestore || !user) return null;
-      return doc(firestore, 'users', user.uid);
-    }, [firestore, user]);
-    const { data: userData } = useDoc(userDocRef);
-    const isPro = userData?.plan === 'pro';
-
-    const alertsRef = useMemoFirebase(() => {
-        if (!user || !firestore) return null;
-        return collection(firestore, `users/${user.uid}/alerts`);
-    }, [user, firestore]);
-
-    const { data: alerts } = useCollection<Alert>(alertsRef);
-    
-    async function handleDelete(id: string) {
-        if (!user || !firestore) return;
-        const alertDocRef = doc(firestore, `users/${user.uid}/alerts`, id);
-        deleteDocumentNonBlocking(alertDocRef);
-        toast({
-            title: 'Alert Deleted',
-            variant: 'destructive',
-        });
-    }
-
-    const handleEdit = (alert: Alert) => {
-        setSelectedAlert(alert);
-        setIsEditorOpen(true);
-    };
+    const [alerts, setAlerts] = useState(mockAlerts);
 
     const handleSave = () => {
         if (selectedAlert) {
@@ -86,10 +54,8 @@ export default function ActiveAlerts() {
     };
 
 
-    async function toggleAlert(alert: Alert) {
-        if (!user || !firestore) return;
-        const alertRef = doc(firestore, `users/${user.uid}/alerts`, alert.id);
-        updateDocumentNonBlocking(alertRef, { enabled: !alert.enabled });
+    async function toggleAlert(alertToToggle: Alert) {
+        setAlerts(currentAlerts => currentAlerts.map(a => a.id === alertToToggle.id ? {...a, enabled: !a.enabled} : a));
     }
 
     return (
@@ -114,12 +80,12 @@ export default function ActiveAlerts() {
                         >
                         <div className="flex items-center gap-3">
                             <div className="p-2 bg-secondary rounded-md">
-                                {iconMap[alert.alertType]}
+                                {iconMap[alert.type]}
                             </div>
                             <div>
-                                <p className="font-semibold text-sm">{alert.walletId || alert.token}</p>
+                                <p className="font-semibold text-sm">{alert.title}</p>
                                 <p className="text-xs text-muted-foreground">
-                                    {alert.rule}
+                                    {alert.description}
                                 </p>
                             </div>
                         </div>
@@ -132,22 +98,6 @@ export default function ActiveAlerts() {
                                     aria-label="Toggle alert"
                                 />
                             </div>
-                            <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleEdit(alert)}
-                            className="h-8 w-8"
-                            >
-                            <Pencil className="h-4 w-4" />
-                            </Button>
-                            <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleDelete(alert.id)}
-                            className="h-8 w-8"
-                            >
-                            <Trash2 className="h-4 w-4 text-destructive" />
-                            </Button>
                         </div>
                         </div>
                     ))
@@ -169,14 +119,14 @@ export default function ActiveAlerts() {
                     Edit Alert
                 </DialogTitle>
                 </DialogHeader>
-                {selectedAlert && ( isPro ? ( 
-                    <AlertBuilder onSave={handleSave} />
+                {selectedAlert && ( true ? ( 
+                    <AlertBuilder onSave={handleSave} isPro={true}/>
                 ) : (
                     <QuickAlertEditor
                         entity={{
-                            type: selectedAlert.alertType === 'wallet' ? 'Wallet' : 'Token',
-                            identifier: selectedAlert.walletId || selectedAlert.token || '',
-                            label: selectedAlert.walletId || selectedAlert.token || ''
+                            type: selectedAlert.type === 'wallet' ? 'Wallet' : 'Token',
+                            identifier: selectedAlert.title || '',
+                            label: selectedAlert.title || ''
                         }}
                         onSave={handleSave}
                         onCancel={handleCancel}

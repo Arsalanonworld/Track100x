@@ -1,3 +1,4 @@
+
 import Link from 'next/link';
 import { LogoIcon } from './header';
 
@@ -6,12 +7,10 @@ const footerLinks = {
     { label: 'Leaderboard', href: '/leaderboard' },
     { label: 'Alerts', href: '/alerts' },
     { label: 'Insights', href: '/insights' },
-    { label: 'Upgrade', href: '/upgrade' },
   ],
   company: [
     { label: 'About', href: '#' },
     { label: 'Contact', href: '#' },
-    { label: 'Account', href: '/account' },
   ],
   social: [
     { label: 'Twitter / X', href: '#' },

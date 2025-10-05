@@ -9,7 +9,6 @@ import { Button } from "../ui/button";
 import { Bell, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "../ui/badge";
-import { useUser } from "@/firebase";
 
 const mockTriggeredAlerts = [
     { id: '1', rule: 'Sent > $1M to CEX', entity: 'PEPE Whale', time: '5 min ago', value: '$1.2M USDT', target: 'Binance' },
@@ -19,12 +18,6 @@ const mockTriggeredAlerts = [
 
 
 export default function NotificationBell() {
-    const { user } = useUser();
-
-    if (!user) {
-        return null;
-    }
-
     return (
         <Popover>
             <PopoverTrigger asChild>
