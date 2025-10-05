@@ -14,7 +14,7 @@ import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { LogOut, User, DollarSign, Star } from 'lucide-react';
 import { AnimatedButton } from './ui/animated-button';
 import { useUser } from '@/firebase';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AuthDialog } from './auth/auth-dialog';
 import { Skeleton } from './ui/skeleton';
 import { useLogout } from './auth/auth-actions';
@@ -25,7 +25,14 @@ export function UserNav() {
   const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
   const plan = claims?.plan || 'free';
 
-  if (loading) {
+  // This state helps prevent hydration mismatch by ensuring the UI doesn't
+  // change until after the initial client-side render.
+  const [isClient, setIsClient] = useState(false);
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient || loading) {
     return <Skeleton className="h-10 w-28 rounded-md" />;
   }
 
