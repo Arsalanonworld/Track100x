@@ -4,27 +4,26 @@
 import { useState, useEffect } from 'react';
 import {
   onSnapshot,
-  collection,
   query,
-  where,
-  getDocs,
   Query,
   DocumentData,
   FirestoreError,
   QuerySnapshot,
 } from 'firebase/firestore';
-import { useFirestore } from '..';
+import { FirestorePermissionError, type SecurityRuleContext } from '../errors';
+import { errorEmitter } from '../error-emitter';
+
 
 interface CollectionData<T> {
   data: T[] | null;
   loading: boolean;
-  error: FirestoreError | null;
+  error: FirestoreError | FirestorePermissionError | null;
 }
 
 export function useCollection<T>(q: Query | null): CollectionData<T> {
   const [data, setData] = useState<T[] | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<FirestoreError | null>(null);
+  const [error, setError] = useState<FirestoreError | FirestorePermissionError | null>(null);
 
   useEffect(() => {
     if (!q) {
@@ -43,10 +42,16 @@ export function useCollection<T>(q: Query | null): CollectionData<T> {
         });
         setData(docs);
         setLoading(false);
+        setError(null);
       },
-      (err: FirestoreError) => {
-        console.error('Error fetching collection:', err);
-        setError(err);
+      async (err: FirestoreError) => {
+        const permissionError = new FirestorePermissionError({
+          path: (q as any)._query.path.segments.join('/'),
+          operation: 'list',
+        } satisfies SecurityRuleContext);
+
+        errorEmitter.emit('permission-error', permissionError);
+        setError(permissionError);
         setLoading(false);
       }
     );
