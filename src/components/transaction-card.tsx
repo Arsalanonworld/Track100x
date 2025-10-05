@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import type { WhaleTransaction } from "@/lib/mock-data";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import Link from "next/link";
-import { ArrowRight, Copy, ChevronDown, BellPlus, ArrowDown } from "lucide-react";
+import { ArrowRight, Copy, ChevronDown, BellPlus, ArrowDown, Star } from "lucide-react";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { cn } from "@/lib/utils";
@@ -19,6 +19,7 @@ import { getExplorerUrl } from "@/lib/explorers";
 import { Dialog, DialogTrigger } from "./ui/dialog";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { CreateAlertDialog } from "./create-alert-dialog";
+import { TrackButton } from "./track-button";
 
 interface TransactionCardProps {
     tx: WhaleTransaction;
@@ -26,11 +27,12 @@ interface TransactionCardProps {
 
 const WalletIdentifier = ({ address, shortAddress, tags, network }: { address: string, shortAddress: string, tags?: string[], network: string }) => (
     <div className="flex items-center gap-2 min-w-0">
-        <Link 
+        <TrackButton walletAddress={address} />
+        <Link
             href={getExplorerUrl(network, address, 'address')}
-            target="_blank" 
-            rel="noopener noreferrer" 
-            onClick={(e) => e.stopPropagation()} 
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
             className="font-mono text-sm hover:underline truncate"
         >
             {shortAddress}

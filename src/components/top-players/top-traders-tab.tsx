@@ -7,11 +7,12 @@ import { Button } from "@/components/ui/button"
 import Link from "next/link";
 import { Lock, ArrowRight, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { TrackButton } from "../track-button";
 
 const mockTraders = [
-    { rank: 1, alias: 'Meme Master', pnl: 20, winRate: 65, topToken: 'SHIB', tags: ['NFT Flipper'] },
-    { rank: 2, alias: 'DeFi Degen', pnl: 15, winRate: 72, topToken: 'AAVE', tags: ['Yield Farmer'] },
-    { rank: 3, alias: 'Solana Surfer', pnl: 35, winRate: 58, topToken: 'WIF', tags: [] },
+    { rank: 1, alias: 'Meme Master', pnl: 20, winRate: 65, topToken: 'SHIB', tags: ['NFT Flipper'], address: '0x000...MemeMaster' },
+    { rank: 2, alias: 'DeFi Degen', pnl: 15, winRate: 72, topToken: 'AAVE', tags: ['Yield Farmer'], address: '0x000...DeFiDegen' },
+    { rank: 3, alias: 'Solana Surfer', pnl: 35, winRate: 58, topToken: 'WIF', tags: [], address: '0x000...SolanaSurfer' },
 ];
 
 export default function TopTradersTab({ isPro }: { isPro: boolean }) {
@@ -89,10 +90,9 @@ export default function TopTradersTab({ isPro }: { isPro: boolean }) {
                             <span className="font-medium">{trader.topToken}</span>
                         </div>
                     </div>
-                    <Button className="w-full mt-4" variant="outline">
-                        <Star className="h-4 w-4 mr-2" />
-                        Track
-                    </Button>
+                    <div className="text-center mt-4">
+                        <TrackButton walletAddress={trader.address} />
+                    </div>
                 </Card>
             ))}
         </div>
