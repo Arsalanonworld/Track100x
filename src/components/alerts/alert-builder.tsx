@@ -7,10 +7,10 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from '../ui/checkbox';
 import { Label } from '../ui/label';
 import { Plus, Trash2 } from 'lucide-react';
-import { toast } from '@/hooks/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import type { Alert } from '@/lib/types';
 import { useUser, useFirestore } from '@/firebase';
-import { doc, updateDoc } from 'firebase/firestore';
+import { doc, updateDoc, addDoc, collection, serverTimestamp } from 'firebase/firestore';
 
 const triggerTypes = [
   { value: "Large Transaction", pro: false },
@@ -62,8 +62,10 @@ const Condition = ({ index, onRemove }: { index: number, onRemove: (index: numbe
 };
 
 
-export default function AlertBuilder({ onSave, isPro, alert }: { onSave: () => void, isPro: boolean, alert?: Alert }) {
+export default function AlertBuilder({ onSave, onCancel, isPro, alert }: { onSave: () => void, onCancel?: () => void, isPro: boolean, alert?: Alert }) {
     const [conditions, setConditions] = useState([{}]);
+    const { user, firestore } = useUser();
+    const { toast } = useToast();
 
     const addCondition = () => {
         setConditions([...conditions, {}]);
@@ -73,14 +75,46 @@ export default function AlertBuilder({ onSave, isPro, alert }: { onSave: () => v
         setConditions(conditions.filter((_, i) => i !== index));
     }
     
-    const handleSave = () => {
-        // Here you would normally gather all the form data and save it.
-        // For now, we just show a toast and call the parent onSave.
-        toast({
-            title: alert ? 'Alert Updated' : 'Alert Saved',
-            description: alert ? 'Your alert has been updated.' : 'Your new alert has been created.'
-        })
-        onSave();
+    const handleSave = async () => {
+        if (!user || !firestore) return;
+
+        // In a real implementation, you would construct the alert object
+        // from the state of the builder's conditions and inputs.
+        // For this mock, we'll just save a placeholder advanced alert.
+        const newOrUpdatedAlert: any = {
+            alertType: alert?.alertType || 'wallet',
+            walletId: alert?.walletId || '0xAdvancedBuilder...',
+            rule: 'Advanced Rule',
+            threshold: 1000000,
+            enabled: true,
+            userId: user.uid,
+        };
+        
+        try {
+            if (alert) { // Update existing alert
+                const alertRef = doc(firestore, `users/${user.uid}/alerts`, alert.id);
+                await updateDoc(alertRef, newOrUpdatedAlert);
+                 toast({
+                    title: 'Alert Updated',
+                    description: 'Your advanced alert has been updated.'
+                });
+            } else { // Create new alert
+                const alertsCol = collection(firestore, `users/${user.uid}/alerts`);
+                await addDoc(alertsCol, { ...newOrUpdatedAlert, createdAt: serverTimestamp() });
+                toast({
+                    title: 'Alert Saved',
+                    description: 'Your new advanced alert has been created.'
+                });
+            }
+            onSave();
+        } catch(e) {
+            console.error("Error saving advanced alert:", e);
+            toast({
+                variant: 'destructive',
+                title: 'Error',
+                description: 'Could not save the alert.'
+            });
+        }
     }
 
     return (
@@ -134,7 +168,7 @@ export default function AlertBuilder({ onSave, isPro, alert }: { onSave: () => v
             </div>
 
             <div className="flex justify-end gap-2 pt-4 border-t">
-                <Button variant="ghost">Cancel</Button>
+                {onCancel && <Button variant="ghost" onClick={onCancel}>Cancel</Button>}
                 <Button onClick={handleSave}>Save Alert</Button>
             </div>
         </div>

@@ -1,7 +1,8 @@
+
 'use client';
 
 import { useEffect, useState, createContext, useContext } from 'react';
-import { type User, onIdTokenChanged, getIdTokenResult } from 'firebase/auth';
+import { type User, onIdTokenChanged } from 'firebase/auth';
 import { doc, onSnapshot, getFirestore } from 'firebase/firestore';
 import { useAuth } from '../';
 import type { UserProfile } from '@/lib/types';
@@ -9,7 +10,7 @@ import { usePathname, useRouter } from 'next/navigation';
 
 type UserContextData = {
   user: User | null;
-  claims: any | null;
+  claims: { plan?: 'free' | 'pro' } | null; // Using profile for plan
   loading: boolean;
   profile: UserProfile | null;
 };
@@ -24,11 +25,13 @@ const UserContext = createContext<UserContextData>({
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const auth = useAuth();
   const [user, setUser] = useState<User | null>(null);
-  const [claims, setClaims] = useState<any | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
+
+  // The 'claims' object is now derived from the profile for consistency
+  const claims = profile ? { plan: profile.plan } : null;
   
   useEffect(() => {
     if (!auth) return;
@@ -37,23 +40,25 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       setLoading(true);
       if (newUser) {
         setUser(newUser);
-        const tokenResult = await getIdTokenResult(newUser);
-        setClaims(tokenResult.claims);
-
+        // We now primarily rely on the Firestore profile for plan info.
+        // Custom claims on the token can still be used for security rules,
+        // but the UI will use the profile.
         const db = getFirestore(auth.app);
         const profileUnsubscribe = onSnapshot(doc(db, `users/${newUser.uid}`), (doc) => {
           if (doc.exists()) {
             setProfile(doc.data() as UserProfile);
           } else {
+            // This case can happen briefly if the profile hasn't been created yet.
             setProfile(null);
           }
+          setLoading(false);
+        }, () => {
           setLoading(false);
         });
 
         return () => profileUnsubscribe();
       } else {
         setUser(null);
-        setClaims(null);
         setProfile(null);
         setLoading(false);
       }

@@ -47,7 +47,7 @@ export default function ActiveAlerts() {
     const { toast } = useToast();
     const [isEditorOpen, setIsEditorOpen] = useState(false);
     const [selectedAlert, setSelectedAlert] = useState<Alert | null>(null);
-    const { user, claims } = useUser();
+    const { user, claims, loading: userLoading } = useUser();
     const firestore = useFirestore();
 
     const alertsQuery = useMemo(() => {
@@ -57,17 +57,12 @@ export default function ActiveAlerts() {
         return null;
     }, [user, firestore]);
     
-    const { data: alerts, loading } = useCollection<Alert>(alertsQuery);
+    const { data: alerts, loading: alertsLoading } = useCollection<Alert>(alertsQuery);
     
     const isPro = claims?.plan === 'pro';
 
     const handleSave = () => {
-        if (selectedAlert) {
-            toast({
-                title: 'Alert Updated!',
-                description: 'Your alert has been successfully updated.',
-            });
-        }
+        // Toast is handled within the editor components now
         setIsEditorOpen(false);
         setSelectedAlert(null);
     };
@@ -116,6 +111,8 @@ export default function ActiveAlerts() {
         }
     }
 
+    const isLoading = userLoading || alertsLoading;
+
     return (
         <Dialog open={isEditorOpen} onOpenChange={setIsEditorOpen}>
             <Card>
@@ -127,8 +124,8 @@ export default function ActiveAlerts() {
                 </CardHeader>
                 <CardContent>
                 <div className="space-y-4">
-                    {loading && <p>Loading alerts...</p>}
-                    {alerts && alerts.length > 0 ? (
+                    {isLoading && <p>Loading alerts...</p>}
+                    {!isLoading && alerts && alerts.length > 0 ? (
                     alerts.map(alert => (
                         <div
                         key={alert.id}
@@ -185,7 +182,7 @@ export default function ActiveAlerts() {
                         </div>
                         </div>
                     ))
-                    ) : !loading && (
+                    ) : !isLoading && (
                     <div className="flex flex-col items-center justify-center text-center text-muted-foreground p-8 border-2 border-dashed rounded-lg">
                         <Bell className="h-10 w-10 mb-4" />
                         <p className="font-semibold">No active alerts found.</p>
@@ -204,7 +201,7 @@ export default function ActiveAlerts() {
                 </DialogTitle>
                 </DialogHeader>
                 {selectedAlert && ( isPro ? ( 
-                    <AlertBuilder onSave={handleSave} isPro={true} alert={selectedAlert}/>
+                    <AlertBuilder onSave={handleSave} onCancel={handleCancel} isPro={true} alert={selectedAlert}/>
                 ) : (
                     <QuickAlertEditor
                         alert={selectedAlert}
@@ -216,3 +213,4 @@ export default function ActiveAlerts() {
         </Dialog>
     );
 }
+

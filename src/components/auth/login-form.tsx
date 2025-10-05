@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -6,7 +7,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Loader2 } from 'lucide-react';
-import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, UserCredential } from 'firebase/auth';
+import { doc, setDoc, getDoc, serverTimestamp, getFirestore } from 'firebase/firestore';
+import type { UserProfile } from '@/lib/types';
+
 
 function GoogleIcon(props: any) {
   return (
@@ -30,6 +34,28 @@ function GoogleIcon(props: any) {
       </g>
     </svg>
   );
+}
+
+// Helper to create a user profile document
+const createUserProfile = async (userCred: UserCredential) => {
+    const user = userCred.user;
+    const db = getFirestore(user.providerData[0].providerId === 'google.com' ? undefined : getAuth().app);
+    const userRef = doc(db, 'users', user.uid);
+    const userDoc = await getDoc(userRef);
+
+    if (!userDoc.exists()) {
+        const newUserProfile: Omit<UserProfile, 'createdAt'> = {
+            uid: user.uid,
+            email: user.email,
+            displayName: user.displayName,
+            photoURL: user.photoURL,
+            plan: 'pro', // Default to 'pro' for testing
+        };
+        await setDoc(userRef, {
+            ...newUserProfile,
+            createdAt: serverTimestamp()
+        });
+    }
 }
 
 export function LoginForm() {
@@ -60,7 +86,8 @@ export function LoginForm() {
     const auth = getAuth();
     const provider = new GoogleAuthProvider();
     try {
-      await signInWithPopup(auth, provider);
+      const userCred = await signInWithPopup(auth, provider);
+      await createUserProfile(userCred);
     } catch (error: any) {
       setError(error.message);
     }
