@@ -72,53 +72,53 @@ export function UserNav() {
   // Logged-in State (Free and Pro)
   return (
     <div className="flex items-center gap-2">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-              <Avatar className="h-10 w-10">
-                <AvatarImage src={user.photoURL ?? ''} alt="User avatar" />
-                <AvatarFallback>{userInitial}</AvatarFallback>
-              </Avatar>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56" align="end" forceMount>
-            <DropdownMenuLabel className="font-normal">
-              <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium leading-none">
-                  {user.displayName || userData?.username || 'User'}
-                </p>
-                <p className="text-xs leading-none text-muted-foreground">
-                  {user.email}
-                </p>
-              </div>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <Link href="/account">Account</Link>
-            </DropdownMenuItem>
-            
-            {isPro && (
-                <DropdownMenuItem asChild>
-                    <Link href="/account">Manage Subscription</Link>
-                </DropdownMenuItem>
-            )}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+            <Avatar className="h-10 w-10">
+              <AvatarImage src={user.photoURL ?? ''} alt="User avatar" />
+              <AvatarFallback>{userInitial}</AvatarFallback>
+            </Avatar>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-56" align="end" forceMount>
+          <DropdownMenuLabel className="font-normal">
+            <div className="flex flex-col space-y-1">
+              <p className="text-sm font-medium leading-none">
+                {user.displayName || userData?.username || 'User'}
+              </p>
+              <p className="text-xs leading-none text-muted-foreground">
+                {user.email}
+              </p>
+            </div>
+          </DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem asChild>
+            <Link href="/account">Account</Link>
+          </DropdownMenuItem>
+          
+          {isPro && (
+              <DropdownMenuItem asChild>
+                  <Link href="/account">Manage Subscription</Link>
+              </DropdownMenuItem>
+          )}
 
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleLogout} disabled={isLoggingOut}>
-                {isLoggingOut && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Log out
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={handleLogout} disabled={isLoggingOut}>
+              {isLoggingOut && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Log out
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
 
-        {isFree && (
-            <AnimatedButton asChild>
-                <Link href="/upgrade" className="flex items-center gap-2">
-                    <Zap className="h-4 w-4" />
-                    Upgrade
-                </Link>
-            </AnimatedButton>
-        )}
+      {isFree && (
+        <AnimatedButton asChild>
+          <Link href="/upgrade" className="flex items-center gap-2">
+            <Zap className="h-4 w-4" />
+            Upgrade
+          </Link>
+        </AnimatedButton>
+      )}
     </div>
   );
 }
