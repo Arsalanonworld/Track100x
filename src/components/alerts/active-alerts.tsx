@@ -1,7 +1,7 @@
 
 'use client';
 
-import { Bell, Pencil, Trash2, Wallet, Zap, Link as LinkIcon } from 'lucide-react';
+import { Bell, Pencil, Trash2, Wallet, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -15,9 +15,6 @@ import { useToast } from '@/hooks/use-toast';
 import { useState, useMemo } from 'react';
 import {
   Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
   DialogTrigger,
 } from '../ui/dialog';
 import { cn } from '@/lib/utils';
@@ -36,6 +33,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { CreateAlertDialog } from '../create-alert-dialog';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 
 const iconMap = {
@@ -47,7 +46,7 @@ export default function ActiveAlerts() {
     const { toast } = useToast();
     const [isEditorOpen, setIsEditorOpen] = useState(false);
     const [selectedAlert, setSelectedAlert] = useState<Alert | null>(null);
-    const { user, claims, loading: userLoading } = useUser();
+    const { user, loading: userLoading } = useUser();
     const firestore = useFirestore();
 
     const alertsQuery = useMemo(() => {
@@ -59,8 +58,6 @@ export default function ActiveAlerts() {
     
     const { data: alerts, loading: alertsLoading } = useCollection<Alert>(alertsQuery);
     
-    const isPro = claims?.plan === 'pro';
-
     const handleEdit = (alert: Alert) => {
         setSelectedAlert(alert);
         setIsEditorOpen(true);
@@ -74,35 +71,34 @@ export default function ActiveAlerts() {
     async function toggleAlert(alertToToggle: Alert) {
         if (!firestore || !user) return;
         const alertRef = doc(firestore, `users/${user.uid}/alerts`, alertToToggle.id);
-        try {
-            await updateDoc(alertRef, { enabled: !alertToToggle.enabled });
-        } catch (error) {
-            console.error("Error toggling alert:", error);
-            toast({
-                variant: 'destructive',
-                title: 'Error',
-                description: 'Could not update the alert status.'
+        updateDoc(alertRef, { enabled: !alertToToggle.enabled })
+        .catch(async (serverError) => {
+             const permissionError = new FirestorePermissionError({
+                path: alertRef.path,
+                operation: 'update',
+                requestResourceData: { enabled: !alertToToggle.enabled },
             });
-        }
+            errorEmitter.emit('permission-error', permissionError);
+        });
     }
     
     async function deleteAlert(alertToDelete: Alert) {
         if (!firestore || !user) return;
         const alertRef = doc(firestore, `users/${user.uid}/alerts`, alertToDelete.id);
-        try {
-            await deleteDoc(alertRef);
-            toast({
-                title: 'Alert Deleted',
-                description: 'The alert has been removed.'
+        deleteDoc(alertRef)
+          .then(() => {
+              toast({
+                  title: 'Alert Deleted',
+                  description: 'The alert has been removed.'
+              });
+          })
+          .catch(async (serverError) => {
+              const permissionError = new FirestorePermissionError({
+                path: alertRef.path,
+                operation: 'delete',
             });
-        } catch (error) {
-            console.error("Error deleting alert:", error);
-             toast({
-                variant: 'destructive',
-                title: 'Error',
-                description: 'Could not delete the alert.'
-            });
-        }
+            errorEmitter.emit('permission-error', permissionError);
+        });
     }
 
     const isLoading = userLoading || alertsLoading;
@@ -192,11 +188,8 @@ export default function ActiveAlerts() {
             </Card>
             {selectedAlert && (
                 <CreateAlertDialog 
-                    onOpenChange={setIsEditorOpen} 
-                    entity={{ 
-                        type: selectedAlert.alertType, 
-                        identifier: selectedAlert.walletId || selectedAlert.token || ''
-                    }}
+                    onOpenChange={handleCloseEditor} 
+                    alert={selectedAlert}
                 />
             )}
         </Dialog>

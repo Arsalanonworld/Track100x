@@ -36,27 +36,6 @@ function GoogleIcon(props: any) {
   );
 }
 
-// Helper to create a user profile document
-const createUserProfile = async (userCred: UserCredential) => {
-    const user = userCred.user;
-    const db = getFirestore(user.providerData[0].providerId === 'google.com' ? undefined : getAuth().app);
-    const userRef = doc(db, 'users', user.uid);
-    const userDoc = await getDoc(userRef);
-
-    if (!userDoc.exists()) {
-        const newUserProfile: Omit<UserProfile, 'createdAt'> = {
-            uid: user.uid,
-            email: user.email,
-            displayName: user.displayName,
-            photoURL: user.photoURL,
-            plan: 'pro', // Default to 'pro' for testing
-        };
-        await setDoc(userRef, {
-            ...newUserProfile,
-            createdAt: serverTimestamp()
-        });
-    }
-}
 
 export function LoginForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -86,8 +65,7 @@ export function LoginForm() {
     const auth = getAuth();
     const provider = new GoogleAuthProvider();
     try {
-      const userCred = await signInWithPopup(auth, provider);
-      await createUserProfile(userCred);
+      await signInWithPopup(auth, provider);
     } catch (error: any) {
       setError(error.message);
     }

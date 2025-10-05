@@ -16,9 +16,9 @@ import {
 } from "@/components/ui/collapsible"
 import { useToast } from "@/hooks/use-toast";
 import { getExplorerUrl } from "@/lib/explorers";
-import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
-import QuickAlertEditor from "./alerts/quick-alert-editor";
+import { Dialog, DialogTrigger } from "./ui/dialog";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { CreateAlertDialog } from "./create-alert-dialog";
 
 interface TransactionCardProps {
     tx: WhaleTransaction;
@@ -47,23 +47,12 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
     const { toast } = useToast();
     const [isAlertEditorOpen, setIsAlertEditorOpen] = useState(false);
 
-    const openQuickAlertEditor = (e: React.MouseEvent) => {
-        e.stopPropagation();
-        setIsAlertEditorOpen(true);
-    }
-    
-    const handleSaveAlert = async (rule: string) => {
-        toast({
-            title: 'Alert Created!',
-            description: `You'll now be notified about activity for ${tx.fromShort}.`
-        });
-        setIsAlertEditorOpen(false);
-    }
-
     const AlertButton = () => (
-        <Button variant="ghost" size="icon" className="h-8 w-8 relative shrink-0" onClick={openQuickAlertEditor} aria-label="Set quick alert">
+      <DialogTrigger asChild>
+        <Button variant="ghost" size="icon" className="h-8 w-8 relative shrink-0" onClick={(e) => e.stopPropagation()} aria-label="Set quick alert">
             <BellPlus className="h-4 w-4 text-muted-foreground hover:text-primary" />
         </Button>
+      </DialogTrigger>
     )
 
     return (
@@ -149,20 +138,13 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
                     </CollapsibleContent>
                 </Card>
             </Collapsible>
-             <DialogContent className="sm:max-w-md">
-                <DialogHeader>
-                  <DialogTitle>Create Quick Alert</DialogTitle>
-                </DialogHeader>
-                <QuickAlertEditor 
-                  entity={{
-                    type: 'Wallet',
+            {isAlertEditorOpen && <CreateAlertDialog 
+                onOpenChange={setIsAlertEditorOpen}
+                entity={{
+                    type: 'wallet',
                     identifier: tx.from,
-                    label: tx.fromShort
-                  }}
-                  onSave={handleSaveAlert}
-                  onCancel={() => setIsAlertEditorOpen(false)}
-                />
-              </DialogContent>
+                }}
+                />}
         </Dialog>
     );
 };

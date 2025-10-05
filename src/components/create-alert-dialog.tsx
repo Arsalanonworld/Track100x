@@ -6,7 +6,6 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogClose,
 } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { QuickAlertConfigurator } from './quick-alert-configurator';
@@ -17,22 +16,31 @@ import Link from 'next/link';
 import { Button } from './ui/button';
 import { ArrowRight, Lock } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import type { Alert } from '@/lib/types';
 
 
-export const CreateAlertDialog = ({ onOpenChange, entity }: { onOpenChange: (open: boolean) => void, entity: { type: 'wallet' | 'token', identifier: string } }) => {
+export const CreateAlertDialog = ({ onOpenChange, entity, alert }: { onOpenChange: (open: boolean) => void, entity?: { type: 'wallet' | 'token', identifier: string }, alert?: Alert }) => {
     const { claims } = useUser();
     const isPro = claims?.plan === 'pro';
     
     const handleSubmitted = () => {
         onOpenChange(false);
     }
+
+    const finalEntity = alert ? { type: alert.alertType, identifier: alert.walletId || alert.token || '' } : entity;
     
     return (
     <DialogContent className="max-w-2xl">
         <DialogHeader>
-            <DialogTitle>Create a New Alert</DialogTitle>
+            <DialogTitle>{alert ? 'Edit Alert' : 'Create a New Alert'}</DialogTitle>
             <DialogDescription>
-                Set up a notification for: <span className='font-mono text-foreground'>{entity.identifier}</span>
+                {finalEntity ? (
+                    <>
+                    Set up a notification for: <span className='font-mono text-foreground'>{finalEntity.identifier}</span>
+                    </>
+                ) : (
+                    "Build a custom alert from scratch to track on-chain activity."
+                )}
             </DialogDescription>
         </DialogHeader>
         <Tabs defaultValue="quick" className="w-full">
@@ -46,7 +54,7 @@ export const CreateAlertDialog = ({ onOpenChange, entity }: { onOpenChange: (ope
             </TabsTrigger>
           </TabsList>
           <TabsContent value="quick" className="pt-6">
-            <QuickAlertConfigurator onSubmitted={handleSubmitted} entity={entity} />
+            <QuickAlertConfigurator onSubmitted={handleSubmitted} entity={finalEntity} alert={alert} />
           </TabsContent>
           <TabsContent value="advanced" className={cn("pt-6", !isPro && 'relative')}>
              {!isPro && (
@@ -67,15 +75,7 @@ export const CreateAlertDialog = ({ onOpenChange, entity }: { onOpenChange: (ope
                     </div>
                 </div>
              )}
-            <AlertBuilder onSave={handleSubmitted} isPro={isPro} alert={{
-                id: '',
-                alertType: entity.type,
-                [entity.type === 'wallet' ? 'walletId' : 'token']: entity.identifier,
-                rule: '',
-                enabled: true,
-                createdAt: null,
-                userId: ''
-            }}/>
+            <AlertBuilder onSave={handleSubmitted} isPro={isPro} alert={alert}/>
           </TabsContent>
         </Tabs>
     </DialogContent>
