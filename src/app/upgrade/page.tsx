@@ -273,7 +273,7 @@ export default function UpgradePage() {
       <div className="container mx-auto px-4 py-12 sm:py-16">
         <section className="text-center max-w-4xl mx-auto">
           <h1 className="text-4xl font-extrabold tracking-tighter sm:text-5xl lg:text-6xl font-headline">
-            Go Pro. Get Your Edge.
+            Follow the Whales. Find the Alpha.
           </h1>
           <p className="max-w-2xl mx-auto mt-6 text-lg text-muted-foreground">
             Get real-time data, unlimited alerts, and advanced tools. Upgrade to Track100x Pro.
