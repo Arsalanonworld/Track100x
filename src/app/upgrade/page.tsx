@@ -1,7 +1,7 @@
 
 'use client';
 import { useState, useEffect } from 'react';
-import { CheckCircle, XCircle, Star, ArrowRight, TrendingUp, Bell, Zap, Trophy, ShieldQuestion, BrainCircuit, Users } from 'lucide-react';
+import { CheckCircle, XCircle, Star, ArrowRight, TrendingUp, Bell, Zap, Trophy, ShieldQuestion, BrainCircuit, Users, BarChart, Newspaper, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
@@ -301,4 +301,5 @@ export default function UpgradePage() {
   );
 }
 
+    
     
