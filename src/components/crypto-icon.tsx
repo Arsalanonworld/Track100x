@@ -3,7 +3,7 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 
 type CryptoIconProps = {
-  token: 'BTC' | 'ETH' | 'SOL' | 'USDT' | 'USDC' | 'WIF' | string;
+  token: 'BTC' | 'ETH' | 'SOL' | 'USDT' | 'USDC' | 'WIF' | string | undefined;
   className?: string;
 };
 
@@ -11,6 +11,14 @@ export const CryptoIcon = ({ token, className }: CryptoIconProps) => {
   const iconProps = {
     className: cn('h-8 w-8 rounded-full', className),
   };
+  
+  if (!token || typeof token !== 'string') {
+    return (
+        <div className={cn("h-8 w-8 rounded-full bg-muted flex items-center justify-center", className)}>
+            <span className="text-xs font-bold text-muted-foreground">?</span>
+        </div>
+      );
+  }
 
   switch (token.toUpperCase()) {
     case 'BTC':
