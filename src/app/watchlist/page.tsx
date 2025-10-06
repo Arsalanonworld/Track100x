@@ -31,7 +31,7 @@ import { FirestorePermissionError } from '@/firebase/errors';
 import { CreateAlertDialog } from '@/components/create-alert-dialog';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { CryptoIcon } from '@/components/crypto-icon';
 import { getExplorerUrl } from '@/lib/explorers';
 import ActiveAlerts from '@/components/alerts/active-alerts';
@@ -269,8 +269,8 @@ export default function WatchlistPage() {
   const isLoading = userLoading || (user && watchlistLoading);
 
   const pageDescription = isPro
-    ? 'Track unlimited wallets and tokens. Manage your alerts and view their history.'
-    : `Track up to ${WATCHLIST_LIMIT_FREE} wallets/tokens on the free plan. Upgrade for more.`;
+    ? 'Add a wallet address or token symbol to start tracking.'
+    : `Track up to ${WATCHLIST_LIMIT_FREE} wallets/tokens on the free plan. Add a new item to get started.`;
 
 
   return (
@@ -282,15 +282,7 @@ export default function WatchlistPage() {
                     description={pageDescription}
                 />
 
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Add to Watchlist</CardTitle>
-                        <CardDescription>Add a new wallet or token to start tracking.</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <AddItemForm atLimit={!!atLimit} onAdd={() => setRefreshKey(k => k + 1)}/>
-                    </CardContent>
-                </Card>
+                <AddItemForm atLimit={!!atLimit} onAdd={() => setRefreshKey(k => k + 1)}/>
 
                 {atLimit && (
                     <Card className="text-center p-8 space-y-4 rounded-lg bg-card border shadow-lg border-primary">
