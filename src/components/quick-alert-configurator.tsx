@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useToast } from '@/hooks/use-toast';
@@ -18,6 +17,8 @@ import { tokenLibrary } from '@/lib/tokens';
 import { Card } from './ui/card';
 import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 import { Input } from './ui/input';
+import { Badge } from './ui/badge';
+import Link from 'next/link';
 
 const uniqueTokens = Object.keys(tokenLibrary);
 const tokenOptions = uniqueTokens.map(symbol => ({ label: symbol, value: symbol }));
@@ -62,7 +63,8 @@ export const QuickAlertConfigurator = ({ onSubmitted, entity, alert }: { onSubmi
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   const { toast } = useToast();
-  const { user } = useUser();
+  const { user, claims } = useUser();
+  const isPro = claims?.plan === 'pro';
   const firestore = useFirestore();
 
   const watchlistQuery = useMemo(() => {
@@ -332,7 +334,13 @@ export const QuickAlertConfigurator = ({ onSubmitted, entity, alert }: { onSubmi
                     <Bot className="h-5 w-5 text-muted-foreground" />
                     <p className="text-sm font-medium">Telegram</p>
                 </div>
-                <p className='text-sm text-muted-foreground'>Connect in Account</p>
+                {isPro ? (
+                  <Button variant="outline" size="sm" asChild>
+                    <Link href="/account">Connect</Link>
+                  </Button>
+                ) : (
+                  <Badge>Pro</Badge>
+                )}
             </div>
         </Card>
         <SubmitButton />

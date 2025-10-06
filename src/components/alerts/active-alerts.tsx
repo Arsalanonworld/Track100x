@@ -1,4 +1,3 @@
-
 'use client';
 
 import { Bell, Pencil, Trash2, Wallet, Zap } from 'lucide-react';
@@ -46,8 +45,9 @@ export default function ActiveAlerts() {
     const { toast } = useToast();
     const [isEditorOpen, setIsEditorOpen] = useState(false);
     const [selectedAlert, setSelectedAlert] = useState<Alert | null>(null);
-    const { user, loading: userLoading } = useUser();
+    const { user, loading: userLoading, claims } = useUser();
     const firestore = useFirestore();
+    const isPro = claims?.plan === 'pro';
 
     const alertsQuery = useMemo(() => {
         if (user && firestore) {
@@ -102,6 +102,7 @@ export default function ActiveAlerts() {
     }
 
     const isLoading = userLoading || alertsLoading;
+    const alertCount = alerts?.length || 0;
 
     return (
         <Dialog open={isEditorOpen} onOpenChange={setIsEditorOpen}>
@@ -109,7 +110,9 @@ export default function ActiveAlerts() {
                 <CardHeader>
                   <CardTitle>Your Active Alerts</CardTitle>
                   <CardDescription>
-                      Manage your saved alerts. You have {alerts?.length || 0} active alerts.
+                      {isPro 
+                        ? `You have ${alertCount} active alerts.`
+                        : `You have ${alertCount} of 5 active alerts.`}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -141,11 +144,13 @@ export default function ActiveAlerts() {
                                 onCheckedChange={() => toggleAlert(alert)}
                                 aria-label="Toggle alert"
                             />
-                            <DialogTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleEdit(alert)}>
-                                    <Pencil className="h-4 w-4" />
-                                </Button>
-                            </DialogTrigger>
+                            {isPro && (
+                                <DialogTrigger asChild>
+                                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleEdit(alert)}>
+                                        <Pencil className="h-4 w-4" />
+                                    </Button>
+                                </DialogTrigger>
+                            )}
                             <AlertDialog>
                               <AlertDialogTrigger asChild>
                                 <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive">

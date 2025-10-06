@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo, useState } from 'react';
@@ -7,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Trash2, BellPlus, ArrowRight, Pencil, Check, X, Lock, Wallet, LineChart } from 'lucide-react';
 import { useUser, useCollection, useFirestore } from '@/firebase';
 import { collection, query, doc, deleteDoc, updateDoc } from 'firebase/firestore';
-import type { WatchlistItem } from '@/lib/types';
+import type { Alert, WatchlistItem } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -41,6 +40,7 @@ import { tokenLibrary } from '@/lib/tokens';
 
 
 const WATCHLIST_LIMIT_FREE = 5;
+const ALERT_LIMIT_FREE = 5;
 
 
 function WatchlistItemCard({ item, onUpdate, onRemove }: { item: WatchlistItem, onUpdate: (id: string, name: string) => void, onRemove: (item: WatchlistItem) => void}) {
@@ -226,9 +226,18 @@ export default function WatchlistPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, firestore, refreshKey]);
 
+  const alertsQuery = useMemo(() => {
+    if (user && firestore) {
+      return query(collection(firestore, `users/${user.uid}/alerts`));
+    }
+    return null;
+  }, [user, firestore, refreshKey]);
+
   const { data: watchlist, loading: watchlistLoading } = useCollection<WatchlistItem>(watchlistQuery);
+  const { data: alerts, loading: alertsLoading } = useCollection<Alert>(alertsQuery);
   
-  const atLimit = !isPro && watchlist && watchlist.length >= WATCHLIST_LIMIT_FREE;
+  const watchlistAtLimit = !isPro && watchlist && watchlist.length >= WATCHLIST_LIMIT_FREE;
+  const alertsAtLimit = !isPro && alerts && alerts.length >= ALERT_LIMIT_FREE;
 
   const handleRemove = (item: WatchlistItem) => {
     if (!firestore || !user) return;
@@ -266,11 +275,11 @@ export default function WatchlistPage() {
       });
   }
 
-  const isLoading = userLoading || (user && watchlistLoading);
+  const isLoading = userLoading || (user && (watchlistLoading || alertsLoading));
 
   const pageDescription = isPro
     ? 'Add wallets or tokens to start tracking their activity.'
-    : `Track up to ${WATCHLIST_LIMIT_FREE} wallets/tokens. Add a new item to get started.`;
+    : `Add a new wallet or token to start tracking. Free plan includes ${WATCHLIST_LIMIT_FREE} watchlist items and ${ALERT_LIMIT_FREE} alerts.`;
 
 
   return (
@@ -282,9 +291,9 @@ export default function WatchlistPage() {
                     description={pageDescription}
                 />
 
-                <AddItemForm atLimit={!!atLimit} onAdd={() => setRefreshKey(k => k + 1)}/>
+                <AddItemForm atLimit={!!watchlistAtLimit} onAdd={() => setRefreshKey(k => k + 1)}/>
 
-                {atLimit && (
+                {watchlistAtLimit && (
                     <Card className="text-center p-8 space-y-4 rounded-lg bg-card border shadow-lg border-primary">
                         <Lock className="w-8 h-8 text-primary mx-auto" />
                         <h3 className="text-2xl font-bold">Watchlist Limit Reached</h3>
@@ -314,6 +323,18 @@ export default function WatchlistPage() {
                        )
                     )}
                 </div>
+                 {alertsAtLimit && (
+                    <Card className="text-center p-8 space-y-4 rounded-lg bg-card border shadow-lg border-primary">
+                        <Lock className="w-8 h-8 text-primary mx-auto" />
+                        <h3 className="text-2xl font-bold">Alert Limit Reached</h3>
+                        <p className="text-muted-foreground max-w-sm mx-auto">
+                            You've reached the limit of ${ALERT_LIMIT_FREE} alerts for the Free plan. Upgrade to create unlimited alerts.
+                        </p>
+                        <Button asChild>
+                            <Link href="/upgrade">Upgrade to Pro <ArrowRight className='w-4 h-4 ml-2'/></Link>
+                        </Button>
+                    </Card>
+                )}
 
                 <div className="space-y-8 pt-8">
                      <div className='space-y-4'>

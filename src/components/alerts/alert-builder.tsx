@@ -1,4 +1,3 @@
-
 'use client';
 import { useState, useMemo } from 'react';
 import { Button } from "@/components/ui/button";
@@ -14,6 +13,8 @@ import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { Combobox } from '../ui/combobox';
 import { Card } from '../ui/card';
+import { Badge } from '../ui/badge';
+import Link from 'next/link';
 
 const triggerTypes = [
   { value: "Large Transaction", pro: false },
@@ -218,7 +219,9 @@ export default function AlertBuilder({ onSave, onCancel, alert, entity }: { onSa
                         <Bot className="h-5 w-5 text-muted-foreground" />
                         <p className='font-medium'>Telegram</p>
                     </div>
-                     <p className='text-sm text-muted-foreground'>Connect in Account</p>
+                     <Button variant="outline" size="sm" asChild>
+                       <Link href="/account">Connect</Link>
+                    </Button>
                 </div>
             </Card>
 
