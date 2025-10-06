@@ -17,7 +17,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { ArrowDown, ArrowUp, Minus } from 'lucide-react';
+import { ArrowDown, ArrowUp } from 'lucide-react';
 import {
   Area,
   AreaChart,
@@ -68,7 +68,7 @@ export default function PortfolioWhaleImpact() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="h-[300px] w-full">
+          <div className="w-full aspect-video">
             <ChartContainer config={chartConfig}>
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart
@@ -81,7 +81,7 @@ export default function PortfolioWhaleImpact() {
                     bottom: 0,
                   }}
                 >
-                  <CartesianGrid vertical={false} />
+                  <CartesianGrid vertical={false} strokeDasharray="3 3" />
                   <XAxis
                     dataKey="date"
                     tickLine={false}
