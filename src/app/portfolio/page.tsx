@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { FeatureLock } from '@/components/feature-lock';
 import { useUser } from '@/firebase';
-import { Wallet, Plus, MoreHorizontal, Settings, Trash2, ArrowLeft, Clock, BarChart, Percent, ShieldCheck, Zap, Info, Download, Share, Bell } from 'lucide-react';
+import { Wallet, Plus, MoreHorizontal, Settings, Trash2, ArrowLeft, Clock, BarChart, Percent, ShieldCheck, Zap, Info, Download, Share, Bell, Link as LinkIcon } from 'lucide-react';
 import { CryptoIcon } from '@/components/crypto-icon';
 import {
   DropdownMenu,
@@ -240,7 +240,7 @@ const WalletAnalyticsDashboard = () => {
              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <StatCard title="Token Count" value={wallet.stats.tokenCount.toString()} icon={<Plus className="h-3 w-3 rotate-45" />} helpText="The number of unique tokens in this wallet." />
                 <StatCard title="Avg. Hold Time" value={`${wallet.stats.avgHoldTime} days`} icon={<Clock className="h-3 w-3" />} helpText="The average time tokens are held in this wallet before being sold or transferred." />
-                <StatCard title="Top Chain" value={wallet.stats.topChain} icon={<Link className="h-3 w-3" />} helpText="The blockchain where most of this wallet's activity occurs." />
+                <StatCard title="Top Chain" value={wallet.stats.topChain} icon={<LinkIcon className="h-3 w-3" />} helpText="The blockchain where most of this wallet's activity occurs." />
                 <StatCard title="Diversification" value={wallet.stats.diversificationScore.toFixed(2)} icon={<Percent className="h-3 w-3" />} helpText="A score from 0 to 1 indicating portfolio diversification." />
             </div>
 
