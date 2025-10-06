@@ -69,7 +69,8 @@ export default function PortfolioWhaleImpact() {
         </CardHeader>
         <CardContent>
           <div className="h-[300px] w-full">
-             <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
+            <ChartContainer config={chartConfig}>
+              <ResponsiveContainer width="100%" height="100%">
                 <AreaChart
                     accessibilityLayer
                     data={chartData}
@@ -87,6 +88,7 @@ export default function PortfolioWhaleImpact() {
                     <Area type="monotone" dataKey="buy" stackId="1" stroke="var(--color-buy)" fill="var(--color-buy)" fillOpacity={0.4} />
                     <Area type="monotone" dataKey="sell" stackId="1" stroke="var(--color-sell)" fill="var(--color-sell)" fillOpacity={0.4} />
                 </AreaChart>
+              </ResponsiveContainer>
             </ChartContainer>
           </div>
         </CardContent>

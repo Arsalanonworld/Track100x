@@ -1,4 +1,3 @@
-
 'use client';
 
 import PageHeader from '@/components/page-header';
@@ -34,7 +33,7 @@ const mockConnectedWallets = [
 ];
 
 const ConnectWalletCard = () => (
-    <Card className="text-center">
+    <Card className="text-center max-w-md mx-auto">
       <CardHeader>
         <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
           <Wallet className="h-6 w-6 text-primary" />
@@ -54,36 +53,66 @@ const ConnectWalletCard = () => (
     </Card>
 );
 
-const ConnectedWalletCard = ({ wallet }: { wallet: typeof mockConnectedWallets[0] }) => {
+const ConnectedWalletDashboard = ({ wallet }: { wallet: typeof mockConnectedWallets[0] }) => {
     return (
-        <Card>
-            <CardHeader className='flex-row items-start justify-between'>
-                <div>
-                    <div className='flex items-center gap-3'>
-                        <Wallet className="h-6 w-6 text-primary" />
-                        <CardTitle>{wallet.name}</CardTitle>
-                    </div>
-                    <CardDescription className='mt-2 font-mono text-xs'>{wallet.address}</CardDescription>
-                </div>
-                 <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                            <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuItem><Settings className='mr-2 h-4 w-4' />Settings</DropdownMenuItem>
-                        <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10"><Trash2 className='mr-2 h-4 w-4' />Disconnect</DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            </CardHeader>
-            <CardContent className='space-y-6'>
-                <div className='p-4 rounded-lg bg-muted/50'>
-                    <p className='text-sm text-muted-foreground'>Total Value</p>
-                    <p className='text-3xl font-bold'>${wallet.totalValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
-                    <p className='text-sm text-green-500 font-medium'>+${(wallet.totalValue * (wallet.pnl_24h/100)).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})} (+{wallet.pnl_24h}%) today</p>
-                </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+            {/* Left Column */}
+            <div className="lg:col-span-2 space-y-8">
+                 <Card>
+                    <CardHeader className='flex-row items-start justify-between'>
+                        <div>
+                            <div className='flex items-center gap-3'>
+                                <CryptoIcon token={wallet.blockchain} className='h-8 w-8'/>
+                                <div>
+                                    <CardTitle>{wallet.name}</CardTitle>
+                                    <CardDescription className='mt-1 font-mono text-xs'>{wallet.address}</CardDescription>
+                                </div>
+                            </div>
+                        </div>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="icon">
+                                    <MoreHorizontal className="h-4 w-4" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                                <DropdownMenuItem><Settings className='mr-2 h-4 w-4' />Settings</DropdownMenuItem>
+                                <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10"><Trash2 className='mr-2 h-4 w-4' />Disconnect</DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </CardHeader>
+                    <CardContent className='space-y-6'>
+                        <div className='p-4 rounded-lg bg-muted/50'>
+                            <p className='text-sm text-muted-foreground'>Total Value</p>
+                            <p className='text-3xl font-bold'>${wallet.totalValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+                            <p className='text-sm text-green-500 font-medium'>+${(wallet.totalValue * (wallet.pnl_24h/100)).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})} (+{wallet.pnl_24h}%) today</p>
+                        </div>
 
+                        <div>
+                            <h3 className="text-lg font-semibold mb-3">Top Holdings</h3>
+                            <div className="space-y-4">
+                                {wallet.tokens.map(token => (
+                                    <div key={token.symbol}>
+                                        <div className='flex justify-between items-center mb-1 text-sm'>
+                                            <div className='flex items-center gap-2 font-medium'>
+                                                <CryptoIcon token={token.symbol} className='h-5 w-5' />
+                                                <span>{token.name}</span>
+                                            </div>
+                                            <div className='flex items-center gap-2'>
+                                                <span>${token.value.toLocaleString()}</span>
+                                                <span className='w-12 text-right text-muted-foreground'>{token.allocation}%</span>
+                                            </div>
+                                        </div>
+                                        <Progress value={token.allocation} className='h-2'/>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
+            {/* Right Column */}
+            <div className="lg:col-span-1 space-y-8">
                  <Card className="bg-destructive/10 border-destructive/50">
                     <CardHeader>
                         <CardTitle className="flex items-center text-lg text-destructive">
@@ -100,29 +129,8 @@ const ConnectedWalletCard = ({ wallet }: { wallet: typeof mockConnectedWallets[0
                         </Button>
                     </CardContent>
                 </Card>
-
-                <div>
-                    <h3 className="text-lg font-semibold mb-3">Top Holdings</h3>
-                    <div className="space-y-4">
-                        {wallet.tokens.map(token => (
-                            <div key={token.symbol}>
-                                <div className='flex justify-between items-center mb-1 text-sm'>
-                                    <div className='flex items-center gap-2 font-medium'>
-                                        <CryptoIcon token={token.symbol} className='h-5 w-5' />
-                                        <span>{token.name}</span>
-                                    </div>
-                                    <div className='flex items-center gap-2'>
-                                        <span>${token.value.toLocaleString()}</span>
-                                        <span className='w-12 text-right text-muted-foreground'>{token.allocation}%</span>
-                                    </div>
-                                </div>
-                                <Progress value={token.allocation} className='h-2'/>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </CardContent>
-        </Card>
+            </div>
+        </div>
     );
 }
 
@@ -139,14 +147,12 @@ export default function PortfolioPage() {
         />
 
         {user && (
-          <div className="space-y-8 max-w-2xl mx-auto">
+          <div className="space-y-8">
             {mockConnectedWallets.length === 0 ? (
-                <div className='max-w-md mx-auto'>
-                    <ConnectWalletCard />
-                </div>
+                <ConnectWalletCard />
             ) : (
               <div>
-                {mockConnectedWallets.map(wallet => <ConnectedWalletCard key={wallet.address} wallet={wallet} />)}
+                {mockConnectedWallets.map(wallet => <ConnectedWalletDashboard key={wallet.address} wallet={wallet} />)}
               </div>
             )}
           </div>
