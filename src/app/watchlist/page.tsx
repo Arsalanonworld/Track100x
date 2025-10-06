@@ -198,7 +198,6 @@ function WatchlistItemCard({ item, onUpdate, onRemove }: { item: WatchlistItem, 
         setIsEditing(false);
     };
     
-    // Mock data for tokens, you would fetch this from an API
     const tokenData: any = {
         'ETH': { price: '$3,550.00' },
         'WIF': { price: '$2.50' },
@@ -207,11 +206,10 @@ function WatchlistItemCard({ item, onUpdate, onRemove }: { item: WatchlistItem, 
         'BTC': { price: '$68,500.00'},
         'USDT': { price: '$1.00'},
         'USDC': { price: '$1.00'},
-        // Add other tokens from your mock data or a real API
     }
     
     const currentToken = item.identifier ? tokenLibrary[item.identifier.toUpperCase()] : undefined;
-    const currentTokenMockPrice = item.identifier ? tokenData[item.identifier.toUpperCase()] : undefined;
+    const currentTokenMockPrice = (item.identifier && item.type === 'token') ? tokenData[item.identifier.toUpperCase()] : undefined;
 
 
     return (
@@ -239,7 +237,7 @@ function WatchlistItemCard({ item, onUpdate, onRemove }: { item: WatchlistItem, 
                                             <h3 className='text-lg font-semibold truncate'>
                                                 {item.name || item.identifier}
                                             </h3>
-                                           {item.type === 'wallet' && (
+                                           {item.name && item.type === 'wallet' && (
                                                 <Button size="icon" variant="ghost" className='h-7 w-7 opacity-0 group-hover:opacity-100' onClick={handleStartEditing}><Edit className='h-4 w-4'/></Button>
                                             )}
                                         </div>
@@ -448,4 +446,3 @@ export default function WatchlistPage() {
   );
 }
 
-    

@@ -14,10 +14,10 @@ import type { Alert, WatchlistItem } from '@/lib/types';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { Combobox } from './ui/combobox';
-import { mockWhaleTxs } from '@/lib/mock-data';
+import { tokenLibrary } from '@/lib/tokens';
 import { Card } from './ui/card';
 
-const uniqueTokens = Array.from(new Set(mockWhaleTxs.map(tx => tx.token.symbol.toUpperCase())));
+const uniqueTokens = Object.keys(tokenLibrary);
 const tokenOptions = uniqueTokens.map(symbol => ({ label: symbol, value: symbol }));
 
 type ThresholdType = 'VALUE' | 'PERCENTAGE' | 'NONE';
@@ -139,8 +139,10 @@ export const QuickAlertConfigurator = ({ onSubmitted, entity, alert }: { onSubmi
 
     if (data.alertType === 'wallet') {
         alertData.walletId = targetIdentifier;
+        alertData.token = null;
     } else {
         alertData.token = targetIdentifier;
+        alertData.walletId = null;
     }
 
     if (alert) {
