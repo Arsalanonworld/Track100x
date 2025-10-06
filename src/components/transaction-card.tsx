@@ -70,21 +70,19 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
                 <Card className="w-full hover:shadow-lg transition-shadow duration-200 group/card overflow-hidden">
                     <CollapsibleTrigger asChild>
                         <div className="cursor-pointer p-3 sm:p-4">
-                            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+                             <div className="grid grid-cols-[auto_1fr_auto] items-center gap-3 sm:gap-4">
                                 
                                 {/* Left Side: Amount & Token */}
-                                <div className="flex items-center gap-3 w-full sm:w-auto">
+                                <div className="flex items-center gap-3">
                                     <CryptoIcon token={tx.token.symbol} className="h-10 w-10"/>
-                                    <div className="flex-1 sm:flex-initial">
+                                    <div>
                                         <p className="font-bold text-lg">{tx.tokenAmount}</p>
-                                        <div className="flex items-center text-sm text-muted-foreground">
-                                            <span>{tx.value}</span>
-                                        </div>
+                                        <p className="text-sm text-muted-foreground">{tx.value}</p>
                                     </div>
                                 </div>
 
-                                {/* Right Side: From/To Flow */}
-                                <div className="flex-1 w-full">
+                                {/* Center: From/To Flow */}
+                                <div className="flex-1 w-full min-w-0">
                                     <div className="flex flex-col gap-2">
                                         <div className="flex items-center gap-2 text-sm">
                                             <span className="text-muted-foreground w-10">From</span>
@@ -93,7 +91,7 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
                                             </Link>
                                             <WatchlistButton type="wallet" identifier={tx.from} />
                                             {tx.fromTags && tx.fromTags.length > 0 && (
-                                                <div className="flex items-center gap-1.5 ml-1">
+                                                <div className="flex items-center gap-1.5 ml-auto sm:ml-1">
                                                     {tx.fromTags.map(tag => <Badge key={tag} variant="secondary">{tag}</Badge>)}
                                                 </div>
                                             )}
@@ -106,7 +104,7 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
                                             </Link>
                                             <WatchlistButton type="wallet" identifier={tx.to} />
                                              {tx.toTags && tx.toTags.length > 0 && (
-                                                <div className="flex items-center gap-1.5 ml-1">
+                                                <div className="flex items-center gap-1.5 ml-auto sm:ml-1">
                                                     {tx.toTags.map(tag => <Badge key={tag} variant="secondary">{tag}</Badge>)}
                                                 </div>
                                             )}
@@ -114,8 +112,8 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
                                     </div>
                                 </div>
 
-                                {/* Actions and Details Toggle */}
-                                <div className="flex items-center self-end sm:self-center justify-end gap-1 sm:gap-2">
+                                {/* Right Side: Actions and Details Toggle */}
+                                <div className="flex items-center self-center justify-end gap-1 sm:gap-2">
                                     <Badge variant="outline" className="hidden xs:inline-flex">{tx.network}</Badge>
                                     <span className="text-xs text-muted-foreground whitespace-nowrap">{tx.time}</span>
                                     
@@ -162,5 +160,6 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
 
 
 export default TransactionCard;
+
 
 
