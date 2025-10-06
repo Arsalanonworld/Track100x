@@ -398,13 +398,18 @@ export default function WatchlistPage() {
 
   const isLoading = userLoading || (user && watchlistLoading);
 
+  const pageDescription = isPro
+    ? 'Track unlimited wallets and tokens with your Pro plan.'
+    : `Track up to ${WATCHLIST_LIMIT_FREE} wallets/tokens on the free plan. Upgrade for more.`;
+
+
   return (
         <div className="relative">
             {!user && !userLoading && <FeatureLock />}
             <div className="space-y-8">
                 <PageHeader
                     title="Your Watchlist"
-                    description={`Track up to ${WATCHLIST_LIMIT_FREE} wallets/tokens on the free plan. Upgrade for more.`}
+                    description={pageDescription}
                 />
                 
                 <AddItemForm atLimit={!!atLimit} onAdd={() => setRefreshKey(k => k + 1)}/>
