@@ -9,6 +9,8 @@ import { FeatureLock } from '@/components/feature-lock';
 import { useUser } from '@/firebase';
 import { Wallet, Plus, MoreHorizontal, Settings, Trash2, ArrowLeft, Clock, BarChart, Percent, ShieldCheck, Zap, Info, Download, Share, Bell, Link as LinkIcon } from 'lucide-react';
 import { CryptoIcon } from '@/components/crypto-icon';
+import { AreaChart, Area, ResponsiveContainer, XAxis, YAxis, Tooltip as RechartsTooltip } from 'recharts';
+
 import {
   Dialog,
   DialogContent,
@@ -22,6 +24,17 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import {
   Table,
   TableBody,
   TableCell,
@@ -30,10 +43,10 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Progress } from '@/components/ui/progress';
-import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useToast } from '@/hooks/use-toast';
 
 const mockConnectedWallet = {
   address: '0x1a2b3c4d5e6f7g8h9i0j1k213m4n5o6p7q8r9s0t',
@@ -107,7 +120,39 @@ const mockConnectedWallet = {
   ]
 };
 
-const StatCard = ({ title, value, icon, helpText, valueClassName }: { title: string, value: string, icon: React.ReactNode, helpText: string, valueClassName?: string }) => (
+const pnlChartData = [
+  { time: '24h ago', value: 2050000 },
+  { time: '18h ago', value: 2100000 },
+  { time: '12h ago', value: 2150000 },
+  { time: '6h ago', value: 2250000 },
+  { time: 'now', value: 2300000 },
+]
+
+const PnlChart = () => (
+  <ResponsiveContainer width="100%" height={50}>
+    <AreaChart data={pnlChartData} margin={{ top: 5, right: 0, left: 0, bottom: 0 }}>
+      <defs>
+        <linearGradient id="pnlColor" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.4}/>
+          <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
+        </linearGradient>
+      </defs>
+      <RechartsTooltip 
+        contentStyle={{ 
+            backgroundColor: 'hsl(var(--background))',
+            borderColor: 'hsl(var(--border))',
+            borderRadius: 'var(--radius)',
+        }}
+        labelStyle={{ fontWeight: 'bold' }}
+        formatter={(value) => [`$${Number(value).toLocaleString()}`, 'Value']}
+      />
+      <Area type="monotone" dataKey="value" stroke="hsl(var(--primary))" fill="url(#pnlColor)" strokeWidth={2} />
+    </AreaChart>
+  </ResponsiveContainer>
+);
+
+
+const StatCard = ({ title, value, icon, helpText, valueClassName, children }: { title: string, value: string, icon?: React.ReactNode, helpText: string, valueClassName?: string, children?: React.ReactNode }) => (
     <Card>
         <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
@@ -126,21 +171,30 @@ const StatCard = ({ title, value, icon, helpText, valueClassName }: { title: str
             <CardTitle className={cn("text-2xl font-bold", valueClassName)}>{value}</CardTitle>
         </CardHeader>
         <CardContent>
-            <div className="text-xs text-muted-foreground flex items-center gap-1">
-                {icon}
-            </div>
+            {icon && <div className="text-xs text-muted-foreground flex items-center gap-1">{icon}</div>}
+            {children}
         </CardContent>
     </Card>
 );
 
-const TokenHoldingsTable = ({ tokens }: { tokens: typeof mockConnectedWallet['tokens'] }) => (
+const TokenHoldingsTable = ({ tokens }: { tokens: typeof mockConnectedWallet['tokens'] }) => {
+    const { toast } = useToast();
+    
+    const handleExport = () => {
+        toast({
+            title: "Export Started",
+            description: "Your token holdings data will be downloaded shortly.",
+        });
+    }
+
+    return (
     <Card>
         <CardHeader className="flex flex-row items-center justify-between">
             <div>
                 <CardTitle>Token Holdings</CardTitle>
                 <CardDescription>Assets held in this connected wallet.</CardDescription>
             </div>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" onClick={handleExport}>
                 <Download className="mr-2 h-4 w-4" />
                 Export
             </Button>
@@ -195,9 +249,9 @@ const TokenHoldingsTable = ({ tokens }: { tokens: typeof mockConnectedWallet['to
             </Table>
         </CardContent>
     </Card>
-);
+)};
 
-const WalletActions = ({ walletAddress }: { walletAddress: string }) => {
+const WalletActions = ({ walletAddress, onRemove }: { walletAddress: string, onRemove: () => void }) => {
     const [isAlertEditorOpen, setIsAlertEditorOpen] = useState(false);
 
     return (
@@ -211,14 +265,30 @@ const WalletActions = ({ walletAddress }: { walletAddress: string }) => {
                         <Button variant="outline" size="icon"><MoreHorizontal className="h-4 w-4" /></Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                        <DropdownMenuItem>
+                        <DropdownMenuItem disabled>
                             <Settings className="mr-2 h-4 w-4" />
                             Wallet Settings
                         </DropdownMenuItem>
-                        <DropdownMenuItem className="text-red-500 focus:text-red-500">
-                            <Trash2 className="mr-2 h-4 w-4" />
-                            Remove Wallet
-                        </DropdownMenuItem>
+                        <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                                <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-red-500 focus:text-red-500">
+                                    <Trash2 className="mr-2 h-4 w-4" />
+                                    Remove Wallet
+                                </DropdownMenuItem>
+                            </AlertDialogTrigger>
+                             <AlertDialogContent>
+                                <AlertDialogHeader>
+                                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    This will disconnect the wallet from your portfolio. You can reconnect it at any time.
+                                </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction onClick={onRemove} className="bg-destructive hover:bg-destructive/90">Remove</AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>
@@ -232,7 +302,7 @@ const WalletActions = ({ walletAddress }: { walletAddress: string }) => {
     );
 };
 
-const WalletAnalyticsDashboard = () => {
+const WalletAnalyticsDashboard = ({ onRemoveWallet }: { onRemoveWallet: () => void }) => {
     const wallet = mockConnectedWallet;
 
     return (
@@ -247,12 +317,14 @@ const WalletAnalyticsDashboard = () => {
                         <p className="font-mono text-sm text-muted-foreground">{wallet.address}</p>
                     </div>
                 </div>
-                <WalletActions walletAddress={wallet.address} />
+                <WalletActions walletAddress={wallet.address} onRemove={onRemoveWallet} />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <StatCard title="Total Portfolio Value" value={`$${(wallet.stats.totalValue / 1000000).toFixed(1)}M`} icon={<BarChart className="h-3 w-3" />} helpText="The current total value of all assets in this wallet." />
-                <StatCard title="24h PnL" value={`+${wallet.stats.pnl_24h}%`} valueClassName="text-green-500" icon={<BarChart className="h-3 w-3" />} helpText="Profit and Loss in the last 24 hours." />
+                <StatCard title="24h PnL" value={`${wallet.stats.pnl_24h > 0 ? '+' : ''}${wallet.stats.pnl_24h}%`} valueClassName={wallet.stats.pnl_24h >= 0 ? 'text-green-500' : 'text-red-500'} helpText="Profit and Loss in the last 24 hours.">
+                  <PnlChart />
+                </StatCard>
                 <StatCard title="Risk Rating" value={wallet.stats.riskRating} valueClassName={wallet.stats.riskRating === 'Low' ? 'text-green-500' : 'text-red-500'} icon={<ShieldCheck className="h-3 w-3" />} helpText="An assessment of the portfolio's risk based on volatility and holdings." />
                  <StatCard title="100x Potential" value={`${wallet.stats.potential}%`} icon={<Zap className="h-3 w-3" />} helpText="Proprietary score indicating potential for high growth." />
             </div>
@@ -270,7 +342,7 @@ const WalletAnalyticsDashboard = () => {
 };
 
 
-const ConnectWalletCard = () => (
+const ConnectWalletCard = ({ onConnect }: { onConnect: () => void}) => (
     <Card className="text-center max-w-md mx-auto mt-16">
       <CardHeader>
         <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
@@ -282,7 +354,7 @@ const ConnectWalletCard = () => (
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <Button>
+        <Button onClick={onConnect}>
           <Plus className="mr-2 h-4 w-4" />
           Connect Wallet
         </Button>
@@ -293,10 +365,7 @@ const ConnectWalletCard = () => (
 
 export default function PortfolioPage() {
   const { user, loading } = useUser();
-
-  // For demonstration, we'll assume a wallet is always connected.
-  // In a real app, this would be based on whether `user` has connected wallets.
-  const hasConnectedWallets = true; 
+  const [hasConnectedWallets, setHasConnectedWallets] = useState(true); 
 
   if (loading) {
     return (
@@ -313,7 +382,7 @@ export default function PortfolioPage() {
             </CardHeader>
             <CardContent>
                 <div className="h-10 w-40 mx-auto bg-muted rounded animate-pulse" />
-                <div className="h-3 w-48 mx-auto bg-muted rounded animate-pulse mt-4" />
+                <div className="h-3 w-48 mx-auto bg-muted rounded-animate-pulse mt-4" />
             </CardContent>
             </Card>
         </div>
@@ -329,13 +398,11 @@ export default function PortfolioPage() {
           description="Analyze your connected wallets and see how whale activity impacts your holdings."
         />
         {user && hasConnectedWallets ? (
-            <WalletAnalyticsDashboard />
+            <WalletAnalyticsDashboard onRemoveWallet={() => setHasConnectedWallets(false)} />
         ) : (
-            <ConnectWalletCard />
+            <ConnectWalletCard onConnect={() => setHasConnectedWallets(true)} />
         )}
       </div>
     </div>
   );
 }
-
-    
