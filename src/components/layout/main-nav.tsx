@@ -15,7 +15,6 @@ export function MainNav() {
         { href: '/feed', label: 'Whale Feed', visible: true },
         { href: '/portfolio', label: 'My Portfolio', visible: true },
         { href: '/watchlist', label: 'Watchlist', visible: true },
-        { href: '/alerts', label: 'Alerts', visible: true },
     ];
     
     const visibleItems = navItems.filter(item => {

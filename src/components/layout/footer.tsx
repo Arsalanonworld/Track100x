@@ -6,7 +6,6 @@ const footerLinks = {
   platform: [
     { label: 'Feed', href: '/feed' },
     { label: 'My Portfolio', href: '/portfolio' },
-    { label: 'Alerts', href: '/alerts' },
     { label: 'Watchlist', href: '/watchlist' },
     { label: 'Upgrade', href: '/upgrade' },
   ],

@@ -20,7 +20,6 @@ export function MobileNav() {
       { href: '/feed', label: 'Whale Feed', icon: Rss, visible: true },
       { href: '/portfolio', label: 'My Portfolio', icon: Wallet, visible: true },
       { href: '/watchlist', label: 'Watchlist', icon: Eye, visible: true },
-      { href: '/alerts', label: 'Alerts', icon: Bell, visible: true },
   ];
 
   const visibleItems = navItems.filter(item => {

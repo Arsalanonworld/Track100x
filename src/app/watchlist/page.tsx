@@ -4,7 +4,7 @@
 import { useMemo, useState } from 'react';
 import PageHeader from '@/components/page-header';
 import { Button } from '@/components/ui/button';
-import { Trash2, BellPlus, ArrowRight, Pencil, Check, X, Lock, Wallet, Plus, Edit } from 'lucide-react';
+import { Trash2, BellPlus, ArrowRight, Pencil, Check, X, Lock, Wallet, Plus, Edit, Bell } from 'lucide-react';
 import { useUser, useCollection, useFirestore } from '@/firebase';
 import { collection, query, doc, deleteDoc, updateDoc, addDoc, serverTimestamp, where, getDocs } from 'firebase/firestore';
 import type { WatchlistItem } from '@/lib/types';
@@ -19,7 +19,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import {
   Dialog,
@@ -41,6 +40,8 @@ import { CryptoIcon } from '@/components/crypto-icon';
 import { getExplorerUrl } from '@/lib/explorers';
 import { Label } from '@/components/ui/label';
 import { tokenLibrary } from '@/lib/tokens';
+import ActiveAlerts from '@/components/alerts/active-alerts';
+import AlertHistory from '@/components/alerts/alert-history';
 
 const WATCHLIST_LIMIT_FREE = 5;
 
@@ -407,7 +408,7 @@ export default function WatchlistPage() {
   const isLoading = userLoading || (user && watchlistLoading);
 
   const pageDescription = isPro
-    ? 'Track unlimited wallets and tokens with your Pro plan.'
+    ? 'Track unlimited wallets and tokens. Manage your alerts and view their history.'
     : `Track up to ${WATCHLIST_LIMIT_FREE} wallets/tokens on the free plan. Upgrade for more.`;
 
 
@@ -435,21 +436,29 @@ export default function WatchlistPage() {
                     </Card>
                 )}
 
-                <div className="grid grid-cols-1 gap-4">
-                    {isLoading ? <WatchlistSkeleton /> : watchlist && watchlist.length > 0 ? (
-                        watchlist.map((item) => (
-                           <WatchlistItemCard key={item.id} item={item} onUpdate={handleUpdate} onRemove={handleRemove} />
-                        ))
-                    ) : (
-                       !isLoading && (
-                        <div className="flex flex-col items-center justify-center text-center text-muted-foreground p-8 rounded-lg border-2 border-dashed">
-                            <p className="font-semibold text-lg">Your watchlist is empty.</p>
-                            <p className="text-sm max-w-xs mx-auto">
-                               Use the form above or add wallets and tokens directly from the Whale Feed.
-                            </p>
-                        </div>
-                       )
-                    )}
+                <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-start">
+                    <div className="lg:col-span-3 space-y-4">
+                        <h2 className='text-xl font-bold'>Tracked Items</h2>
+                        {isLoading ? <WatchlistSkeleton /> : watchlist && watchlist.length > 0 ? (
+                            watchlist.map((item) => (
+                               <WatchlistItemCard key={item.id} item={item} onUpdate={handleUpdate} onRemove={handleRemove} />
+                            ))
+                        ) : (
+                           !isLoading && (
+                            <div className="flex flex-col items-center justify-center text-center text-muted-foreground p-8 rounded-lg border-2 border-dashed">
+                                <p className="font-semibold text-lg">Your watchlist is empty.</p>
+                                <p className="text-sm max-w-xs mx-auto">
+                                   Use the form above or add wallets and tokens directly from the Whale Feed.
+                                </p>
+                            </div>
+                           )
+                        )}
+                    </div>
+
+                    <div className="lg:col-span-2 space-y-8">
+                         <ActiveAlerts />
+                         <AlertHistory />
+                    </div>
                 </div>
 
             </div>
