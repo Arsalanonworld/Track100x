@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState } from 'react';
 import { useMotionValueEvent, useScroll } from 'framer-motion';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -80,7 +80,7 @@ export const StickyScrollFeatures = ({
             animate={{
                 backgroundColor: backgroundColors[activeCard % backgroundColors.length],
             }}
-            className="h-[40rem] flex justify-center relative space-x-10 rounded-2xl p-4 sm:p-10"
+            className="h-[40rem] flex justify-center relative space-x-10 rounded-2xl p-4 sm:p-10 mt-10"
             ref={ref}
             >
             <div className="div relative flex items-start px-4">
@@ -122,7 +122,7 @@ export const StickyScrollFeatures = ({
                 'hidden lg:block h-fit sticky top-10 overflow-hidden w-[40rem] rounded-2xl'
                 )}
             >
-                <FeatureCard slug={features[activeCard].contentSlug} />
+                {features[activeCard] && <FeatureCard slug={features[activeCard].contentSlug} />}
             </motion.div>
         </motion.div>
     </div>
