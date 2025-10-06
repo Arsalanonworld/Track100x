@@ -10,14 +10,14 @@ export default function HomePage() {
       {/* Hero Section */}
       <HeroSection />
 
-      {/* Whale Feed Section & Other sections with container for padding */}
-      <div className="container">
-          <div className="space-y-8 md:space-y-12">
-            <div id="whale-feed">
-                <WhaleFeed />
-            </div>
+      {/* Whale Feed Section & Other sections */}
+      <div className="space-y-8 md:space-y-12">
+        <div id="whale-feed">
+          <WhaleFeed />
+        </div>
+        <div className="container">
             <HomePageCta />
-          </div>
+        </div>
       </div>
     </div>
   );
