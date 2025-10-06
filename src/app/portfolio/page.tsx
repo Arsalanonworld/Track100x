@@ -6,13 +6,10 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { FeatureLock } from '@/components/feature-lock';
 import { useUser } from '@/firebase';
-import { Wallet, Plus, Zap } from 'lucide-react';
+import { Wallet, Plus } from 'lucide-react';
 
-// Mock data for connected wallets
-const connectedWallets = [
-  { address: '0x1234...aBcd', alias: 'My Main Wallet', blockchain: 'Ethereum' },
-  { address: 'So1...1112', alias: 'Solana Degen', blockchain: 'Solana' },
-];
+// Mock data for connected wallets - we'll keep it empty for now to show the "Connect" card
+const connectedWallets: any[] = [];
 
 export default function PortfolioPage() {
   const { user, loading } = useUser();
@@ -60,6 +57,27 @@ export default function PortfolioPage() {
             )}
           </div>
         )}
+        
+        {loading && (
+            <div className='max-w-md mx-auto'>
+               <Card className="text-center">
+                <CardHeader>
+                    <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-muted animate-pulse">
+                    </div>
+                    <div className='space-y-2 mt-4'>
+                        <div className="h-6 w-3/4 mx-auto bg-muted rounded animate-pulse" />
+                        <div className="h-4 w-full mx-auto bg-muted rounded animate-pulse" />
+                        <div className="h-4 w-5/6 mx-auto bg-muted rounded animate-pulse" />
+                    </div>
+                </CardHeader>
+                <CardContent>
+                    <div className="h-10 w-40 mx-auto bg-muted rounded animate-pulse" />
+                    <div className="h-3 w-48 mx-auto bg-muted rounded animate-pulse mt-4" />
+                </CardContent>
+                </Card>
+            </div>
+        )}
+
       </div>
     </div>
   );
