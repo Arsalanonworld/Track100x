@@ -6,9 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { FeatureLock } from '@/components/feature-lock';
 import { useUser } from '@/firebase';
-import { Wallet, Plus, MoreHorizontal, Settings, Trash2 } from 'lucide-react';
+import { Wallet, Plus, MoreHorizontal, Settings, Trash2, AlertTriangle } from 'lucide-react';
 import { CryptoIcon } from '@/components/crypto-icon';
-import { Separator } from '@/components/ui/separator';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Progress } from '@/components/ui/progress';
+import Link from 'next/link';
 
 const mockConnectedWallets = [
   {
@@ -84,6 +84,23 @@ const ConnectedWalletCard = ({ wallet }: { wallet: typeof mockConnectedWallets[0
                     <p className='text-sm text-green-500 font-medium'>+${(wallet.totalValue * (wallet.pnl_24h/100)).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})} (+{wallet.pnl_24h}%) today</p>
                 </div>
 
+                 <Card className="bg-destructive/10 border-destructive/50">
+                    <CardHeader>
+                        <CardTitle className="flex items-center text-lg text-destructive">
+                            <AlertTriangle className="h-5 w-5 mr-2" />
+                            Risk Warning
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <p className="text-sm text-destructive-foreground/90">
+                            High whale sell pressure detected on <span className="font-bold">25%</span> of your portfolio. 3 whales sold $1.2M of SOL in the last 24h. Your portfolio has 15% exposure to SOL.
+                        </p>
+                        <Button variant="outline" asChild className="mt-4">
+                            <Link href="/portfolio/analysis">View Impact Analysis</Link>
+                        </Button>
+                    </CardContent>
+                </Card>
+
                 <div>
                     <h3 className="text-lg font-semibold mb-3">Top Holdings</h3>
                     <div className="space-y-4">
@@ -118,7 +135,7 @@ export default function PortfolioPage() {
       <div className="space-y-8">
         <PageHeader
           title="My Portfolio"
-          description="Track your assets and see how whale activity impacts your holdings."
+          description="See how whale activity impacts your holdings."
         />
 
         {user && (
