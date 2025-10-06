@@ -20,7 +20,7 @@ import { Card } from './ui/card';
 const uniqueTokens = Object.keys(tokenLibrary);
 const tokenOptions = uniqueTokens.map(symbol => ({ label: symbol, value: symbol }));
 
-type ThresholdType = 'VALUE' | 'PERCENTAGE' | 'NONE';
+type ThresholdType = 'VALUE' | 'PERCENTAGE';
 
 interface Rule {
   value: string;
@@ -28,29 +28,27 @@ interface Rule {
   thresholdType: ThresholdType;
 }
 
-const portfolioRules: Rule[] = [
-  { value: 'portfolio-value-change', label: 'Portfolio Value Change', thresholdType: 'PERCENTAGE'},
-  { value: 'whale-impact', label: 'Whale Sells a Holding', thresholdType: 'VALUE' },
+const walletRules: Rule[] = [
+    { value: 'large-transaction', label: 'Large Transaction', thresholdType: 'VALUE' },
 ];
 
 const tokenRules: Rule[] = [
-  { value: 'price-swing', label: 'Price Swing', thresholdType: 'PERCENTAGE' },
-  { value: 'whale-buy-pressure', label: 'Whale Buy/Sell Pressure', thresholdType: 'VALUE' },
-  { value: 'new-whale-tx', label: 'Any New Whale Transaction', thresholdType: 'NONE' },
+    { value: 'price-change', label: 'Price Change', thresholdType: 'PERCENTAGE' },
+    { value: 'large-trade-volume', label: 'Large Trade Volume', thresholdType: 'VALUE' },
 ];
 
 const thresholds = {
     VALUE: [
-        { value: '10000', label: 'Exceeds $10,000' },
-        { value: '50000', label: 'Exceeds $50,000' },
-        { value: '100000', label: 'Exceeds $100,000' },
-        { value: '1000000', label: 'Exceeds $1,000,000' },
+        { value: '10000', label: '> $10,000' },
+        { value: '50000', label: '> $50,000' },
+        { value: '100000', label: '> $100,000' },
+        { value: '1000000', label: '> $1,000,000' },
     ],
     PERCENTAGE: [
-        { value: '5', label: 'Changes by 5%' },
-        { value: '10', label: 'Changes by 10%' },
-        { value: '25', label: 'Changes by 25%' },
-        { value: '50', label: 'Changes by 50%' },
+        { value: '5', label: 'moves by 5%' },
+        { value: '10', label: 'moves by 10%' },
+        { value: '25', label: 'moves by 25%' },
+        { value: '50', label: 'moves by 50%' },
     ]
 };
 
@@ -116,7 +114,7 @@ export const QuickAlertConfigurator = ({ onSubmitted, entity, alert }: { onSubmi
   const comboboxOptions = alertType === 'wallet' ? walletOptions : tokenOptionsFromWatchlist;
 
 
-  const currentRules = alertType === 'wallet' ? portfolioRules : tokenRules;
+  const currentRules = alertType === 'wallet' ? walletRules : tokenRules;
   const activeRule = currentRules.find(r => r.value === selectedRule);
   const thresholdType = activeRule?.thresholdType;
 
@@ -125,7 +123,7 @@ export const QuickAlertConfigurator = ({ onSubmitted, entity, alert }: { onSubmi
     const newType = entity?.type || alert?.alertType;
     if (newType) {
         setAlertType(newType);
-        const ruleExists = (newType === 'wallet' ? portfolioRules : tokenRules).some(r => r.value === selectedRule);
+        const ruleExists = (newType === 'wallet' ? walletRules : tokenRules).some(r => r.value === selectedRule);
         if (!ruleExists) {
             setSelectedRule(undefined);
         }
@@ -157,7 +155,7 @@ export const QuickAlertConfigurator = ({ onSubmitted, entity, alert }: { onSubmi
         userId: user.uid,
     };
     
-    if (thresholdType === 'NONE') {
+    if (!thresholdType) {
         alertData.threshold = null;
     }
 
@@ -277,12 +275,12 @@ export const QuickAlertConfigurator = ({ onSubmitted, entity, alert }: { onSubmi
             </Select>
         </div>
         
-        {thresholdType && thresholdType !== 'NONE' && (
+        {thresholdType && (
             <div className="space-y-2">
-                <Label htmlFor="threshold">Threshold</Label>
+                <Label htmlFor="threshold">Condition</Label>
                 <Select name="threshold" defaultValue={alert?.threshold?.toString()}>
                 <SelectTrigger id="threshold">
-                    <SelectValue placeholder="Select a threshold..." />
+                    <SelectValue placeholder="Select a condition..." />
                 </SelectTrigger>
                 <SelectContent>
                     {thresholds[thresholdType].map(t => (
