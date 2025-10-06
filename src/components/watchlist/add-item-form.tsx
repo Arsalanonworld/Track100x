@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Plus, Wallet, Tag } from 'lucide-react';
+import { Plus, Search } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useUser, useFirestore } from '@/firebase';
 import { collection, addDoc, serverTimestamp, query, where, getDocs } from 'firebase/firestore';
@@ -14,16 +14,9 @@ import type { WatchlistItem } from '@/lib/types';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { tokenLibrary } from '@/lib/tokens';
-import { Combobox } from '../ui/combobox';
-
-const tokenOptions = Object.values(tokenLibrary).map(token => ({
-    value: token.symbol,
-    label: `${token.name} (${token.symbol})`
-}));
 
 export function AddItemForm({ atLimit, onAdd }: { atLimit: boolean; onAdd: () => void }) {
-  const [walletIdentifier, setWalletIdentifier] = useState('');
-  const [tokenIdentifier, setTokenIdentifier] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [alias, setAlias] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isAliasModalOpen, setIsAliasModalOpen] = useState(false);
@@ -34,15 +27,11 @@ export function AddItemForm({ atLimit, onAdd }: { atLimit: boolean; onAdd: () =>
   const { toast } = useToast();
 
   const isWalletAddress = (str: string) => /^0x[a-fA-F0-9]{40}$/.test(str);
+  const isKnownToken = (str: string) => !!tokenLibrary[str.toUpperCase()];
 
-  const handleAddWalletClick = () => {
-    if (!walletIdentifier) {
-      toast({ variant: 'destructive', title: 'Wallet Address Required', description: 'Please enter a wallet address.' });
-      return;
-    }
-
-    if (!isWalletAddress(walletIdentifier)) {
-      toast({ variant: 'destructive', title: 'Invalid Wallet Address', description: 'Please enter a valid Ethereum wallet address.' });
+  const handleAddClick = () => {
+    if (!identifier) {
+      toast({ variant: 'destructive', title: 'Input Required', description: 'Please enter a wallet address or token symbol.' });
       return;
     }
 
@@ -51,24 +40,16 @@ export function AddItemForm({ atLimit, onAdd }: { atLimit: boolean; onAdd: () =>
       return;
     }
 
-    setItemToAdd({ identifier: walletIdentifier, type: 'wallet' });
-    setIsAliasModalOpen(true);
+    if (isWalletAddress(identifier)) {
+      setItemToAdd({ identifier, type: 'wallet' });
+      setIsAliasModalOpen(true);
+    } else if (isKnownToken(identifier)) {
+      confirmAddItem(identifier.toUpperCase(), 'token', '');
+    } else {
+      toast({ variant: 'destructive', title: 'Invalid Input', description: 'Please enter a valid wallet address or a known token symbol.' });
+    }
   };
   
-  const handleAddTokenClick = () => {
-    if (!tokenIdentifier) {
-        toast({ variant: 'destructive', title: 'Token Required', description: 'Please select a token to add.' });
-        return;
-    }
-
-    if (atLimit) {
-      toast({ variant: 'destructive', title: 'Watchlist Limit Reached', description: 'Please upgrade to add more items.' });
-      return;
-    }
-    
-    confirmAddItem(tokenIdentifier, 'token', '');
-  }
-
   const confirmAddItem = async (id: string, type: 'wallet' | 'token', name: string) => {
     if (!user || !firestore) return;
     setIsSubmitting(true);
@@ -105,8 +86,7 @@ export function AddItemForm({ atLimit, onAdd }: { atLimit: boolean; onAdd: () =>
     } finally {
       setIsSubmitting(false);
       setIsAliasModalOpen(false);
-      setWalletIdentifier('');
-      setTokenIdentifier('');
+      setIdentifier('');
       setAlias('');
     }
   };
@@ -119,43 +99,26 @@ export function AddItemForm({ atLimit, onAdd }: { atLimit: boolean; onAdd: () =>
 
   return (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-        {/* Add Wallet */}
-        <div className="flex gap-2">
+      <div className="flex gap-2">
             <div className="relative flex-1">
-                <Wallet className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2"/>
+                <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2"/>
                 <Input 
-                    id="wallet-input"
-                    placeholder="Paste wallet address..."
-                    value={walletIdentifier}
-                    onChange={(e) => setWalletIdentifier(e.target.value)}
+                    id="add-item-input"
+                    placeholder="Paste wallet address or enter token symbol..."
+                    value={identifier}
+                    onChange={(e) => setIdentifier(e.target.value)}
                     disabled={atLimit}
                     className="pl-9"
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') handleAddClick();
+                    }}
                 />
             </div>
-            <Button onClick={handleAddWalletClick} disabled={atLimit || !walletIdentifier} className="shrink-0">
+            <Button onClick={handleAddClick} disabled={atLimit || !identifier} className="shrink-0">
                 <Plus className="h-4 w-4 sm:mr-2"/>
                 <span className="hidden sm:inline">Add</span>
             </Button>
         </div>
-        {/* Add Token */}
-        <div className="flex gap-2">
-            <div className="relative flex-1">
-                <Tag className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2 z-10"/>
-                <Combobox 
-                    options={tokenOptions}
-                    value={tokenIdentifier}
-                    onChange={setTokenIdentifier}
-                    placeholder="Search for a token..."
-                    emptyMessage="No tokens found."
-                />
-            </div>
-            <Button onClick={handleAddTokenClick} disabled={atLimit || !tokenIdentifier} className="shrink-0">
-                <Plus className="h-4 w-4 sm:mr-2"/>
-                <span className="hidden sm:inline">Add</span>
-            </Button>
-        </div>
-      </div>
       <Dialog open={isAliasModalOpen} onOpenChange={setIsAliasModalOpen}>
         <DialogContent>
           <DialogHeader>
