@@ -76,42 +76,50 @@ function AddItemForm({ atLimit, onAdd }: { atLimit: boolean, onAdd: () => void }
         return;
     }
 
-    setItemToAdd({ identifier: type === 'token' ? identifier.toUpperCase() : identifier, type });
-    setIsAliasModalOpen(true);
+    const finalIdentifier = type === 'token' ? identifier.toUpperCase() : identifier;
+
+    setItemToAdd({ identifier: finalIdentifier, type });
+
+    if (type === 'token') {
+      // Skip alias for tokens, add directly
+      await confirmAddItem(finalIdentifier, type);
+    } else {
+      setIsAliasModalOpen(true);
+    }
   };
 
-  const confirmAddItem = async () => {
-    if (!user || !firestore || !itemToAdd) return;
+  const confirmAddItem = async (id: string, type: 'wallet' | 'token') => {
+    if (!user || !firestore) return;
     setIsSubmitting(true);
     
     try {
-        const q = query(collection(firestore, `users/${user.uid}/watchlist`), where("identifier", "==", itemToAdd.identifier));
+        const q = query(collection(firestore, `users/${user.uid}/watchlist`), where("identifier", "==", id));
         const querySnapshot = await getDocs(q);
 
         if (!querySnapshot.empty) {
-            toast({ variant: 'destructive', title: 'Already Watched', description: `${itemToAdd.identifier} is already on your watchlist.` });
+            toast({ variant: 'destructive', title: 'Already Watched', description: `${id} is already on your watchlist.` });
             setIsSubmitting(false);
             setIsAliasModalOpen(false);
             return;
         }
 
         const newDoc: Omit<WatchlistItem, 'id' | 'createdAt'> & { createdAt: any } = {
-            identifier: itemToAdd.identifier,
-            type: itemToAdd.type,
-            name: alias || '',
+            identifier: id,
+            type: type,
+            name: type === 'wallet' ? alias : '', // Only save alias for wallets
             userId: user.uid,
             createdAt: serverTimestamp(),
         };
 
         await addDoc(collection(firestore, `users/${user.uid}/watchlist`), newDoc);
-        toast({ title: 'Item Added!', description: `${itemToAdd.identifier} has been added to your watchlist.` });
+        toast({ title: 'Item Added!', description: `${id} has been added to your watchlist.` });
         onAdd();
     } catch (error) {
         console.error("Error adding to watchlist:", error);
         const permissionError = new FirestorePermissionError({
             path: `users/${user.uid}/watchlist`,
             operation: 'create',
-            requestResourceData: { identifier: itemToAdd.identifier, type: itemToAdd.type, name: alias }
+            requestResourceData: { identifier: id, type: type, name: alias }
         });
         errorEmitter.emit('permission-error', permissionError);
     } finally {
@@ -121,6 +129,13 @@ function AddItemForm({ atLimit, onAdd }: { atLimit: boolean, onAdd: () => void }
         setAlias('');
     }
   }
+
+  const handleWalletAliasSubmit = () => {
+    if (itemToAdd) {
+        confirmAddItem(itemToAdd.identifier, itemToAdd.type);
+    }
+  }
+
 
   return (
     <>
@@ -154,7 +169,7 @@ function AddItemForm({ atLimit, onAdd }: { atLimit: boolean, onAdd: () => void }
                 </div>
                 <DialogFooter>
                     <Button variant="outline" onClick={() => setIsAliasModalOpen(false)}>Cancel</Button>
-                    <Button onClick={confirmAddItem} disabled={isSubmitting}>Confirm</Button>
+                    <Button onClick={handleWalletAliasSubmit} disabled={isSubmitting}>Confirm</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
@@ -185,9 +200,12 @@ function WatchlistItemCard({ item, onUpdate, onRemove }: { item: WatchlistItem, 
     // Mock data for tokens, you would fetch this from an API
     const tokenData: any = {
         'ETH': { name: 'Ethereum', price: '$3,550.00' },
-        'WIF': { name: 'Dogwifhat', price: '$2.50' },
+        'WIF': { name: 'dogwifhat', price: '$2.50' },
         'PEPE': { name: 'Pepe', price: '$0.000012' },
         'SOL': { name: 'Solana', price: '$150.25' },
+        'BTC': { name: 'Bitcoin', price: '$68,500.00'},
+        'USDT': { name: 'Tether', price: '$1.00'},
+        'USDC': { name: 'USD Coin', price: '$1.00'},
     }
     const currentToken = tokenData[item.identifier];
 
@@ -204,34 +222,42 @@ function WatchlistItemCard({ item, onUpdate, onRemove }: { item: WatchlistItem, 
 
                         {/* Main Content */}
                         <div className='flex-1 space-y-2 min-w-0'>
-                           {isEditing ? (
-                               <div className='flex items-center gap-2'>
-                                   <Input value={newName} onChange={e => setNewName(e.target.value)} placeholder='Set an alias' />
-                                   <Button size="icon" variant="ghost" onClick={handleSave}><Check className='h-4 w-4 text-green-500'/></Button>
-                                   <Button size="icon" variant="ghost" onClick={handleCancelEditing}><X className='h-4 w-4 text-red-500'/></Button>
-                               </div>
+                           {item.type === 'wallet' ? (
+                                isEditing ? (
+                                    <div className='flex items-center gap-2'>
+                                        <Input value={newName} onChange={e => setNewName(e.target.value)} placeholder='Set an alias' />
+                                        <Button size="icon" variant="ghost" onClick={handleSave}><Check className='h-4 w-4 text-green-500'/></Button>
+                                        <Button size="icon" variant="ghost" onClick={handleCancelEditing}><X className='h-4 w-4 text-red-500'/></Button>
+                                    </div>
+                                ) : (
+                                    <>
+                                        <div className='flex items-center gap-2'>
+                                            <h3 className='text-lg font-semibold truncate'>
+                                                {item.name || item.identifier}
+                                            </h3>
+                                            <Button size="icon" variant="ghost" className='h-7 w-7 opacity-0 group-hover:opacity-100' onClick={handleStartEditing}><Edit className='h-4 w-4'/></Button>
+                                        </div>
+                                        {item.name && (
+                                            <a href={getExplorerUrl('ethereum', item.identifier, 'address')} target="_blank" rel="noopener noreferrer" className='font-mono text-sm text-muted-foreground hover:text-primary transition-colors inline-block truncate max-w-full'>
+                                                {item.identifier}
+                                            </a>
+                                        )}
+                                    </>
+                                )
                            ) : (
-                            <div className='flex items-center gap-2'>
-                                <h3 className='text-lg font-semibold truncate'>
-                                    {item.type === 'token' ? item.name || currentToken?.name || item.identifier : item.name || item.identifier}
-                                </h3>
-                                <Button size="icon" variant="ghost" className='h-7 w-7 opacity-0 group-hover:opacity-100' onClick={handleStartEditing}><Edit className='h-4 w-4'/></Button>
-                            </div>
+                                <>
+                                    <h3 className='text-lg font-semibold truncate'>
+                                        {currentToken?.name || item.identifier}
+                                    </h3>
+                                    <p className="text-sm text-muted-foreground font-mono">{item.identifier}</p>
+                                </>
                            )}
-                           
-                            {item.type === 'wallet' ? (
-                                 <a href={getExplorerUrl('ethereum', item.identifier, 'address')} target="_blank" rel="noopener noreferrer" className='font-mono text-sm text-muted-foreground hover:text-primary transition-colors inline-block truncate'>
-                                    {item.identifier}
-                                </a>
-                            ) : (
-                               <p className="text-sm text-muted-foreground font-mono">{item.identifier}</p>
-                            )}
 
                             <div className='text-sm text-muted-foreground pt-1'>
                                 {item.type === 'wallet' ? (
                                     <p>Last Activity: <span className='text-green-500 font-medium'>$500K ETH tx, 2h ago</span></p>
                                 ) : (
-                                    <p>Price: <span className='text-foreground font-medium'>{currentToken?.price}</span> <span className='text-red-500 font-medium ml-2'>-5.2%</span></p>
+                                    <p>Price: <span className='text-foreground font-medium'>{currentToken?.price || '$0.00'}</span> <span className='text-red-500 font-medium ml-2'>-5.2%</span></p>
                                 )}
                             </div>
                         </div>
@@ -412,7 +438,4 @@ export default function WatchlistPage() {
   );
 }
 
-
-
-    
     
