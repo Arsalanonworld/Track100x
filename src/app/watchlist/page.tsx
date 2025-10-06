@@ -65,7 +65,8 @@ function AddItemForm({ atLimit, onAdd }: { atLimit: boolean, onAdd: () => void }
       return;
     }
 
-    const type = isWalletAddress(identifier) ? 'wallet' : isTokenSymbol(identifier.toUpperCase()) ? 'token' : null;
+    const upperIdentifier = identifier.toUpperCase();
+    const type = isWalletAddress(identifier) ? 'wallet' : isTokenSymbol(upperIdentifier) ? 'token' : null;
     
     if (!type) {
         toast({ variant: 'destructive', title: 'Invalid Identifier', description: 'Please enter a valid ETH wallet address or a 2-6 character token symbol.' });
@@ -77,7 +78,7 @@ function AddItemForm({ atLimit, onAdd }: { atLimit: boolean, onAdd: () => void }
         return;
     }
 
-    const finalIdentifier = type === 'token' ? identifier.toUpperCase() : identifier;
+    const finalIdentifier = type === 'token' ? upperIdentifier : identifier;
 
     setItemToAdd({ identifier: finalIdentifier, type });
 
@@ -208,8 +209,10 @@ function WatchlistItemCard({ item, onUpdate, onRemove }: { item: WatchlistItem, 
         'USDC': { price: '$1.00'},
     }
     
-    const currentToken = item.identifier ? tokenLibrary[item.identifier.toUpperCase()] : undefined;
-    const currentTokenMockPrice = (item.identifier && item.type === 'token') ? tokenData[item.identifier.toUpperCase()] : undefined;
+    if (!item.identifier) return null;
+
+    const currentToken = tokenLibrary[item.identifier.toUpperCase()];
+    const currentTokenMockPrice = tokenData[item.identifier.toUpperCase()];
 
 
     return (
@@ -237,7 +240,7 @@ function WatchlistItemCard({ item, onUpdate, onRemove }: { item: WatchlistItem, 
                                             <h3 className='text-lg font-semibold truncate'>
                                                 {item.name || item.identifier}
                                             </h3>
-                                           {item.name && item.type === 'wallet' && (
+                                           {item.type === 'wallet' && (
                                                 <Button size="icon" variant="ghost" className='h-7 w-7 opacity-0 group-hover:opacity-100' onClick={handleStartEditing}><Edit className='h-4 w-4'/></Button>
                                             )}
                                         </div>
@@ -261,7 +264,7 @@ function WatchlistItemCard({ item, onUpdate, onRemove }: { item: WatchlistItem, 
                                 {item.type === 'wallet' ? (
                                     <p>Last Activity: <span className='text-green-500 font-medium'>$500K ETH tx, 2h ago</span></p>
                                 ) : (
-                                     item.identifier && currentTokenMockPrice ? (
+                                     currentTokenMockPrice ? (
                                         <p>Price: <span className='text-foreground font-medium'>{currentTokenMockPrice.price}</span> <span className='text-red-500 font-medium ml-2'>-5.2%</span></p>
                                     ) : (
                                         <p>Price: <span className='text-foreground font-medium'>$0.00</span> <span className='text-muted-foreground font-medium ml-2'>-</span></p>
