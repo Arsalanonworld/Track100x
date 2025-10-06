@@ -18,6 +18,8 @@ const footerLinks = {
     { label: 'Discord', href: '#' },
   ],
   legal: [
+    { label: 'Terms of Service', href: '/terms-of-service' },
+    { label: 'Privacy Policy', href: '/privacy-policy' },
   ],
 };
 
