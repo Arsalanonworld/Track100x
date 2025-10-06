@@ -191,6 +191,7 @@ export const QuickAlertConfigurator = ({ onSubmitted, entity, alert }: { onSubmi
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
         <input type="hidden" name="identifier" value={targetIdentifier} />
+        <input type="hidden" name="alertType" value={alertType} />
         <div className="space-y-2">
             <Label>Alert Type</Label>
             <Select onValueChange={(v: 'wallet' | 'token') => { setAlertType(v); setSelectedRule(undefined); setTargetIdentifier('') }} defaultValue={alertType} name="alertType" disabled={!!entity || !!alert}>
