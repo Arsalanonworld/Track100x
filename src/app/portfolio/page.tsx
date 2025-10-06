@@ -1,6 +1,7 @@
 
 'use client';
 
+import { useState } from 'react';
 import PageHeader from '@/components/page-header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -8,6 +9,12 @@ import { FeatureLock } from '@/components/feature-lock';
 import { useUser } from '@/firebase';
 import { Wallet, Plus, MoreHorizontal, Settings, Trash2, ArrowLeft, Clock, BarChart, Percent, ShieldCheck, Zap, Info, Download, Share, Bell, Link as LinkIcon } from 'lucide-react';
 import { CryptoIcon } from '@/components/crypto-icon';
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { CreateAlertDialog } from '@/components/create-alert-dialog';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -190,27 +197,40 @@ const TokenHoldingsTable = ({ tokens }: { tokens: typeof mockConnectedWallet['to
     </Card>
 );
 
-const WalletActions = () => (
-    <div className="flex items-center gap-2">
-        <Button><Bell className="mr-2 h-4 w-4" />Create Alert</Button>
-        <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                 <Button variant="outline" size="icon"><MoreHorizontal className="h-4 w-4" /></Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-                 <DropdownMenuItem>
-                    <Settings className="mr-2 h-4 w-4" />
-                    Wallet Settings
-                </DropdownMenuItem>
-                 <DropdownMenuItem className="text-red-500 focus:text-red-500">
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    Remove Wallet
-                </DropdownMenuItem>
-            </DropdownMenuContent>
-        </DropdownMenu>
-    </div>
-);
+const WalletActions = ({ walletAddress }: { walletAddress: string }) => {
+    const [isAlertEditorOpen, setIsAlertEditorOpen] = useState(false);
 
+    return (
+        <Dialog open={isAlertEditorOpen} onOpenChange={setIsAlertEditorOpen}>
+            <div className="flex items-center gap-2">
+                <DialogTrigger asChild>
+                    <Button><Bell className="mr-2 h-4 w-4" />Create Alert</Button>
+                </DialogTrigger>
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="outline" size="icon"><MoreHorizontal className="h-4 w-4" /></Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        <DropdownMenuItem>
+                            <Settings className="mr-2 h-4 w-4" />
+                            Wallet Settings
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className="text-red-500 focus:text-red-500">
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Remove Wallet
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            </div>
+            {isAlertEditorOpen && (
+                <CreateAlertDialog
+                    onOpenChange={setIsAlertEditorOpen}
+                    entity={{ type: 'wallet', identifier: walletAddress }}
+                />
+            )}
+        </Dialog>
+    );
+};
 
 const WalletAnalyticsDashboard = () => {
     const wallet = mockConnectedWallet;
@@ -227,7 +247,7 @@ const WalletAnalyticsDashboard = () => {
                         <p className="font-mono text-sm text-muted-foreground">{wallet.address}</p>
                     </div>
                 </div>
-                <WalletActions />
+                <WalletActions walletAddress={wallet.address} />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
