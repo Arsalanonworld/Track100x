@@ -181,6 +181,16 @@ function WatchlistItemCard({ item, onUpdate, onRemove }: { item: WatchlistItem, 
         onUpdate(item.id, newName);
         setIsEditing(false);
     };
+    
+    // Mock data for tokens, you would fetch this from an API
+    const tokenData: any = {
+        'ETH': { name: 'Ethereum', price: '$3,550.00' },
+        'WIF': { name: 'Dogwifhat', price: '$2.50' },
+        'PEPE': { name: 'Pepe', price: '$0.000012' },
+        'SOL': { name: 'Solana', price: '$150.25' },
+    }
+    const currentToken = tokenData[item.identifier];
+
 
     return (
         <Dialog open={isAlertEditorOpen} onOpenChange={setIsAlertEditorOpen}>
@@ -202,22 +212,26 @@ function WatchlistItemCard({ item, onUpdate, onRemove }: { item: WatchlistItem, 
                                </div>
                            ) : (
                             <div className='flex items-center gap-2'>
-                                <h3 className='text-lg font-semibold truncate'>{item.name || item.identifier}</h3>
+                                <h3 className='text-lg font-semibold truncate'>
+                                    {item.type === 'token' ? item.name || currentToken?.name || item.identifier : item.name || item.identifier}
+                                </h3>
                                 <Button size="icon" variant="ghost" className='h-7 w-7 opacity-0 group-hover:opacity-100' onClick={handleStartEditing}><Edit className='h-4 w-4'/></Button>
                             </div>
                            )}
                            
-                            {item.type === 'wallet' && item.name && (
+                            {item.type === 'wallet' ? (
                                  <a href={getExplorerUrl('ethereum', item.identifier, 'address')} target="_blank" rel="noopener noreferrer" className='font-mono text-sm text-muted-foreground hover:text-primary transition-colors inline-block truncate'>
                                     {item.identifier}
                                 </a>
+                            ) : (
+                               <p className="text-sm text-muted-foreground font-mono">{item.identifier}</p>
                             )}
 
                             <div className='text-sm text-muted-foreground pt-1'>
                                 {item.type === 'wallet' ? (
                                     <p>Last Activity: <span className='text-green-500 font-medium'>$500K ETH tx, 2h ago</span></p>
                                 ) : (
-                                    <p>Recent Move: <span className='text-red-500 font-medium'>-5.2% in 24h</span></p>
+                                    <p>Price: <span className='text-foreground font-medium'>{currentToken?.price}</span> <span className='text-red-500 font-medium ml-2'>-5.2%</span></p>
                                 )}
                             </div>
                         </div>
@@ -378,7 +392,7 @@ export default function WatchlistPage() {
                         ))
                     ) : (
                        !isLoading && (
-                        <div className="lg:col-span-2 flex flex-col items-center justify-center text-center text-muted-foreground p-8 rounded-lg border-2 border-dashed">
+                        <div className="flex flex-col items-center justify-center text-center text-muted-foreground p-8 rounded-lg border-2 border-dashed">
                             <p className="font-semibold text-lg">Your watchlist is empty.</p>
                             <p className="text-sm max-w-xs mx-auto">
                                Use the form above or add wallets and tokens directly from the Whale Feed.
@@ -400,4 +414,5 @@ export default function WatchlistPage() {
 
 
 
+    
     
