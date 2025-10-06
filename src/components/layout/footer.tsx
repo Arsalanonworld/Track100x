@@ -5,7 +5,6 @@ import { LogoIcon } from './header';
 const footerLinks = {
   platform: [
     { label: 'Feed', href: '/feed' },
-    { label: 'My Portfolio', href: '/portfolio' },
     { label: 'Watchlist', href: '/watchlist' },
     { label: 'Upgrade', href: '/upgrade' },
   ],

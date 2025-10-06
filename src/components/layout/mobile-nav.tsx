@@ -18,12 +18,11 @@ export function MobileNav() {
 
   const navItems = [
       { href: '/feed', label: 'Whale Feed', icon: Rss, visible: true },
-      { href: '/portfolio', label: 'My Portfolio', icon: Wallet, visible: true },
       { href: '/watchlist', label: 'Watchlist', icon: Eye, visible: true },
   ];
 
   const visibleItems = navItems.filter(item => {
-      if (!user && (item.href === '/watchlist' || item.href === '/alerts' || item.href === '/portfolio')) {
+      if (!user && (item.href === '/watchlist')) {
           return false;
       }
       return item.visible;

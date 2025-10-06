@@ -13,12 +13,11 @@ export function MainNav() {
 
     const navItems = [
         { href: '/feed', label: 'Whale Feed', visible: true },
-        { href: '/portfolio', label: 'My Portfolio', visible: true },
         { href: '/watchlist', label: 'Watchlist', visible: true },
     ];
     
     const visibleItems = navItems.filter(item => {
-        if (!user && (item.href === '/watchlist' || item.href === '/alerts' || item.href === '/portfolio')) {
+        if (!user && (item.href === '/watchlist')) {
             return false;
         }
         return item.visible;
