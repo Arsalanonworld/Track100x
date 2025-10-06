@@ -186,12 +186,12 @@ function WatchlistItemCard({ item, onUpdate, onRemove }: { item: WatchlistItem, 
     const [newName, setNewName] = useState(item.name || '');
 
     const handleStartEditing = () => {
+        setNewName(item.name || '');
         setIsEditing(true);
     };
 
     const handleCancelEditing = () => {
         setIsEditing(false);
-        setNewName(item.name || '');
     };
 
     const handleSave = () => {
@@ -229,19 +229,28 @@ function WatchlistItemCard({ item, onUpdate, onRemove }: { item: WatchlistItem, 
                         <div className='flex-1 space-y-2 min-w-0'>
                            {item.type === 'wallet' ? (
                                 isEditing ? (
-                                    <div className='flex items-center gap-2'>
-                                        <Input value={newName} onChange={e => setNewName(e.target.value)} placeholder='Set an alias' />
-                                        <Button size="icon" variant="ghost" onClick={handleSave}><Check className='h-4 w-4 text-green-500'/></Button>
-                                        <Button size="icon" variant="ghost" onClick={handleCancelEditing}><X className='h-4 w-4 text-red-500'/></Button>
+                                    <div className="flex items-center gap-2">
+                                        <Input 
+                                            value={newName} 
+                                            onChange={e => setNewName(e.target.value)} 
+                                            placeholder='Set an alias' 
+                                            className="h-9"
+                                        />
+                                        <Button size="icon" variant="ghost" onClick={handleSave} className="h-9 w-9 text-green-500 hover:text-green-600">
+                                            <Check className='h-5 w-5'/>
+                                        </Button>
+                                        <Button size="icon" variant="ghost" onClick={handleCancelEditing} className="h-9 w-9 text-red-500 hover:text-red-600">
+                                            <X className='h-5 w-5'/>
+                                        </Button>
                                     </div>
                                 ) : (
                                     <>
-                                        <div className='flex items-center gap-2'>
+                                        <div className='flex items-center gap-1'>
                                             <h3 className='text-lg font-semibold truncate'>
                                                 {item.name || item.identifier}
                                             </h3>
                                            {item.type === 'wallet' && (
-                                                <Button size="icon" variant="ghost" className='h-7 w-7 opacity-0 group-hover:opacity-100' onClick={handleStartEditing}><Edit className='h-4 w-4'/></Button>
+                                                <Button size="icon" variant="ghost" className='h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity' onClick={handleStartEditing}><Edit className='h-4 w-4'/></Button>
                                             )}
                                         </div>
                                         {item.name && (

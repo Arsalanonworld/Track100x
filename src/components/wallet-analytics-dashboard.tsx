@@ -4,7 +4,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
-import { Bell, Info, BarChart, Settings, Trash2, ArrowLeft } from 'lucide-react';
+import { Bell, Info, BarChart, Settings, Trash2 } from 'lucide-react';
 import { CryptoIcon } from '@/components/crypto-icon';
 import { AreaChart, Area, ResponsiveContainer, Tooltip as RechartsTooltip } from 'recharts';
 
@@ -38,7 +38,7 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useToast } from '@/hooks/use-toast';
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuPortal } from '@/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { WatchlistButton } from '@/components/track-button';
 import { MoreVertical } from 'lucide-react';
 
@@ -51,8 +51,6 @@ const mockAnalyzedWallet = {
     pnl_24h: 12,
     riskRating: 'Low',
     topChain: 'Ethereum',
-    tokenCount: 15,
-    avgHoldTime: 45, // in days
   },
   tokens: [
     {
@@ -256,57 +254,46 @@ const TokenHoldingsTable = ({ tokens }: { tokens: typeof mockAnalyzedWallet['tok
     </Card>
 )};
 
-const WalletActions = ({ walletAddress, isPortfolioView, onBack }: { walletAddress: string, isPortfolioView?: boolean, onBack: () => void }) => {
+const WalletActions = ({ walletAddress, onDisconnect }: { walletAddress: string, onDisconnect: () => void }) => {
     const [isAlertEditorOpen, setIsAlertEditorOpen] = useState(false);
 
     return (
         <Dialog open={isAlertEditorOpen} onOpenChange={setIsAlertEditorOpen}>
             <div className="flex items-center gap-2">
-                {isPortfolioView ? (
-                    <>
-                        <DialogTrigger asChild>
-                            <Button><Bell className="mr-2 h-4 w-4" />Create Alert</Button>
-                        </DialogTrigger>
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button variant="outline" size="icon"><MoreVertical className="h-4 w-4" /></Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                                <DropdownMenuItem>
-                                    <Settings className="mr-2 h-4 w-4" />
-                                    Wallet Settings
+                <WatchlistButton type="wallet" identifier={walletAddress} />
+                <DialogTrigger asChild>
+                    <Button><Bell className="mr-2 h-4 w-4" />Create Alert</Button>
+                </DialogTrigger>
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="outline" size="icon"><MoreVertical className="h-4 w-4" /></Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        <DropdownMenuItem>
+                            <Settings className="mr-2 h-4 w-4" />
+                            Wallet Settings
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                                <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-destructive">
+                                    <Trash2 className="mr-2 h-4 w-4" />
+                                    Disconnect Wallet
                                 </DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <AlertDialog>
-                                    <AlertDialogTrigger asChild>
-                                        <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-destructive">
-                                            <Trash2 className="mr-2 h-4 w-4" />
-                                            Remove Wallet
-                                        </DropdownMenuItem>
-                                    </AlertDialogTrigger>
-                                    <AlertDialogContent>
-                                        <AlertDialogHeader>
-                                            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                                            <AlertDialogDescription>This will remove the wallet from your portfolio. You can add it back at any time.</AlertDialogDescription>
-                                        </AlertDialogHeader>
-                                        <AlertDialogFooter>
-                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                            <AlertDialogAction onClick={onBack} className="bg-destructive hover:bg-destructive/90">Remove</AlertDialogAction>
-                                        </AlertDialogFooter>
-                                    </AlertDialogContent>
-                                </AlertDialog>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                    </>
-                ) : (
-                    <>
-                        <Button variant='outline' onClick={onBack}><ArrowLeft className="mr-2 h-4 w-4" />Back to Analyzer</Button>
-                        <WatchlistButton type="wallet" identifier={walletAddress} />
-                        <DialogTrigger asChild>
-                            <Button><Bell className="mr-2 h-4 w-4" />Create Alert</Button>
-                        </DialogTrigger>
-                    </>
-                )}
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                    <AlertDialogDescription>This will disconnect the wallet from your portfolio view. You can connect it again at any time.</AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction onClick={onDisconnect} className="bg-destructive hover:bg-destructive/90">Disconnect</AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
+                    </DropdownMenuContent>
+                </DropdownMenu>
             </div>
             {isAlertEditorOpen && (
                 <CreateAlertDialog
@@ -318,7 +305,7 @@ const WalletActions = ({ walletAddress, isPortfolioView, onBack }: { walletAddre
     );
 };
 
-export default function WalletAnalyticsDashboard({ walletAddress, isPortfolioView = false, onBack }: { walletAddress: string, isPortfolioView?: boolean, onBack: () => void }) {
+export default function WalletAnalyticsDashboard({ walletAddress, onDisconnect }: { walletAddress: string, onDisconnect: () => void }) {
     const wallet = mockAnalyzedWallet;
 
     return (
@@ -328,12 +315,12 @@ export default function WalletAnalyticsDashboard({ walletAddress, isPortfolioVie
                     <CryptoIcon token={wallet.stats.topChain} className="h-10 w-10" />
                     <div>
                         <h1 className="text-2xl font-bold flex items-center gap-2">
-                           {isPortfolioView ? "My Wallet" : wallet.name}
+                           My Wallet
                         </h1>
                         <p className="font-mono text-sm text-muted-foreground">{wallet.address}</p>
                     </div>
                 </div>
-                <WalletActions walletAddress={wallet.address} isPortfolioView={isPortfolioView} onBack={onBack} />
+                <WalletActions walletAddress={wallet.address} onDisconnect={onDisconnect} />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -349,5 +336,3 @@ export default function WalletAnalyticsDashboard({ walletAddress, isPortfolioVie
         </div>
     );
 };
-
-    

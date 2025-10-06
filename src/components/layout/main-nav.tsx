@@ -13,14 +13,14 @@ export function MainNav() {
 
     const navItems = [
         { href: '/feed', label: 'Whale Feed', visible: true },
-        { href: '/wallet-analytics', label: 'Analyzer', visible: true },
+        { href: '/portfolio', label: 'My Portfolio', visible: true },
         { href: '/crypto-pulse', label: 'Crypto Pulse', visible: true },
         { href: '/watchlist', label: 'Watchlist', visible: true },
         { href: '/alerts', label: 'Alerts', visible: true },
     ];
     
     const visibleItems = navItems.filter(item => {
-        if (!user && (item.href === '/watchlist' || item.href === '/alerts')) {
+        if (!user && (item.href === '/watchlist' || item.href === '/alerts' || item.href === '/portfolio')) {
             return false;
         }
         return item.visible;

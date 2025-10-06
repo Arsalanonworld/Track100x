@@ -4,7 +4,7 @@
 import * as React from "react"
 import Link, { type LinkProps } from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { Menu, Rss, Search, Eye, Bell, TrendingUp } from "lucide-react"
+import { Menu, Rss, Search, Eye, Bell, TrendingUp, Wallet } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -18,14 +18,14 @@ export function MobileNav() {
 
   const navItems = [
       { href: '/feed', label: 'Whale Feed', icon: Rss, visible: true },
-      { href: '/wallet-analytics', label: 'Analyzer', icon: Search, visible: true },
+      { href: '/portfolio', label: 'My Portfolio', icon: Wallet, visible: true },
       { href: '/crypto-pulse', label: 'Crypto Pulse', icon: TrendingUp, visible: true },
       { href: '/watchlist', label: 'Watchlist', icon: Eye, visible: true },
       { href: '/alerts', label: 'Alerts', icon: Bell, visible: true },
   ];
 
   const visibleItems = navItems.filter(item => {
-      if (!user && (item.href === '/watchlist' || item.href === '/alerts')) {
+      if (!user && (item.href === '/watchlist' || item.href === '/alerts' || item.href === '/portfolio')) {
           return false;
       }
       return item.visible;

@@ -5,7 +5,7 @@ import { LogoIcon } from './header';
 const footerLinks = {
   platform: [
     { label: 'Feed', href: '/feed' },
-    { label: 'Wallet Analytics', href: '/wallet-analytics' },
+    { label: 'My Portfolio', href: '/portfolio' },
     { label: 'Alerts', href: '/alerts' },
     { label: 'Watchlist', href: '/watchlist' },
     { label: 'Upgrade', href: '/upgrade' },
@@ -96,5 +96,3 @@ export function Footer() {
     </footer>
   );
 }
-
-    

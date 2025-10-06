@@ -7,10 +7,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
-import { Star, User, Bell, Link as LinkIcon, Bot } from 'lucide-react';
+import { Star, User, Bell, Link as LinkIcon, Bot, MoreVertical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Separator } from '@/components/ui/separator';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { useToast } from '@/hooks/use-toast';
 
 function AccountSkeleton() {
   return (
@@ -51,8 +58,16 @@ function AccountSkeleton() {
 
 export default function AccountPage() {
   const { user, claims, loading } = useUser();
+  const { toast } = useToast();
   const plan = claims?.plan || 'free';
   const isPro = plan === 'pro';
+
+  const handleConnectTelegram = () => {
+    toast({
+        title: "Coming Soon!",
+        description: "Telegram integration is not yet available.",
+    })
+  }
 
   if (loading) {
     return <AccountSkeleton />;
@@ -158,10 +173,22 @@ export default function AccountPage() {
                               <p className='text-xs text-muted-foreground'>Receive instant whale alerts in Telegram.</p>
                           </div>
                       </div>
-                      <Button variant="outline">
-                          <LinkIcon className="h-4 w-4 mr-2" />
-                          Connect
-                      </Button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="outline">
+                                <LinkIcon className="h-4 w-4 mr-2" />
+                                Connect
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                            <DropdownMenuItem onClick={handleConnectTelegram}>
+                                Connect Account
+                            </DropdownMenuItem>
+                            <DropdownMenuItem asChild>
+                                <a href="#" target="_blank" rel="noopener noreferrer">Learn More</a>
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                   </div>
               </CardContent>
           </Card>
