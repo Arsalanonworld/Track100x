@@ -82,13 +82,13 @@ function AddItemForm({ atLimit, onAdd }: { atLimit: boolean, onAdd: () => void }
 
     if (type === 'token') {
       // Skip alias for tokens, add directly
-      await confirmAddItem(finalIdentifier, type);
+      await confirmAddItem(finalIdentifier, type, '');
     } else {
       setIsAliasModalOpen(true);
     }
   };
 
-  const confirmAddItem = async (id: string, type: 'wallet' | 'token') => {
+  const confirmAddItem = async (id: string, type: 'wallet' | 'token', name: string) => {
     if (!user || !firestore) return;
     setIsSubmitting(true);
     
@@ -106,7 +106,7 @@ function AddItemForm({ atLimit, onAdd }: { atLimit: boolean, onAdd: () => void }
         const newDoc: Omit<WatchlistItem, 'id' | 'createdAt'> & { createdAt: any } = {
             identifier: id,
             type: type,
-            name: type === 'wallet' ? alias : '', // Only save alias for wallets
+            name: name,
             userId: user.uid,
             createdAt: serverTimestamp(),
         };
@@ -119,7 +119,7 @@ function AddItemForm({ atLimit, onAdd }: { atLimit: boolean, onAdd: () => void }
         const permissionError = new FirestorePermissionError({
             path: `users/${user.uid}/watchlist`,
             operation: 'create',
-            requestResourceData: { identifier: id, type: type, name: alias }
+            requestResourceData: { identifier: id, type: type, name: name }
         });
         errorEmitter.emit('permission-error', permissionError);
     } finally {
@@ -132,7 +132,7 @@ function AddItemForm({ atLimit, onAdd }: { atLimit: boolean, onAdd: () => void }
 
   const handleWalletAliasSubmit = () => {
     if (itemToAdd) {
-        confirmAddItem(itemToAdd.identifier, itemToAdd.type);
+        confirmAddItem(itemToAdd.identifier, itemToAdd.type, alias);
     }
   }
 
@@ -235,7 +235,9 @@ function WatchlistItemCard({ item, onUpdate, onRemove }: { item: WatchlistItem, 
                                             <h3 className='text-lg font-semibold truncate'>
                                                 {item.name || item.identifier}
                                             </h3>
-                                            <Button size="icon" variant="ghost" className='h-7 w-7 opacity-0 group-hover:opacity-100' onClick={handleStartEditing}><Edit className='h-4 w-4'/></Button>
+                                            {item.type === 'wallet' && (
+                                                <Button size="icon" variant="ghost" className='h-7 w-7 opacity-0 group-hover:opacity-100' onClick={handleStartEditing}><Edit className='h-4 w-4'/></Button>
+                                            )}
                                         </div>
                                         {item.name && (
                                             <a href={getExplorerUrl('ethereum', item.identifier, 'address')} target="_blank" rel="noopener noreferrer" className='font-mono text-sm text-muted-foreground hover:text-primary transition-colors inline-block truncate max-w-full'>
@@ -247,7 +249,7 @@ function WatchlistItemCard({ item, onUpdate, onRemove }: { item: WatchlistItem, 
                            ) : (
                                 <>
                                     <h3 className='text-lg font-semibold truncate'>
-                                        {currentToken?.name || item.identifier}
+                                        {currentToken?.name || item.name || item.identifier}
                                     </h3>
                                     <p className="text-sm text-muted-foreground font-mono">{item.identifier}</p>
                                 </>
@@ -311,7 +313,7 @@ function WatchlistSkeleton() {
                 <Card key={i}>
                     <CardContent className="p-4">
                         <div className="flex items-start gap-4">
-                            <Skeleton className="h-8 w-8 rounded-md mt-1" />
+                            <Skeleton className="h-8 w-8 rounded-full mt-1" />
                             <div className="space-y-2 w-full">
                                 <Skeleton className="h-6 w-3/4 rounded-md" />
                                 <Skeleton className="h-4 w-1/2 rounded-md" />
@@ -342,7 +344,6 @@ export default function WatchlistPage() {
       return query(collection(firestore, `users/${user.uid}/watchlist`));
     }
     return null;
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, firestore, refreshKey]);
 
   const { data: watchlist, loading: watchlistLoading } = useCollection<WatchlistItem>(watchlistQuery);
