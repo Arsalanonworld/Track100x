@@ -280,14 +280,6 @@ export const QuickAlertConfigurator = ({ onSubmitted, entity, alert }: { onSubmi
                     <p className="text-sm font-medium">Email</p>
                     <Switch />
                 </div>
-                <div className="flex items-center justify-between rounded-md border p-3">
-                    <p className="text-sm font-medium">Telegram</p>
-                    <Switch />
-                </div>
-                <div className="flex items-center justify-between rounded-md border p-3">
-                    <p className="text-sm font-medium">Discord</p>
-                    <Switch />
-                </div>
              </div>
           </div>
         <SubmitButton />

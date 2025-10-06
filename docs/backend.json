@@ -16,19 +16,6 @@
       },
       "required": ["uid", "email", "plan", "createdAt"]
     },
-    "LeaderboardEntry": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "LeaderboardEntry",
-      "type": "object",
-      "description": "Represents a single entry in the leaderboard.",
-      "properties": {
-        "rank": { "type": "number" },
-        "walletId": { "type": "string" },
-        "pnl": { "type": "number" },
-        "netWorth": { "type": "number" }
-      },
-      "required": ["rank", "walletId", "pnl", "netWorth"]
-    },
     "WhaleFeedTransaction": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "WhaleFeedTransaction",
@@ -86,10 +73,6 @@
     "/users/{userId}/watchlist/{watchlistItemId}": {
       "schema": { "$ref": "#/entities/WatchlistItem" },
       "description": "Stores wallets a user is watching."
-    },
-    "/leaderboard/{leaderboardEntryId}": {
-      "schema": { "$ref": "#/entities/LeaderboardEntry" },
-      "description": "Stores the public leaderboard data."
     },
     "/whaleFeed/{whaleTransactionId}": {
       "schema": { "$ref": "#/entities/WhaleFeedTransaction" },

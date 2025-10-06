@@ -11,10 +11,9 @@ export function MainNav() {
     const { user } = useUser();
 
     const navItems = [
-        { href: '/leaderboard', label: 'Leaderboard', visible: true },
+        { href: '/feed', label: 'Feed', visible: true },
         { href: '/watchlist', label: 'Watchlist', visible: !!user },
         { href: '/alerts', label: 'Alerts', visible: true },
-        { href: '/insights', label: 'Insights', visible: true },
     ];
     
     const visibleItems = navItems.filter(item => item.visible);

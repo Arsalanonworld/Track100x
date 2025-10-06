@@ -4,18 +4,17 @@ import { LogoIcon } from './header';
 
 const footerLinks = {
   platform: [
-    { label: 'Leaderboard', href: '/leaderboard' },
+    { label: 'Feed', href: '/feed' },
     { label: 'Alerts', href: '/alerts' },
-    { label: 'Insights', href: '/insights' },
+    { label: 'Watchlist', href: '/watchlist' },
     { label: 'Upgrade', href: '/upgrade' },
   ],
   company: [
-    { label: 'About', href: '/about' },
-    { label: 'Contact', href: '/contact' },
+    { label: 'Blog', href: '#' },
+    { label: 'Contact', href: '#' },
   ],
   social: [
     { label: 'Twitter / X', href: '#' },
-    { label: 'Instagram', href: '#' },
     { label: 'Discord', href: '#' },
   ],
   legal: [

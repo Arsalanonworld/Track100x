@@ -28,7 +28,7 @@ import { cn } from '@/lib/utils';
 import { useUser } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { AuthDialog } from '@/components/auth/auth-dialog';
-import { Zap, Bell, BarChart, Newspaper, Eye } from 'lucide-react';
+import { Zap, Bell, Eye } from 'lucide-react';
 
 
 // ----------------- Data -----------------
@@ -36,31 +36,27 @@ const features = [
   {
     category: 'Core Features',
     items: [
-      { name: 'Live Whale Feed', free: 'Delayed (1-2 mins)', pro: 'Real-time' },
-      { name: 'Whale Feed Ads', free: true, pro: false },
-      { name: 'Leaderboard Access', free: 'Top 10 Wallets', pro: 'Top 100 Wallets' },
-      { name: 'Watchlist', free: '3 Wallets', pro: 'Unlimited' },
-      { name: 'Insights & Articles', free: 'Previews Only', pro: 'Full Access' },
+      { name: 'Live Whale Feed', free: 'Delayed (5-15 mins)', pro: 'Real-time (0 delay)' },
+      { name: 'Watchlist', free: '5 items', pro: 'Unlimited' },
     ],
   },
   {
     category: 'Alerts',
     items: [
-      { name: 'Quick Alerts', free: '1 Active Alert', pro: 'Unlimited' },
-      { name: 'Advanced Alert Builder', free: false, pro: true },
+      { name: 'Alerts per Month', free: '5 alerts', pro: 'Unlimited' },
       {
         name: 'Delivery Channels',
         free: 'In-App Only',
-        pro: 'In-App, Email, Telegram, Discord',
+        pro: 'In-App & Email',
       },
     ],
   },
   {
     category: 'Experience',
     items: [
-      { name: 'Advertisements', free: true, pro: false },
-      { name: 'Affiliate Links', free: true, pro: false },
-      { name: 'Priority Support', free: false, pro: true },
+      { name: 'Advertisements & Affiliate Links', free: true, pro: false },
+      { name: 'Weekly Digest Email', free: true, pro: false },
+      { name: 'Daily Digest Email', free: false, pro: true },
     ],
   },
 ];
@@ -68,28 +64,18 @@ const features = [
 const featureHighlights = [
     {
         icon: <Zap className="h-8 w-8 text-primary" />,
-        title: 'Real-Time Whale Feed',
+        title: 'Real-Time Feed',
         description: 'See whale moves instantly as they happen on-chain, with zero delays.',
     },
     {
         icon: <Bell className="h-8 w-8 text-primary" />,
-        title: 'Unlimited Smart Alerts',
-        description: 'Set advanced rules and get notified via Email, Telegram, or Discord.',
-    },
-    {
-        icon: <BarChart className="h-8 w-8 text-primary" />,
-        title: 'Top 100 Leaderboard',
-        description: 'Gain an edge by tracking the most profitable wallets in crypto.',
-    },
-    {
-        icon: <Newspaper className="h-8 w-8 text-primary" />,
-        title: 'Full Insights Access',
-        description: 'Read exclusive, in-depth research and market analysis from our experts.',
+        title: 'Unlimited Alerts',
+        description: 'Create unlimited alerts and get notified via Email to never miss a move.',
     },
     {
         icon: <Eye className="h-8 w-8 text-primary" />,
-        title: 'Ad-Free Experience',
-        description: 'Enjoy a clean, focused interface with no distractions or affiliate links.',
+        title: 'Unlimited Watchlist',
+        description: 'Track as many wallets and tokens as you want without any limitations.',
     },
 ];
 
@@ -102,7 +88,7 @@ const faqs = [
   {
     question: 'What happens to my data and alerts if I downgrade to Free?',
     answer:
-      'Your alerts and watchlist items will not be deleted, but they will be deactivated if you exceed the Free plan limits (1 active alert, 3 watched wallets). You can re-activate them if you upgrade again or reduce your usage to fit within the limits.',
+      'Your alerts and watchlist items will not be deleted, but they will be deactivated if you exceed the Free plan limits (5 alerts, 5 watched items). You can re-activate them if you upgrade again or reduce your usage to fit within the limits.',
   },
   {
     question: 'What payment methods do you accept?',
@@ -112,12 +98,7 @@ const faqs = [
   {
     question: 'How "real-time" is the data?',
     answer:
-      'Our Pro plan offers a feed with near-zero latency, pulling data directly as transactions are confirmed on-chain. The Free plan feed has a delay of up to 1-2 minutes.',
-  },
-  {
-    question: 'Do you offer a free trial for the Pro plan?',
-    answer:
-      'We do not offer a time-based free trial. However, our Free plan is a great way to experience the core functionality of Track100x. You can upgrade to Pro at any time to unlock all features.',
+      'Our Pro plan offers a feed with near-zero latency, pulling data directly as transactions are confirmed on-chain. The Free plan feed has a delay of up to 5-15 minutes.',
   },
 ];
 
@@ -200,7 +181,7 @@ const ProFeatures = () => {
                     Here's what you unlock with a Pro membership.
                 </p>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {featureHighlights.map((feature, index) => (
                     <div key={index} className="bg-card border rounded-xl p-6 flex flex-col items-center text-center">
                         <div className="flex-shrink-0">{feature.icon}</div>
@@ -253,10 +234,10 @@ export default function UpgradePage() {
       <div className="container mx-auto px-4 py-12 sm:py-16">
         <section className="text-center max-w-4xl mx-auto">
           <h1 className="text-4xl font-extrabold tracking-tighter sm:text-5xl lg:text-6xl">
-            Follow the Whales. Find the Alpha.
+            Track Whale Wallets Instantly.
           </h1>
           <p className="max-w-2xl mx-auto mt-6 text-lg text-muted-foreground">
-            Get real-time data, unlimited alerts, and advanced tools. Upgrade to Track100x Pro.
+            Free delayed feed. $5/month for real-time alerts & tracking.
           </p>
           <div className="flex items-center justify-center gap-4 mt-8">
             <Button size="lg" onClick={handleUpgradeClick}>
@@ -289,7 +270,7 @@ export default function UpgradePage() {
               aria-label="Toggle billing cycle"
             />
             <span className={cn('font-medium', billingCycle === 'yearly' && 'text-primary')}>
-              Yearly <span className="text-green-500 font-bold ml-1">(Save 20%)</span>
+              Yearly <span className="text-green-500 font-bold ml-1">(Save over 15%)</span>
             </span>
           </div>
           <div className="mt-12 grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-4xl mx-auto items-start">
@@ -297,20 +278,20 @@ export default function UpgradePage() {
               plan="Free"
               price="$0"
               description="Get a feel for our platform with essential tracking tools."
-              features={['Delayed Whale Feed', 'Top 10 Leaderboard', '1 Active Alert', 'Ad-supported']}
+              features={['Delayed Whale Feed', '5 Watchlist Items', '5 Alerts per Month', 'Ad-supported']}
               ctaText={user ? 'Your Current Plan' : 'Get Started Free'}
               ctaAction={() => !user && router.push('/')}
             />
             <PricingCard
               plan="Pro"
-              price={billingCycle === 'monthly' ? '$29' : '$23'}
+              price={billingCycle === 'monthly' ? '$5' : '$4'}
               pricePeriod="/ month"
               description="Unlimited access to every tool for the serious on-chain analyst."
               features={[
                 'Real-time Whale Feed',
-                'Full Leaderboard Access',
-                'Unlimited Advanced Alerts',
-                'Ad-Free Experience',
+                'Unlimited Watchlist',
+                'Unlimited Alerts',
+                'Ad-Free Experience & Daily Digest',
               ]}
               ctaText="Upgrade to Pro"
               ctaAction={handleUpgradeClick}

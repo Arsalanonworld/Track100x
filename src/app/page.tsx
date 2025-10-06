@@ -1,10 +1,8 @@
-
 'use client';
 
 import { WhaleFeed } from '@/components/whale-feed';
 import HeroSection from '@/components/hero-section';
 import { HomePageCta } from '@/components/home-page-cta';
-import { LeaderboardPreview } from '@/components/leaderboard-preview';
 
 export default function HomePage() {
   return (
@@ -18,7 +16,6 @@ export default function HomePage() {
             <div id="whale-feed">
                 <WhaleFeed />
             </div>
-            <LeaderboardPreview />
             <HomePageCta />
           </div>
       </div>

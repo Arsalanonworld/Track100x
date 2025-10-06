@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
-import { Star, User, Bell, Link as LinkIcon, Bot, Circle } from 'lucide-react';
+import { Star, User, Bell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Switch } from '@/components/ui/switch';
@@ -119,7 +119,7 @@ export default function AccountPage() {
                   <p className="text-muted-foreground mt-2">You have full access to all Track100x features.</p>
                   <Separator className="my-6" />
                   <p className="text-sm font-semibold">Next billing date: <span className="font-normal">January 1, 2025</span></p>
-                  <p className="text-sm font-semibold">Price: <span className="font-normal">$23/month (Billed Annually)</span></p>
+                  <p className="text-sm font-semibold">Price: <span className="font-normal">$49/year (Billed Annually)</span></p>
                   <Button variant="outline" className="mt-4" disabled>Manage Subscription</Button>
                    <p className="text-xs text-muted-foreground mt-2">Redirect to Stripe/LemonSqueezy not implemented.</p>
                 </div>
@@ -156,27 +156,13 @@ export default function AccountPage() {
                 </div>
                  <div className='flex items-center justify-between p-4 border rounded-lg'>
                     <div className='flex items-center gap-3'>
-                        <Circle className="h-5 w-5 text-green-500 fill-green-500" />
+                        <Bell className="h-5 w-5 text-green-500" />
                         <p className='font-medium'>Email Notifications</p>
                     </div>
                     <div className='flex items-center gap-3'>
                         <span className="text-sm text-muted-foreground">{user.email}</span>
                         <Switch defaultChecked />
                     </div>
-                </div>
-                <div className='flex items-center justify-between p-4 border rounded-lg'>
-                    <div className='flex items-center gap-3'>
-                        <Bot className="h-5 w-5 text-muted-foreground" />
-                        <p className='font-medium'>Telegram Notifications</p>
-                    </div>
-                     <Button variant="secondary"><LinkIcon className='h-4 w-4 mr-2'/>Connect</Button>
-                </div>
-                <div className='flex items-center justify-between p-4 border rounded-lg'>
-                    <div className='flex items-center gap-3'>
-                        <Bot className="h-5 w-5 text-muted-foreground" />
-                        <p className='font-medium'>Discord Notifications</p>
-                    </div>
-                     <Button variant="secondary"><LinkIcon className='h-4 w-4 mr-2'/>Connect</Button>
                 </div>
             </CardContent>
         </Card>

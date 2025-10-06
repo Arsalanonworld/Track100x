@@ -3,7 +3,7 @@
 import * as React from "react"
 import Link, { type LinkProps } from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { Menu, BarChart, Bell, FileText, Eye, Users } from "lucide-react"
+import { Menu, BarChart, Bell, FileText, Eye, Rss } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -16,10 +16,9 @@ export function MobileNav() {
   const { user } = useUser();
 
   const navItems = [
-      { href: '/leaderboard', label: 'Leaderboard', icon: Users, visible: true },
+      { href: '/feed', label: 'Feed', icon: Rss, visible: true },
       { href: '/watchlist', label: 'Watchlist', icon: Eye, visible: !!user },
       { href: '/alerts', label: 'Alerts', icon: Bell, visible: true },
-      { href: '/insights', label: 'Insights', icon: FileText, visible: true },
   ];
 
   const visibleItems = navItems.filter(item => item.visible);
