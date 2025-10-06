@@ -59,6 +59,30 @@
       "description": "Insight article image",
       "imageUrl": "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxjcnlwdG8lMjBhaXJkcm9wfGVufDB8fHx8MTc1OTY1OTQzM3ww&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "crypto airdrop"
+    },
+    {
+      "id": "feature-portfolio-breakdown",
+      "description": "Screenshot of a portfolio breakdown chart.",
+      "imageUrl": "https://images.unsplash.com/photo-1642543348743-77c920288517?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzNzk2NTR8MHwxfHNlYXJjaHwxfHxjcnlwdG8lMjBwb3J0Zm9saW8lMjBicmVha2Rvd258ZW58MHx8fHwxNzE2OTk2OTMzfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "crypto portfolio"
+    },
+    {
+      "id": "feature-pnl-analysis",
+      "description": "Screenshot of a PnL analysis chart.",
+      "imageUrl": "https://images.unsplash.com/photo-1640325036399-4a43404c0d35?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzNzk2NTR8MHwxfHNlYXJjaHwyfHxjcnlwdG8lMjBwcm9maXQlMjBhbmQlMjBsb3NzfGVufDB8fHx8MTcxNjk5Njk1OHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "crypto profit"
+    },
+    {
+      "id": "feature-heatmap",
+      "description": "Screenshot of an on-chain activity heatmap.",
+      "imageUrl": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzNzk2NTR8MHwxfHNlYXJjaHwxfHxkYXRhJTIwZGFzaGJvYXJkJTIwaGVhdG1hcHxlbnwwfHx8fDE3MTY5OTcwMTF8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "data heatmap"
+    },
+    {
+      "id": "feature-ai-insights",
+      "description": "Screenshot of AI-powered insights.",
+      "imageUrl": "https://images.unsplash.com/photo-1677756119517-756a188d2d94?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzNzk2NTR8MHwxfHNlYXJjaHwxfHxBSC UyMGluc2lnaHRzJTIwY3J5cHRvfGVufDB8fHx8MTcxNjk5NzAzNHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "AI insights"
     }
   ]
 }

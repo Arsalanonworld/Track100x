@@ -1,43 +1,33 @@
+
 'use client';
 
 import { useState } from 'react';
-import PageHeader from '@/components/page-header';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Search, ArrowRight, PieChart, TrendingUp, Activity, Sparkles, ShieldCheck, Copy } from 'lucide-react';
 import WalletAnalyticsDashboard from './_components/wallet-analytics-dashboard';
+import { StickyScrollFeatures } from '@/components/sticky-scroll-features';
 
 const features = [
     {
-        icon: <PieChart className="h-6 w-6 text-primary" />,
         title: "Comprehensive Portfolio Breakdown",
-        description: "Visualize token allocation, quantity, and current market value with our interactive pie chart and detailed holdings table."
+        description: "Visualize token allocation, quantity, and current market value with our interactive pie chart and detailed holdings table.",
+        contentSlug: "feature-portfolio-breakdown"
     },
     {
-        icon: <TrendingUp className="h-6 w-6 text-primary" />,
         title: "In-Depth PnL Analysis",
-        description: "Track realized and unrealized gains and losses over various timeframes to understand true wallet performance."
+        description: "Track realized and unrealized gains and losses over various timeframes to understand true wallet performance.",
+        contentSlug: "feature-pnl-analysis"
     },
     {
-        icon: <Activity className="h-6 w-6 text-primary" />,
         title: "On-Chain Activity Heatmap",
-        description: "Visualize transaction patterns, interaction frequency, and gas usage over the past year to spot trends."
+        description: "Visualize transaction patterns, interaction frequency, and gas usage over the past year to spot trends.",
+        contentSlug: "feature-heatmap"
     },
     {
-        icon: <Sparkles className="h-6 w-6 text-primary" />,
         title: "AI-Powered Strategic Insights",
-        description: "Receive AI-generated summaries of a wallet's trading strategy, risk profile, and potential for high-multiple returns."
-    },
-    {
-        icon: <ShieldCheck className="h-6 w-6 text-primary" />,
-        title: "Diversification & Risk Scoring",
-        description: "Assess portfolio risk with our diversification score and receive a color-coded risk rating."
-    },
-    {
-        icon: <Copy className="h-6 w-6 text-primary" />,
-        title: "Wallet Benchmarking",
-        description: "Compare wallet performance against market benchmarks like Bitcoin and Ethereum to gauge relative success."
+        description: "Receive AI-generated summaries of a wallet's trading strategy, risk profile, and potential for high-multiple returns.",
+        contentSlug: "feature-ai-insights"
     },
 ];
 
@@ -56,7 +46,7 @@ const WalletSearch = ({ onSearch }: { onSearch: (address: string) => void }) => 
 
     return (
         <div className="space-y-16">
-            <div className="text-center max-w-3xl mx-auto">
+            <div className="text-center max-w-3xl mx-auto pt-8">
                 <h1 className="text-4xl font-extrabold tracking-tighter sm:text-5xl lg:text-6xl">
                     The Ultimate Wallet Analyzer
                 </h1>
@@ -82,25 +72,7 @@ const WalletSearch = ({ onSearch }: { onSearch: (address: string) => void }) => 
                 </div>
             </div>
             
-            <div className="space-y-8">
-                 <div className="text-center max-w-3xl mx-auto">
-                    <h2 className="text-3xl font-bold tracking-tighter">A New Standard in Wallet Analysis</h2>
-                    <p className="mt-4 text-muted-foreground">
-                        Go beyond simple balance checks. We provide institutional-grade tools to give you an edge.
-                    </p>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {features.map((feature, i) => (
-                        <Card key={i} className="p-6 bg-card/50 border-border/80 text-left flex items-start gap-4">
-                            <div className="flex-shrink-0 mt-1">{feature.icon}</div>
-                            <div>
-                                <h3 className="font-bold text-lg">{feature.title}</h3>
-                                <p className="text-muted-foreground text-sm mt-1">{feature.description}</p>
-                            </div>
-                        </Card>
-                    ))}
-                </div>
-            </div>
+            <StickyScrollFeatures features={features} />
 
         </div>
     );
