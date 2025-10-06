@@ -5,7 +5,7 @@ import { useMemo, useState } from 'react';
 import PageHeader from '@/components/page-header';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Trash2, EyeOff, BellPlus, ArrowRight, Pencil, Check, X, Lock, Wallet, Tag } from 'lucide-react';
+import { Trash2, EyeOff, BellPlus, ArrowRight, Pencil, Check, X, Lock, Wallet } from 'lucide-react';
 import { useUser, useCollection, useFirestore } from '@/firebase';
 import { collection, query, doc, deleteDoc, updateDoc } from 'firebase/firestore';
 import type { WatchlistItem } from '@/lib/types';
