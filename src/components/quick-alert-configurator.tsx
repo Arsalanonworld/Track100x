@@ -13,7 +13,7 @@ import { useUser, useFirestore } from "@/firebase";
 import { addDoc, collection, doc, serverTimestamp, updateDoc } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
-import { Loader2 } from "lucide-react";
+import { Loader2, Lock } from "lucide-react";
 
 type WalletRuleType = 'transactionValue' | 'tokenBalanceChange' | 'portfolioValueChange' | 'pnlChange' | 'dormancy';
 type TokenRuleType = 'priceChange' | 'newWhaleTransaction' | 'liquidityShift';
@@ -28,8 +28,9 @@ interface QuickAlertConfiguratorProps {
 }
 
 export function QuickAlertConfigurator({ entity, alert, onSubmitted }: QuickAlertConfiguratorProps) {
-    const { user } = useUser();
+    const { user, claims } = useUser();
     const firestore = useFirestore();
+    const isPro = claims?.plan === 'pro';
 
     const isWallet = (entity?.type === 'wallet' || alert?.alertType === 'wallet');
     const [ruleType, setRuleType] = useState<WalletRuleType | TokenRuleType | string>(alert?.rule || (isWallet ? 'transactionValue' : 'priceChange'));
@@ -147,20 +148,48 @@ export function QuickAlertConfigurator({ entity, alert, onSubmitted }: QuickAler
                         <div className="space-y-4">
                             <div>
                                 <Label>Value Threshold (USD)</Label>
-                                <Input 
-                                    type="number" 
-                                    value={value} 
-                                    onChange={(e) => setValue(Number(e.target.value))}
-                                    placeholder="e.g. 1000000"
-                                />
+                                {isPro ? (
+                                    <Input 
+                                        type="number" 
+                                        value={value} 
+                                        onChange={(e) => setValue(Number(e.target.value))}
+                                        placeholder="e.g. 1000000"
+                                    />
+                                ) : (
+                                    <Select value={String(value)} onValueChange={(v) => setValue(Number(v))}>
+                                        <SelectTrigger>
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="100000">$100,000</SelectItem>
+                                            <SelectItem value="500000">$500,000</SelectItem>
+                                            <SelectItem value="1000000">$1,000,000</SelectItem>
+                                            <SelectItem value="5000000">$5,000,000</SelectItem>
+                                            <SelectItem value="custom" disabled>
+                                                <div className="flex items-center gap-2">
+                                                    <Lock className="h-3 w-3"/> Custom (Pro)
+                                                </div>
+                                            </SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                )}
                                 <p className="text-xs text-muted-foreground mt-1">Notify for transactions over this value.</p>
                             </div>
                             <div>
-                                <Label>Direction</Label>
-                                <RadioGroup value={direction} onValueChange={setDirection} className="flex gap-4 pt-2">
-                                    <div className="flex items-center space-x-2"><RadioGroupItem value="in" id="in" /><Label htmlFor="in">Incoming</Label></div>
-                                    <div className="flex items-center space-x-2"><RadioGroupItem value="out" id="out" /><Label htmlFor="out">Outgoing</Label></div>
-                                    <div className="flex items-center space-x-2"><RadioGroupItem value="any" id="any" /><Label htmlFor="any">Any</Label></div>
+                                <Label className="flex items-center gap-2">Direction {!isPro && <Lock className="h-3 w-3"/>}</Label>
+                                <RadioGroup value={isPro ? direction : 'any'} onValueChange={setDirection} className="flex gap-4 pt-2" disabled={!isPro}>
+                                    <div className="flex items-center space-x-2">
+                                        <RadioGroupItem value="in" id="in" disabled={!isPro}/>
+                                        <Label htmlFor="in" className={!isPro ? 'text-muted-foreground' : ''}>Incoming</Label>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                        <RadioGroupItem value="out" id="out" disabled={!isPro}/>
+                                        <Label htmlFor="out" className={!isPro ? 'text-muted-foreground' : ''}>Outgoing</Label>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                        <RadioGroupItem value="any" id="any" />
+                                        <Label htmlFor="any">Any</Label>
+                                    </div>
                                 </RadioGroup>
                             </div>
                             <div>
@@ -328,7 +357,7 @@ export function QuickAlertConfigurator({ entity, alert, onSubmitted }: QuickAler
                 </Select>
             </div>
             {renderContent()}
-            <div className="flex justify-end gap-2">
+            <div className="flex justify-end gap-2 pt-4">
                 <Button variant="outline" onClick={onSubmitted}>Cancel</Button>
                 <Button onClick={handleSave} disabled={isSubmitting}>
                     {isSubmitting ? <Loader2 className="animate-spin" /> : alert ? "Save Changes" : "Create Alert"}
