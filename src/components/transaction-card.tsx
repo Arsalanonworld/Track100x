@@ -3,7 +3,7 @@
 import { Card } from "@/components/ui/card";
 import type { WhaleTransaction } from "@/lib/mock-data";
 import Link from "next/link";
-import { Copy, ChevronDown, BellPlus, ArrowUpRight, Wallet2, Hash } from "lucide-react";
+import { Copy, ChevronDown, BellPlus, ArrowUpRight } from "lucide-react";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { cn } from "@/lib/utils";
@@ -20,11 +20,10 @@ import { CreateAlertDialog } from "./create-alert-dialog";
 import { WatchlistButton } from "./track-button";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuLabel } from "./ui/dropdown-menu";
 import { CryptoIcon } from "./crypto-icon";
-import { Table, TableBody, TableCell, TableRow } from "./ui/table";
 
-
-const DetailRow = ({ label, value, network, entityType, tags }: { label: string, value: string, network: string, entityType: 'tx' | 'address', tags?: string[] }) => {
+const DetailItem = ({ label, value, network, entityType }: { label: string; value: string; network: string; entityType: "tx" | "address" }) => {
     const { toast } = useToast();
+
     const handleCopy = (e: React.MouseEvent, text: string) => {
         e.stopPropagation();
         navigator.clipboard.writeText(text);
@@ -32,33 +31,26 @@ const DetailRow = ({ label, value, network, entityType, tags }: { label: string,
     };
 
     return (
-        <TableRow>
-            <TableCell className="font-medium text-muted-foreground w-[120px]">{label}</TableCell>
-            <TableCell>
-                <div className="flex items-center justify-between">
-                    <div className="flex-1 min-w-0">
-                        <p className="font-mono text-sm truncate">{value}</p>
-                        {tags && tags.length > 0 && (
-                            <div className="flex items-center gap-1.5 mt-1.5">
-                                {tags.map(tag => <Badge key={tag} variant="secondary" className="text-xs">{tag}</Badge>)}
-                            </div>
-                        )}
-                    </div>
-                    <div className="flex items-center gap-0">
-                         <Button variant="ghost" size="icon" className="h-7 w-7" onClick={(e) => handleCopy(e, value)}>
-                            <Copy className="h-3.5 w-3.5" />
-                        </Button>
-                        <Button variant="ghost" size="icon" className="h-7 w-7" asChild>
-                            <Link href={getExplorerUrl(network, value, entityType)} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
-                                <ArrowUpRight className="h-3.5 w-3.5" />
-                            </Link>
-                        </Button>
-                    </div>
+        <div className="group/detail-item grid grid-cols-[80px_1fr] items-center gap-4">
+            <span className="text-sm text-muted-foreground text-right">{label}</span>
+            <div className="flex items-center justify-between">
+                 <Link href={getExplorerUrl(network, value, entityType)} target="_blank" rel="noopener noreferrer" className="font-mono text-sm truncate hover:text-primary" onClick={(e) => e.stopPropagation()}>
+                    {value}
+                </Link>
+                <div className="flex items-center opacity-0 group-hover/detail-item:opacity-100 transition-opacity">
+                    <Button variant="ghost" size="icon" className="h-7 w-7" onClick={(e) => handleCopy(e, value)}>
+                        <Copy className="h-3.5 w-3.5" />
+                    </Button>
+                    <Button variant="ghost" size="icon" className="h-7 w-7" asChild>
+                        <Link href={getExplorerUrl(network, value, entityType)} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
+                            <ArrowUpRight className="h-3.5 w-3.5" />
+                        </Link>
+                    </Button>
                 </div>
-            </TableCell>
-        </TableRow>
-    )
-}
+            </div>
+        </div>
+    );
+};
 
 
 const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
@@ -74,7 +66,7 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
     return (
         <Dialog open={isAlertEditorOpen} onOpenChange={setIsAlertEditorOpen}>
             <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-                <Card className="w-full hover:shadow-lg transition-shadow duration-200 group/card">
+                <Card className="w-full hover:shadow-lg transition-shadow duration-200 group/card overflow-hidden">
                     <CollapsibleTrigger asChild>
                         <div className="cursor-pointer p-3 sm:p-4">
                             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
@@ -148,14 +140,10 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
                         </div>
                     </CollapsibleTrigger>
                     <CollapsibleContent>
-                       <div className="px-4 pb-4">
-                           <Table>
-                               <TableBody>
-                                   <DetailRow label="Sender" value={tx.from} network={tx.network} entityType="address" tags={tx.fromTags} />
-                                   <DetailRow label="Receiver" value={tx.to} network={tx.network} entityType="address" tags={tx.toTags} />
-                                   <DetailRow label="Transaction Hash" value={tx.txHash} network={tx.network} entityType="tx" />
-                               </TableBody>
-                           </Table>
+                       <div className="p-4 border-t bg-muted/30 space-y-3">
+                           <DetailItem label="Sender" value={tx.from} network={tx.network} entityType="address" />
+                           <DetailItem label="Receiver" value={tx.to} network={tx.network} entityType="address" />
+                           <DetailItem label="Tx Hash" value={tx.txHash} network={tx.network} entityType="tx" />
                         </div>
                     </CollapsibleContent>
                 </Card>
@@ -172,4 +160,3 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
 
 
 export default TransactionCard;
-
