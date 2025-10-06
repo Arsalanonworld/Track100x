@@ -137,7 +137,7 @@ function WatchlistItemCard({ item, onUpdate, onRemove }: { item: WatchlistItem, 
                                         )}
                                     </div>
                                     <div className='flex justify-end items-center h-full'>
-                                        <LineChart className='h-8 w-16 text-green-500' />
+                                       
                                     </div>
                                 </div>
                            )}
@@ -269,8 +269,8 @@ export default function WatchlistPage() {
   const isLoading = userLoading || (user && watchlistLoading);
 
   const pageDescription = isPro
-    ? 'Add a wallet address or token symbol to start tracking.'
-    : `Track up to ${WATCHLIST_LIMIT_FREE} wallets/tokens on the free plan. Add a new item to get started.`;
+    ? 'Add wallets or tokens to start tracking their activity.'
+    : `Track up to ${WATCHLIST_LIMIT_FREE} wallets/tokens. Add a new item to get started.`;
 
 
   return (
