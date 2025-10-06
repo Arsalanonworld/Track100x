@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { FeatureLock } from '@/components/feature-lock';
 import { useUser } from '@/firebase';
-import { Wallet, Plus, MoreHorizontal, Settings, Trash2, AlertTriangle, ArrowLeft, Clock, BarChart, Percent, ShieldCheck, Zap, Info, Download, Share, Bell } from 'lucide-react';
+import { Wallet, Plus, MoreHorizontal, Settings, Trash2, ArrowLeft, Clock, BarChart, Percent, ShieldCheck, Zap, Info, Download, Share, Bell } from 'lucide-react';
 import { CryptoIcon } from '@/components/crypto-icon';
 import {
   DropdownMenu,
@@ -30,6 +30,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 
 const mockConnectedWallet = {
   address: '0x1a2b3c4d5e6f7g8h9i0j1k213m4n5o6p7q8r9s0t',
+  name: 'My Main Wallet',
   stats: {
     totalValue: 2300000,
     pnl_24h: 12,
@@ -37,7 +38,7 @@ const mockConnectedWallet = {
     potential: 85,
     tokenCount: 15,
     avgHoldTime: 45, // in days
-    topChain: 'Solana',
+    topChain: 'Ethereum',
     riskRating: 'Low',
   },
   tokens: [
@@ -130,7 +131,7 @@ const TokenHoldingsTable = ({ tokens }: { tokens: typeof mockConnectedWallet['to
         <CardHeader className="flex flex-row items-center justify-between">
             <div>
                 <CardTitle>Token Holdings</CardTitle>
-                <CardDescription>All assets held in this wallet. (Top 20)</CardDescription>
+                <CardDescription>Assets held in this connected wallet.</CardDescription>
             </div>
             <Button variant="outline" size="sm">
                 <Download className="mr-2 h-4 w-4" />
@@ -189,37 +190,58 @@ const TokenHoldingsTable = ({ tokens }: { tokens: typeof mockConnectedWallet['to
     </Card>
 );
 
+const WalletActions = () => (
+    <div className="flex items-center gap-2">
+        <Button><Bell className="mr-2 h-4 w-4" />Create Alert</Button>
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                 <Button variant="outline" size="icon"><MoreHorizontal className="h-4 w-4" /></Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+                 <DropdownMenuItem>
+                    <Settings className="mr-2 h-4 w-4" />
+                    Wallet Settings
+                </DropdownMenuItem>
+                 <DropdownMenuItem className="text-red-500 focus:text-red-500">
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    Remove Wallet
+                </DropdownMenuItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
+    </div>
+);
+
+
 const WalletAnalyticsDashboard = () => {
     const wallet = mockConnectedWallet;
 
     return (
         <div className="space-y-8">
-            <div>
-                <Button variant="ghost" size="sm" asChild className="mb-4">
-                    <Link href="#"><ArrowLeft className="mr-2 h-4 w-4" />Back to Analyzer</Link>
-                </Button>
-                <div className="flex flex-wrap items-center justify-between gap-4">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+                <div className="flex items-center gap-4">
+                    <CryptoIcon token={wallet.stats.topChain} className="h-10 w-10" />
                     <div>
-                        <h1 className="text-3xl font-bold">Wallet Analytics</h1>
-                        <p className="font-mono text-muted-foreground">{wallet.address}</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <Button variant="outline"><Plus className="mr-2 h-4 w-4" />Track Wallet</Button>
-                        <Button><Bell className="mr-2 h-4 w-4" />Set Alert</Button>
-                        <Button variant="outline"><Share className="mr-2 h-4 w-4" />Share</Button>
+                        <h1 className="text-2xl font-bold flex items-center gap-2">
+                           {wallet.name}
+                        </h1>
+                        <p className="font-mono text-sm text-muted-foreground">{wallet.address}</p>
                     </div>
                 </div>
+                <WalletActions />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <StatCard title="Total Portfolio Value" value={`$${(wallet.stats.totalValue / 1000000).toFixed(1)}M`} icon={<BarChart className="h-3 w-3" />} helpText="The current total value of all assets in this wallet." />
                 <StatCard title="24h PnL" value={`+${wallet.stats.pnl_24h}%`} valueClassName="text-green-500" icon={<BarChart className="h-3 w-3" />} helpText="Profit and Loss in the last 24 hours." />
-                <StatCard title="Diversification Score" value={wallet.stats.diversificationScore.toFixed(2)} icon={<Percent className="h-3 w-3" />} helpText="A score from 0 to 1 indicating portfolio diversification." />
-                <StatCard title="100x Potential" value={wallet.stats.potential.toString()} icon={<Zap className="h-3 w-3" />} helpText="Proprietary score indicating potential for high growth." />
+                <StatCard title="Risk Rating" value={wallet.stats.riskRating} valueClassName={wallet.stats.riskRating === 'Low' ? 'text-green-500' : 'text-red-500'} icon={<ShieldCheck className="h-3 w-3" />} helpText="An assessment of the portfolio's risk based on volatility and holdings." />
+                 <StatCard title="100x Potential" value={`${wallet.stats.potential}%`} icon={<Zap className="h-3 w-3" />} helpText="Proprietary score indicating potential for high growth." />
+            </div>
+            
+             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <StatCard title="Token Count" value={wallet.stats.tokenCount.toString()} icon={<Plus className="h-3 w-3 rotate-45" />} helpText="The number of unique tokens in this wallet." />
                 <StatCard title="Avg. Hold Time" value={`${wallet.stats.avgHoldTime} days`} icon={<Clock className="h-3 w-3" />} helpText="The average time tokens are held in this wallet before being sold or transferred." />
-                <StatCard title="Top Chain" value={wallet.stats.topChain} icon={<Percent className="h-3 w-3" />} helpText="The blockchain where most of this wallet's activity occurs." />
-                <StatCard title="Risk Rating" value={wallet.stats.riskRating} valueClassName={wallet.stats.riskRating === 'Low' ? 'text-green-500' : 'text-red-500'} icon={<ShieldCheck className="h-3 w-3" />} helpText="An assessment of the portfolio's risk based on volatility and holdings." />
+                <StatCard title="Top Chain" value={wallet.stats.topChain} icon={<Link className="h-3 w-3" />} helpText="The blockchain where most of this wallet's activity occurs." />
+                <StatCard title="Diversification" value={wallet.stats.diversificationScore.toFixed(2)} icon={<Percent className="h-3 w-3" />} helpText="A score from 0 to 1 indicating portfolio diversification." />
             </div>
 
             <TokenHoldingsTable tokens={wallet.tokens} />
@@ -282,6 +304,10 @@ export default function PortfolioPage() {
     <div className="relative">
       {!user && <FeatureLock />}
       <div className="space-y-8">
+         <PageHeader
+          title="Portfolio Dashboard"
+          description="Analyze your connected wallets and see how whale activity impacts your holdings."
+        />
         {user && hasConnectedWallets ? (
             <WalletAnalyticsDashboard />
         ) : (
@@ -292,5 +318,4 @@ export default function PortfolioPage() {
   );
 }
 
-    
     
