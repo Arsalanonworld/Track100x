@@ -34,3 +34,11 @@ export type WatchlistItem = {
     createdAt: any; // Firebase Timestamp
     userId: string;
 };
+
+export type PortfolioWallet = {
+    id: string;
+    address: string;
+    blockchain: 'ethereum' | 'solana' | 'polygon' | 'bsc';
+    name?: string; // User-defined alias
+    userId: string;
+}

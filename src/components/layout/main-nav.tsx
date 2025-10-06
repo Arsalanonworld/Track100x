@@ -1,3 +1,4 @@
+
 'use client'
 
 import * as React from "react"
@@ -12,6 +13,7 @@ export function MainNav() {
 
     const navItems = [
         { href: '/feed', label: 'Feed', visible: true },
+        { href: '/portfolio', label: 'Portfolio', visible: !!user },
         { href: '/watchlist', label: 'Watchlist', visible: !!user },
         { href: '/alerts', label: 'Alerts', visible: true },
     ];

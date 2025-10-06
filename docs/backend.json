@@ -71,6 +71,30 @@
         }
       },
       "required": ["identifier", "type", "createdAt", "userId"]
+    },
+    "PortfolioWallet": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "PortfolioWallet",
+      "type": "object",
+      "description": "Represents a wallet connected to a user's portfolio.",
+      "properties": {
+        "address": {
+          "type": "string",
+          "description": "The public address of the wallet."
+        },
+        "blockchain": {
+          "type": "string",
+          "enum": ["ethereum", "solana", "polygon", "bsc"]
+        },
+        "name": {
+          "type": "string",
+          "description": "A user-defined alias for the wallet."
+        },
+        "userId": {
+          "type": "string"
+        }
+      },
+      "required": ["address", "blockchain", "userId"]
     }
   },
   "auth": {
@@ -88,6 +112,10 @@
     "/users/{userId}/watchlist/{watchlistItemId}": {
       "schema": { "$ref": "#/entities/WatchlistItem" },
       "description": "Stores wallets or tokens a user is watching."
+    },
+    "/users/{userId}/portfolio/{walletId}": {
+      "schema": { "$ref": "#/entities/PortfolioWallet" },
+      "description": "Stores wallets a user has connected to their portfolio."
     },
     "/whaleFeed/{whaleTransactionId}": {
       "schema": { "$ref": "#/entities/WhaleFeedTransaction" },
