@@ -13,7 +13,7 @@ export function MainNav() {
 
     const navItems = [
         { href: '/feed', label: 'Feed', visible: true },
-        { href: '/portfolio', label: 'Portfolio', visible: !!user },
+        { href: '/wallet-analytics', label: 'Wallet Analytics', visible: true },
         { href: '/watchlist', label: 'Watchlist', visible: !!user },
         { href: '/alerts', label: 'Alerts', visible: true },
     ];

@@ -1,19 +1,17 @@
-
 'use client';
 
 import { useState } from 'react';
 import PageHeader from '@/components/page-header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { FeatureLock } from '@/components/feature-lock';
 import { useUser } from '@/firebase';
-import { Wallet, Plus, MoreHorizontal, Settings, Trash2, Clock, BarChart, Percent, ShieldCheck, Zap, Info, Download, Bell, Link as LinkIcon } from 'lucide-react';
+import { Wallet, Plus, MoreHorizontal, Settings, Trash2, Clock, BarChart, Percent, ShieldCheck, Zap, Info, Download, Bell, Link as LinkIcon, Search } from 'lucide-react';
 import { CryptoIcon } from '@/components/crypto-icon';
 import { AreaChart, Area, ResponsiveContainer, XAxis, YAxis, Tooltip as RechartsTooltip } from 'recharts';
+import { Input } from '@/components/ui/input';
 
 import {
   Dialog,
-  DialogContent,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { CreateAlertDialog } from '@/components/create-alert-dialog';
@@ -48,9 +46,9 @@ import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useToast } from '@/hooks/use-toast';
 
-const mockConnectedWallet = {
+const mockAnalyzedWallet = {
   address: '0x1a2b3c4d5e6f7g8h9i0j1k213m4n5o6p7q8r9s0t',
-  name: 'My Main Wallet',
+  name: 'Analyzed Wallet',
   stats: {
     totalValue: 2300000,
     pnl_24h: 12,
@@ -175,7 +173,7 @@ const StatCard = ({ title, value, icon, helpText, valueClassName, children }: { 
     </Card>
 );
 
-const TokenHoldingsTable = ({ tokens }: { tokens: typeof mockConnectedWallet['tokens'] }) => {
+const TokenHoldingsTable = ({ tokens }: { tokens: typeof mockAnalyzedWallet['tokens'] }) => {
     const { toast } = useToast();
     
     const handleExport = () => {
@@ -190,7 +188,7 @@ const TokenHoldingsTable = ({ tokens }: { tokens: typeof mockConnectedWallet['to
         <CardHeader className="flex flex-row items-center justify-between">
             <div>
                 <CardTitle>Token Holdings</CardTitle>
-                <CardDescription>Assets held in this connected wallet.</CardDescription>
+                <CardDescription>Assets held in this wallet.</CardDescription>
             </div>
             <Button variant="outline" size="sm" onClick={handleExport}>
                 <Download className="mr-2 h-4 w-4" />
@@ -249,46 +247,16 @@ const TokenHoldingsTable = ({ tokens }: { tokens: typeof mockConnectedWallet['to
     </Card>
 )};
 
-const WalletActions = ({ walletAddress, onRemove }: { walletAddress: string, onRemove: () => void }) => {
+const WalletActions = ({ walletAddress }: { walletAddress: string }) => {
     const [isAlertEditorOpen, setIsAlertEditorOpen] = useState(false);
 
     return (
         <Dialog open={isAlertEditorOpen} onOpenChange={setIsAlertEditorOpen}>
             <div className="flex items-center gap-2">
+                <Button variant='outline'><Plus className="mr-2 h-4 w-4" />Track Wallet</Button>
                 <DialogTrigger asChild>
                     <Button><Bell className="mr-2 h-4 w-4" />Create Alert</Button>
                 </DialogTrigger>
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="outline" size="icon"><MoreHorizontal className="h-4 w-4" /></Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuItem disabled>
-                            <Settings className="mr-2 h-4 w-4" />
-                            Wallet Settings
-                        </DropdownMenuItem>
-                        <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                                <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-red-500 focus:text-red-500">
-                                    <Trash2 className="mr-2 h-4 w-4" />
-                                    Remove Wallet
-                                </DropdownMenuItem>
-                            </AlertDialogTrigger>
-                             <AlertDialogContent>
-                                <AlertDialogHeader>
-                                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                    This will disconnect the wallet from your portfolio. You can reconnect it at any time.
-                                </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction onClick={onRemove} className="bg-destructive hover:bg-destructive/90">Remove</AlertDialogAction>
-                                </AlertDialogFooter>
-                            </AlertDialogContent>
-                        </AlertDialog>
-                    </DropdownMenuContent>
-                </DropdownMenu>
             </div>
             {isAlertEditorOpen && (
                 <CreateAlertDialog
@@ -300,11 +268,11 @@ const WalletActions = ({ walletAddress, onRemove }: { walletAddress: string, onR
     );
 };
 
-const WalletAnalyticsDashboard = ({ onRemoveWallet }: { onRemoveWallet: () => void }) => {
-    const wallet = mockConnectedWallet;
+const WalletAnalyticsDashboard = ({ walletAddress }: { walletAddress: string }) => {
+    const wallet = mockAnalyzedWallet;
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-8 mt-8">
             <div className="flex flex-wrap items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
                     <CryptoIcon token={wallet.stats.topChain} className="h-10 w-10" />
@@ -315,7 +283,7 @@ const WalletAnalyticsDashboard = ({ onRemoveWallet }: { onRemoveWallet: () => vo
                         <p className="font-mono text-sm text-muted-foreground">{wallet.address}</p>
                     </div>
                 </div>
-                <WalletActions walletAddress={wallet.address} onRemove={onRemoveWallet} />
+                <WalletActions walletAddress={wallet.address} />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -338,68 +306,53 @@ const WalletAnalyticsDashboard = ({ onRemoveWallet }: { onRemoveWallet: () => vo
     );
 };
 
+const WalletSearch = ({ onSearch }: { onSearch: (address: string) => void }) => {
+    const [address, setAddress] = useState('');
 
-const ConnectWalletCard = ({ onConnect }: { onConnect: () => void}) => (
-    <Card className="text-center max-w-md mx-auto mt-16">
-      <CardHeader>
-        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-          <Wallet className="h-6 w-6 text-primary" />
-        </div>
-        <CardTitle className="mt-4">Connect Your Wallet</CardTitle>
-        <CardDescription>
-          Connect a wallet to see your personalized portfolio analytics and whale impact score.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Button onClick={onConnect}>
-          <Plus className="mr-2 h-4 w-4" />
-          Connect Wallet
-        </Button>
-         <p className="text-xs text-muted-foreground mt-4">Read-only access. We will never ask for your private keys.</p>
-      </CardContent>
-    </Card>
-);
+    const handleSearch = () => {
+        if (address) {
+            onSearch(address);
+        }
+    }
 
-export default function PortfolioPage() {
-  const { user, loading } = useUser();
-  const [hasConnectedWallets, setHasConnectedWallets] = useState(false); 
-
-  if (loading) {
     return (
-        <div className='max-w-md mx-auto mt-16'>
-           <Card className="text-center">
+        <Card className="max-w-2xl mx-auto">
             <CardHeader>
-                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-muted animate-pulse">
-                </div>
-                <div className='space-y-2 mt-4'>
-                    <div className="h-6 w-3/4 mx-auto bg-muted rounded animate-pulse" />
-                    <div className="h-4 w-full mx-auto bg-muted rounded animate-pulse" />
-                    <div className="h-4 w-5/6 mx-auto bg-muted rounded animate-pulse" />
-                </div>
+                <CardTitle>Analyze Any Wallet</CardTitle>
+                <CardDescription>Enter an ETH wallet address to get a detailed breakdown of its holdings and activity.</CardDescription>
             </CardHeader>
             <CardContent>
-                <div className="h-10 w-40 mx-auto bg-muted rounded animate-pulse" />
-                <div className="h-3 w-48 mx-auto bg-muted rounded-animate-pulse mt-4" />
+                <div className="flex gap-2">
+                    <Input 
+                        placeholder="Enter wallet address (e.g., 0x...)" 
+                        value={address}
+                        onChange={(e) => setAddress(e.target.value)}
+                    />
+                    <Button onClick={handleSearch}>
+                        <Search className="mr-2 h-4 w-4" />
+                        Analyze
+                    </Button>
+                </div>
             </CardContent>
-            </Card>
-        </div>
-    )
-  }
+        </Card>
+    );
+}
+
+export default function WalletAnalyticsPage() {
+  const [analyzedAddress, setAnalyzedAddress] = useState<string | null>(null);
 
   return (
-    <div className="relative">
-      {!user && <FeatureLock />}
-      <div className="space-y-8">
-         <PageHeader
-          title="Portfolio Dashboard"
-          description="Analyze your connected wallets and see how whale activity impacts your holdings."
+    <div className="space-y-8">
+        <PageHeader
+        title="Wallet Analytics"
+        description="Get deep insights into any wallet on the blockchain."
         />
-        {user && hasConnectedWallets ? (
-            <WalletAnalyticsDashboard onRemoveWallet={() => setHasConnectedWallets(false)} />
+        
+        {!analyzedAddress ? (
+            <WalletSearch onSearch={setAnalyzedAddress} />
         ) : (
-            <ConnectWalletCard onConnect={() => setHasConnectedWallets(true)} />
+            <WalletAnalyticsDashboard walletAddress={analyzedAddress} />
         )}
-      </div>
     </div>
   );
 }
