@@ -1,4 +1,5 @@
 
+
 'use client';
 import { Card } from "@/components/ui/card";
 import type { WhaleTransaction } from "@/lib/mock-data";
@@ -75,10 +76,9 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
                                 <div className="flex items-center gap-3 w-full sm:w-auto">
                                     <CryptoIcon token={tx.token.symbol} className="h-10 w-10"/>
                                     <div className="flex-1 sm:flex-initial">
-                                        <p className="font-bold text-lg">{tx.value}</p>
+                                        <p className="font-bold text-lg">{tx.tokenAmount}</p>
                                         <div className="flex items-center text-sm text-muted-foreground">
-                                            <span className="font-semibold">{tx.token.symbol}</span>
-                                            <WatchlistButton type="token" identifier={tx.token.symbol} />
+                                            <span>{tx.value}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -162,4 +162,5 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
 
 
 export default TransactionCard;
+
 

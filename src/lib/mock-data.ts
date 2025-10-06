@@ -1,11 +1,13 @@
 
+
 export type WhaleTransaction = {
   id: string;
   token: {
       symbol: string;
       icon: string | undefined;
   };
-  value: string;
+  tokenAmount: string; // e.g. "15,000 ETH"
+  value: string; // e.g. "$52.2M"
   from: string;
   fromShort: string;
   fromTags?: string[];
@@ -43,6 +45,7 @@ export const mockWhaleTxs: WhaleTransaction[] = [
   {
       id: '1',
       token: { symbol: 'ETH', icon: `https://raw.githubusercontent.com/Uniswap/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png` },
+      tokenAmount: '14,704 ETH',
       value: '$52.2M',
       from: '0x123456789012345678901234567890123456aBcd',
       fromShort: '0x1234...aBcd',
@@ -62,6 +65,7 @@ export const mockWhaleTxs: WhaleTransaction[] = [
   {
       id: '2',
       token: { symbol: 'USDT', icon: `https://raw.githubusercontent.com/Uniswap/assets/master/blockchains/ethereum/assets/0xdAC17F958D2ee523a2206206994597C13D831ec7/logo.png` },
+      tokenAmount: '15.5M USDT',
       value: '$15.5M',
       from: '0x987654321098765432109876543210987654fedC',
       fromShort: 'Binance',
@@ -81,6 +85,7 @@ export const mockWhaleTxs: WhaleTransaction[] = [
   {
       id: '3',
       token: { symbol: 'USDC', icon: `https://raw.githubusercontent.com/Uniswap/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png` },
+      tokenAmount: '21.1M USDC',
       value: '$21.1M',
       from: '0xdef1234567890123456789012345678901234567',
       fromShort: '0xdef1...4567',
@@ -99,6 +104,7 @@ export const mockWhaleTxs: WhaleTransaction[] = [
   {
       id: '4',
       token: { symbol: 'WIF', icon: `https://assets.coingecko.com/coins/images/34041/standard/wif.jpg?1715065403` },
+      tokenAmount: '4.72M WIF',
       value: '$11.8M',
       from: '0xabcdef1234567890abcdef1234567890abcdef',
       fromShort: '0xabcd...cdef',
@@ -117,6 +123,7 @@ export const mockWhaleTxs: WhaleTransaction[] = [
    {
       id: '5',
       token: { symbol: 'WBTC', icon: `https://raw.githubusercontent.com/Uniswap/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png` },
+      tokenAmount: '1,138 WBTC',
       value: '$78.0M',
       from: '0xab1234567890123456789012345678901234f123',
       fromShort: '0xab12...f123',
@@ -135,6 +142,7 @@ export const mockWhaleTxs: WhaleTransaction[] = [
   {
       id: '6',
       token: { symbol: 'BONK', icon: `https://assets.coingecko.com/coins/images/28600/standard/bonk.jpg?1715124248` },
+      tokenAmount: '516B BONK',
       value: '$12.4M',
       from: '0xabcdef1234567890abcdef1234567890abcdef',
       fromShort: '0xabcd...cdef',
@@ -153,6 +161,7 @@ export const mockWhaleTxs: WhaleTransaction[] = [
   {
       id: '7',
       token: { symbol: 'LINK', icon: `https://raw.githubusercontent.com/Uniswap/assets/master/blockchains/ethereum/assets/0x514910771AF9Ca656af840dff83E8264EcF986CA/logo.png` },
+      tokenAmount: '1.26M LINK',
       value: '$18.9M',
       from: '0x901234567890123456789012345678901234mNop',
       fromShort: '0x9012...mNop',
@@ -171,6 +180,7 @@ export const mockWhaleTxs: WhaleTransaction[] = [
   {
       id: '8',
       token: { symbol: 'SHIB', icon: `https://assets.coingecko.com/coins/images/11939/standard/shiba.png` },
+      tokenAmount: '328B SHIB',
       value: '$8.2M',
       from: '0xshibainuWhaleAddressE1f2g3h4i5j6k7l8m9n0',
       fromShort: '0xshib...m9n0',
@@ -188,6 +198,7 @@ export const mockWhaleTxs: WhaleTransaction[] = [
   {
       id: '9',
       token: { symbol: 'MATIC', icon: `https://raw.githubusercontent.com/Uniswap/assets/master/blockchains/polygon/assets/0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270/logo.png` },
+      tokenAmount: '43.4M MATIC',
       value: '$25.0M',
       from: '0xmaticWhaleAddressA1b2c3d4e5f6g7h8i9j0k1l2',
       fromShort: '0xmati...1l2',
@@ -205,6 +216,7 @@ export const mockWhaleTxs: WhaleTransaction[] = [
   {
       id: '10',
       token: { symbol: 'AVAX', icon: `https://raw.githubusercontent.com/Uniswap/assets/master/blockchains/avalanchec/assets/0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7/logo.png` },
+      tokenAmount: '951K AVAX',
       value: '$33.3M',
       from: '0xavaxWhaleAddressX1y2z3a4b5c6d7e8f9g0h1i2',
       fromShort: '0xavax...1i2',
@@ -222,6 +234,7 @@ export const mockWhaleTxs: WhaleTransaction[] = [
   {
       id: '11',
       token: { symbol: 'DOGE', icon: `https://assets.coingecko.com/coins/images/5/large/dogecoin.png` },
+      tokenAmount: '280.6M DOGE',
       value: '$42.1M',
       from: '0xdogeWhaleAddressD1e2f3g4h5i6j7k8l9m0n1o2',
       fromShort: '0xdoge...1o2',
@@ -241,6 +254,7 @@ export const mockWhaleTxs: WhaleTransaction[] = [
   {
       id: '12',
       token: { symbol: 'SOL', icon: `https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png` },
+      tokenAmount: '400K SOL',
       value: '$60.0M',
       from: '0xsolanaWhaleAddressS1o2l3a4n5a6s7o8l9a0n1a',
       fromShort: '0xsola...n1a',
@@ -258,6 +272,7 @@ export const mockWhaleTxs: WhaleTransaction[] = [
   {
       id: '13',
       token: { symbol: 'RNDR', icon: `https://assets.coingecko.com/coins/images/4778/large/render.png` },
+      tokenAmount: '2.47M RNDR',
       value: '$19.8M',
       from: '0xrenderWhaleAddressR1e2n3d4e5r6s7o8l9a0n1a',
       fromShort: '0xrend...n1a',
@@ -275,6 +290,7 @@ export const mockWhaleTxs: WhaleTransaction[] = [
   {
       id: '14',
       token: { symbol: 'PEPE', icon: `https://assets.coingecko.com/coins/images/29853/large/pepe.jpeg` },
+      tokenAmount: '375B PEPE',
       value: '$4.5M',
       from: '0xpepeWhaleAddressP1e2p3e4p5e6p7e8p9e0p1e2',
       fromShort: '0xpepe...p1e2',
@@ -292,6 +308,7 @@ export const mockWhaleTxs: WhaleTransaction[] = [
   {
       id: '15',
       token: { symbol: 'ETH', icon: `https://raw.githubusercontent.com/Uniswap/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png` },
+      tokenAmount: '28,450 ETH',
       value: '$101.0M',
       from: '0xethMegaWhaleAddressE1t2h3m4e5g6a7w8h9a0l1e',
       fromShort: '0xethM...a0l1e',
@@ -309,6 +326,7 @@ export const mockWhaleTxs: WhaleTransaction[] = [
   {
       id: '16',
       token: { symbol: 'BTC', icon: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/bitcoin/info/logo.png' },
+      tokenAmount: '3,650 BTC',
       value: '$250.0M',
       from: '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa',
       fromShort: 'Satoshi...',
@@ -326,6 +344,7 @@ export const mockWhaleTxs: WhaleTransaction[] = [
   {
       id: '17',
       token: { symbol: 'XRP', icon: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ripple/info/logo.png' },
+      tokenAmount: '11.45M XRP',
       value: '$5.5M',
       from: 'rPdvC2Xn2a7bC2Xn2a7bC2Xn2a7bC2Xn2a',
       fromShort: 'rPdvC...n2a',
@@ -343,6 +362,7 @@ export const mockWhaleTxs: WhaleTransaction[] = [
   {
       id: '18',
       token: { symbol: 'ADA', icon: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/cardano/info/logo.png' },
+      tokenAmount: '4.66M ADA',
       value: '$2.1M',
       from: 'addr1qx2fx...z2a',
       fromShort: 'addr1...z2a',
@@ -360,6 +380,7 @@ export const mockWhaleTxs: WhaleTransaction[] = [
   {
       id: '19',
       token: { symbol: 'LTC', icon: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/litecoin/info/logo.png' },
+      tokenAmount: '21.4K LTC',
       value: '$1.5M',
       from: 'ltc1qdp...xw3',
       fromShort: 'ltc1q...xw3',
@@ -377,6 +398,7 @@ export const mockWhaleTxs: WhaleTransaction[] = [
   {
       id: '20',
       token: { symbol: 'UNI', icon: `https://raw.githubusercontent.com/Uniswap/assets/master/blockchains/ethereum/assets/0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984/logo.png` },
+      tokenAmount: '320K UNI',
       value: '$3.2M',
       from: '0xuniWhaleAddressU1n2i3s4w5a6p7w8h9a0l1e',
       fromShort: '0xuniW...a0l1e',
@@ -394,6 +416,7 @@ export const mockWhaleTxs: WhaleTransaction[] = [
   {
       id: '21',
       token: { symbol: 'AAVE', icon: `https://raw.githubusercontent.com/Uniswap/assets/master/blockchains/ethereum/assets/0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9/logo.png` },
+      tokenAmount: '97.5K AAVE',
       value: '$7.8M',
       from: '0xaaveWhaleAddressA1a2v3e4w5h6a7l8e9a0d1r',
       fromShort: '0xaave...0d1r',
@@ -411,6 +434,7 @@ export const mockWhaleTxs: WhaleTransaction[] = [
   {
       id: '22',
       token: { symbol: 'MKR', icon: `https://raw.githubusercontent.com/Uniswap/assets/master/blockchains/ethereum/assets/0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2/logo.png` },
+      tokenAmount: '1,708 MKR',
       value: '$4.1M',
       from: '0xmkrWhaleAddressM1k2r3w4h5a6l7e8a9d0d1r',
       fromShort: '0xmkrW...0d1r',
@@ -428,6 +452,7 @@ export const mockWhaleTxs: WhaleTransaction[] = [
   {
       id: '23',
       token: { symbol: 'CRV', icon: `https://raw.githubusercontent.com/Uniswap/assets/master/blockchains/ethereum/assets/0xD533a949740bb3306d119CC777fa900bA034cd52/logo.png` },
+      tokenAmount: '14.6M CRV',
       value: '$6.6M',
       from: '0xcrvWhaleAddressC1r2v3w4h5a6l7e8a9d0d1r',
       fromShort: '0xcrvW...0d1r',
@@ -445,6 +470,7 @@ export const mockWhaleTxs: WhaleTransaction[] = [
   {
       id: '24',
       token: { symbol: 'SNX', icon: `https://raw.githubusercontent.com/Uniswap/assets/master/blockchains/ethereum/assets/0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F/logo.png` },
+      tokenAmount: '1.45M SNX',
       value: '$2.9M',
       from: '0xsnxWhaleAddressS1n2x3w4h5a6l7e8a9d0d1r',
       fromShort: '0xsnxW...0d1r',
@@ -462,6 +488,7 @@ export const mockWhaleTxs: WhaleTransaction[] = [
   {
       id: '25',
       token: { symbol: 'YFI', icon: `https://raw.githubusercontent.com/Uniswap/assets/master/blockchains/ethereum/assets/0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e/logo.png` },
+      tokenAmount: '200 YFI',
       value: '$1.2M',
       from: '0xyfiWhaleAddressY1f2i3w4h5a6l7e8a9d0d1r',
       fromShort: '0xyfiW...0d1r',
@@ -479,6 +506,7 @@ export const mockWhaleTxs: WhaleTransaction[] = [
   {
       id: '26',
       token: { symbol: '1INCH', icon: `https://raw.githubusercontent.com/Uniswap/assets/master/blockchains/ethereum/assets/0x111111111117dC0aa78b770fA6A738034120C302/logo.png` },
+      tokenAmount: '9.5M 1INCH',
       value: '$3.8M',
       from: '0x1inchWhaleAddress1i2n3c4h5w6a7l8e9a0d1r',
       fromShort: '0x1inc...0d1r',
@@ -496,6 +524,7 @@ export const mockWhaleTxs: WhaleTransaction[] = [
   {
       id: '27',
       token: { symbol: 'SUSHI', icon: `https://raw.githubusercontent.com/Uniswap/assets/master/blockchains/ethereum/assets/0x6B3595068778DD592e39A122f4f5a5cF09C90fE2/logo.png` },
+      tokenAmount: '2.2M SUSHI',
       value: '$2.2M',
       from: '0xsushiWhaleAddressS1u2s3h4i5w6a7p8w9h0a1l',
       fromShort: '0xsush...h0a1l',
@@ -513,6 +542,7 @@ export const mockWhaleTxs: WhaleTransaction[] = [
   {
       id: '28',
       token: { symbol: 'COMP', icon: `https://raw.githubusercontent.com/Uniswap/assets/master/blockchains/ethereum/assets/0xc00e94Cb662C3520282E6f5717214004A7f26888/logo.png` },
+      tokenAmount: '100K COMP',
       value: '$5.0M',
       from: '0xcompWhaleAddressC1o2m3p4w5h6a7l8e9a0d1r',
       fromShort: '0xcomp...0d1r',
@@ -530,6 +560,7 @@ export const mockWhaleTxs: WhaleTransaction[] = [
   {
       id: '29',
       token: { symbol: 'ZRX', icon: `https://raw.githubusercontent.com/Uniswap/assets/master/blockchains/ethereum/assets/0xE41d2489571d322189246DaFA5ebDe1F4699F498/logo.png` },
+      tokenAmount: '4.85M ZRX',
       value: '$1.7M',
       from: '0xzrxWhaleAddressZ1r2x3w4h5a6l7e8a9d0d1r',
       fromShort: '0xzrxW...0d1r',
@@ -547,6 +578,7 @@ export const mockWhaleTxs: WhaleTransaction[] = [
   {
       id: '30',
       token: { symbol: 'BAL', icon: `https://raw.githubusercontent.com/Uniswap/assets/master/blockchains/ethereum/assets/0xba100000625a3754423978a60c9317c58a424e3D/logo.png` },
+      tokenAmount: '968K BAL',
       value: '$3.1M',
       from: '0xbalWhaleAddressB1a2l3w4h5a6l7e8a9d0d1r',
       fromShort: '0xbalW...0d1r',
@@ -564,6 +596,7 @@ export const mockWhaleTxs: WhaleTransaction[] = [
   {
       id: '31',
       token: { symbol: 'GNO', icon: 'https://assets.coingecko.com/coins/images/53/standard/gnosis.png?1696501422' },
+      tokenAmount: '6K GNO',
       value: '$1.8M',
       from: '0xGnosisWhaleAddressG1N2O3S4I5S6W7H8A9L0E',
       fromShort: '0xGnos...L0E',
@@ -582,6 +615,7 @@ export const mockWhaleTxs: WhaleTransaction[] = [
   {
       id: '32',
       token: { symbol: 'LDO', icon: 'https://assets.coingecko.com/coins/images/13573/standard/Lido_DAO.png?1696513333' },
+      tokenAmount: '12.5M LDO',
       value: '$22.5M',
       from: '0xLidoWhaleAddressL1D2O3W4H5A6L7E8A9D0D1R',
       fromShort: '0xLido...0D1R',
@@ -600,6 +634,7 @@ export const mockWhaleTxs: WhaleTransaction[] = [
   {
       id: '33',
       token: { symbol: 'JUP', icon: 'https://assets.coingecko.com/coins/images/34188/standard/jup.png?1715065963' },
+      tokenAmount: '10.2M JUP',
       value: '$9.2M',
       from: '0xJupiterWhaleAddressJ1U2P3W4H5A6L7E8A9D0D1R',
       fromShort: '0xJupi...0D1R',
@@ -618,6 +653,7 @@ export const mockWhaleTxs: WhaleTransaction[] = [
   {
       id: '34',
       token: { symbol: 'PYTH', icon: 'https://assets.coingecko.com/coins/images/32223/standard/pyth.png?1715063074' },
+      tokenAmount: '32.4M PYTH',
       value: '$14.6M',
       from: '0xPythWhaleAddressP1Y2T3H4W5H6A7L8E9A0D1R',
       fromShort: '0xPyth...0D1R',
