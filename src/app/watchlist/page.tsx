@@ -193,7 +193,7 @@ function WatchlistItemCard({ item, onUpdate, onRemove }: { item: WatchlistItem, 
                         </div>
 
                         {/* Main Content */}
-                        <div className='flex-1 space-y-2'>
+                        <div className='flex-1 space-y-2 min-w-0'>
                            {isEditing ? (
                                <div className='flex items-center gap-2'>
                                    <Input value={newName} onChange={e => setNewName(e.target.value)} placeholder='Set an alias' />
@@ -202,7 +202,7 @@ function WatchlistItemCard({ item, onUpdate, onRemove }: { item: WatchlistItem, 
                                </div>
                            ) : (
                             <div className='flex items-center gap-2'>
-                                <h3 className='text-lg font-semibold'>{item.name || item.identifier}</h3>
+                                <h3 className='text-lg font-semibold truncate'>{item.name || item.identifier}</h3>
                                 {item.name && (
                                      <p className='font-mono text-sm text-muted-foreground hover:text-primary transition-colors inline-block'>
                                         {item.identifier}
@@ -213,7 +213,7 @@ function WatchlistItemCard({ item, onUpdate, onRemove }: { item: WatchlistItem, 
                            )}
                            
                             {item.type === 'wallet' && (
-                                 <a href={getExplorerUrl('ethereum', item.identifier, 'address')} target="_blank" rel="noopener noreferrer" className='font-mono text-sm text-muted-foreground hover:text-primary transition-colors inline-block'>
+                                 <a href={getExplorerUrl('ethereum', item.identifier, 'address')} target="_blank" rel="noopener noreferrer" className='font-mono text-sm text-muted-foreground hover:text-primary transition-colors inline-block truncate'>
                                     {item.identifier}
                                 </a>
                             )}
@@ -402,3 +402,4 @@ export default function WatchlistPage() {
         </div>
   );
 }
+
