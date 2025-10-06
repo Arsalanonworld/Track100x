@@ -1,3 +1,4 @@
+
 'use client';
 import {
   Card,
@@ -9,9 +10,9 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { QuickAlertConfigurator } from '../quick-alert-configurator';
 import AlertBuilder from './alert-builder';
-import { useState } from 'react';
-import { useUser } from '@/firebase';
-import { Lock } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { useUser, useCollection, useFirestore } from '@/firebase';
+import { Lock, ArrowRight } from 'lucide-react';
 import {
   Tooltip,
   TooltipContent,
@@ -20,11 +21,28 @@ import {
 } from "@/components/ui/tooltip"
 import Link from 'next/link';
 import { Button } from '../ui/button';
+import { collection, query } from 'firebase/firestore';
+import type { Alert } from '@/lib/types';
+
+
+const ALERT_LIMIT_FREE = 1;
 
 export default function AlertCreatorCard() {
   const [key, setKey] = useState(Date.now()); // Used to reset form
-  const { claims } = useUser();
+  const { user, claims } = useUser();
   const isPro = claims?.plan === 'pro';
+  const firestore = useFirestore();
+
+  const alertsQuery = useMemo(() => {
+    if (user && firestore) {
+        return query(collection(firestore, `users/${user.uid}/alerts`));
+    }
+    return null;
+  }, [user, firestore]);
+
+  const { data: alerts } = useCollection<Alert>(alertsQuery);
+
+  const atLimit = !isPro && alerts && alerts.length >= ALERT_LIMIT_FREE;
 
   const handleSubmitted = () => {
     // Reset the forms by changing the key of the containing element
@@ -55,6 +73,32 @@ export default function AlertCreatorCard() {
     </TooltipProvider>
   )
 
+  if (atLimit) {
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>Create New Alert</CardTitle>
+                 <CardDescription>
+                    Build a custom alert to track on-chain activity from scratch.
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div className="text-center p-8 space-y-4 rounded-lg bg-card border shadow-lg border-primary">
+                    <Lock className="w-8 h-8 text-primary mx-auto" />
+                    <h3 className="text-2xl font-bold">Alert Limit Reached</h3>
+                    <p className="text-muted-foreground max-w-sm mx-auto">
+                        You've reached the limit of {ALERT_LIMIT_FREE} active alert for the Free plan. Upgrade for unlimited alerts.
+                    </p>
+                    <Button asChild>
+                        <Link href="/upgrade">Upgrade to Pro <ArrowRight className='w-4 h-4 ml-2'/></Link>
+                    </Button>
+                </div>
+            </CardContent>
+        </Card>
+    );
+  }
+
+
   return (
       <Card>
         <CardHeader>
@@ -80,3 +124,5 @@ export default function AlertCreatorCard() {
       </Card>
   );
 }
+
+    

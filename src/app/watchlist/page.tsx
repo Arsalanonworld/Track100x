@@ -5,7 +5,7 @@ import { useMemo, useState } from 'react';
 import PageHeader from '@/components/page-header';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Trash2, EyeOff, BellPlus, ArrowRight, Pencil, Check, X } from 'lucide-react';
+import { Trash2, EyeOff, BellPlus, ArrowRight, Pencil, Check, X, Lock } from 'lucide-react';
 import { useUser, useCollection, useFirestore } from '@/firebase';
 import { collection, query, doc, deleteDoc, updateDoc } from 'firebase/firestore';
 import type { WatchlistItem } from '@/lib/types';
@@ -32,7 +32,9 @@ import { FirestorePermissionError } from '@/firebase/errors';
 import { CreateAlertDialog } from '@/components/create-alert-dialog';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
+import { Card } from '@/components/ui/card';
 
+const WATCHLIST_LIMIT_FREE = 3;
 
 function WatchlistSkeleton() {
     return (
@@ -57,12 +59,14 @@ function WatchlistSkeleton() {
 }
 
 export default function WatchlistPage() {
-  const { user, loading: userLoading } = useUser();
+  const { user, loading: userLoading, claims } = useUser();
   const firestore = useFirestore();
   const [isAlertEditorOpen, setIsAlertEditorOpen] = useState(false);
   const [selectedWatchlistItem, setSelectedWatchlistItem] = useState<WatchlistItem | null>(null);
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
   const [newName, setNewName] = useState('');
+
+  const isPro = claims?.plan === 'pro';
 
   const watchlistQuery = useMemo(() => {
     if (user && firestore) {
@@ -73,6 +77,8 @@ export default function WatchlistPage() {
 
   const { data: watchlist, loading: watchlistLoading } = useCollection<WatchlistItem>(watchlistQuery);
   const { toast } = useToast();
+
+  const atLimit = !isPro && watchlist && watchlist.length >= WATCHLIST_LIMIT_FREE;
 
   const handleOpenAlertEditor = (item: WatchlistItem) => {
     setSelectedWatchlistItem(item);
@@ -137,6 +143,19 @@ export default function WatchlistPage() {
                     title="Watchlist"
                     description="Monitor your tracked wallets. Add a custom name for easy tracking."
                 />
+                
+                {atLimit && (
+                    <Card className="text-center p-8 space-y-4 rounded-lg bg-card border shadow-lg border-primary">
+                        <Lock className="w-8 h-8 text-primary mx-auto" />
+                        <h3 className="text-2xl font-bold">Watchlist Limit Reached</h3>
+                        <p className="text-muted-foreground max-w-sm mx-auto">
+                            You've reached the limit of {WATCHLIST_LIMIT_FREE} wallets for the Free plan. Upgrade to track unlimited wallets.
+                        </p>
+                        <Button asChild>
+                            <Link href="/upgrade">Upgrade to Pro <ArrowRight className='w-4 h-4 ml-2'/></Link>
+                        </Button>
+                    </Card>
+                )}
 
                 <div className="border rounded-lg">
                     {isLoading ? <WatchlistSkeleton /> : watchlist && watchlist.length > 0 ? (
@@ -223,3 +242,5 @@ export default function WatchlistPage() {
     </Dialog>
   );
 }
+
+    

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -5,7 +6,7 @@ import PageHeader from '@/components/page-header';
 import { topPlayersData, Player } from '@/lib/mock-data';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { BellPlus, Search, ExternalLink, Filter } from 'lucide-react';
+import { BellPlus, Search, ExternalLink, Filter, Lock, ArrowRight } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
@@ -27,6 +28,7 @@ import { useUser } from '@/firebase';
 
 
 const allTags = Array.from(new Set(topPlayersData.flatMap(p => p.tags)));
+const LEADERBOARD_LIMIT_FREE = 50;
 
 const TopPlayerRow = ({ player, rank }: { player: Player; rank: number }) => {
     const [isAlertEditorOpen, setIsAlertEditorOpen] = useState(false);
@@ -145,6 +147,9 @@ export default function LeaderboardPage() {
         return players;
     }, [searchTerm, selectedChain, selectedTag, sortBy]);
 
+    const playersToShow = isPro ? filteredAndSortedPlayers : filteredAndSortedPlayers.slice(0, LEADERBOARD_LIMIT_FREE);
+
+
     const FilterControls = () => (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="relative">
@@ -236,14 +241,27 @@ export default function LeaderboardPage() {
                 </TableRow>
             </TableHeader>
             <TableBody>
-                {filteredAndSortedPlayers.map((player, index) => (
+                {playersToShow.map((player, index) => (
                     <TopPlayerRow key={player.id} player={player} rank={index + 1} />
                 ))}
             </TableBody>
         </Table>
       </Card>
+      
+      {!isPro && (
+        <div className="text-center p-8 space-y-4 rounded-lg bg-card border shadow-lg">
+            <Lock className="w-8 h-8 text-primary mx-auto" />
+            <h3 className="text-2xl font-bold">You've Reached the End of the Free Leaderboard</h3>
+            <p className="text-muted-foreground max-w-sm mx-auto">
+                Upgrade to Pro to unlock the full list of 1,000+ wallets and gain a competitive edge.
+            </p>
+            <Button asChild>
+                <Link href="/upgrade">Upgrade to Pro <ArrowRight className='w-4 h-4 ml-2'/></Link>
+            </Button>
+        </div>
+      )}
 
-       {filteredAndSortedPlayers.length === 0 && (
+       {playersToShow.length === 0 && (
           <div className="text-center py-16 text-muted-foreground col-span-full">
               <p className="text-lg font-semibold">No players found.</p>
               <p>Try adjusting your search or category filters.</p>
@@ -254,3 +272,5 @@ export default function LeaderboardPage() {
     </div>
   );
 }
+
+    
