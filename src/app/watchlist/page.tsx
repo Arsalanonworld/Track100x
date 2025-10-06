@@ -64,7 +64,7 @@ function AddItemForm({ atLimit, onAdd }: { atLimit: boolean, onAdd: () => void }
       return;
     }
 
-    const type = isWalletAddress(identifier) ? 'wallet' : isTokenSymbol(identifier) ? 'token' : null;
+    const type = isWalletAddress(identifier) ? 'wallet' : isTokenSymbol(identifier.toUpperCase()) ? 'token' : null;
     
     if (!type) {
         toast({ variant: 'destructive', title: 'Invalid Identifier', description: 'Please enter a valid ETH wallet address or a 2-6 character token symbol.' });
@@ -76,7 +76,7 @@ function AddItemForm({ atLimit, onAdd }: { atLimit: boolean, onAdd: () => void }
         return;
     }
 
-    setItemToAdd({ identifier, type });
+    setItemToAdd({ identifier: type === 'token' ? identifier.toUpperCase() : identifier, type });
     setIsAliasModalOpen(true);
   };
 
@@ -90,6 +90,8 @@ function AddItemForm({ atLimit, onAdd }: { atLimit: boolean, onAdd: () => void }
 
         if (!querySnapshot.empty) {
             toast({ variant: 'destructive', title: 'Already Watched', description: `${itemToAdd.identifier} is already on your watchlist.` });
+            setIsSubmitting(false);
+            setIsAliasModalOpen(false);
             return;
         }
 
@@ -201,13 +203,20 @@ function WatchlistItemCard({ item, onUpdate, onRemove }: { item: WatchlistItem, 
                            ) : (
                             <div className='flex items-center gap-2'>
                                 <h3 className='text-lg font-semibold'>{item.name || item.identifier}</h3>
+                                {item.name && (
+                                     <p className='font-mono text-sm text-muted-foreground hover:text-primary transition-colors inline-block'>
+                                        {item.identifier}
+                                    </p>
+                                )}
                                 <Button size="icon" variant="ghost" className='h-7 w-7 opacity-0 group-hover:opacity-100' onClick={handleStartEditing}><Edit className='h-4 w-4'/></Button>
                             </div>
                            )}
                            
-                            <a href={item.type === 'wallet' ? getExplorerUrl('ethereum', item.identifier, 'address') : '#'} target="_blank" rel="noopener noreferrer" className='font-mono text-sm text-muted-foreground hover:text-primary transition-colors inline-block'>
-                                {item.identifier}
-                            </a>
+                            {item.type === 'wallet' && (
+                                 <a href={getExplorerUrl('ethereum', item.identifier, 'address')} target="_blank" rel="noopener noreferrer" className='font-mono text-sm text-muted-foreground hover:text-primary transition-colors inline-block'>
+                                    {item.identifier}
+                                </a>
+                            )}
 
                             <div className='text-sm text-muted-foreground pt-1'>
                                 {item.type === 'wallet' ? (
@@ -359,7 +368,7 @@ export default function WatchlistPage() {
                         <Lock className="w-8 h-8 text-primary mx-auto" />
                         <h3 className="text-2xl font-bold">Watchlist Limit Reached</h3>
                         <p className="text-muted-foreground max-w-sm mx-auto">
-                            You've reached the limit of {WATCHLIST_LIMIT_FREE} items for the Free plan. Upgrade to track unlimited wallets and tokens.
+                            You've reached the limit of ${WATCHLIST_LIMIT_FREE} items for the Free plan. Upgrade to track unlimited wallets and tokens.
                         </p>
                         <Button asChild>
                             <Link href="/upgrade">Upgrade to Pro <ArrowRight className='w-4 h-4 ml-2'/></Link>
@@ -367,7 +376,7 @@ export default function WatchlistPage() {
                     </Card>
                 )}
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4">
                     {isLoading ? <WatchlistSkeleton /> : watchlist && watchlist.length > 0 ? (
                         watchlist.map((item) => (
                            <WatchlistItemCard key={item.id} item={item} onUpdate={handleUpdate} onRemove={handleRemove} />
@@ -393,5 +402,3 @@ export default function WatchlistPage() {
         </div>
   );
 }
-
-    
