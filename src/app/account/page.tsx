@@ -7,10 +7,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
-import { Star, User, Bell, Link as LinkIcon, Bot, CheckCircle, Circle } from 'lucide-react';
+import { Star, User, Bell, Link as LinkIcon, Bot, Circle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 
@@ -21,26 +20,31 @@ function AccountSkeleton() {
         <Skeleton className="h-10 w-1/3" />
         <Skeleton className="h-6 w-2/3" />
       </div>
-      <div className="flex gap-4 border-b">
-        <Skeleton className="h-10 w-24" />
-        <Skeleton className="h-10 w-24" />
-        <Skeleton className="h-10 w-24" />
-      </div>
-      <Card>
-        <CardHeader>
-          <div className="flex items-center gap-4">
-            <Skeleton className="h-16 w-16 rounded-full" />
-            <div className="space-y-2">
-              <Skeleton className="h-6 w-48" />
-              <Skeleton className="h-4 w-64" />
+      <div className="space-y-8">
+        <Card>
+          <CardHeader>
+            <div className="flex items-center gap-4">
+              <Skeleton className="h-16 w-16 rounded-full" />
+              <div className="space-y-2">
+                <Skeleton className="h-6 w-48" />
+                <Skeleton className="h-4 w-64" />
+              </div>
             </div>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <Skeleton className="h-8 w-1/4" />
-          <Skeleton className="h-10 w-full" />
-        </CardContent>
-      </Card>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Skeleton className="h-8 w-1/4" />
+            <Skeleton className="h-10 w-full" />
+          </CardContent>
+        </Card>
+        <Card>
+            <CardHeader><Skeleton className="h-6 w-1/4" /></CardHeader>
+            <CardContent><Skeleton className="h-10 w-full" /></CardContent>
+        </Card>
+         <Card>
+            <CardHeader><Skeleton className="h-6 w-1/4" /></CardHeader>
+            <CardContent><Skeleton className="h-10 w-full" /></CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
@@ -70,16 +74,9 @@ export default function AccountPage() {
         description="Manage your profile, subscription, and application settings."
       />
 
-      <Tabs defaultValue="profile" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 max-w-md">
-          <TabsTrigger value="profile">Profile</TabsTrigger>
-          <TabsTrigger value="subscription">Subscription</TabsTrigger>
-          <TabsTrigger value="settings">Settings</TabsTrigger>
-        </TabsList>
-        
-        {/* Profile Tab */}
-        <TabsContent value="profile" className="pt-6">
-          <Card>
+      <div className="space-y-8">
+        {/* Profile Card */}
+        <Card>
             <CardHeader>
               <CardTitle>Your Profile</CardTitle>
               <CardDescription>This information is visible to us and used for account purposes.</CardDescription>
@@ -102,12 +99,10 @@ export default function AccountPage() {
                     <p className="font-mono text-xs bg-muted/50 rounded-sm px-2 py-1 mt-1 inline-block">{user.uid}</p>
                 </div>
             </CardContent>
-          </Card>
-        </TabsContent>
+        </Card>
         
-        {/* Subscription Tab */}
-        <TabsContent value="subscription" className="pt-6">
-          <Card>
+        {/* Subscription Card */}
+        <Card>
             <CardHeader>
               <CardTitle>Subscription Plan</CardTitle>
               <CardDescription>Manage your billing and subscription details.</CardDescription>
@@ -143,12 +138,10 @@ export default function AccountPage() {
                 </div>
               )}
             </CardContent>
-          </Card>
-        </TabsContent>
+        </Card>
 
-        {/* Settings Tab */}
-        <TabsContent value="settings" className="pt-6">
-          <Card>
+        {/* Settings Card */}
+        <Card>
             <CardHeader>
               <CardTitle>Notification Settings</CardTitle>
               <CardDescription>Control how you receive alerts.</CardDescription>
@@ -186,12 +179,8 @@ export default function AccountPage() {
                      <Button variant="secondary"><LinkIcon className='h-4 w-4 mr-2'/>Connect</Button>
                 </div>
             </CardContent>
-          </Card>
-        </TabsContent>
-
-      </Tabs>
+        </Card>
+      </div>
     </div>
   );
 }
-
-    
