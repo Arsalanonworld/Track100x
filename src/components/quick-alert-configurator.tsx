@@ -80,16 +80,40 @@ export const QuickAlertConfigurator = ({ onSubmitted, entity, alert }: { onSubmi
       label: item.name ? `${item.name} (${item.identifier.slice(0, 6)}...${item.identifier.slice(-4)})` : item.identifier,
     })) || [];
     
+    // Add the currently viewed wallet if it's not in the watchlist
     if (entity?.type === 'wallet' && !items.some(i => i.value === entity.identifier)) {
-        items.unshift({ value: entity.identifier, label: 'Connected Portfolio' });
+        items.unshift({ value: entity.identifier, label: entity.identifier });
     } else if (alert?.walletId && !items.some(i => i.value === alert.walletId)) {
-        items.unshift({ value: alert.walletId, label: 'Connected Portfolio' });
+        items.unshift({ value: alert.walletId, label: alert.walletId });
     }
 
     return items;
   }, [watchlistItems, entity, alert]);
+  
+  const tokenOptionsFromWatchlist = useMemo(() => {
+    const items = watchlistItems?.filter(i => i.type === 'token').map(item => ({
+      value: item.identifier,
+      label: item.identifier,
+    })) || [];
 
-  const comboboxOptions = alertType === 'wallet' ? walletOptions : tokenOptions;
+    // Add all known tokens, preventing duplicates
+    const allTokens = [...items];
+    tokenOptions.forEach(opt => {
+        if (!allTokens.some(item => item.value === opt.value)) {
+            allTokens.push(opt);
+        }
+    });
+
+    if (entity?.type === 'token' && !allTokens.some(i => i.value === entity.identifier)) {
+        allTokens.unshift({ value: entity.identifier, label: entity.identifier });
+    } else if (alert?.token && !allTokens.some(i => i.value === alert.token)) {
+        allTokens.unshift({ value: alert.token, label: alert.token });
+    }
+
+    return allTokens;
+  }, [watchlistItems, entity, alert]);
+
+  const comboboxOptions = alertType === 'wallet' ? walletOptions : tokenOptionsFromWatchlist;
 
 
   const currentRules = alertType === 'wallet' ? portfolioRules : tokenRules;
@@ -203,7 +227,7 @@ export const QuickAlertConfigurator = ({ onSubmitted, entity, alert }: { onSubmi
                 </SelectTrigger>
                 <SelectContent>
                     <SelectItem value="wallet">
-                        <div className="flex items-center gap-2"><Wallet className="h-4 w-4" /> Portfolio</div>
+                        <div className="flex items-center gap-2"><Wallet className="h-4 w-4" /> Portfolio / Wallet</div>
                     </SelectItem>
                     <SelectItem value="token">
                         <div className="flex items-center gap-2"><Tag className="h-4 w-4" /> Token</div>
@@ -214,7 +238,7 @@ export const QuickAlertConfigurator = ({ onSubmitted, entity, alert }: { onSubmi
 
         {alertType === 'wallet' && (
           <div className="space-y-2">
-            <Label htmlFor="wallet-address">Portfolio</Label>
+            <Label htmlFor="wallet-address">Portfolio / Wallet</Label>
             <Combobox
                 options={comboboxOptions}
                 value={targetIdentifier}

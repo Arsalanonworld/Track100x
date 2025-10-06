@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from '../ui/label';
-import { Plus, Bot } from 'lucide-react';
+import { Plus, Bot, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import type { Alert, WatchlistItem } from '@/lib/types';
 import { useUser, useFirestore, useCollection } from '@/firebase';
@@ -26,6 +26,9 @@ const triggerTypes = [
 const Condition = ({ index, onRemove }: { index: number, onRemove: (index: number) => void}) => {
     return (
         <div className="p-4 border rounded-lg space-y-4 relative bg-background">
+             <Button variant="ghost" size="icon" className="absolute top-1 right-1 h-6 w-6" onClick={() => onRemove(index)}>
+                <X className="h-4 w-4 text-muted-foreground" />
+             </Button>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                  <div className="space-y-2">
                     <Label>Trigger Type</Label>

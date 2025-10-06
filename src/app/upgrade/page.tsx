@@ -7,6 +7,9 @@ import {
   XCircle,
   Star,
   ArrowRight,
+  Newspaper,
+  ShieldCheck,
+  Zap,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -37,35 +40,40 @@ const features = [
     category: 'Core Features',
     items: [
       { name: 'Real-Time Whale Feed', free: true, pro: true },
+      { name: 'Wallet Analytics', free: true, pro: true },
       { name: 'Watchlist', free: '5 items', pro: 'Unlimited' },
     ],
   },
   {
     category: 'Alerts',
     items: [
-      { name: 'Telegram Alerts per Month', free: '5 alerts', pro: 'Unlimited' },
+      { name: 'Quick Alerts', free: '5 active', pro: 'Unlimited' },
+      { name: 'Advanced Alert Builder', free: false, pro: true },
+      { name: 'Telegram Alerts', free: false, pro: true },
     ],
   },
    {
-    category: 'Digests',
+    category: 'Digests & Insights',
     items: [
-        { name: 'Weekly Digest', free: true, pro: false },
+        { name: 'AI-Generated Insights', free: false, pro: true },
         { name: 'Daily Digest', free: false, pro: true },
+        { name: 'Weekly Digest', free: true, pro: true },
     ]
    },
   {
     category: 'Experience',
     items: [
       { name: 'Advertisements & Affiliate Links', free: true, pro: false },
+      { name: 'Priority Support', free: false, pro: true },
     ],
   },
 ];
 
 const featureHighlights = [
     {
-        icon: <Eye className="h-8 w-8 text-primary" />,
-        title: 'Unlimited Watchlist',
-        description: 'Track as many wallets and tokens as you want without any limitations.',
+        icon: <Zap className="h-8 w-8 text-primary" />,
+        title: 'Advanced Alert Builder',
+        description: 'Create complex, multi-conditional alerts to precisely monitor specific on-chain events and strategies.',
     },
     {
         icon: <Bell className="h-8 w-8 text-primary" />,
@@ -73,9 +81,9 @@ const featureHighlights = [
         description: 'Create unlimited alerts and get notified instantly via Telegram to never miss a move.',
     },
     {
-        icon: <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-newspaper h-8 w-8 text-primary"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h4"/><path d="M16 2v20"/><path d="M8 7h4"/><path d="M8 12h4"/><path d="M8 17h4"/></svg>,
-        title: 'Daily Digest',
-        description: 'Get a daily summary of the most important whale movements and market signals.',
+        icon: <Newspaper className="h-8 w-8 text-primary"/>,
+        title: 'AI Insights & Daily Digest',
+        description: 'Get AI-generated summaries and a daily digest of the most important whale movements and market signals.',
     },
 ];
 
@@ -278,7 +286,7 @@ export default function UpgradePage() {
               plan="Free"
               price="$0"
               description="Get a feel for our platform with essential tracking tools."
-              features={['Real-time Whale Feed', '5 Watchlist Items', '5 Telegram Alerts/month', 'Weekly Digest']}
+              features={['Real-time Whale Feed', '5 Watchlist Items', '5 Active Alerts', 'Weekly Digest']}
               ctaText={user ? 'Your Current Plan' : 'Get Started Free'}
               ctaAction={() => !user && router.push('/')}
             />
@@ -289,8 +297,8 @@ export default function UpgradePage() {
               description="Unlimited access to every tool for the serious on-chain analyst."
               features={[
                 'Unlimited Watchlist',
-                'Unlimited Telegram Alerts',
-                'Daily Digest',
+                'Unlimited Alerts & Advanced Builder',
+                'AI Insights & Daily Digest',
                 'Ad-Free Experience',
               ]}
               ctaText="Upgrade to Pro"

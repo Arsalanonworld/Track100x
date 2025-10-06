@@ -22,6 +22,7 @@ import Link from 'next/link';
 import { Button } from '../ui/button';
 import { collection, query } from 'firebase/firestore';
 import type { Alert } from '@/lib/types';
+import AlertBuilder from './alert-builder';
 
 
 const ALERT_LIMIT_FREE = 5;
@@ -49,7 +50,7 @@ export default function AlertCreatorCard() {
   };
 
   const AdvancedTabTrigger = isPro ? (
-     <TabsTrigger value="advanced" disabled>
+     <TabsTrigger value="advanced">
         Advanced Builder
     </TabsTrigger>
   ) : (
@@ -116,9 +117,7 @@ export default function AlertCreatorCard() {
                     <QuickAlertConfigurator onSubmitted={handleSubmitted} />
                 </TabsContent>
                 <TabsContent value="advanced" className="pt-6">
-                    <div className='text-center text-muted-foreground p-8 border-dashed border-2 rounded-lg'>
-                      <p>The advanced builder is coming soon!</p>
-                    </div>
+                    <AlertBuilder onSave={handleSubmitted} />
                 </TabsContent>
             </Tabs>
         </CardContent>
