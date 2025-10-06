@@ -1,5 +1,4 @@
 
-
 'use client';
 import { Card } from "@/components/ui/card";
 import type { WhaleTransaction } from "@/lib/mock-data";
@@ -70,7 +69,7 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
                 <Card className="w-full hover:shadow-lg transition-shadow duration-200 group/card overflow-hidden">
                     <CollapsibleTrigger asChild>
                         <div className="cursor-pointer p-3 sm:p-4">
-                            <div className="grid grid-cols-1 md:grid-cols-[auto_1fr_auto] items-center gap-3">
+                            <div className="grid grid-cols-1 md:grid-cols-[auto_1fr_auto] items-center gap-3 md:gap-6">
                                 {/* Left Side: Amount & Token */}
                                 <div className="flex items-center gap-3 w-full sm:w-auto">
                                     <CryptoIcon token={tx.token.symbol} className="h-10 w-10"/>
@@ -163,7 +162,3 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
 
 
 export default TransactionCard;
-
-
-
-
