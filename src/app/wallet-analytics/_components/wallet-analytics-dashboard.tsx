@@ -4,7 +4,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
-import { Plus, Bell, Info, Link as LinkIcon, BarChart, ShieldCheck, Clock, Percent, Download, MoreVertical, Settings, Trash2, ArrowLeft } from 'lucide-react';
+import { Bell, Info, BarChart, Settings, Trash2, ArrowLeft } from 'lucide-react';
 import { CryptoIcon } from '@/components/crypto-icon';
 import { AreaChart, Area, ResponsiveContainer, Tooltip as RechartsTooltip } from 'recharts';
 
@@ -38,7 +38,9 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useToast } from '@/hooks/use-toast';
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuPortal } from '@/components/ui/dropdown-menu';
+import { WatchlistButton } from '@/components/track-button';
+import { MoreVertical } from 'lucide-react';
 
 
 const mockAnalyzedWallet = {
@@ -186,10 +188,21 @@ const TokenHoldingsTable = ({ tokens }: { tokens: typeof mockAnalyzedWallet['tok
                 <CardTitle>Token Holdings</CardTitle>
                 <CardDescription>All assets held in this wallet. (Top 20)</CardDescription>
             </div>
-            <Button variant="outline" size="sm" onClick={handleExport}>
-                <Download className="mr-2 h-4 w-4" />
-                Export
-            </Button>
+             <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                   <Button variant="outline" size="sm">
+                        <MoreVertical className="h-4 w-4" />
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={handleExport}>
+                        Export as CSV
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                       View on Etherscan
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
         </CardHeader>
         <CardContent>
             <Table>
@@ -288,7 +301,7 @@ const WalletActions = ({ walletAddress, isPortfolioView, onBack }: { walletAddre
                 ) : (
                     <>
                         <Button variant='outline' onClick={onBack}><ArrowLeft className="mr-2 h-4 w-4" />Back to Analyzer</Button>
-                        <Button variant='outline'><Plus className="mr-2 h-4 w-4" />Track Wallet</Button>
+                        <WatchlistButton type="wallet" identifier={walletAddress} />
                         <DialogTrigger asChild>
                             <Button><Bell className="mr-2 h-4 w-4" />Create Alert</Button>
                         </DialogTrigger>
@@ -336,3 +349,5 @@ export default function WalletAnalyticsDashboard({ walletAddress, isPortfolioVie
         </div>
     );
 };
+
+    
