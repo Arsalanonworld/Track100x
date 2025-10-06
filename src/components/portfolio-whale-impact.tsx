@@ -19,18 +19,16 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { ArrowDown, ArrowUp, Minus } from 'lucide-react';
 import {
-  LineChart,
-  Line,
+  Area,
+  AreaChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  AreaChart,
-  Area,
 } from 'recharts';
 import type { ChartConfig } from '@/components/ui/chart';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
 
 const chartData = [
   { date: '2024-10-01', buy: 4000, sell: 2400 },
@@ -71,8 +69,9 @@ export default function PortfolioWhaleImpact() {
         </CardHeader>
         <CardContent>
           <div className="h-[300px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
+             <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
                 <AreaChart
+                    accessibilityLayer
                     data={chartData}
                     margin={{
                         top: 10,
@@ -88,7 +87,7 @@ export default function PortfolioWhaleImpact() {
                     <Area type="monotone" dataKey="buy" stackId="1" stroke="var(--color-buy)" fill="var(--color-buy)" fillOpacity={0.4} />
                     <Area type="monotone" dataKey="sell" stackId="1" stroke="var(--color-sell)" fill="var(--color-sell)" fillOpacity={0.4} />
                 </AreaChart>
-            </ResponsiveContainer>
+            </ChartContainer>
           </div>
         </CardContent>
       </Card>
