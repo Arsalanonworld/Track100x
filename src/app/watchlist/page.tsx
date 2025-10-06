@@ -239,7 +239,9 @@ function WatchlistItemCard({ item, onUpdate, onRemove }: { item: WatchlistItem, 
                                             <h3 className='text-lg font-semibold truncate'>
                                                 {item.name || item.identifier}
                                             </h3>
-                                            <Button size="icon" variant="ghost" className='h-7 w-7 opacity-0 group-hover:opacity-100' onClick={handleStartEditing}><Edit className='h-4 w-4'/></Button>
+                                           {item.type === 'wallet' && (
+                                                <Button size="icon" variant="ghost" className='h-7 w-7 opacity-0 group-hover:opacity-100' onClick={handleStartEditing}><Edit className='h-4 w-4'/></Button>
+                                            )}
                                         </div>
                                         {item.name && (
                                             <a href={getExplorerUrl('ethereum', item.identifier, 'address')} target="_blank" rel="noopener noreferrer" className='font-mono text-sm text-muted-foreground hover:text-primary transition-colors inline-block truncate max-w-full'>
@@ -261,7 +263,11 @@ function WatchlistItemCard({ item, onUpdate, onRemove }: { item: WatchlistItem, 
                                 {item.type === 'wallet' ? (
                                     <p>Last Activity: <span className='text-green-500 font-medium'>$500K ETH tx, 2h ago</span></p>
                                 ) : (
-                                    <p>Price: <span className='text-foreground font-medium'>{currentTokenMockPrice?.price || '$0.00'}</span> <span className='text-red-500 font-medium ml-2'>-5.2%</span></p>
+                                     item.identifier && currentTokenMockPrice ? (
+                                        <p>Price: <span className='text-foreground font-medium'>{currentTokenMockPrice.price}</span> <span className='text-red-500 font-medium ml-2'>-5.2%</span></p>
+                                    ) : (
+                                        <p>Price: <span className='text-foreground font-medium'>$0.00</span> <span className='text-muted-foreground font-medium ml-2'>-</span></p>
+                                    )
                                 )}
                             </div>
                         </div>
@@ -441,3 +447,5 @@ export default function WatchlistPage() {
         </div>
   );
 }
+
+    
