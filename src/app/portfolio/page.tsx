@@ -1,4 +1,3 @@
-
 'use client';
 
 import PageHeader from '@/components/page-header';
@@ -6,15 +5,34 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { FeatureLock } from '@/components/feature-lock';
 import { useUser } from '@/firebase';
-import { Wallet, Plus } from 'lucide-react';
+import { Wallet, Plus, MoreHorizontal, Settings, Trash2 } from 'lucide-react';
+import { CryptoIcon } from '@/components/crypto-icon';
+import { Separator } from '@/components/ui/separator';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Progress } from '@/components/ui/progress';
 
-// Mock data for connected wallets - we'll keep it empty for now to show the "Connect" card
-const connectedWallets: any[] = [];
+const mockConnectedWallets = [
+  {
+    name: 'My Main Wallet',
+    address: '0x71C7656EC7ab88b098defB751B7401B5f6d8976F',
+    blockchain: 'ethereum',
+    totalValue: 124567.89,
+    pnl_24h: 3.45,
+    tokens: [
+      { symbol: 'ETH', name: 'Ethereum', value: 75000, allocation: 60.2 },
+      { symbol: 'WIF', name: 'dogwifhat', value: 25000, allocation: 20.0 },
+      { symbol: 'PEPE', name: 'Pepe', value: 10000, allocation: 8.0 },
+      { symbol: 'USDC', name: 'USD Coin', value: 14567.89, allocation: 11.8 },
+    ]
+  }
+];
 
-export default function PortfolioPage() {
-  const { user, loading } = useUser();
-
-  const ConnectWalletCard = () => (
+const ConnectWalletCard = () => (
     <Card className="text-center">
       <CardHeader>
         <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
@@ -33,7 +51,65 @@ export default function PortfolioPage() {
          <p className="text-xs text-muted-foreground mt-4">Read-only access. We will never ask for your private keys.</p>
       </CardContent>
     </Card>
-  );
+);
+
+const ConnectedWalletCard = ({ wallet }: { wallet: typeof mockConnectedWallets[0] }) => {
+    return (
+        <Card>
+            <CardHeader className='flex-row items-start justify-between'>
+                <div>
+                    <div className='flex items-center gap-3'>
+                        <Wallet className="h-6 w-6 text-primary" />
+                        <CardTitle>{wallet.name}</CardTitle>
+                    </div>
+                    <CardDescription className='mt-2 font-mono text-xs'>{wallet.address}</CardDescription>
+                </div>
+                 <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                            <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        <DropdownMenuItem><Settings className='mr-2 h-4 w-4' />Settings</DropdownMenuItem>
+                        <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10"><Trash2 className='mr-2 h-4 w-4' />Disconnect</DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            </CardHeader>
+            <CardContent className='space-y-6'>
+                <div className='p-4 rounded-lg bg-muted/50'>
+                    <p className='text-sm text-muted-foreground'>Total Value</p>
+                    <p className='text-3xl font-bold'>${wallet.totalValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+                    <p className='text-sm text-green-500 font-medium'>+${(wallet.totalValue * (wallet.pnl_24h/100)).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})} (+{wallet.pnl_24h}%) today</p>
+                </div>
+
+                <div>
+                    <h3 className="text-lg font-semibold mb-3">Top Holdings</h3>
+                    <div className="space-y-4">
+                        {wallet.tokens.map(token => (
+                            <div key={token.symbol}>
+                                <div className='flex justify-between items-center mb-1 text-sm'>
+                                    <div className='flex items-center gap-2 font-medium'>
+                                        <CryptoIcon token={token.symbol} className='h-5 w-5' />
+                                        <span>{token.name}</span>
+                                    </div>
+                                    <div className='flex items-center gap-2'>
+                                        <span>${token.value.toLocaleString()}</span>
+                                        <span className='w-12 text-right text-muted-foreground'>{token.allocation}%</span>
+                                    </div>
+                                </div>
+                                <Progress value={token.allocation} className='h-2'/>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+    );
+}
+
+export default function PortfolioPage() {
+  const { user, loading } = useUser();
 
   return (
     <div className="relative">
@@ -45,14 +121,14 @@ export default function PortfolioPage() {
         />
 
         {user && (
-          <div className="space-y-8">
-            {connectedWallets.length === 0 ? (
+          <div className="space-y-8 max-w-2xl mx-auto">
+            {mockConnectedWallets.length === 0 ? (
                 <div className='max-w-md mx-auto'>
                     <ConnectWalletCard />
                 </div>
             ) : (
               <div>
-                <p>Portfolio dashboard will be built here.</p>
+                {mockConnectedWallets.map(wallet => <ConnectedWalletCard key={wallet.address} wallet={wallet} />)}
               </div>
             )}
           </div>
