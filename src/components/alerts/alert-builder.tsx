@@ -113,6 +113,7 @@ export default function AlertBuilder({ onSave, onCancel, alert, entity }: { onSa
         }
 
         const newOrUpdatedAlert: any = {
+            type: 'advanced',
             alertType: alertType,
             rule: 'Advanced Rule',
             threshold: 1000000,

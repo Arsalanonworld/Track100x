@@ -33,6 +33,7 @@
       "type": "object",
       "description": "Represents a user-defined alert.",
       "properties": {
+        "type": { "type": "string", "enum": ["quick", "advanced"] },
         "alertType": { "type": "string", "enum": ["wallet", "token"] },
         "walletId": { "type": "string" },
         "token": { "type": "string" },
@@ -42,7 +43,7 @@
         "createdAt": { "type": "string", "format": "date-time" },
         "userId": { "type": "string" }
       },
-      "required": ["alertType", "rule", "enabled", "createdAt", "userId"]
+      "required": ["type", "alertType", "rule", "enabled", "createdAt", "userId"]
     },
     "WatchlistItem": {
       "$schema": "http://json-schema.org/draft-07/schema#",

@@ -149,6 +149,7 @@ export const QuickAlertConfigurator = ({ onSubmitted, entity, alert }: { onSubmi
     const data = Object.fromEntries(formData.entries());
 
     const alertData: any = {
+        type: 'quick',
         alertType: data.alertType,
         rule: data.rule,
         threshold: data.threshold ? Number(data.threshold) : null,
