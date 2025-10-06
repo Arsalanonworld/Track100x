@@ -25,6 +25,8 @@ export type Alert = {
     enabled: boolean;
     createdAt: any; // Firebase Timestamp
     userId: string;
+    direction?: 'incoming' | 'outgoing' | 'any';
+    tokenFilter?: string;
 };
 
 export type WatchlistItem = {

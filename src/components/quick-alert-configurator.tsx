@@ -16,6 +16,8 @@ import { FirestorePermissionError } from '@/firebase/errors';
 import { Combobox } from './ui/combobox';
 import { tokenLibrary } from '@/lib/tokens';
 import { Card } from './ui/card';
+import { RadioGroup, RadioGroupItem } from './ui/radio-group';
+import { Input } from './ui/input';
 
 const uniqueTokens = Object.keys(tokenLibrary);
 const tokenOptions = uniqueTokens.map(symbol => ({ label: symbol, value: symbol }));
@@ -78,7 +80,6 @@ export const QuickAlertConfigurator = ({ onSubmitted, entity, alert }: { onSubmi
       label: item.name ? `${item.name} (${item.identifier.slice(0, 6)}...${item.identifier.slice(-4)})` : item.identifier,
     })) || [];
     
-    // Add the currently viewed wallet if it's not in the watchlist
     if (entity?.type === 'wallet' && !items.some(i => i.value === entity.identifier)) {
         items.unshift({ value: entity.identifier, label: entity.identifier });
     } else if (alert?.walletId && !items.some(i => i.value === alert.walletId)) {
@@ -94,7 +95,6 @@ export const QuickAlertConfigurator = ({ onSubmitted, entity, alert }: { onSubmi
       label: item.identifier,
     })) || [];
 
-    // Add all known tokens, preventing duplicates
     const allTokens = [...items];
     tokenOptions.forEach(opt => {
         if (!allTokens.some(item => item.value === opt.value)) {
@@ -155,6 +155,11 @@ export const QuickAlertConfigurator = ({ onSubmitted, entity, alert }: { onSubmi
         userId: user.uid,
     };
     
+    if (alertType === 'wallet') {
+      alertData.direction = data.direction;
+      alertData.tokenFilter = data.tokenFilter || null;
+    }
+    
     if (!thresholdType) {
         alertData.threshold = null;
     }
@@ -214,6 +219,8 @@ export const QuickAlertConfigurator = ({ onSubmitted, entity, alert }: { onSubmi
         {isSubmitting ? <Loader2 className="animate-spin" /> : alert ? "Save Changes" : "Create Alert"}
     </Button>
   );
+
+  const isLargeTransactionRule = selectedRule === 'large-transaction';
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -289,6 +296,33 @@ export const QuickAlertConfigurator = ({ onSubmitted, entity, alert }: { onSubmi
                 </SelectContent>
                 </Select>
             </div>
+        )}
+
+        {alertType === 'wallet' && isLargeTransactionRule && (
+          <div className='space-y-4 rounded-md border p-4'>
+            <div className="space-y-2">
+              <Label>Direction</Label>
+               <RadioGroup defaultValue={alert?.direction || "any"} name="direction" className="flex gap-4">
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="incoming" id="incoming" />
+                    <Label htmlFor="incoming">Incoming</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="outgoing" id="outgoing" />
+                    <Label htmlFor="outgoing">Outgoing</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="any" id="any" />
+                    <Label htmlFor="any">Any</Label>
+                  </div>
+              </RadioGroup>
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="tokenFilter">Token (Optional)</Label>
+                <Input id="tokenFilter" name="tokenFilter" placeholder="e.g., USDT, ETH" defaultValue={alert?.tokenFilter}/>
+                <p className="text-xs text-muted-foreground">Leave blank to be notified for any token.</p>
+            </div>
+          </div>
         )}
         
         <Card className="p-4">
