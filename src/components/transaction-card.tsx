@@ -4,7 +4,7 @@
 import { Card } from "@/components/ui/card";
 import type { WhaleTransaction } from "@/lib/mock-data";
 import Link from "next/link";
-import { Copy, ChevronDown, BellPlus, ArrowUpRight } from "lucide-react";
+import { Copy, ChevronDown, BellPlus, ArrowUpRight, ArrowRight } from "lucide-react";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { cn } from "@/lib/utils";
@@ -70,10 +70,9 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
                 <Card className="w-full hover:shadow-lg transition-shadow duration-200 group/card overflow-hidden">
                     <CollapsibleTrigger asChild>
                         <div className="cursor-pointer p-3 sm:p-4">
-                             <div className="grid grid-cols-[auto_1fr_auto] items-center gap-3 sm:gap-4">
-                                
+                            <div className="grid grid-cols-1 md:grid-cols-[auto_1fr_auto] items-center gap-3">
                                 {/* Left Side: Amount & Token */}
-                                <div className="flex items-center gap-3">
+                                <div className="flex items-center gap-3 w-full sm:w-auto">
                                     <CryptoIcon token={tx.token.symbol} className="h-10 w-10"/>
                                     <div>
                                         <p className="font-bold text-lg">{tx.tokenAmount}</p>
@@ -83,28 +82,32 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
 
                                 {/* Center: From/To Flow */}
                                 <div className="flex-1 w-full min-w-0">
-                                    <div className="flex flex-col gap-2">
-                                        <div className="flex items-center gap-2 text-sm">
-                                            <span className="text-muted-foreground w-10">From</span>
+                                    <div className="flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-4">
+                                        {/* From */}
+                                        <div className="flex items-center gap-2 text-sm w-full md:w-auto md:justify-end">
+                                            <span className="text-muted-foreground w-10 hidden md:inline">From</span>
                                             <Link href={getExplorerUrl(tx.network, tx.from, 'address')} target="_blank" rel="noopener noreferrer" className="font-mono hover:underline truncate">
                                                 {tx.fromShort}
                                             </Link>
                                             <WatchlistButton type="wallet" identifier={tx.from} />
                                             {tx.fromTags && tx.fromTags.length > 0 && (
-                                                <div className="flex items-center gap-1.5 ml-auto sm:ml-1">
+                                                <div className="flex items-center gap-1.5 ml-auto">
                                                     {tx.fromTags.map(tag => <Badge key={tag} variant="secondary">{tag}</Badge>)}
                                                 </div>
                                             )}
                                         </div>
-
-                                        <div className="flex items-center gap-2 text-sm">
-                                            <span className="text-muted-foreground w-10">To</span>
+                                        
+                                        <ArrowRight className="h-4 w-4 text-muted-foreground hidden md:block shrink-0" />
+                                        
+                                        {/* To */}
+                                        <div className="flex items-center gap-2 text-sm w-full md:w-auto">
+                                            <span className="text-muted-foreground w-10 hidden md:inline">To</span>
                                              <Link href={getExplorerUrl(tx.network, tx.to, 'address')} target="_blank" rel="noopener noreferrer" className="font-mono hover:underline truncate">
                                                 {tx.toShort}
                                             </Link>
                                             <WatchlistButton type="wallet" identifier={tx.to} />
                                              {tx.toTags && tx.toTags.length > 0 && (
-                                                <div className="flex items-center gap-1.5 ml-auto sm:ml-1">
+                                                <div className="flex items-center gap-1.5 ml-auto">
                                                     {tx.toTags.map(tag => <Badge key={tag} variant="secondary">{tag}</Badge>)}
                                                 </div>
                                             )}
@@ -160,6 +163,7 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
 
 
 export default TransactionCard;
+
 
 
 
