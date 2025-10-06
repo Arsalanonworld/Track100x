@@ -91,6 +91,7 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
                                             <Link href={getExplorerUrl(tx.network, tx.from, 'address')} target="_blank" rel="noopener noreferrer" className="font-mono hover:underline truncate">
                                                 {tx.fromShort}
                                             </Link>
+                                            <WatchlistButton type="wallet" identifier={tx.from} />
                                             {tx.fromTags && tx.fromTags.length > 0 && (
                                                 <div className="flex items-center gap-1.5 ml-1">
                                                     {tx.fromTags.map(tag => <Badge key={tag} variant="secondary">{tag}</Badge>)}
@@ -103,6 +104,7 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
                                              <Link href={getExplorerUrl(tx.network, tx.to, 'address')} target="_blank" rel="noopener noreferrer" className="font-mono hover:underline truncate">
                                                 {tx.toShort}
                                             </Link>
+                                            <WatchlistButton type="wallet" identifier={tx.to} />
                                              {tx.toTags && tx.toTags.length > 0 && (
                                                 <div className="flex items-center gap-1.5 ml-1">
                                                     {tx.toTags.map(tag => <Badge key={tag} variant="secondary">{tag}</Badge>)}
@@ -160,3 +162,4 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
 
 
 export default TransactionCard;
+
