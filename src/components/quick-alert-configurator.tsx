@@ -90,6 +90,9 @@ export const QuickAlertConfigurator = ({ onSubmitted, entity, alert }: { onSubmi
     return items;
   }, [watchlistItems, entity, alert]);
 
+  const comboboxOptions = alertType === 'wallet' ? walletOptions : tokenOptions;
+
+
   const currentRules = alertType === 'wallet' ? walletRules : tokenRules;
   const activeRule = currentRules.find(r => r.value === selectedRule);
   const thresholdType = activeRule?.thresholdType;
@@ -190,7 +193,6 @@ export const QuickAlertConfigurator = ({ onSubmitted, entity, alert }: { onSubmi
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-        <input type="hidden" name="identifier" value={targetIdentifier} />
         <input type="hidden" name="alertType" value={alertType} />
         <div className="space-y-2">
             <Label>Alert Type</Label>
@@ -213,7 +215,7 @@ export const QuickAlertConfigurator = ({ onSubmitted, entity, alert }: { onSubmi
           <div className="space-y-2">
             <Label htmlFor="wallet-address">Wallet Address or Alias</Label>
             <Combobox
-                options={walletOptions}
+                options={comboboxOptions}
                 value={targetIdentifier}
                 onChange={setTargetIdentifier}
                 placeholder="Select from watchlist or paste an address..."
@@ -226,7 +228,7 @@ export const QuickAlertConfigurator = ({ onSubmitted, entity, alert }: { onSubmi
             <div className="space-y-2">
                 <Label htmlFor="token-symbol">Token Symbol</Label>
                 <Combobox
-                    options={tokenOptions}
+                    options={comboboxOptions}
                     value={targetIdentifier}
                     onChange={setTargetIdentifier}
                     placeholder="Select or type a token symbol..."
