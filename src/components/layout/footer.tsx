@@ -11,7 +11,7 @@ const footerLinks = {
     { label: 'Upgrade', href: '/upgrade' },
   ],
   company: [
-    { label: 'Blog', href: '#' },
+    { label: 'Crypto Pulse', href: '/crypto-pulse' },
     { label: 'Contact', href: '#' },
   ],
   social: [
