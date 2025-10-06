@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -160,10 +161,11 @@ const StatCard = ({ title, value, icon, helpText, valueClassName, children }: { 
             </div>
             <CardTitle className={cn("text-2xl font-bold", valueClassName)}>{value}</CardTitle>
         </CardHeader>
-        <CardContent>
-            {icon && <div className="text-xs text-muted-foreground flex items-center gap-1">{icon}</div>}
-            {children}
-        </CardContent>
+        {children ? (
+          <CardContent>{children}</CardContent>
+        ) : (
+          <CardContent className="h-[58px]" />
+        )}
     </Card>
 );
 
@@ -322,18 +324,12 @@ export default function WalletAnalyticsDashboard({ walletAddress, isPortfolioVie
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <StatCard title="Total Portfolio Value" value={`$${(wallet.stats.totalValue / 1000000).toFixed(1)}M`} icon={<BarChart className="h-3 w-3" />} helpText="The current total value of all assets in this wallet." />
+                <StatCard title="Total Portfolio Value" value={`$${(wallet.stats.totalValue / 1000000).toFixed(1)}M`} helpText="The current total value of all assets in this wallet." />
                 <StatCard title="24h PnL" value={`${wallet.stats.pnl_24h > 0 ? '+' : ''}${wallet.stats.pnl_24h}%`} valueClassName={wallet.stats.pnl_24h >= 0 ? 'text-green-500' : 'text-red-500'} helpText="Profit and Loss in the last 24 hours.">
                   <PnlChart />
                 </StatCard>
-                <StatCard title="Risk Rating" value={wallet.stats.riskRating} valueClassName={wallet.stats.riskRating === 'Low' ? 'text-green-500' : 'text-red-500'} icon={<ShieldCheck className="h-3 w-3" />} helpText="An assessment of the portfolio's risk based on volatility and holdings." />
-                <StatCard title="Top Chain" value={wallet.stats.topChain} icon={<LinkIcon className="h-3 w-3" />} helpText="The blockchain where most of this wallet's activity occurs." />
-            </div>
-            
-             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                <StatCard title="Token Count" value={wallet.stats.tokenCount.toString()} icon={<Plus className="h-3 w-3 rotate-45" />} helpText="The number of unique tokens in this wallet." />
-                <StatCard title="Avg. Hold Time" value={`${wallet.stats.avgHoldTime} days`} icon={<Clock className="h-3 w-3" />} helpText="The average time tokens are held in this wallet before being sold or transferred." />
-                <StatCard title="Diversification" value={`${(0.72 * 100).toFixed(0)}%`} icon={<Percent className="h-3 w-3" />} helpText="A score from 0% to 100% indicating portfolio diversification." />
+                <StatCard title="Risk Rating" value={wallet.stats.riskRating} valueClassName={wallet.stats.riskRating === 'Low' ? 'text-green-500' : 'text-red-500'} helpText="An assessment of the portfolio's risk based on volatility and holdings." />
+                <StatCard title="Top Chain" value={wallet.stats.topChain} helpText="The blockchain where most of this wallet's activity occurs." />
             </div>
 
             <TokenHoldingsTable tokens={wallet.tokens} />
