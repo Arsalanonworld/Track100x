@@ -1,3 +1,4 @@
+
 'use client';
 
 import { WhaleFeed } from '@/components/whale-feed';
