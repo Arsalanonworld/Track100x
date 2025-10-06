@@ -20,6 +20,7 @@ import { Dialog, DialogTrigger } from "./ui/dialog";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { CreateAlertDialog } from "./create-alert-dialog";
 import { WatchlistButton } from "./track-button";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from "./ui/dropdown-menu";
 
 interface TransactionCardProps {
     tx: WhaleTransaction;
@@ -102,28 +103,36 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
                                     <div className="flex items-center self-end xs:self-center justify-end gap-1 sm:gap-2">
                                         <Badge variant="outline" className="text-xs">{tx.network}</Badge>
                                         <div className="text-xs text-muted-foreground whitespace-nowrap">{tx.time}</div>
-                                         <TooltipProvider>
-                                          <Tooltip>
-                                            <TooltipTrigger asChild>
-                                                <Button variant="ghost" size="icon" className="h-8 w-8 relative shrink-0" onClick={(e) => { e.stopPropagation(); openAlertEditor('wallet', tx.from); }} aria-label="Set wallet alert">
-                                                    <BellPlus className="h-4 w-4 text-muted-foreground hover:text-primary" />
-                                                </Button>
-                                            </TooltipTrigger>
-                                            <TooltipContent>
-                                              <p>Create alert for wallet</p>
-                                            </TooltipContent>
-                                          </Tooltip>
-                                          <Tooltip>
-                                             <TooltipTrigger asChild>
-                                                <Button variant="ghost" size="icon" className="h-8 w-8 relative shrink-0" onClick={(e) => { e.stopPropagation(); openAlertEditor('token', tx.token.symbol); }} aria-label="Set token alert">
-                                                    <Tag className="h-4 w-4 text-muted-foreground hover:text-primary" />
-                                                </Button>
-                                            </TooltipTrigger>
-                                            <TooltipContent>
-                                              <p>Create alert for token</p>
-                                            </TooltipContent>
-                                          </Tooltip>
-                                        </TooltipProvider>
+                                        
+                                        <DropdownMenu>
+                                            <TooltipProvider>
+                                                <Tooltip>
+                                                    <TooltipTrigger asChild>
+                                                        <DropdownMenuTrigger asChild>
+                                                            <Button variant="ghost" size="icon" className="h-8 w-8 relative shrink-0" onClick={(e) => e.stopPropagation()} aria-label="Set alert">
+                                                                <BellPlus className="h-4 w-4 text-muted-foreground hover:text-primary" />
+                                                            </Button>
+                                                        </DropdownMenuTrigger>
+                                                    </TooltipTrigger>
+                                                    <TooltipContent>
+                                                    <p>Create alert</p>
+                                                    </TooltipContent>
+                                                </Tooltip>
+                                            </TooltipProvider>
+                                            <DropdownMenuContent onClick={(e) => e.stopPropagation()}>
+                                                <DropdownMenuItem onClick={() => openAlertEditor('token', tx.token.symbol)}>
+                                                    Alert for Token: {tx.token.symbol}
+                                                </DropdownMenuItem>
+                                                <DropdownMenuSeparator />
+                                                <DropdownMenuItem onClick={() => openAlertEditor('wallet', tx.from)}>
+                                                    Alert for Sender: {tx.fromShort}
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem onClick={() => openAlertEditor('wallet', tx.to)}>
+                                                    Alert for Receiver: {tx.toShort}
+                                                </DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+
                                         <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0 data-[state=open]:bg-muted" aria-label="Toggle transaction details">
                                             <ChevronDown className={cn("h-4 w-4 transition-transform", isOpen && "rotate-180")} />
                                         </Button>
