@@ -209,8 +209,9 @@ function WatchlistItemCard({ item, onUpdate, onRemove }: { item: WatchlistItem, 
         'USDC': { price: '$1.00'},
         // Add other tokens from your mock data or a real API
     }
-    const currentToken = tokenLibrary[item.identifier.toUpperCase()];
-    const currentTokenMockPrice = tokenData[item.identifier.toUpperCase()];
+    
+    const currentToken = item.identifier ? tokenLibrary[item.identifier.toUpperCase()] : undefined;
+    const currentTokenMockPrice = item.identifier ? tokenData[item.identifier.toUpperCase()] : undefined;
 
 
     return (
@@ -238,9 +239,7 @@ function WatchlistItemCard({ item, onUpdate, onRemove }: { item: WatchlistItem, 
                                             <h3 className='text-lg font-semibold truncate'>
                                                 {item.name || item.identifier}
                                             </h3>
-                                            {item.type === 'wallet' && (
-                                                <Button size="icon" variant="ghost" className='h-7 w-7 opacity-0 group-hover:opacity-100' onClick={handleStartEditing}><Edit className='h-4 w-4'/></Button>
-                                            )}
+                                            <Button size="icon" variant="ghost" className='h-7 w-7 opacity-0 group-hover:opacity-100' onClick={handleStartEditing}><Edit className='h-4 w-4'/></Button>
                                         </div>
                                         {item.name && (
                                             <a href={getExplorerUrl('ethereum', item.identifier, 'address')} target="_blank" rel="noopener noreferrer" className='font-mono text-sm text-muted-foreground hover:text-primary transition-colors inline-block truncate max-w-full'>
@@ -442,5 +441,3 @@ export default function WatchlistPage() {
         </div>
   );
 }
-
-    
