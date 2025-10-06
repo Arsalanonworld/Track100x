@@ -20,43 +20,45 @@ import { CreateAlertDialog } from "./create-alert-dialog";
 import { WatchlistButton } from "./track-button";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuLabel } from "./ui/dropdown-menu";
 import { CryptoIcon } from "./crypto-icon";
+import { Table, TableBody, TableCell, TableRow } from "./ui/table";
 
 
-const WalletIdentifierDetails = ({ address, tags, network, label, icon }: { address: string, tags?: string[], network: string, label: string, icon: React.ReactNode }) => {
+const DetailRow = ({ label, value, network, entityType, tags }: { label: string, value: string, network: string, entityType: 'tx' | 'address', tags?: string[] }) => {
     const { toast } = useToast();
     const handleCopy = (e: React.MouseEvent, text: string) => {
         e.stopPropagation();
         navigator.clipboard.writeText(text);
         toast({ title: "Copied!", description: text });
     };
-    
+
     return (
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 p-3 rounded-md bg-background/50 border">
-            <div className="flex items-center gap-3 min-w-0">
-                <div className="text-muted-foreground">{icon}</div>
-                <div className="flex-1 min-w-0">
-                    <p className="text-xs text-muted-foreground">{label}</p>
-                    <p className="font-mono text-sm truncate">{address}</p>
-                     {tags && tags.length > 0 && (
-                        <div className="flex items-center gap-1.5 mt-1.5">
-                            {tags.map(tag => <Badge key={tag} variant="secondary" className="text-xs">{tag}</Badge>)}
-                        </div>
-                     )}
+        <TableRow>
+            <TableCell className="font-medium text-muted-foreground w-[120px]">{label}</TableCell>
+            <TableCell>
+                <div className="flex items-center justify-between">
+                    <div className="flex-1 min-w-0">
+                        <p className="font-mono text-sm truncate">{value}</p>
+                        {tags && tags.length > 0 && (
+                            <div className="flex items-center gap-1.5 mt-1.5">
+                                {tags.map(tag => <Badge key={tag} variant="secondary" className="text-xs">{tag}</Badge>)}
+                            </div>
+                        )}
+                    </div>
+                    <div className="flex items-center gap-0">
+                         <Button variant="ghost" size="icon" className="h-7 w-7" onClick={(e) => handleCopy(e, value)}>
+                            <Copy className="h-3.5 w-3.5" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="h-7 w-7" asChild>
+                            <Link href={getExplorerUrl(network, value, entityType)} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
+                                <ArrowUpRight className="h-3.5 w-3.5" />
+                            </Link>
+                        </Button>
+                    </div>
                 </div>
-            </div>
-            <div className="flex items-center gap-1 self-end sm:self-center">
-                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={(e) => handleCopy(e, address)}>
-                    <Copy className="h-3.5 w-3.5" />
-                </Button>
-                <Button variant="ghost" size="icon" className="h-7 w-7" asChild>
-                    <Link href={getExplorerUrl(network, address, label === 'Transaction' ? 'tx' : 'address')} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
-                        <ArrowUpRight className="h-3.5 w-3.5" />
-                    </Link>
-                </Button>
-            </div>
-        </div>
-    );
-};
+            </TableCell>
+        </TableRow>
+    )
+}
 
 
 const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
@@ -146,29 +148,14 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
                         </div>
                     </CollapsibleTrigger>
                     <CollapsibleContent>
-                       <div className="p-4 border-t bg-muted/30">
-                            <div className="space-y-2">
-                                <WalletIdentifierDetails 
-                                    label="Sender"
-                                    address={tx.from}
-                                    tags={tx.fromTags}
-                                    network={tx.network}
-                                    icon={<Wallet2 className="h-4 w-4" />}
-                                />
-                                <WalletIdentifierDetails
-                                    label="Receiver"
-                                    address={tx.to}
-                                    tags={tx.toTags}
-                                    network={tx.network}
-                                    icon={<Wallet2 className="h-4 w-4" />}
-                                />
-                                <WalletIdentifierDetails
-                                    label="Transaction"
-                                    address={tx.txHash}
-                                    network={tx.network}
-                                    icon={<Hash className="h-4 w-4" />}
-                                />
-                            </div>
+                       <div className="px-4 pb-4">
+                           <Table>
+                               <TableBody>
+                                   <DetailRow label="Sender" value={tx.from} network={tx.network} entityType="address" tags={tx.fromTags} />
+                                   <DetailRow label="Receiver" value={tx.to} network={tx.network} entityType="address" tags={tx.toTags} />
+                                   <DetailRow label="Transaction Hash" value={tx.txHash} network={tx.network} entityType="tx" />
+                               </TableBody>
+                           </Table>
                         </div>
                     </CollapsibleContent>
                 </Card>
@@ -185,3 +172,4 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
 
 
 export default TransactionCard;
+
