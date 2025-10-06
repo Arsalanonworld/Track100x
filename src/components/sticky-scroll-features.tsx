@@ -1,13 +1,12 @@
 
 'use client';
 
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { useMotionValueEvent, useScroll } from 'framer-motion';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { Card } from './ui/card';
-import Image from 'next/image';
 import { PlaceHolderImagesById } from '@/lib/placeholder-images';
+import Image from 'next/image';
 
 type Feature = {
     title: string;
@@ -20,15 +19,15 @@ export const StickyScrollFeatures = ({
 }: {
   features: Feature[];
 }) => {
-  const [activeCard, setActiveCard] = useState(0);
+  const [activeCard, setActiveCard] = React.useState(0);
   const ref = useRef<any>(null);
   const { scrollYProgress } = useScroll({
     container: ref,
-    offset: ['start start', 'end start'],
+    offset: ["start start", "end start"],
   });
   const cardLength = features.length;
 
-  useMotionValueEvent(scrollYProgress, 'change', latest => {
+  useMotionValueEvent(scrollYProgress, "change", (latest) => {
     const cardsBreakpoints = features.map((_, index) => index / cardLength);
     const closestBreakpointIndex = cardsBreakpoints.reduce(
       (acc, breakpoint, index) => {
@@ -43,20 +42,17 @@ export const StickyScrollFeatures = ({
     setActiveCard(closestBreakpointIndex);
   });
 
-  const backgroundColors = ['var(--zinc-900)', 'var(--black)', 'var(--neutral-900)'];
-  const linearGradients = [
-    'linear-gradient(to bottom right, var(--cyan-500), var(--emerald-500))',
-    'linear-gradient(to bottom right, var(--pink-500), var(--indigo-500))',
-    'linear-gradient(to bottom right, var(--orange-500), var(--yellow-500))',
-    'linear-gradient(to bottom right, var(--blue-500), var(--purple-500))',
+  const backgroundColors = [
+    "var(--zinc-900)",
+    "var(--black)",
+    "var(--neutral-900)",
   ];
 
   const FeatureCard = ({ slug }: { slug: string }) => {
     const image = PlaceHolderImagesById[slug];
     if (!image) return null;
     return (
-      <Card className="h-[30rem] w-full rounded-2xl p-8 bg-card flex flex-col justify-end">
-          <div className="relative w-full h-full rounded-lg overflow-hidden">
+        <div className="relative h-full w-full rounded-2xl overflow-hidden">
             <Image 
                 src={image.imageUrl}
                 alt={image.description}
@@ -64,9 +60,8 @@ export const StickyScrollFeatures = ({
                 className="object-cover"
                 data-ai-hint={image.imageHint}
             />
-             <div className="absolute inset-0 bg-black/40"></div>
-          </div>
-      </Card>
+            <div className="absolute inset-0 bg-black/40"></div>
+      </div>
     );
   };
 
@@ -77,49 +72,33 @@ export const StickyScrollFeatures = ({
             Go beyond simple balance checks. We provide institutional-grade tools to give you an edge.
         </p>
         <motion.div
-            animate={{
-                backgroundColor: backgroundColors[activeCard % backgroundColors.length],
-            }}
-            className="h-[40rem] flex justify-center relative space-x-10 rounded-2xl p-4 sm:p-10 mt-10"
+            className="h-[30rem] overflow-y-auto flex justify-center relative rounded-2xl p-4 sm:p-10 mt-10 bg-card border"
             ref={ref}
             >
             <div className="div relative flex items-start px-4">
-                <div className="max-w-2xl">
-                {features.map((item, index) => (
-                    <div key={item.title + index} className="my-20">
-                    <motion.h2
-                        initial={{
-                        opacity: 0,
-                        }}
-                        animate={{
-                        opacity: activeCard === index ? 1 : 0.3,
-                        }}
-                        className="text-2xl font-bold text-slate-100 text-left"
-                    >
-                        {item.title}
-                    </motion.h2>
-                    <motion.p
-                        initial={{
-                        opacity: 0,
-                        }}
-                        animate={{
-                        opacity: activeCard === index ? 1 : 0.3,
-                        }}
-                        className="text-kg text-slate-300 max-w-sm mt-4 text-left"
-                    >
-                        {item.description}
-                    </motion.p>
+                <div className="max-w-2xl mx-auto">
+                    <div className="font-bold text-foreground text-2xl mb-4 text-left">
+                        {features[activeCard].title}
                     </div>
-                ))}
-                <div className="h-40" />
+                    <div className="text-muted-foreground max-w-lg text-left">
+                        {features.map((item, index) => (
+                        <motion.div
+                            key={item.title + index}
+                            animate={{
+                                opacity: activeCard === index ? 1 : 0.3,
+                            }}
+                            className="my-20"
+                        >
+                            <h2 className="text-xl font-bold">{item.title}</h2>
+                            <p className="text-base mt-2">{item.description}</p>
+                        </motion.div>
+                        ))}
+                    </div>
                 </div>
             </div>
-            <motion.div
-                animate={{
-                    background: linearGradients[activeCard % linearGradients.length],
-                }}
+             <motion.div
                 className={cn(
-                'hidden lg:block h-fit sticky top-10 overflow-hidden w-[40rem] rounded-2xl'
+                    'hidden lg:block h-80 w-[45rem] rounded-xl bg-background sticky top-10 overflow-hidden'
                 )}
             >
                 {features[activeCard] && <FeatureCard slug={features[activeCard].contentSlug} />}
@@ -128,3 +107,4 @@ export const StickyScrollFeatures = ({
     </div>
   );
 };
+
