@@ -15,7 +15,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Input } from './ui/input';
-import { Search, Filter, ChevronsUpDown } from 'lucide-react';
+import { Search, Filter, ChevronsUpDown, ArrowRight } from 'lucide-react';
 import { mockWhaleTxs } from '@/lib/mock-data';
 import { Button } from './ui/button';
 import TransactionCard from './transaction-card';
@@ -25,15 +25,16 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible"
+import Link from 'next/link';
 
-export function WhaleFeed() {
+export function WhaleFeed({ isPreview = false }: { isPreview?: boolean }) {
   
   const [currentPage, setCurrentPage] = useState(1);
   const [tokenFilter, setTokenFilter] = useState('');
   const [chainFilter, setChainFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
 
-  const transactionsPerPage = 10;
+  const transactionsPerPage = isPreview ? 5 : 10;
   
 
   const handleNextPage = () => {
@@ -69,7 +70,7 @@ export function WhaleFeed() {
         (currentPage - 1) * transactionsPerPage,
         currentPage * transactionsPerPage
       )
-  }, [filteredTransactions, currentPage]);
+  }, [filteredTransactions, currentPage, transactionsPerPage]);
 
 
   const FilterControls = () => (
@@ -153,42 +154,45 @@ export function WhaleFeed() {
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                   <CardTitle className="flex-1 whitespace-nowrap">Real-Time Whale Feed</CardTitle>
                   
-                  {/* Desktop Filters */}
-                  <div className="hidden md:flex flex-row gap-2 w-full max-w-lg items-center">
-                    <FilterControls />
-                  </div>
+                  {!isPreview && (
+                    <>
+                    {/* Desktop Filters */}
+                    <div className="hidden md:flex flex-row gap-2 w-full max-w-lg items-center">
+                        <FilterControls />
+                    </div>
 
-                  {/* Mobile Filter Button */}
-                  <div className="md:hidden w-full flex justify-end">
-                     <Sheet>
-                        <SheetTrigger asChild>
-                           <Button variant="outline">
-                             <Filter className="h-4 w-4 mr-2" />
-                             Filters
-                           </Button>
-                        </SheetTrigger>
-                        <SheetContent side="bottom" className="rounded-t-lg">
-                          <SheetHeader className="text-left">
-                            <SheetTitle>Filter Transactions</SheetTitle>
-                            <SheetDescription>
-                              Refine the whale feed to find what you're looking for.
-                            </SheetDescription>
-                          </SheetHeader>
-                          <Collapsible className="py-4" defaultOpen={true}>
-                            <CollapsibleTrigger className="flex justify-between w-full font-semibold text-sm items-center pb-2 border-b">
-                              <span>Show Filters</span>
-                              <ChevronsUpDown className="h-4 w-4"/>
-                            </CollapsibleTrigger>
-                            <CollapsibleContent>
-                              <div className="grid grid-cols-1 gap-4 pt-4">
-                                <FilterControls />
-                              </div>
-                            </CollapsibleContent>
-                          </Collapsible>
-                        </SheetContent>
-                      </Sheet>
-                  </div>
-
+                    {/* Mobile Filter Button */}
+                    <div className="md:hidden w-full flex justify-end">
+                        <Sheet>
+                            <SheetTrigger asChild>
+                            <Button variant="outline">
+                                <Filter className="h-4 w-4 mr-2" />
+                                Filters
+                            </Button>
+                            </SheetTrigger>
+                            <SheetContent side="bottom" className="rounded-t-lg">
+                            <SheetHeader className="text-left">
+                                <SheetTitle>Filter Transactions</SheetTitle>
+                                <SheetDescription>
+                                Refine the whale feed to find what you're looking for.
+                                </SheetDescription>
+                            </SheetHeader>
+                            <Collapsible className="py-4" defaultOpen={true}>
+                                <CollapsibleTrigger className="flex justify-between w-full font-semibold text-sm items-center pb-2 border-b">
+                                <span>Show Filters</span>
+                                <ChevronsUpDown className="h-4 w-4"/>
+                                </CollapsibleTrigger>
+                                <CollapsibleContent>
+                                <div className="grid grid-cols-1 gap-4 pt-4">
+                                    <FilterControls />
+                                </div>
+                                </CollapsibleContent>
+                            </Collapsible>
+                            </SheetContent>
+                        </Sheet>
+                    </div>
+                    </>
+                  )}
                 </div>
             </CardHeader>
             <CardContent>
@@ -204,7 +208,14 @@ export function WhaleFeed() {
                       </div>
                     )}
                 </div>
-                {filteredTransactions.length > transactionsPerPage && <PaginationControls />}
+                {isPreview && (
+                    <div className="text-center mt-6">
+                        <Button asChild variant="outline">
+                           <Link href="/feed">View full feed <ArrowRight className="h-4 w-4 ml-2" /></Link>
+                        </Button>
+                    </div>
+                )}
+                {!isPreview && filteredTransactions.length > transactionsPerPage && <PaginationControls />}
             </CardContent>
         </Card>
   );

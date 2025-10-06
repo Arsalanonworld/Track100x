@@ -11,13 +11,11 @@ export default function HomePage() {
       <HeroSection />
 
       {/* Whale Feed Section & Other sections */}
-      <div className="space-y-8 md:space-y-12">
+      <div className="container">
         <div id="whale-feed">
-          <WhaleFeed />
+          <WhaleFeed isPreview={true} />
         </div>
-        <div className="container">
-            <HomePageCta />
-        </div>
+        <HomePageCta />
       </div>
     </div>
   );
