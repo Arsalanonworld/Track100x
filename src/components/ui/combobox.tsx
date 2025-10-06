@@ -38,7 +38,7 @@ export function Combobox({ options, value, onChange, placeholder, emptyMessage }
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full justify-between"
+          className="w-full justify-between pl-9"
         >
           {value
             ? options.find((option) => option.value.toLowerCase() === value.toLowerCase())?.label

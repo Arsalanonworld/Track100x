@@ -121,32 +121,27 @@ export function AddItemForm({ atLimit, onAdd }: { atLimit: boolean; onAdd: () =>
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
         {/* Add Wallet */}
-        <div className="space-y-2">
-            <Label htmlFor="wallet-input" className="flex items-center">
-                <Wallet className="w-4 h-4 mr-2 text-muted-foreground"/>
-                Track a new Wallet
-            </Label>
-            <div className="flex gap-2">
+        <div className="flex gap-2">
+            <div className="relative flex-1">
+                <Wallet className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2"/>
                 <Input 
                     id="wallet-input"
                     placeholder="Paste wallet address..."
                     value={walletIdentifier}
                     onChange={(e) => setWalletIdentifier(e.target.value)}
                     disabled={atLimit}
+                    className="pl-9"
                 />
-                <Button onClick={handleAddWalletClick} disabled={atLimit || !walletIdentifier} className="shrink-0">
-                    <Plus className="h-4 w-4 mr-2"/>
-                    Add
-                </Button>
             </div>
+            <Button onClick={handleAddWalletClick} disabled={atLimit || !walletIdentifier} className="shrink-0">
+                <Plus className="h-4 w-4 sm:mr-2"/>
+                <span className="hidden sm:inline">Add</span>
+            </Button>
         </div>
         {/* Add Token */}
-        <div className="space-y-2">
-            <Label htmlFor="token-input" className="flex items-center">
-                <Tag className="w-4 h-4 mr-2 text-muted-foreground"/>
-                Track a new Token
-            </Label>
-            <div className="flex gap-2">
+        <div className="flex gap-2">
+            <div className="relative flex-1">
+                <Tag className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2 z-10"/>
                 <Combobox 
                     options={tokenOptions}
                     value={tokenIdentifier}
@@ -154,11 +149,11 @@ export function AddItemForm({ atLimit, onAdd }: { atLimit: boolean; onAdd: () =>
                     placeholder="Search for a token..."
                     emptyMessage="No tokens found."
                 />
-                <Button onClick={handleAddTokenClick} disabled={atLimit || !tokenIdentifier} className="shrink-0">
-                    <Plus className="h-4 w-4 mr-2"/>
-                    Add
-                </Button>
             </div>
+            <Button onClick={handleAddTokenClick} disabled={atLimit || !tokenIdentifier} className="shrink-0">
+                <Plus className="h-4 w-4 sm:mr-2"/>
+                <span className="hidden sm:inline">Add</span>
+            </Button>
         </div>
       </div>
       <Dialog open={isAliasModalOpen} onOpenChange={setIsAliasModalOpen}>
