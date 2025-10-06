@@ -41,6 +41,7 @@ import { CryptoIcon } from '@/components/crypto-icon';
 import { getExplorerUrl } from '@/lib/explorers';
 import { Label } from '@/components/ui/label';
 import { AdCard } from '@/components/ad-card';
+import { tokenLibrary } from '@/lib/tokens';
 
 const WATCHLIST_LIMIT_FREE = 5;
 
@@ -199,15 +200,17 @@ function WatchlistItemCard({ item, onUpdate, onRemove }: { item: WatchlistItem, 
     
     // Mock data for tokens, you would fetch this from an API
     const tokenData: any = {
-        'ETH': { name: 'Ethereum', price: '$3,550.00' },
-        'WIF': { name: 'dogwifhat', price: '$2.50' },
-        'PEPE': { name: 'Pepe', price: '$0.000012' },
-        'SOL': { name: 'Solana', price: '$150.25' },
-        'BTC': { name: 'Bitcoin', price: '$68,500.00'},
-        'USDT': { name: 'Tether', price: '$1.00'},
-        'USDC': { name: 'USD Coin', price: '$1.00'},
+        'ETH': { price: '$3,550.00' },
+        'WIF': { price: '$2.50' },
+        'PEPE': { price: '$0.000012' },
+        'SOL': { price: '$150.25' },
+        'BTC': { price: '$68,500.00'},
+        'USDT': { price: '$1.00'},
+        'USDC': { price: '$1.00'},
+        // Add other tokens from your mock data or a real API
     }
-    const currentToken = tokenData[item.identifier];
+    const currentToken = tokenLibrary[item.identifier.toUpperCase()];
+    const currentTokenMockPrice = tokenData[item.identifier.toUpperCase()];
 
 
     return (
@@ -259,7 +262,7 @@ function WatchlistItemCard({ item, onUpdate, onRemove }: { item: WatchlistItem, 
                                 {item.type === 'wallet' ? (
                                     <p>Last Activity: <span className='text-green-500 font-medium'>$500K ETH tx, 2h ago</span></p>
                                 ) : (
-                                    <p>Price: <span className='text-foreground font-medium'>{currentToken?.price || '$0.00'}</span> <span className='text-red-500 font-medium ml-2'>-5.2%</span></p>
+                                    <p>Price: <span className='text-foreground font-medium'>{currentTokenMockPrice?.price || '$0.00'}</span> <span className='text-red-500 font-medium ml-2'>-5.2%</span></p>
                                 )}
                             </div>
                         </div>
@@ -344,6 +347,7 @@ export default function WatchlistPage() {
       return query(collection(firestore, `users/${user.uid}/watchlist`));
     }
     return null;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, firestore, refreshKey]);
 
   const { data: watchlist, loading: watchlistLoading } = useCollection<WatchlistItem>(watchlistQuery);
