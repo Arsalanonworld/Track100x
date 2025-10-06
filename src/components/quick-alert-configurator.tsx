@@ -5,8 +5,7 @@ import { useToast } from '@/hooks/use-toast';
 import React, { useMemo } from 'react';
 import { Label } from './ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { Wallet, Tag } from 'lucide-react';
-import { Switch } from './ui/switch';
+import { Wallet, Tag, Bot } from 'lucide-react';
 import { Button } from './ui/button';
 import { Loader2 } from 'lucide-react';
 import { useUser, useFirestore, useCollection } from '@/firebase';
@@ -16,6 +15,7 @@ import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { Combobox } from './ui/combobox';
 import { mockWhaleTxs } from '@/lib/mock-data';
+import { Card } from './ui/card';
 
 const uniqueTokens = Array.from(new Set(mockWhaleTxs.map(tx => tx.token.symbol.toUpperCase())));
 const tokenOptions = uniqueTokens.map(symbol => ({ label: symbol, value: symbol }));
@@ -269,19 +269,16 @@ export const QuickAlertConfigurator = ({ onSubmitted, entity, alert }: { onSubmi
             </div>
         )}
         
-         <div className="space-y-2">
+        <Card className="p-4">
             <Label>Delivery Channel</Label>
-            <div className="flex flex-col gap-2">
-                <div className="flex items-center justify-between rounded-md border p-3">
-                    <p className="text-sm font-medium">In-App</p>
-                    <Switch defaultChecked disabled/>
+            <div className="flex items-center justify-between rounded-md border p-3 mt-2">
+                <div className='flex items-center gap-3'>
+                    <Bot className="h-5 w-5 text-muted-foreground" />
+                    <p className="text-sm font-medium">Telegram</p>
                 </div>
-                <div className="flex items-center justify-between rounded-md border p-3">
-                    <p className="text-sm font-medium">Email</p>
-                    <Switch />
-                </div>
-             </div>
-          </div>
+                <p className='text-sm text-muted-foreground'>Connect in Account</p>
+            </div>
+        </Card>
         <SubmitButton />
     </form>
   );

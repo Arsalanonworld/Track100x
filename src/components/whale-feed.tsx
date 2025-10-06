@@ -1,3 +1,4 @@
+
 'use client';
 import React, { useState, useMemo } from 'react';
 import {
@@ -24,8 +25,6 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible"
-import { useUser } from '@/firebase';
-import { AdCard } from './ad-card';
 
 export function WhaleFeed() {
   
@@ -33,8 +32,6 @@ export function WhaleFeed() {
   const [tokenFilter, setTokenFilter] = useState('');
   const [chainFilter, setChainFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
-  const { claims } = useUser();
-  const isPro = claims?.plan === 'pro';
 
   const transactionsPerPage = 10;
   
@@ -154,7 +151,7 @@ export function WhaleFeed() {
         <Card className="border-x-0 sm:border-x">
             <CardHeader>
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                  <CardTitle className="flex-1 whitespace-nowrap">Live Whale Transactions</CardTitle>
+                  <CardTitle className="flex-1 whitespace-nowrap">Real-Time Whale Feed</CardTitle>
                   
                   {/* Desktop Filters */}
                   <div className="hidden md:flex flex-row gap-2 w-full max-w-lg items-center">
@@ -197,11 +194,8 @@ export function WhaleFeed() {
             <CardContent>
                 <div className="space-y-3">
                     {currentTransactions.length > 0 ? (
-                      currentTransactions.map((tx, index) => (
-                        <React.Fragment key={tx.id}>
-                          <TransactionCard tx={tx} />
-                          {!isPro && index === 3 && <AdCard />}
-                        </React.Fragment>
+                      currentTransactions.map((tx) => (
+                        <TransactionCard key={tx.id} tx={tx} />
                       ))
                     ) : (
                       <div className="text-center py-16 text-muted-foreground">

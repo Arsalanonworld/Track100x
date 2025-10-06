@@ -25,7 +25,7 @@ import { collection, query } from 'firebase/firestore';
 import type { Alert } from '@/lib/types';
 
 
-const ALERT_LIMIT_FREE = 1;
+const ALERT_LIMIT_FREE = 5;
 
 export default function AlertCreatorCard() {
   const [key, setKey] = useState(Date.now()); // Used to reset form
@@ -124,5 +124,3 @@ export default function AlertCreatorCard() {
       </Card>
   );
 }
-
-    

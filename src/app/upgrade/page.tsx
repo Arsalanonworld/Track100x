@@ -36,8 +36,8 @@ const features = [
   {
     category: 'Core Features',
     items: [
-      { name: 'Live Whale Feed', free: 'Delayed (5-15 mins)', pro: 'Real-time (0 delay)' },
-      { name: 'Watchlist', free: '5 items', pro: 'Unlimited' },
+      { name: 'Real-Time Whale Feed', free: true, pro: true },
+      { name: 'Watchlist', free: '3 items', pro: 'Unlimited' },
     ],
   },
   {
@@ -46,36 +46,41 @@ const features = [
       { name: 'Alerts per Month', free: '5 alerts', pro: 'Unlimited' },
       {
         name: 'Delivery Channels',
-        free: 'In-App Only',
-        pro: 'In-App & Email',
+        free: 'Telegram',
+        pro: 'Telegram',
       },
     ],
   },
+   {
+    category: 'Digests',
+    items: [
+        { name: 'Weekly Digest', free: true, pro: false },
+        { name: 'Daily Digest', free: false, pro: true },
+    ]
+   },
   {
     category: 'Experience',
     items: [
       { name: 'Advertisements & Affiliate Links', free: true, pro: false },
-      { name: 'Weekly Digest Email', free: true, pro: false },
-      { name: 'Daily Digest Email', free: false, pro: true },
     ],
   },
 ];
 
 const featureHighlights = [
     {
-        icon: <Zap className="h-8 w-8 text-primary" />,
-        title: 'Real-Time Feed',
-        description: 'See whale moves instantly as they happen on-chain, with zero delays.',
-    },
-    {
-        icon: <Bell className="h-8 w-8 text-primary" />,
-        title: 'Unlimited Alerts',
-        description: 'Create unlimited alerts and get notified via Email to never miss a move.',
-    },
-    {
         icon: <Eye className="h-8 w-8 text-primary" />,
         title: 'Unlimited Watchlist',
         description: 'Track as many wallets and tokens as you want without any limitations.',
+    },
+    {
+        icon: <Bell className="h-8 w-8 text-primary" />,
+        title: 'Unlimited Telegram Alerts',
+        description: 'Create unlimited alerts and get notified instantly via Telegram to never miss a move.',
+    },
+    {
+        icon: <Zap className="h-8 w-8 text-primary" />,
+        title: 'Daily Digest',
+        description: 'Get a daily summary of the most important whale movements and market signals.',
     },
 ];
 
@@ -88,7 +93,7 @@ const faqs = [
   {
     question: 'What happens to my data and alerts if I downgrade to Free?',
     answer:
-      'Your alerts and watchlist items will not be deleted, but they will be deactivated if you exceed the Free plan limits (5 alerts, 5 watched items). You can re-activate them if you upgrade again or reduce your usage to fit within the limits.',
+      'Your alerts and watchlist items will not be deleted, but they will be deactivated if you exceed the Free plan limits (5 alerts, 3 watched items). You can re-activate them if you upgrade again or reduce your usage to fit within the limits.',
   },
   {
     question: 'What payment methods do you accept?',
@@ -96,9 +101,9 @@ const faqs = [
       'We accept all major credit cards. All payments are processed securely through our payment provider, Stripe.',
   },
   {
-    question: 'How "real-time" is the data?',
+    question: 'How do Telegram alerts work?',
     answer:
-      'Our Pro plan offers a feed with near-zero latency, pulling data directly as transactions are confirmed on-chain. The Free plan feed has a delay of up to 5-15 minutes.',
+      'Once you subscribe to Pro, you can connect your Telegram account in your settings. Our bot will then send you instant notifications directly to your Telegram app whenever one of your alerts is triggered.',
   },
 ];
 
@@ -234,10 +239,10 @@ export default function UpgradePage() {
       <div className="container mx-auto px-4 py-12 sm:py-16">
         <section className="text-center max-w-4xl mx-auto">
           <h1 className="text-4xl font-extrabold tracking-tighter sm:text-5xl lg:text-6xl">
-            Track Whale Wallets Instantly.
+            Never Miss a Whale Move Again.
           </h1>
           <p className="max-w-2xl mx-auto mt-6 text-lg text-muted-foreground">
-            Free delayed feed. $5/month for real-time alerts & tracking.
+            Get unlimited real-time alerts via Telegram. Free for your first 5 alerts. Only $7/month for unlimited.
           </p>
           <div className="flex items-center justify-center gap-4 mt-8">
             <Button size="lg" onClick={handleUpgradeClick}>
@@ -270,7 +275,7 @@ export default function UpgradePage() {
               aria-label="Toggle billing cycle"
             />
             <span className={cn('font-medium', billingCycle === 'yearly' && 'text-primary')}>
-              Yearly <span className="text-green-500 font-bold ml-1">(Save over 15%)</span>
+              Yearly <span className="text-green-500 font-bold ml-1">(Save over 25%)</span>
             </span>
           </div>
           <div className="mt-12 grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-4xl mx-auto items-start">
@@ -278,20 +283,20 @@ export default function UpgradePage() {
               plan="Free"
               price="$0"
               description="Get a feel for our platform with essential tracking tools."
-              features={['Delayed Whale Feed', '5 Watchlist Items', '5 Alerts per Month', 'Ad-supported']}
+              features={['Real-time Whale Feed', '3 Watchlist Items', '5 Telegram Alerts/month', 'Weekly Digest']}
               ctaText={user ? 'Your Current Plan' : 'Get Started Free'}
               ctaAction={() => !user && router.push('/')}
             />
             <PricingCard
               plan="Pro"
-              price={billingCycle === 'monthly' ? '$5' : '$4'}
+              price={billingCycle === 'monthly' ? '$7' : '$6'}
               pricePeriod="/ month"
               description="Unlimited access to every tool for the serious on-chain analyst."
               features={[
-                'Real-time Whale Feed',
                 'Unlimited Watchlist',
-                'Unlimited Alerts',
-                'Ad-Free Experience & Daily Digest',
+                'Unlimited Telegram Alerts',
+                'Daily Digest',
+                'Ad-Free Experience',
               ]}
               ctaText="Upgrade to Pro"
               ctaAction={handleUpgradeClick}

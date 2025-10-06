@@ -4,9 +4,8 @@ import { useState, useMemo } from 'react';
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { Checkbox } from '../ui/checkbox';
 import { Label } from '../ui/label';
-import { Plus } from 'lucide-react';
+import { Plus, Bot } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import type { Alert, WatchlistItem } from '@/lib/types';
 import { useUser, useFirestore, useCollection } from '@/firebase';
@@ -14,6 +13,7 @@ import { doc, updateDoc, addDoc, collection, serverTimestamp, query } from 'fire
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { Combobox } from '../ui/combobox';
+import { Card } from '../ui/card';
 
 const triggerTypes = [
   { value: "Large Transaction", pro: false },
@@ -207,28 +207,17 @@ export default function AlertBuilder({ onSave, onCancel, alert, entity }: { onSa
                  </p>
             </div>
 
-
-            <div className="space-y-4">
-                <h3 className="font-semibold">Delivery Options</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-                    <div className="flex items-center space-x-2">
-                        <Checkbox id="email" defaultChecked />
-                        <Label htmlFor="email">Email Notification</Label>
+            <Card className="p-4">
+                 <h3 className="font-semibold mb-2">Delivery Channel</h3>
+                 <div className='flex items-center justify-between p-3 border rounded-lg bg-background'>
+                    <div className='flex items-center gap-3'>
+                        <Bot className="h-5 w-5 text-muted-foreground" />
+                        <p className='font-medium'>Telegram</p>
                     </div>
-                    <div className="flex items-center space-x-2">
-                        <Checkbox id="in-app" defaultChecked />
-                        <Label htmlFor="in-app">In-App Notification</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                        <Checkbox id="telegram" />
-                        <Label htmlFor="telegram">Telegram</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                        <Checkbox id="discord" />
-                        <Label htmlFor="discord">Discord</Label>
-                    </div>
+                     <p className='text-sm text-muted-foreground'>Connect in Account</p>
                 </div>
-            </div>
+            </Card>
+
 
             <div className="flex justify-end gap-2 pt-4 border-t">
                 {onCancel && <Button variant="ghost" onClick={onCancel}>Cancel</Button>}
