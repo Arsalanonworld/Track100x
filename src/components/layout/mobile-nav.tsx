@@ -4,7 +4,7 @@
 import * as React from "react"
 import Link, { type LinkProps } from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { Menu, BarChart, Bell, FileText, Eye, Rss, Wallet, Search } from "lucide-react"
+import { Menu, Rss, Search, Eye, Bell, TrendingUp } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -17,13 +17,19 @@ export function MobileNav() {
   const { user } = useUser();
 
   const navItems = [
-      { href: '/feed', label: 'Feed', icon: Rss, visible: true },
-      { href: '/wallet-analytics', label: 'Wallet Analytics', icon: Search, visible: true },
-      { href: '/watchlist', label: 'Watchlist', icon: Eye, visible: !!user },
+      { href: '/feed', label: 'Whale Feed', icon: Rss, visible: true },
+      { href: '/wallet-analytics', label: 'Analyzer', icon: Search, visible: true },
+      { href: '/crypto-pulse', label: 'Crypto Pulse', icon: TrendingUp, visible: true },
+      { href: '/watchlist', label: 'Watchlist', icon: Eye, visible: true },
       { href: '/alerts', label: 'Alerts', icon: Bell, visible: true },
   ];
 
-  const visibleItems = navItems.filter(item => item.visible);
+  const visibleItems = navItems.filter(item => {
+      if (!user && (item.href === '/watchlist' || item.href === '/alerts')) {
+          return false;
+      }
+      return item.visible;
+  });
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -58,7 +64,9 @@ export function MobileNav() {
               key={item.href}
               href={item.href}
               onOpenChange={setOpen}
+              className="flex items-center gap-3"
             >
+              <item.icon className="h-5 w-5 text-muted-foreground" />
               {item.label}
             </MobileLink>
           ))}
@@ -96,5 +104,3 @@ function MobileLink({
     </Link>
   )
 }
-
-    

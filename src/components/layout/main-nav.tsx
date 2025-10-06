@@ -12,13 +12,19 @@ export function MainNav() {
     const { user } = useUser();
 
     const navItems = [
-        { href: '/feed', label: 'Feed', visible: true },
-        { href: '/wallet-analytics', label: 'Wallet Analytics', visible: true },
-        { href: '/watchlist', label: 'Watchlist', visible: !!user },
+        { href: '/feed', label: 'Whale Feed', visible: true },
+        { href: '/wallet-analytics', label: 'Analyzer', visible: true },
+        { href: '/crypto-pulse', label: 'Crypto Pulse', visible: true },
+        { href: '/watchlist', label: 'Watchlist', visible: true },
         { href: '/alerts', label: 'Alerts', visible: true },
     ];
     
-    const visibleItems = navItems.filter(item => item.visible);
+    const visibleItems = navItems.filter(item => {
+        if (!user && (item.href === '/watchlist' || item.href === '/alerts')) {
+            return false;
+        }
+        return item.visible;
+    });
 
   return (
     <nav className="hidden md:flex items-center space-x-6 text-sm font-medium">
@@ -39,5 +45,3 @@ export function MainNav() {
     </nav>
   )
 }
-
-    
