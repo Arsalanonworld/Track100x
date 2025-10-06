@@ -63,13 +63,13 @@ function WatchlistItemCard({ item, onUpdate, onRemove }: { item: WatchlistItem, 
     };
     
     const tokenData: any = {
-        'ETH': { price: '$3,550.00', change: '-5.2%' },
-        'WIF': { price: '$2.50', change: '+1.2%' },
-        'PEPE': { price: '$0.000012', change: '-10.5%' },
-        'SOL': { price: '$150.25', change: '+3.1%' },
-        'BTC': { price: '$68,500.00', change: '-1.0%'},
-        'USDT': { price: '$1.00', change: '0.0%'},
-        'USDC': { price: '$1.00', change: '0.0%'},
+        'ETH': { price: '$3,550.00' },
+        'WIF': { price: '$2.50' },
+        'PEPE': { price: '$0.000012' },
+        'SOL': { price: '$150.25' },
+        'BTC': { price: '$68,500.00'},
+        'USDT': { price: '$1.00'},
+        'USDC': { price: '$1.00'},
     }
     
     if (!item.identifier) return null;
@@ -133,7 +133,7 @@ function WatchlistItemCard({ item, onUpdate, onRemove }: { item: WatchlistItem, 
                                         <p className="text-sm text-muted-foreground font-mono">{item.identifier}</p>
                                         
                                         {currentTokenMockPrice && (
-                                            <p className='text-sm mt-2'>Price: <span className='text-foreground font-medium'>{currentTokenMockPrice.price}</span> <span className={currentTokenMockPrice.change.startsWith('-') ? 'text-red-500' : 'text-green-500'}>{currentTokenMockPrice.change}</span></p>
+                                            <p className='text-sm mt-2'>Price: <span className='text-foreground font-medium'>{currentTokenMockPrice.price}</span></p>
                                         )}
                                     </div>
                                     <div className='flex justify-end items-center h-full'>
@@ -305,34 +305,33 @@ export default function WatchlistPage() {
                     </Card>
                 )}
 
-                <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-start">
-                    <div className="lg:col-span-3 space-y-4">
-                        <h2 className='text-xl font-bold'>Tracked Items</h2>
-                        {isLoading ? <WatchlistSkeleton /> : watchlist && watchlist.length > 0 ? (
-                            watchlist.map((item) => (
-                               <WatchlistItemCard key={item.id} item={item} onUpdate={handleUpdate} onRemove={handleRemove} />
-                            ))
-                        ) : (
-                           !isLoading && (
-                            <div className="flex flex-col items-center justify-center text-center text-muted-foreground p-8 rounded-lg border-2 border-dashed">
-                                <p className="font-semibold text-lg">Your watchlist is empty.</p>
-                                <p className="text-sm max-w-xs mx-auto">
-                                   Use the form above or add wallets and tokens directly from the Whale Feed.
-                                </p>
-                            </div>
-                           )
-                        )}
-                    </div>
+                <div className="space-y-4">
+                    <h2 className='text-2xl font-bold tracking-tight'>Tracked Items</h2>
+                    {isLoading ? <WatchlistSkeleton /> : watchlist && watchlist.length > 0 ? (
+                        watchlist.map((item) => (
+                           <WatchlistItemCard key={item.id} item={item} onUpdate={handleUpdate} onRemove={handleRemove} />
+                        ))
+                    ) : (
+                       !isLoading && (
+                        <div className="flex flex-col items-center justify-center text-center text-muted-foreground p-8 rounded-lg border-2 border-dashed">
+                            <p className="font-semibold text-lg">Your watchlist is empty.</p>
+                            <p className="text-sm max-w-xs mx-auto">
+                               Use the form above or add wallets and tokens directly from the Whale Feed.
+                            </p>
+                        </div>
+                       )
+                    )}
+                </div>
 
-                    <div className="lg:col-span-2 space-y-8">
-                         <ActiveAlerts />
-                         <AlertHistory />
-                    </div>
+                <div className="space-y-8 pt-8">
+                     <div className='space-y-4'>
+                        <h2 className='text-2xl font-bold tracking-tight'>Alerts</h2>
+                        <ActiveAlerts />
+                     </div>
+                     <AlertHistory />
                 </div>
 
             </div>
         </div>
   );
 }
-
-    
