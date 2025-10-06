@@ -40,7 +40,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { CryptoIcon } from '@/components/crypto-icon';
 import { getExplorerUrl } from '@/lib/explorers';
 import { Label } from '@/components/ui/label';
-import { AdCard } from '@/components/ad-card';
 import { tokenLibrary } from '@/lib/tokens';
 
 const WATCHLIST_LIMIT_FREE = 5;
@@ -453,11 +452,6 @@ export default function WatchlistPage() {
                     )}
                 </div>
 
-                {!isPro && (
-                  <div className="pt-8">
-                    <AdCard />
-                  </div>
-                )}
             </div>
         </div>
   );

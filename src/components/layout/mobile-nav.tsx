@@ -19,7 +19,6 @@ export function MobileNav() {
   const navItems = [
       { href: '/feed', label: 'Whale Feed', icon: Rss, visible: true },
       { href: '/portfolio', label: 'My Portfolio', icon: Wallet, visible: true },
-      { href: '/crypto-pulse', label: 'Crypto Pulse', icon: TrendingUp, visible: true },
       { href: '/watchlist', label: 'Watchlist', icon: Eye, visible: true },
       { href: '/alerts', label: 'Alerts', icon: Bell, visible: true },
   ];

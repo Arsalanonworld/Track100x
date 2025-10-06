@@ -11,7 +11,6 @@ const footerLinks = {
     { label: 'Upgrade', href: '/upgrade' },
   ],
   company: [
-    { label: 'Crypto Pulse', href: '/crypto-pulse' },
     { label: 'Contact', href: '#' },
   ],
   social: [
@@ -19,8 +18,6 @@ const footerLinks = {
     { label: 'Discord', href: '#' },
   ],
   legal: [
-    { label: 'Terms of Service', href: '/terms-of-service' },
-    { label: 'Privacy Policy', href: '/privacy-policy' },
   ],
 };
 

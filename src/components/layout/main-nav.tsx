@@ -14,7 +14,6 @@ export function MainNav() {
     const navItems = [
         { href: '/feed', label: 'Whale Feed', visible: true },
         { href: '/portfolio', label: 'My Portfolio', visible: true },
-        { href: '/crypto-pulse', label: 'Crypto Pulse', visible: true },
         { href: '/watchlist', label: 'Watchlist', visible: true },
         { href: '/alerts', label: 'Alerts', visible: true },
     ];
