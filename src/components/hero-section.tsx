@@ -1,7 +1,7 @@
 
 'use client';
 import { useState, useEffect, useRef } from 'react';
-import { BarChart, Bell, CheckCircle } from "lucide-react";
+import { Bell, Eye, CheckCircle } from "lucide-react";
 import { WhaleIcon } from "./icons/whale-icon";
 
 const phrases = [
@@ -30,19 +30,19 @@ const phrases = [
 const features = [
     {
         icon: <WhaleIcon className="h-5 w-5 text-muted-foreground" />,
-        label: "Live Whale Feed"
+        label: "Real-Time Feed"
     },
     {
-        icon: <BarChart className="h-5 w-5 text-muted-foreground" />,
-        label: "Wallet Leaderboards"
+        icon: <Eye className="h-5 w-5 text-muted-foreground" />,
+        label: "Simple Watchlist"
     },
     {
         icon: <Bell className="h-5 w-5 text-muted-foreground" />,
-        label: "Real-Time Alerts"
+        label: "Telegram Alerts"
     },
     {
         icon: <CheckCircle className="h-5 w-5 text-muted-foreground" />,
-        label: "Free for Everyone"
+        label: "Free to Use"
     }
 ];
 
