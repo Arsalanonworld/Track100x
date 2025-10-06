@@ -1,3 +1,4 @@
+
 'use client';
 
 import PageHeader from '@/components/page-header';
@@ -5,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { FeatureLock } from '@/components/feature-lock';
 import { useUser } from '@/firebase';
-import { Wallet, Plus, MoreHorizontal, Settings, Trash2, AlertTriangle, ArrowLeft, Clock, BarChart, Percent, ShieldCheck, Zap, Info, Download, Share } from 'lucide-react';
+import { Wallet, Plus, MoreHorizontal, Settings, Trash2, AlertTriangle, ArrowLeft, Clock, BarChart, Percent, ShieldCheck, Zap, Info, Download, Share, Bell } from 'lucide-react';
 import { CryptoIcon } from '@/components/crypto-icon';
 import {
   DropdownMenu,
@@ -290,3 +291,5 @@ export default function PortfolioPage() {
     </div>
   );
 }
+
+    
