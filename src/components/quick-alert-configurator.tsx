@@ -28,16 +28,15 @@ interface Rule {
   thresholdType: ThresholdType;
 }
 
-const walletRules: Rule[] = [
-  { value: 'tx-value', label: 'Transaction Value', thresholdType: 'VALUE' },
-  { value: 'balance-change', label: 'Token Balance Change', thresholdType: 'VALUE' },
-  { value: 'pnl-change', label: '7d PnL Change', thresholdType: 'PERCENTAGE' },
+const portfolioRules: Rule[] = [
+  { value: 'portfolio-value-change', label: 'Portfolio Value Change', thresholdType: 'PERCENTAGE'},
+  { value: 'whale-impact', label: 'Whale Sells a Holding', thresholdType: 'VALUE' },
 ];
 
 const tokenRules: Rule[] = [
-  { value: 'price-change', label: 'Price Change %', thresholdType: 'PERCENTAGE' },
-  { value: 'new-whale-tx', label: 'New Whale Transaction', thresholdType: 'NONE' },
-  { value: 'liquidity-shift', label: 'Liquidity Shift %', thresholdType: 'PERCENTAGE' },
+  { value: 'price-swing', label: 'Price Swing', thresholdType: 'PERCENTAGE' },
+  { value: 'whale-buy-pressure', label: 'Whale Buy/Sell Pressure', thresholdType: 'VALUE' },
+  { value: 'new-whale-tx', label: 'Any New Whale Transaction', thresholdType: 'NONE' },
 ];
 
 const thresholds = {
@@ -82,9 +81,9 @@ export const QuickAlertConfigurator = ({ onSubmitted, entity, alert }: { onSubmi
     })) || [];
     
     if (entity?.type === 'wallet' && !items.some(i => i.value === entity.identifier)) {
-        items.unshift({ value: entity.identifier, label: entity.identifier });
+        items.unshift({ value: entity.identifier, label: 'Connected Portfolio' });
     } else if (alert?.walletId && !items.some(i => i.value === alert.walletId)) {
-        items.unshift({ value: alert.walletId, label: alert.walletId });
+        items.unshift({ value: alert.walletId, label: 'Connected Portfolio' });
     }
 
     return items;
@@ -93,7 +92,7 @@ export const QuickAlertConfigurator = ({ onSubmitted, entity, alert }: { onSubmi
   const comboboxOptions = alertType === 'wallet' ? walletOptions : tokenOptions;
 
 
-  const currentRules = alertType === 'wallet' ? walletRules : tokenRules;
+  const currentRules = alertType === 'wallet' ? portfolioRules : tokenRules;
   const activeRule = currentRules.find(r => r.value === selectedRule);
   const thresholdType = activeRule?.thresholdType;
 
@@ -102,7 +101,7 @@ export const QuickAlertConfigurator = ({ onSubmitted, entity, alert }: { onSubmi
     const newType = entity?.type || alert?.alertType;
     if (newType) {
         setAlertType(newType);
-        const ruleExists = (newType === 'wallet' ? walletRules : tokenRules).some(r => r.value === selectedRule);
+        const ruleExists = (newType === 'wallet' ? portfolioRules : tokenRules).some(r => r.value === selectedRule);
         if (!ruleExists) {
             setSelectedRule(undefined);
         }
@@ -197,17 +196,17 @@ export const QuickAlertConfigurator = ({ onSubmitted, entity, alert }: { onSubmi
     <form onSubmit={handleSubmit} className="space-y-6">
         <input type="hidden" name="alertType" value={alertType} />
         <div className="space-y-2">
-            <Label>Alert Type</Label>
+            <Label>Alert For</Label>
             <Select onValueChange={(v: 'wallet' | 'token') => { setAlertType(v); setSelectedRule(undefined); setTargetIdentifier('') }} defaultValue={alertType} name="alertType" disabled={!!entity || !!alert}>
                 <SelectTrigger>
                     <SelectValue placeholder="Select alert type..." />
                 </SelectTrigger>
                 <SelectContent>
                     <SelectItem value="wallet">
-                        <div className="flex items-center gap-2"><Wallet className="h-4 w-4" /> Wallet Activity</div>
+                        <div className="flex items-center gap-2"><Wallet className="h-4 w-4" /> Portfolio</div>
                     </SelectItem>
                     <SelectItem value="token">
-                        <div className="flex items-center gap-2"><Tag className="h-4 w-4" /> Token Events</div>
+                        <div className="flex items-center gap-2"><Tag className="h-4 w-4" /> Token</div>
                     </SelectItem>
                 </SelectContent>
             </Select>
@@ -215,7 +214,7 @@ export const QuickAlertConfigurator = ({ onSubmitted, entity, alert }: { onSubmi
 
         {alertType === 'wallet' && (
           <div className="space-y-2">
-            <Label htmlFor="wallet-address">Wallet Address or Alias</Label>
+            <Label htmlFor="wallet-address">Portfolio</Label>
             <Combobox
                 options={comboboxOptions}
                 value={targetIdentifier}
@@ -240,7 +239,7 @@ export const QuickAlertConfigurator = ({ onSubmitted, entity, alert }: { onSubmi
         )}
         
         <div className="space-y-2">
-            <Label htmlFor="rule">Rule</Label>
+            <Label htmlFor="rule">Notify me when...</Label>
             <Select name="rule" required value={selectedRule} onValueChange={setSelectedRule}>
             <SelectTrigger id="rule">
                 <SelectValue placeholder="Select a rule..." />
