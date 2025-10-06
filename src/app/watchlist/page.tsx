@@ -203,16 +203,11 @@ function WatchlistItemCard({ item, onUpdate, onRemove }: { item: WatchlistItem, 
                            ) : (
                             <div className='flex items-center gap-2'>
                                 <h3 className='text-lg font-semibold truncate'>{item.name || item.identifier}</h3>
-                                {item.name && (
-                                     <p className='font-mono text-sm text-muted-foreground hover:text-primary transition-colors inline-block'>
-                                        {item.identifier}
-                                    </p>
-                                )}
                                 <Button size="icon" variant="ghost" className='h-7 w-7 opacity-0 group-hover:opacity-100' onClick={handleStartEditing}><Edit className='h-4 w-4'/></Button>
                             </div>
                            )}
                            
-                            {item.type === 'wallet' && (
+                            {item.type === 'wallet' && item.name && (
                                  <a href={getExplorerUrl('ethereum', item.identifier, 'address')} target="_blank" rel="noopener noreferrer" className='font-mono text-sm text-muted-foreground hover:text-primary transition-colors inline-block truncate'>
                                     {item.identifier}
                                 </a>
@@ -403,3 +398,6 @@ export default function WatchlistPage() {
   );
 }
 
+
+
+    
