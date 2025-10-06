@@ -72,21 +72,57 @@ export default function PortfolioWhaleImpact() {
             <ChartContainer config={chartConfig}>
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart
-                    accessibilityLayer
-                    data={chartData}
-                    margin={{
-                        top: 10,
-                        right: 30,
-                        left: 0,
-                        bottom: 0,
-                    }}
+                  accessibilityLayer
+                  data={chartData}
+                  margin={{
+                    top: 10,
+                    right: 10,
+                    left: 10,
+                    bottom: 0,
+                  }}
                 >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" />
-                    <YAxis />
-                    <Tooltip content={<ChartTooltipContent indicator="dot" />} />
-                    <Area type="monotone" dataKey="buy" stackId="1" stroke="var(--color-buy)" fill="var(--color-buy)" fillOpacity={0.4} />
-                    <Area type="monotone" dataKey="sell" stackId="1" stroke="var(--color-sell)" fill="var(--color-sell)" fillOpacity={0.4} />
+                  <CartesianGrid vertical={false} />
+                  <XAxis
+                    dataKey="date"
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={8}
+                    tickFormatter={(value) => new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                  />
+                  <YAxis
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={8}
+                    tickFormatter={(value) => `$${Number(value) / 1000}k`}
+                  />
+                  <Tooltip
+                    cursor={false}
+                    content={<ChartTooltipContent indicator="dot" />}
+                  />
+                  <defs>
+                    <linearGradient id="fillBuy" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="var(--color-buy)" stopOpacity={0.8} />
+                      <stop offset="95%" stopColor="var(--color-buy)" stopOpacity={0.1} />
+                    </linearGradient>
+                    <linearGradient id="fillSell" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="var(--color-sell)" stopOpacity={0.8} />
+                      <stop offset="95%" stopColor="var(--color-sell)" stopOpacity={0.1} />
+                    </linearGradient>
+                  </defs>
+                  <Area
+                    dataKey="buy"
+                    type="natural"
+                    fill="url(#fillBuy)"
+                    stroke="var(--color-buy)"
+                    stackId="a"
+                  />
+                  <Area
+                    dataKey="sell"
+                    type="natural"
+                    fill="url(#fillSell)"
+                    stroke="var(--color-sell)"
+                    stackId="a"
+                  />
                 </AreaChart>
               </ResponsiveContainer>
             </ChartContainer>
