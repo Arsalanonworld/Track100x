@@ -1,3 +1,4 @@
+
 'use client';
 
 import PageHeader from '@/components/page-header';
@@ -6,19 +7,24 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
-import { Star, User } from 'lucide-react';
+import { Star, User, Bell, Link as LinkIcon, Bot, CheckCircle, Circle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Switch } from '@/components/ui/switch';
+import { Separator } from '@/components/ui/separator';
 
-export default function AccountPage() {
-  const { user, claims, loading } = useUser();
-  const plan = claims?.plan || 'free';
-
-  const AccountSkeleton = () => (
+function AccountSkeleton() {
+  return (
     <div className="space-y-8">
       <div className="space-y-2">
         <Skeleton className="h-10 w-1/3" />
         <Skeleton className="h-6 w-2/3" />
+      </div>
+      <div className="flex gap-4 border-b">
+        <Skeleton className="h-10 w-24" />
+        <Skeleton className="h-10 w-24" />
+        <Skeleton className="h-10 w-24" />
       </div>
       <Card>
         <CardHeader>
@@ -37,6 +43,13 @@ export default function AccountPage() {
       </Card>
     </div>
   );
+}
+
+
+export default function AccountPage() {
+  const { user, claims, loading } = useUser();
+  const plan = claims?.plan || 'free';
+  const isPro = plan === 'pro';
 
   if (loading) {
     return <AccountSkeleton />;
@@ -54,50 +67,64 @@ export default function AccountPage() {
     <div className="space-y-8">
       <PageHeader
         title="My Account"
-        description="Manage your profile, settings, and subscription."
+        description="Manage your profile, subscription, and application settings."
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-1">
+      <Tabs defaultValue="profile" className="w-full">
+        <TabsList className="grid w-full grid-cols-3 max-w-md">
+          <TabsTrigger value="profile">Profile</TabsTrigger>
+          <TabsTrigger value="subscription">Subscription</TabsTrigger>
+          <TabsTrigger value="settings">Settings</TabsTrigger>
+        </TabsList>
+        
+        {/* Profile Tab */}
+        <TabsContent value="profile" className="pt-6">
           <Card>
             <CardHeader>
-              <CardTitle>Profile</CardTitle>
+              <CardTitle>Your Profile</CardTitle>
+              <CardDescription>This information is visible to us and used for account purposes.</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4 text-sm">
+            <CardContent className="space-y-6">
                 <div className="flex items-center gap-4">
-                    <Avatar className="h-16 w-16">
+                    <Avatar className="h-20 w-20 border">
                         <AvatarImage src={user.photoURL ?? ''} alt="User avatar" />
                         <AvatarFallback>
                             {user.displayName ? user.displayName.charAt(0).toUpperCase() : user.email?.charAt(0).toUpperCase()}
                         </AvatarFallback>
                     </Avatar>
-                    <div>
-                        <p className="font-semibold">{user.displayName || 'User'}</p>
+                    <div className="space-y-1">
+                        <p className="text-2xl font-semibold">{user.displayName || 'User'}</p>
                         <p className="text-muted-foreground">{user.email}</p>
                     </div>
                 </div>
                 <div>
-                    <p className="font-semibold text-muted-foreground">User ID</p>
-                    <p className="font-mono text-xs break-all">{user.uid}</p>
+                    <p className="font-semibold text-sm text-muted-foreground">User ID</p>
+                    <p className="font-mono text-xs bg-muted/50 rounded-sm px-2 py-1 mt-1 inline-block">{user.uid}</p>
                 </div>
             </CardContent>
           </Card>
-        </div>
-        <div className="lg:col-span-2">
+        </TabsContent>
+        
+        {/* Subscription Tab */}
+        <TabsContent value="subscription" className="pt-6">
           <Card>
             <CardHeader>
               <CardTitle>Subscription Plan</CardTitle>
+              <CardDescription>Manage your billing and subscription details.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              {plan === 'pro' ? (
+              {isPro ? (
                 <div>
                   <div className="flex items-center gap-2">
-                    <Badge variant="default" className="text-base py-1 px-3 bg-green-600 hover:bg-green-700">
+                    <Badge className="text-base py-1 px-3 bg-green-600 hover:bg-green-700">
                       <Star className="h-4 w-4 mr-2" />
                       Pro Plan
                     </Badge>
                   </div>
-                  <p className="text-muted-foreground mt-2">You have full access to all features.</p>
+                  <p className="text-muted-foreground mt-2">You have full access to all Track100x features.</p>
+                  <Separator className="my-6" />
+                  <p className="text-sm font-semibold">Next billing date: <span className="font-normal">January 1, 2025</span></p>
+                  <p className="text-sm font-semibold">Price: <span className="font-normal">$23/month (Billed Annually)</span></p>
                   <Button variant="outline" className="mt-4" disabled>Manage Subscription</Button>
                    <p className="text-xs text-muted-foreground mt-2">Redirect to Stripe/LemonSqueezy not implemented.</p>
                 </div>
@@ -109,7 +136,7 @@ export default function AccountPage() {
                       Free Plan
                     </Badge>
                   </div>
-                  <p className="text-muted-foreground mt-2">You are currently on the Free plan.</p>
+                  <p className="text-muted-foreground mt-2">You are currently on the Free plan. Upgrade to unlock all features.</p>
                   <Button asChild className="mt-4">
                     <Link href="/upgrade">Upgrade to Pro</Link>
                   </Button>
@@ -117,8 +144,54 @@ export default function AccountPage() {
               )}
             </CardContent>
           </Card>
-        </div>
-      </div>
+        </TabsContent>
+
+        {/* Settings Tab */}
+        <TabsContent value="settings" className="pt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Notification Settings</CardTitle>
+              <CardDescription>Control how you receive alerts.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+                <div className='flex items-center justify-between p-4 border rounded-lg'>
+                    <div className='flex items-center gap-3'>
+                        <Bell className="h-5 w-5 text-muted-foreground" />
+                        <p className='font-medium'>In-App Notifications</p>
+                    </div>
+                     <Switch defaultChecked disabled />
+                </div>
+                 <div className='flex items-center justify-between p-4 border rounded-lg'>
+                    <div className='flex items-center gap-3'>
+                        <Circle className="h-5 w-5 text-green-500 fill-green-500" />
+                        <p className='font-medium'>Email Notifications</p>
+                    </div>
+                    <div className='flex items-center gap-3'>
+                        <span className="text-sm text-muted-foreground">{user.email}</span>
+                        <Switch defaultChecked />
+                    </div>
+                </div>
+                <div className='flex items-center justify-between p-4 border rounded-lg'>
+                    <div className='flex items-center gap-3'>
+                        <Bot className="h-5 w-5 text-muted-foreground" />
+                        <p className='font-medium'>Telegram Notifications</p>
+                    </div>
+                     <Button variant="secondary"><LinkIcon className='h-4 w-4 mr-2'/>Connect</Button>
+                </div>
+                <div className='flex items-center justify-between p-4 border rounded-lg'>
+                    <div className='flex items-center gap-3'>
+                        <Bot className="h-5 w-5 text-muted-foreground" />
+                        <p className='font-medium'>Discord Notifications</p>
+                    </div>
+                     <Button variant="secondary"><LinkIcon className='h-4 w-4 mr-2'/>Connect</Button>
+                </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+      </Tabs>
     </div>
   );
 }
+
+    
