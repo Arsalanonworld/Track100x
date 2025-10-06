@@ -2,9 +2,8 @@
 'use client';
 import { Card, CardContent } from "@/components/ui/card";
 import type { WhaleTransaction } from "@/lib/mock-data";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import Link from "next/link";
-import { ArrowRight, Copy, ChevronDown, BellPlus, Wallet2 } from "lucide-react";
+import { Copy, ChevronDown, BellPlus } from "lucide-react";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { cn } from "@/lib/utils";
@@ -17,10 +16,9 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { getExplorerUrl } from "@/lib/explorers";
 import { Dialog } from "./ui/dialog";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { CreateAlertDialog } from "./create-alert-dialog";
 import { WatchlistButton } from "./track-button";
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from "./ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuLabel } from "./ui/dropdown-menu";
 import { CryptoIcon } from "./crypto-icon";
 
 interface TransactionCardProps {
@@ -49,35 +47,6 @@ const WalletIdentifierDetails = ({ address, shortAddress, tags, network, label }
     </div>
 )};
 
-const WalletPill = ({ address, shortAddress, tags, network, onAlertClick }: { address: string, shortAddress: string, tags?: string[], network: string, onAlertClick: () => void}) => (
-    <div className="relative group flex-1 bg-muted/40 hover:bg-muted/80 transition-colors rounded-lg p-3 min-w-0">
-        <div className="flex items-center gap-2">
-            <Wallet2 className="h-5 w-5 text-muted-foreground shrink-0"/>
-            <div className="flex-1 min-w-0">
-                <Link href={getExplorerUrl(network, address, 'address')} target="_blank" rel="noopener noreferrer" className="font-mono text-sm hover:underline truncate block">{shortAddress}</Link>
-                {tags && tags.length > 0 && (
-                    <div className="flex items-center gap-1.5 mt-1">
-                        {tags.map(tag => <Badge key={tag} variant="secondary" className="text-xs font-normal">{tag}</Badge>)}
-                    </div>
-                )}
-            </div>
-        </div>
-        <div className="absolute top-2 right-2 flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
-            <WatchlistButton type="wallet" identifier={address} />
-            <TooltipProvider>
-                <Tooltip>
-                    <TooltipTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => { e.stopPropagation(); onAlertClick(); }}>
-                            <BellPlus className="h-4 w-4" />
-                        </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>Create Alert</TooltipContent>
-                </Tooltip>
-            </TooltipProvider>
-        </div>
-    </div>
-);
-
 
 const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -100,41 +69,75 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
             <Collapsible open={isOpen} onOpenChange={setIsOpen}>
                 <Card className="w-full hover:shadow-lg transition-shadow duration-200 group/card">
                     <CollapsibleTrigger asChild>
-                        <div className="cursor-pointer">
-                            <CardContent className="p-3 sm:p-4">
-                                <div className="flex flex-col sm:flex-row items-center gap-2">
-                                    {/* From Wallet */}
-                                    <WalletPill address={tx.from} shortAddress={tx.fromShort} tags={tx.fromTags} network={tx.network} onAlertClick={() => openAlertEditor('wallet', tx.from)} />
-
-                                    {/* Center Amount */}
-                                    <div className="flex-shrink-0 group-hover/card:scale-110 transition-transform duration-300 ease-in-out p-2">
-                                        <div className="flex flex-col items-center">
-                                            <CryptoIcon token={tx.token.symbol} className="h-8 w-8 mb-1"/>
-                                            <p className="font-bold text-base whitespace-nowrap">{tx.value}</p>
-                                            <div className="flex items-center text-xs text-muted-foreground">
-                                                <span>{tx.token.symbol}</span>
-                                                <WatchlistButton type="token" identifier={tx.token.symbol} />
-                                            </div>
+                        <div className="cursor-pointer p-3 sm:p-4">
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+                                
+                                {/* Left Side: Amount & Token */}
+                                <div className="flex items-center gap-3 w-full sm:w-auto">
+                                    <CryptoIcon token={tx.token.symbol} className="h-10 w-10"/>
+                                    <div className="flex-1 sm:flex-initial">
+                                        <p className="font-bold text-lg">{tx.value}</p>
+                                        <div className="flex items-center text-sm text-muted-foreground">
+                                            <span className="font-semibold">{tx.token.symbol}</span>
+                                            <WatchlistButton type="token" identifier={tx.token.symbol} />
                                         </div>
                                     </div>
-                                    <div className="hidden sm:block p-1 bg-muted rounded-full group-hover/card:bg-primary transition-colors">
-                                        <ArrowRight className="h-4 w-4 text-muted-foreground group-hover/card:text-primary-foreground"/>
-                                    </div>
-                                     <div className="sm:hidden p-1 bg-muted rounded-full group-hover/card:bg-primary transition-colors -rotate-90">
-                                        <ArrowRight className="h-4 w-4 text-muted-foreground group-hover/card:text-primary-foreground"/>
-                                    </div>
-
-                                    {/* To Wallet */}
-                                    <WalletPill address={tx.to} shortAddress={tx.toShort} tags={tx.toTags} network={tx.network} onAlertClick={() => openAlertEditor('wallet', tx.to)} />
                                 </div>
-                                <div className="flex items-center justify-end gap-2 text-xs text-muted-foreground mt-2">
-                                    <Badge variant="outline" className="text-xs">{tx.network}</Badge>
-                                    <span>{tx.time}</span>
-                                    <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0 data-[state=open]:bg-muted" aria-label="Toggle transaction details">
+
+                                {/* Right Side: From/To Flow */}
+                                <div className="flex-1 w-full">
+                                    <div className="flex flex-col gap-2">
+                                        <div className="flex items-center gap-2 text-sm">
+                                            <span className="text-muted-foreground w-10">From</span>
+                                            <Link href={getExplorerUrl(tx.network, tx.from, 'address')} target="_blank" rel="noopener noreferrer" className="font-mono hover:underline truncate">
+                                                {tx.fromShort}
+                                            </Link>
+                                            {tx.fromTags && tx.fromTags.length > 0 && (
+                                                <div className="flex items-center gap-1.5 ml-1">
+                                                    {tx.fromTags.map(tag => <Badge key={tag} variant="secondary">{tag}</Badge>)}
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        <div className="flex items-center gap-2 text-sm">
+                                            <span className="text-muted-foreground w-10">To</span>
+                                             <Link href={getExplorerUrl(tx.network, tx.to, 'address')} target="_blank" rel="noopener noreferrer" className="font-mono hover:underline truncate">
+                                                {tx.toShort}
+                                            </Link>
+                                             {tx.toTags && tx.toTags.length > 0 && (
+                                                <div className="flex items-center gap-1.5 ml-1">
+                                                    {tx.toTags.map(tag => <Badge key={tag} variant="secondary">{tag}</Badge>)}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Actions and Details Toggle */}
+                                <div className="flex items-center self-end sm:self-center justify-end gap-1 sm:gap-2">
+                                    <Badge variant="outline" className="hidden xs:inline-flex">{tx.network}</Badge>
+                                    <span className="text-xs text-muted-foreground whitespace-nowrap">{tx.time}</span>
+                                    
+                                     <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => e.stopPropagation()}>
+                                                <BellPlus className="h-4 w-4" />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent onClick={(e) => e.stopPropagation()}>
+                                            <DropdownMenuLabel>Create Alert For</DropdownMenuLabel>
+                                            <DropdownMenuSeparator />
+                                            <DropdownMenuItem onClick={() => openAlertEditor('token', tx.token.symbol)}>Token: {tx.token.symbol}</DropdownMenuItem>
+                                            <DropdownMenuItem onClick={() => openAlertEditor('wallet', tx.from)}>Sender: {tx.fromShort}</DropdownMenuItem>
+                                            <DropdownMenuItem onClick={() => openAlertEditor('wallet', tx.to)}>Receiver: {tx.toShort}</DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+
+                                    <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0 data-[state=open]:bg-muted" aria-label="Toggle transaction details">
                                         <ChevronDown className={cn("h-4 w-4 transition-transform", isOpen && "rotate-180")} />
                                     </Button>
                                 </div>
-                            </CardContent>
+                            </div>
                         </div>
                     </CollapsibleTrigger>
                     <CollapsibleContent>
@@ -164,4 +167,3 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
 
 
 export default TransactionCard;
-
