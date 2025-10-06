@@ -9,7 +9,6 @@ import {
 } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { QuickAlertConfigurator } from '../quick-alert-configurator';
-import AlertBuilder from './alert-builder';
 import { useState, useMemo } from 'react';
 import { useUser, useCollection, useFirestore } from '@/firebase';
 import { Lock, ArrowRight } from 'lucide-react';
@@ -50,7 +49,7 @@ export default function AlertCreatorCard() {
   };
 
   const AdvancedTabTrigger = isPro ? (
-     <TabsTrigger value="advanced">
+     <TabsTrigger value="advanced" disabled>
         Advanced Builder
     </TabsTrigger>
   ) : (
@@ -117,7 +116,9 @@ export default function AlertCreatorCard() {
                     <QuickAlertConfigurator onSubmitted={handleSubmitted} />
                 </TabsContent>
                 <TabsContent value="advanced" className="pt-6">
-                    <AlertBuilder onSave={handleSubmitted} />
+                    <div className='text-center text-muted-foreground p-8 border-dashed border-2 rounded-lg'>
+                      <p>The advanced builder is coming soon!</p>
+                    </div>
                 </TabsContent>
             </Tabs>
         </CardContent>

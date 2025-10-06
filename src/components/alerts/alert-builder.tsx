@@ -83,7 +83,7 @@ export default function AlertBuilder({ onSave, onCancel, alert, entity }: { onSa
     const { data: watchlistItems } = useCollection<WatchlistItem>(watchlistQuery);
 
     const walletOptions = useMemo(() => {
-        return watchlistItems?.filter(item => item.type === 'wallet' && item.identifier).map(item => ({
+        return watchlistItems?.filter(item => item.type === 'wallet').map(item => ({
             value: item.identifier,
             label: item.name ? `${item.name} (${item.identifier.slice(0, 6)}...${item.identifier.slice(-4)})` : item.identifier,
         })) || [];

@@ -453,4 +453,3 @@ export default function WatchlistPage() {
         </div>
   );
 }
-

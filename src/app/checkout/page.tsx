@@ -26,7 +26,7 @@ function CheckoutForm() {
 
   return (
     <div className="min-h-screen bg-muted/30">
-      <div className="container mx-auto px-4 py-8 md:py-12">
+      <div className="container mx-auto px-4 py-8 md:py-12 max-w-4xl">
         <div className="mb-8">
             <Button variant="ghost" asChild>
                 <Link href="/upgrade">
@@ -37,7 +37,7 @@ function CheckoutForm() {
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
           {/* Left Side: Payment Details */}
-          <Card>
+          <Card className="lg:col-span-1">
             <CardHeader>
               <CardTitle>Payment Details</CardTitle>
               <CardDescription>
@@ -76,34 +76,36 @@ function CheckoutForm() {
           </Card>
 
           {/* Right Side: Order Summary */}
-          <Card className="bg-background sticky top-24">
-            <CardHeader>
-              <CardTitle>Order Summary</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span>Track100x Pro - {planName}</span>
-                  <span className="font-semibold">${total.toFixed(2)}</span>
+          <div className="lg:col-span-1">
+            <Card className="bg-background sticky top-24">
+              <CardHeader>
+                <CardTitle>Order Summary</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span>Track100x Pro - {planName}</span>
+                    <span className="font-semibold">${total.toFixed(2)}</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Billed {billingCycle}.
+                  </p>
                 </div>
-                <p className="text-sm text-muted-foreground">
-                  Billed {billingCycle}.
-                </p>
-              </div>
-              <Separator />
-              <div className="flex justify-between font-bold text-lg">
-                <span>Total</span>
-                <span>${total.toFixed(2)}</span>
-              </div>
-              <Button className="w-full" size="lg" onClick={() => router.push('/confirmation')}>
-                 <Lock className="mr-2 h-4 w-4" />
-                 Pay Now
-              </Button>
-               <p className="text-xs text-center text-muted-foreground">
-                This is a demo. No real payment will be processed.
-               </p>
-            </CardContent>
-          </Card>
+                <Separator />
+                <div className="flex justify-between font-bold text-lg">
+                  <span>Total</span>
+                  <span>${total.toFixed(2)}</span>
+                </div>
+                <Button className="w-full" size="lg" onClick={() => router.push('/confirmation')}>
+                   <Lock className="mr-2 h-4 w-4" />
+                   Pay Now
+                </Button>
+                 <p className="text-xs text-center text-muted-foreground">
+                  This is a demo. No real payment will be processed.
+                 </p>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
     </div>
