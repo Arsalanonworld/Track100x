@@ -4,30 +4,30 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, ArrowRight, PieChart, TrendingUp, Activity, Sparkles, ShieldCheck, Copy } from 'lucide-react';
+import { Search, ArrowRight, PieChart, TrendingUp, Activity, Sparkles } from 'lucide-react';
 import WalletAnalyticsDashboard from './_components/wallet-analytics-dashboard';
 import { StickyScrollFeatures } from '@/components/sticky-scroll-features';
 
 const features = [
     {
+        icon: <PieChart className="h-8 w-8 text-primary" />,
         title: "Comprehensive Portfolio Breakdown",
         description: "Visualize token allocation, quantity, and current market value with our interactive pie chart and detailed holdings table.",
-        contentSlug: "feature-portfolio-breakdown"
     },
     {
+        icon: <TrendingUp className="h-8 w-8 text-primary" />,
         title: "In-Depth PnL Analysis",
         description: "Track realized and unrealized gains and losses over various timeframes to understand true wallet performance.",
-        contentSlug: "feature-pnl-analysis"
     },
     {
+        icon: <Activity className="h-8 w-8 text-primary" />,
         title: "On-Chain Activity Heatmap",
         description: "Visualize transaction patterns, interaction frequency, and gas usage over the past year to spot trends.",
-        contentSlug: "feature-heatmap"
     },
     {
+        icon: <Sparkles className="h-8 w-8 text-primary" />,
         title: "AI-Powered Strategic Insights",
         description: "Receive AI-generated summaries of a wallet's trading strategy, risk profile, and potential for high-multiple returns.",
-        contentSlug: "feature-ai-insights"
     },
 ];
 
