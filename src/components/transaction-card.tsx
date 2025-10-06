@@ -1,9 +1,9 @@
 
 'use client';
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import type { WhaleTransaction } from "@/lib/mock-data";
 import Link from "next/link";
-import { Copy, ChevronDown, BellPlus } from "lucide-react";
+import { Copy, ChevronDown, BellPlus, ArrowUpRight, Wallet2, Hash } from "lucide-react";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { cn } from "@/lib/utils";
@@ -21,43 +21,48 @@ import { WatchlistButton } from "./track-button";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuLabel } from "./ui/dropdown-menu";
 import { CryptoIcon } from "./crypto-icon";
 
-interface TransactionCardProps {
-    tx: WhaleTransaction;
-}
 
-const WalletIdentifierDetails = ({ address, shortAddress, tags, network, label }: { address: string, shortAddress: string, tags?: string[], network: string, label: string }) => {
+const WalletIdentifierDetails = ({ address, tags, network, label, icon }: { address: string, tags?: string[], network: string, label: string, icon: React.ReactNode }) => {
     const { toast } = useToast();
-    const handleCopy = (text: string, entity: string) => {
+    const handleCopy = (e: React.MouseEvent, text: string) => {
+        e.stopPropagation();
         navigator.clipboard.writeText(text);
-        toast({ title: `${entity} Copied!`, description: text });
+        toast({ title: "Copied!", description: text });
     };
     
     return (
-     <div className="space-y-1">
-         <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground font-semibold w-12">{label}</span>
-            <Link href={getExplorerUrl(network, address, 'address')} target="_blank" rel="noopener noreferrer" className="font-mono text-sm hover:underline truncate">{address}</Link>
-            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleCopy(address, `${label} Address`)}><Copy className="h-3 w-3"/></Button>
-         </div>
-         {tags && tags.length > 0 && (
-             <div className="flex items-center gap-1 pl-14">
-                {tags.map(tag => <Badge key={tag} variant="secondary" className="text-xs font-normal">{tag}</Badge>)}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 p-3 rounded-md bg-background/50 border">
+            <div className="flex items-center gap-3 min-w-0">
+                <div className="text-muted-foreground">{icon}</div>
+                <div className="flex-1 min-w-0">
+                    <p className="text-xs text-muted-foreground">{label}</p>
+                    <p className="font-mono text-sm truncate">{address}</p>
+                     {tags && tags.length > 0 && (
+                        <div className="flex items-center gap-1.5 mt-1.5">
+                            {tags.map(tag => <Badge key={tag} variant="secondary" className="text-xs">{tag}</Badge>)}
+                        </div>
+                     )}
+                </div>
             </div>
-         )}
-    </div>
-)};
+            <div className="flex items-center gap-1 self-end sm:self-center">
+                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={(e) => handleCopy(e, address)}>
+                    <Copy className="h-3.5 w-3.5" />
+                </Button>
+                <Button variant="ghost" size="icon" className="h-7 w-7" asChild>
+                    <Link href={getExplorerUrl(network, address, label === 'Transaction' ? 'tx' : 'address')} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
+                        <ArrowUpRight className="h-3.5 w-3.5" />
+                    </Link>
+                </Button>
+            </div>
+        </div>
+    );
+};
 
 
 const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
     const [isOpen, setIsOpen] = useState(false);
-    const { toast } = useToast();
     const [isAlertEditorOpen, setIsAlertEditorOpen] = useState(false);
     const [alertEntity, setAlertEntity] = useState<{type: 'wallet' | 'token', identifier: string} | null>(null);
-
-    const handleCopy = (text: string, entity: string) => {
-        navigator.clipboard.writeText(text);
-        toast({ title: `${entity} Copied!`, description: text });
-    };
 
     const openAlertEditor = (type: 'wallet' | 'token', identifier: string) => {
         setAlertEntity({type, identifier});
@@ -143,13 +148,26 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
                     <CollapsibleContent>
                        <div className="p-4 border-t bg-muted/30">
                             <div className="space-y-2">
-                                <WalletIdentifierDetails address={tx.from} shortAddress={tx.fromShort} tags={tx.fromTags} network={tx.network} label="From" />
-                                <WalletIdentifierDetails address={tx.to} shortAddress={tx.toShort} tags={tx.toTags} network={tx.network} label="To" />
-                                <div className="flex items-center gap-2 pt-2">
-                                    <span className="text-sm text-muted-foreground font-semibold w-12">Tx Hash</span>
-                                    <Link href={getExplorerUrl(tx.network, tx.txHash, 'tx')} target="_blank" rel="noopener noreferrer" className="font-mono text-sm hover:underline truncate">{tx.txHash}</Link>
-                                    <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleCopy(tx.txHash, "Hash")}><Copy className="h-3 w-3"/></Button>
-                                </div>
+                                <WalletIdentifierDetails 
+                                    label="Sender"
+                                    address={tx.from}
+                                    tags={tx.fromTags}
+                                    network={tx.network}
+                                    icon={<Wallet2 className="h-4 w-4" />}
+                                />
+                                <WalletIdentifierDetails
+                                    label="Receiver"
+                                    address={tx.to}
+                                    tags={tx.toTags}
+                                    network={tx.network}
+                                    icon={<Wallet2 className="h-4 w-4" />}
+                                />
+                                <WalletIdentifierDetails
+                                    label="Transaction"
+                                    address={tx.txHash}
+                                    network={tx.network}
+                                    icon={<Hash className="h-4 w-4" />}
+                                />
                             </div>
                         </div>
                     </CollapsibleContent>
