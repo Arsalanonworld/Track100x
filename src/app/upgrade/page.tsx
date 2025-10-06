@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState } from 'react';
@@ -36,7 +37,7 @@ const features = [
     category: 'Core Features',
     items: [
       { name: 'Real-Time Whale Feed', free: true, pro: true },
-      { name: 'Watchlist', free: '3 items', pro: 'Unlimited' },
+      { name: 'Watchlist', free: '5 items', pro: 'Unlimited' },
     ],
   },
   {
@@ -87,7 +88,7 @@ const faqs = [
   {
     question: 'What happens to my data and alerts if I downgrade to Free?',
     answer:
-      'Your alerts and watchlist items will not be deleted, but they will be deactivated if you exceed the Free plan limits (5 alerts, 3 watched items). You can re-activate them if you upgrade again or reduce your usage to fit within the limits.',
+      'Your alerts and watchlist items will not be deleted, but they will be deactivated if you exceed the Free plan limits (5 alerts, 5 watched items). You can re-activate them if you upgrade again or reduce your usage to fit within the limits.',
   },
   {
     question: 'What payment methods do you accept?',
@@ -277,7 +278,7 @@ export default function UpgradePage() {
               plan="Free"
               price="$0"
               description="Get a feel for our platform with essential tracking tools."
-              features={['Real-time Whale Feed', '3 Watchlist Items', '5 Telegram Alerts/month', 'Weekly Digest']}
+              features={['Real-time Whale Feed', '5 Watchlist Items', '5 Telegram Alerts/month', 'Weekly Digest']}
               ctaText={user ? 'Your Current Plan' : 'Get Started Free'}
               ctaAction={() => !user && router.push('/')}
             />
@@ -403,3 +404,5 @@ export default function UpgradePage() {
     </>
   );
 }
+
+    

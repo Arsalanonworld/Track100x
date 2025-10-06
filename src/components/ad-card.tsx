@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { Card, CardContent } from './ui/card';
 import { Button } from './ui/button';
-import { ArrowRight, Zap } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import Image from 'next/image';
 
 export const AdCard = () => {
@@ -30,7 +30,7 @@ export const AdCard = () => {
                 </div>
                 <div className="shrink-0 mt-2 sm:mt-0">
                     <Button asChild variant="secondary" size="sm">
-                        <Link href="#" target="_blank" rel="noopener noreferrer">
+                        <Link href="https://www.ledger.com/" target="_blank" rel="noopener noreferrer">
                             Shop Ledger Now
                             <ArrowRight className="w-4 h-4 ml-2" />
                         </Link>
@@ -40,3 +40,5 @@ export const AdCard = () => {
         </Card>
     )
 }
+
+    
