@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -24,6 +23,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
+import { useUser } from '@/firebase';
 
 
 const allTags = Array.from(new Set(topPlayersData.flatMap(p => p.tags)));
@@ -109,6 +109,8 @@ export default function LeaderboardPage() {
     const [selectedChain, setSelectedChain] = useState('all');
     const [selectedTag, setSelectedTag] = useState('all');
     const [sortBy, setSortBy] = useState('netWorth');
+    const { claims } = useUser();
+    const isPro = claims?.plan === 'pro';
 
     const filteredAndSortedPlayers = useMemo(() => {
         let players = [...topPlayersData];
@@ -248,7 +250,7 @@ export default function LeaderboardPage() {
           </div>
       )}
       
-      <SponsoredBanner />
+      {!isPro && <SponsoredBanner />}
     </div>
   );
 }
