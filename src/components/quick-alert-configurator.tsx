@@ -32,9 +32,6 @@ const walletRules: Rule[] = [
   { value: 'tx-value', label: 'Transaction Value', thresholdType: 'VALUE' },
   { value: 'balance-change', label: 'Token Balance Change', thresholdType: 'VALUE' },
   { value: 'pnl-change', label: '7d PnL Change', thresholdType: 'PERCENTAGE' },
-  { value: 'dormancy', label: 'Dormancy Status', thresholdType: 'NONE' },
-  { value: 'new-protocol-interaction', label: 'Interacts with New Protocol', thresholdType: 'NONE' },
-  { value: 'first-token-purchase', label: 'First Time Buying a Token', thresholdType: 'NONE' },
 ];
 
 const tokenRules: Rule[] = [
@@ -79,12 +76,11 @@ export const QuickAlertConfigurator = ({ onSubmitted, entity, alert }: { onSubmi
   const { data: watchlistItems } = useCollection<WatchlistItem>(watchlistQuery);
 
   const walletOptions = useMemo(() => {
-    const items = watchlistItems?.map(item => ({
-      value: item.walletAddress,
-      label: item.name ? `${item.name} (${item.walletAddress.slice(0, 6)}...${item.walletAddress.slice(-4)})` : item.walletAddress,
+    const items = watchlistItems?.filter(i => i.type === 'wallet').map(item => ({
+      value: item.identifier,
+      label: item.name ? `${item.name} (${item.identifier.slice(0, 6)}...${item.identifier.slice(-4)})` : item.identifier,
     })) || [];
     
-    // Add the current entity if it's not in the list, to handle cases where it's a new wallet
     if (entity?.type === 'wallet' && !items.some(i => i.value === entity.identifier)) {
         items.unshift({ value: entity.identifier, label: entity.identifier });
     } else if (alert?.walletId && !items.some(i => i.value === alert.walletId)) {
@@ -103,7 +99,6 @@ export const QuickAlertConfigurator = ({ onSubmitted, entity, alert }: { onSubmi
     const newType = entity?.type || alert?.alertType;
     if (newType) {
         setAlertType(newType);
-        // Reset rule selection if type changes and rule is not compatible
         const ruleExists = (newType === 'wallet' ? walletRules : tokenRules).some(r => r.value === selectedRule);
         if (!ruleExists) {
             setSelectedRule(undefined);
@@ -198,7 +193,7 @@ export const QuickAlertConfigurator = ({ onSubmitted, entity, alert }: { onSubmi
         <input type="hidden" name="identifier" value={targetIdentifier} />
         <div className="space-y-2">
             <Label>Alert Type</Label>
-            <Select onValueChange={(v: 'wallet' | 'token') => { setAlertType(v); setSelectedRule(undefined); }} defaultValue={alertType} name="alertType" disabled={!!entity || !!alert}>
+            <Select onValueChange={(v: 'wallet' | 'token') => { setAlertType(v); setSelectedRule(undefined); setTargetIdentifier('') }} defaultValue={alertType} name="alertType" disabled={!!entity || !!alert}>
                 <SelectTrigger>
                     <SelectValue placeholder="Select alert type..." />
                 </SelectTrigger>
@@ -220,8 +215,8 @@ export const QuickAlertConfigurator = ({ onSubmitted, entity, alert }: { onSubmi
                 options={walletOptions}
                 value={targetIdentifier}
                 onChange={setTargetIdentifier}
-                placeholder="Select or paste a wallet..."
-                emptyMessage="No wallets in watchlist. Paste an address."
+                placeholder="Select from watchlist or paste an address..."
+                emptyMessage="No wallets in watchlist. You can paste an address."
               />
           </div>
         )}
@@ -233,7 +228,7 @@ export const QuickAlertConfigurator = ({ onSubmitted, entity, alert }: { onSubmi
                     options={tokenOptions}
                     value={targetIdentifier}
                     onChange={setTargetIdentifier}
-                    placeholder="Select token..."
+                    placeholder="Select or type a token symbol..."
                     emptyMessage="No tokens found."
                 />
             </div>

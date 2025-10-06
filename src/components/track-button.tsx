@@ -5,13 +5,18 @@ import { useUser, useFirestore } from "@/firebase";
 import { collection, addDoc, serverTimestamp, query, where, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { useToast } from "@/hooks/use-toast";
 import { useState, useMemo, useEffect } from "react";
-import { Loader2, Star } from "lucide-react";
+import { Loader2, Eye } from "lucide-react";
 import { AuthDialog } from "./auth/auth-dialog";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 
-export const TrackButton = ({ walletAddress }: { walletAddress: string }) => {
+type WatchlistButtonProps = {
+    identifier: string;
+    type: 'wallet' | 'token';
+}
+
+export const WatchlistButton = ({ identifier, type }: WatchlistButtonProps) => {
     const { user, loading: userLoading } = useUser();
     const firestore = useFirestore();
     const { toast } = useToast();
@@ -23,8 +28,8 @@ export const TrackButton = ({ walletAddress }: { walletAddress: string }) => {
 
     const watchlistQuery = useMemo(() => {
         if (!user || !firestore) return null;
-        return query(collection(firestore, `users/${user.uid}/watchlist`), where("walletAddress", "==", walletAddress));
-    }, [user, firestore, walletAddress]);
+        return query(collection(firestore, `users/${user.uid}/watchlist`), where("identifier", "==", identifier), where("type", "==", type));
+    }, [user, firestore, identifier, type]);
 
     useEffect(() => {
         if (userLoading) return;
@@ -75,8 +80,8 @@ export const TrackButton = ({ walletAddress }: { walletAddress: string }) => {
                 const docRef = doc(firestore, `users/${user.uid}/watchlist`, docId);
                 await deleteDoc(docRef);
                 toast({
-                    title: "Wallet Unwatched",
-                    description: "This wallet has been removed from your watchlist.",
+                    title: `${type === 'wallet' ? 'Wallet' : 'Token'} Unwatched`,
+                    description: `This ${type} has been removed from your watchlist.`,
                 });
                 setIsTracking(false);
                 setDocId(null);
@@ -85,7 +90,7 @@ export const TrackButton = ({ walletAddress }: { walletAddress: string }) => {
                 toast({
                     variant: 'destructive',
                     title: "Error",
-                    description: "Could not remove wallet from watchlist.",
+                    description: `Could not remove ${type} from watchlist.`,
                 });
             }
         } else {
@@ -93,13 +98,14 @@ export const TrackButton = ({ walletAddress }: { walletAddress: string }) => {
             try {
                 const watchlistCol = collection(firestore, `users/${user.uid}/watchlist`);
                 const newDocRef = await addDoc(watchlistCol, {
-                    walletAddress: walletAddress,
+                    identifier: identifier,
+                    type: type,
                     createdAt: serverTimestamp(),
                     userId: user.uid,
                 });
                 toast({
-                    title: "Wallet Watched!",
-                    description: "You are now tracking this wallet on your watchlist.",
+                    title: `${type === 'wallet' ? 'Wallet' : 'Token'} Watched!`,
+                    description: `You are now tracking this ${type} on your watchlist.`,
                 });
                 setIsTracking(true);
                 setDocId(newDocRef.id);
@@ -108,7 +114,7 @@ export const TrackButton = ({ walletAddress }: { walletAddress: string }) => {
                 toast({
                     variant: 'destructive',
                     title: "Error",
-                    description: "Could not add wallet to watchlist.",
+                    description: `Could not add ${type} to watchlist.`,
                 });
             }
         }
@@ -128,7 +134,7 @@ export const TrackButton = ({ walletAddress }: { walletAddress: string }) => {
                         {isSubmitting ? (
                             <Loader2 className="h-4 w-4 animate-spin" />
                         ) : (
-                            <Star className={cn("h-4 w-4", isTracking ? "fill-primary text-primary" : "text-muted-foreground")} />
+                            <Eye className={cn("h-4 w-4", isTracking ? "text-primary" : "text-muted-foreground")} />
                         )}
                     </Button>
                 </TooltipTrigger>

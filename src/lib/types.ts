@@ -1,6 +1,5 @@
 
 
-
 import type { Timestamp } from "firebase/firestore";
 
 export type UserPlan = 'free' | 'pro';
@@ -29,11 +28,9 @@ export type Alert = {
 
 export type WatchlistItem = {
     id:string;
-    walletAddress: string;
-    name?: string;
+    identifier: string; // Wallet address or token symbol
+    type: 'wallet' | 'token';
+    name?: string; // User-defined alias
     createdAt: any; // Firebase Timestamp
     userId: string;
 };
-
-
-

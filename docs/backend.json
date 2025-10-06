@@ -48,14 +48,29 @@
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "WatchlistItem",
       "type": "object",
-      "description": "Represents a wallet on a user's watchlist.",
+      "description": "Represents an item (wallet or token) on a user's watchlist.",
       "properties": {
-        "walletAddress": { "type": "string" },
-        "name": { "type": "string", "description": "A user-defined alias for the wallet." },
-        "createdAt": { "type": "string", "format": "date-time" },
-        "userId": { "type": "string" }
+        "identifier": {
+          "type": "string",
+          "description": "The wallet address or token symbol."
+        },
+        "type": {
+          "type": "string",
+          "enum": ["wallet", "token"]
+        },
+        "name": {
+          "type": "string",
+          "description": "A user-defined alias for the item."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "userId": {
+          "type": "string"
+        }
       },
-      "required": ["walletAddress", "createdAt", "userId"]
+      "required": ["identifier", "type", "createdAt", "userId"]
     }
   },
   "auth": {
@@ -72,7 +87,7 @@
     },
     "/users/{userId}/watchlist/{watchlistItemId}": {
       "schema": { "$ref": "#/entities/WatchlistItem" },
-      "description": "Stores wallets a user is watching."
+      "description": "Stores wallets or tokens a user is watching."
     },
     "/whaleFeed/{whaleTransactionId}": {
       "schema": { "$ref": "#/entities/WhaleFeedTransaction" },

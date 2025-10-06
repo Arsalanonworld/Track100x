@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import type { WhaleTransaction } from "@/lib/mock-data";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import Link from "next/link";
-import { ArrowRight, Copy, ChevronDown, BellPlus } from "lucide-react";
+import { ArrowRight, Copy, ChevronDown, BellPlus, Tag } from "lucide-react";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { cn } from "@/lib/utils";
@@ -19,7 +19,7 @@ import { getExplorerUrl } from "@/lib/explorers";
 import { Dialog, DialogTrigger } from "./ui/dialog";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { CreateAlertDialog } from "./create-alert-dialog";
-import { TrackButton } from "./track-button";
+import { WatchlistButton } from "./track-button";
 
 interface TransactionCardProps {
     tx: WhaleTransaction;
@@ -52,19 +52,17 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
     const [isOpen, setIsOpen] = useState(false);
     const { toast } = useToast();
     const [isAlertEditorOpen, setIsAlertEditorOpen] = useState(false);
+    const [alertEntity, setAlertEntity] = useState<{type: 'wallet' | 'token', identifier: string} | null>(null);
 
     const handleCopy = (text: string, entity: string) => {
         navigator.clipboard.writeText(text);
         toast({ title: `${entity} Copied!`, description: text });
     };
 
-    const AlertButton = () => (
-      <DialogTrigger asChild>
-        <Button variant="ghost" size="icon" className="h-8 w-8 relative shrink-0" onClick={(e) => { e.stopPropagation(); setIsAlertEditorOpen(true); }} aria-label="Set quick alert">
-            <BellPlus className="h-4 w-4 text-muted-foreground hover:text-primary" />
-        </Button>
-      </DialogTrigger>
-    )
+    const openAlertEditor = (type: 'wallet' | 'token', identifier: string) => {
+        setAlertEntity({type, identifier});
+        setIsAlertEditorOpen(true);
+    };
 
     return (
         <Dialog open={isAlertEditorOpen} onOpenChange={setIsAlertEditorOpen}>
@@ -82,17 +80,20 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
                                         </Avatar>
                                         <div className="min-w-0">
                                             <div className="font-bold text-base truncate">{tx.value}</div>
-                                            <div className="text-sm text-muted-foreground truncate">{tx.token.symbol}</div>
+                                            <div className="text-sm text-muted-foreground truncate flex items-center">
+                                                <span>{tx.token.symbol}</span>
+                                                <WatchlistButton type="token" identifier={tx.token.symbol} />
+                                            </div>
                                         </div>
                                     </div>
                                     
                                     {/* --- Center Column (From/To) --- */}
                                      <div className="flex-grow flex items-center gap-2 pl-1 sm:pl-0 sm:justify-center">
                                        <div className="font-mono text-sm flex items-center gap-2 truncate">
-                                           <TrackButton walletAddress={tx.from} />
+                                           <WatchlistButton type="wallet" identifier={tx.from} />
                                            <Link href={getExplorerUrl(tx.network, tx.from, 'address')} target="_blank" rel="noopener noreferrer" className="hover:underline text-primary truncate">{tx.fromShort}</Link>
                                            <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0" />
-                                           <TrackButton walletAddress={tx.to} />
+                                           <WatchlistButton type="wallet" identifier={tx.to} />
                                            <Link href={getExplorerUrl(tx.network, tx.to, 'address')} target="_blank" rel="noopener noreferrer" className="hover:underline text-primary truncate">{tx.toShort}</Link>
                                        </div>
                                     </div>
@@ -101,13 +102,25 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
                                     <div className="flex items-center self-end xs:self-center justify-end gap-1 sm:gap-2">
                                         <Badge variant="outline" className="text-xs">{tx.network}</Badge>
                                         <div className="text-xs text-muted-foreground whitespace-nowrap">{tx.time}</div>
-                                        <TooltipProvider>
+                                         <TooltipProvider>
                                           <Tooltip>
                                             <TooltipTrigger asChild>
-                                               <AlertButton />
+                                                <Button variant="ghost" size="icon" className="h-8 w-8 relative shrink-0" onClick={(e) => { e.stopPropagation(); openAlertEditor('wallet', tx.from); }} aria-label="Set wallet alert">
+                                                    <BellPlus className="h-4 w-4 text-muted-foreground hover:text-primary" />
+                                                </Button>
                                             </TooltipTrigger>
                                             <TooltipContent>
-                                              <p>Create quick alert</p>
+                                              <p>Create alert for wallet</p>
+                                            </TooltipContent>
+                                          </Tooltip>
+                                          <Tooltip>
+                                             <TooltipTrigger asChild>
+                                                <Button variant="ghost" size="icon" className="h-8 w-8 relative shrink-0" onClick={(e) => { e.stopPropagation(); openAlertEditor('token', tx.token.symbol); }} aria-label="Set token alert">
+                                                    <Tag className="h-4 w-4 text-muted-foreground hover:text-primary" />
+                                                </Button>
+                                            </TooltipTrigger>
+                                            <TooltipContent>
+                                              <p>Create alert for token</p>
                                             </TooltipContent>
                                           </Tooltip>
                                         </TooltipProvider>
@@ -134,13 +147,12 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
                     </CollapsibleContent>
                 </Card>
             </Collapsible>
-            {isAlertEditorOpen && <CreateAlertDialog 
-                onOpenChange={setIsAlertEditorOpen}
-                entity={{
-                    type: 'wallet',
-                    identifier: tx.from,
-                }}
-                />}
+            {isAlertEditorOpen && alertEntity && (
+                <CreateAlertDialog 
+                    onOpenChange={setIsAlertEditorOpen}
+                    entity={alertEntity}
+                />
+            )}
         </Dialog>
     );
 };
