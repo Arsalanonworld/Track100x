@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -9,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Plus, Search, BellPlus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { useUser, useFirestore } from '@/firebase';
+import { useUser, useFirestore, useCollection } from '@/firebase';
 import { collection, addDoc, serverTimestamp, query, where, getDocs } from 'firebase/firestore';
 import type { WatchlistItem } from '@/lib/types';
 import { errorEmitter } from '@/firebase/error-emitter';
@@ -21,9 +20,10 @@ type WatchlistActionFormProps = {
     onItemAdded: () => void;
     onAlertCreate: (entity: { type: 'wallet' | 'token'; identifier: string }) => void;
     atLimit: boolean;
+    isLoading: boolean;
 };
 
-export function WatchlistActionForm({ onItemAdded, onAlertCreate, atLimit }: WatchlistActionFormProps) {
+export function WatchlistActionForm({ onItemAdded, onAlertCreate, atLimit, isLoading }: WatchlistActionFormProps) {
   const [identifier, setIdentifier] = useState('');
   const [alias, setAlias] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -115,6 +115,8 @@ export function WatchlistActionForm({ onItemAdded, onAlertCreate, atLimit }: Wat
     }
   };
 
+  const isFormDisabled = isLoading || isSubmitting;
+
   return (
     <>
       <div className="flex items-center p-1.5 rounded-full border bg-card shadow-sm w-full">
@@ -125,7 +127,7 @@ export function WatchlistActionForm({ onItemAdded, onAlertCreate, atLimit }: Wat
                     placeholder="Paste address or token symbol..."
                     value={identifier}
                     onChange={(e) => setIdentifier(e.target.value)}
-                    disabled={isSubmitting}
+                    disabled={isFormDisabled}
                     className="pl-9 bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0 h-10"
                     onKeyDown={(e) => {
                         if (e.key === 'Enter') handleAction('add');
@@ -133,11 +135,11 @@ export function WatchlistActionForm({ onItemAdded, onAlertCreate, atLimit }: Wat
                 />
             </div>
             <div className="flex items-center gap-1">
-                <Button onClick={() => handleAction('add')} disabled={atLimit || isSubmitting || !identifier} className="shrink-0 rounded-full h-10 px-4 sm:px-6" variant="outline">
+                <Button onClick={() => handleAction('add')} disabled={atLimit || isFormDisabled || !identifier} className="shrink-0 rounded-full h-10 px-4 sm:px-6" variant="outline">
                     <Plus className="h-4 w-4 sm:mr-2"/>
                     <span className="hidden sm:inline">Add to Watchlist</span>
                 </Button>
-                <Button onClick={() => handleAction('alert')} disabled={isSubmitting || !identifier} className="shrink-0 rounded-full h-10 px-4 sm:px-6">
+                <Button onClick={() => handleAction('alert')} disabled={isFormDisabled || !identifier} className="shrink-0 rounded-full h-10 px-4 sm:px-6">
                     <BellPlus className="h-4 w-4 sm:mr-2"/>
                     <span className="hidden sm:inline">Create Alert</span>
                 </Button>

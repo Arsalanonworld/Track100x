@@ -116,7 +116,7 @@ function WatchlistItemCard({ item, onUpdate, onRemove }: { item: WatchlistItem, 
                                     <h3 className='text-lg font-semibold truncate'>
                                         {currentToken?.name || item.name || item.identifier}
                                     </h3>
-                                    <p className="font-mono text-sm text-muted-foreground">{item.identifier}</p>
+                                    <p className="font-mono text-sm text-muted-foreground">{item.identifier.toUpperCase()}</p>
                                 </div>
                            )}
                         </div>
@@ -206,6 +206,8 @@ export default function WatchlistPage() {
 
   const { data: watchlist, loading: watchlistLoading } = useCollection<WatchlistItem>(watchlistQuery);
   
+  const isLoading = userLoading || (user && watchlistLoading);
+
   const watchlistAtLimit = !isPro && watchlist && watchlist.length >= WATCHLIST_LIMIT_FREE;
 
   const handleRemove = (item: WatchlistItem) => {
@@ -253,8 +255,6 @@ export default function WatchlistPage() {
     setRefreshKey(prev => prev + 1);
   }
 
-  const isLoading = userLoading || (user && watchlistLoading);
-
   const pageDescription = isPro
     ? 'Add wallets or tokens to start tracking their activity.'
     : `Add a new wallet or token to start tracking. Free plan includes ${WATCHLIST_LIMIT_FREE} watchlist items.`;
@@ -275,6 +275,7 @@ export default function WatchlistPage() {
                             onItemAdded={handleItemAdded} 
                             onAlertCreate={handleOpenEditor} 
                             atLimit={watchlistAtLimit} 
+                            isLoading={isLoading}
                         />
                         
                         {watchlistAtLimit && (
