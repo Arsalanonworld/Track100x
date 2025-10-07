@@ -270,7 +270,7 @@ export default function WatchlistPage() {
 
                 <div className='grid grid-cols-1 lg:grid-cols-3 gap-8 items-start'>
                     <div className='lg:col-span-2 space-y-6'>
-                        <div className="flex items-center flex-wrap gap-2 p-1.5 rounded-full border bg-card shadow-sm max-w-xl">
+                        <div className="flex items-center flex-wrap p-1.5 rounded-full border bg-card shadow-sm max-w-xl">
                            <AddItemForm atLimit={!!watchlistAtLimit} onAdd={() => setRefreshKey(k => k + 1)}/>
                            <Separator orientation="vertical" className="h-6 mx-1" />
                            <DialogTrigger asChild>
@@ -313,7 +313,7 @@ export default function WatchlistPage() {
                             )}
                         </div>
                     </div>
-                    <div className='lg:col-span-1 space-y-6'>
+                    <div className='lg:col-span-1 space-y-6 lg:mt-[124px]'>
                        <AlertsPanel onNewAlert={() => setIsEditorOpen(true)} />
                     </div>
                 </div>
