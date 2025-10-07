@@ -41,7 +41,7 @@ const triggerTypes = [
 ];
 
 
-const Condition = ({ index, onRemove, condition, updateCondition, entityType }: { index: number, onRemove: (index: number) => void, condition: any, updateCondition: (index: number, newCondition: any) => void, entityType: 'wallet' | 'token' }) => {
+const Condition = ({ index, onRemove, condition, updateCondition, entityType, isPro }: { index: number, onRemove: (index: number) => void, condition: any, updateCondition: (index: number, newCondition: any) => void, entityType: 'wallet' | 'token', isPro: boolean }) => {
     
     const relevantTriggers = triggerTypes.filter(t => t.group.toLowerCase() === entityType);
 
@@ -59,8 +59,10 @@ const Condition = ({ index, onRemove, condition, updateCondition, entityType }: 
                         </SelectTrigger>
                         <SelectContent>
                             {relevantTriggers.map(type => 
-                            <SelectItem key={type.value} value={type.value} disabled={type.pro}>
-                                {type.label} {type.pro && '(Pro)'}
+                            <SelectItem key={type.value} value={type.value} disabled={type.pro && !isPro}>
+                                <div className='flex items-center gap-2'>
+                                  {type.label} {type.pro && <Lock className='h-3 w-3' />}
+                                </div>
                             </SelectItem>)}
                         </SelectContent>
                     </Select>
@@ -212,6 +214,21 @@ export default function AlertBuilder({ onSave, onCancel, alert, entity }: { onSa
 
     const rulePreview = conditions.map(c => `(${(triggerTypes.find(t => t.value === c.type)?.label || '...')})`).join(` ${logicalOperator} `);
 
+    if (!isPro) {
+        return (
+            <Card className="text-center p-8 space-y-4">
+                <Lock className="w-8 h-8 text-primary mx-auto" />
+                <h3 className="text-2xl font-bold">Advanced Alerts are a Pro Feature</h3>
+                <p className="text-muted-foreground max-w-sm mx-auto">
+                   To create multi-conditional alerts with the advanced builder, please upgrade your plan.
+                </p>
+                <Button asChild>
+                    <Link href="/upgrade">Upgrade to Pro</Link>
+                </Button>
+            </Card>
+        )
+    }
+
     return (
         <div className="space-y-6">
             <div className='space-y-2'>
@@ -250,7 +267,7 @@ export default function AlertBuilder({ onSave, onCancel, alert, entity }: { onSa
                 <Label>Conditions</Label>
                 {conditions.map((c, index) => (
                     <div key={index} className='space-y-4'>
-                        <Condition index={index} onRemove={removeCondition} condition={c} updateCondition={updateCondition} entityType={alertType}/>
+                        <Condition index={index} onRemove={removeCondition} condition={c} updateCondition={updateCondition} entityType={alertType} isPro={isPro} />
                         {index < conditions.length - 1 && (
                             <div className="flex items-center justify-center">
                                <div className="relative">
@@ -321,3 +338,5 @@ export default function AlertBuilder({ onSave, onCancel, alert, entity }: { onSa
         </div>
     );
 }
+
+    
