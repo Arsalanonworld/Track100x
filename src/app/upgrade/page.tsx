@@ -32,7 +32,6 @@ import { useUser } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { AuthDialog } from '@/components/auth/auth-dialog';
 import { Bell, Eye } from 'lucide-react';
-import { StickyScrollFeatures } from '@/components/sticky-scroll-features';
 
 
 // ----------------- Data -----------------
@@ -116,74 +115,6 @@ const faqs = [
   },
 ];
 
-const PricingCard = ({
-  plan,
-  price,
-  pricePeriod,
-  description,
-  features,
-  ctaText,
-  ctaAction,
-  highlight = false,
-}: {
-  plan: string;
-  price: string;
-  pricePeriod?: string;
-  description: string;
-  features: string[];
-  ctaText: string;
-  ctaAction: () => void;
-  highlight?: boolean;
-}) => (
-  <Card
-    className={cn(
-      'flex flex-col text-left',
-      highlight && 'border-primary ring-2 ring-primary shadow-lg'
-    )}
-  >
-    <CardHeader>
-      {highlight && (
-        <div className="flex justify-between items-center">
-          <CardTitle className="text-2xl">{plan}</CardTitle>
-          <div className="flex items-center gap-2 text-sm font-bold text-primary">
-            <Star className="h-5 w-5" />
-            Most Popular
-          </div>
-        </div>
-      )}
-      {!highlight && <CardTitle className="text-2xl">{plan}</CardTitle>}
-
-      <div className="flex items-baseline pt-4">
-        <span className="text-4xl font-bold tracking-tight">{price}</span>
-        {pricePeriod && (
-          <span className="ml-1 text-xl font-medium text-muted-foreground">{pricePeriod}</span>
-        )}
-      </div>
-      <CardDescription>{description}</CardDescription>
-    </CardHeader>
-    <CardContent className="flex-1">
-      <ul className="space-y-3">
-        {features.map((feature: any, index: number) => (
-          <li key={index} className="flex items-center gap-3">
-            <CheckCircle className="h-5 w-5 text-green-500 shrink-0" />
-            <span>{feature}</span>
-          </li>
-        ))}
-      </ul>
-    </CardContent>
-    <CardFooter>
-      <Button
-        className="w-full"
-        size="lg"
-        onClick={ctaAction}
-        variant={highlight ? 'default' : 'outline'}
-      >
-        {ctaText}
-      </Button>
-    </CardFooter>
-  </Card>
-);
-
 export default function UpgradePage() {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('yearly');
   const { user, loading, claims } = useUser();
@@ -202,7 +133,10 @@ export default function UpgradePage() {
     if (!user) {
       setAuthDialogOpen(true);
     } else {
-      router.push(`/checkout?plan=${billingCycle}`);
+      // This is where you would redirect to a checkout page.
+      // For this example, we'll just show an alert.
+      alert(`Redirecting to checkout for ${billingCycle} plan...`);
+      // In a real app: router.push(`/checkout?plan=${billingCycle}`);
     }
   };
 
@@ -221,12 +155,13 @@ export default function UpgradePage() {
   return (
     <>
       <div className="container mx-auto px-4 py-12 sm:py-16">
+        {/* Hero Section */}
         <section className="text-center max-w-4xl mx-auto">
           <h1 className="text-4xl font-extrabold tracking-tighter sm:text-5xl lg:text-6xl">
-            Never Miss a Whale Move Again.
+            Unlock Your Full On-Chain Potential
           </h1>
           <p className="max-w-2xl mx-auto mt-6 text-lg text-muted-foreground">
-            Get unlimited real-time alerts via Telegram. Free for your first 5 alerts. Only $7/month for unlimited.
+            Go beyond the basics. Get unlimited alerts, access the advanced builder, receive AI-powered insights, and enjoy an ad-free experience.
           </p>
           <div className="flex items-center justify-center gap-4 mt-8">
             <Button size="lg" onClick={handleUpgradeClick}>
@@ -238,10 +173,30 @@ export default function UpgradePage() {
           </div>
         </section>
 
+        {/* Feature Highlights Section */}
         <section className="py-16 sm:py-24">
-          <StickyScrollFeatures features={featureHighlights} />
+           <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">A New Standard in Wallet Analysis</h2>
+            <p className="mt-4 text-muted-foreground max-w-2xl mx-auto">
+                Go beyond simple balance checks. We provide institutional-grade tools to give you an edge.
+            </p>
+          </div>
+           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+              {featureHighlights.map((feature, index) => (
+                <Card key={index} className="flex flex-col items-center text-center p-6">
+                    <CardHeader className="p-0">
+                      {feature.icon}
+                      <h3 className="text-lg font-bold mt-4 mb-2">{feature.title}</h3>
+                    </CardHeader>
+                    <CardContent className="p-0 flex-1">
+                          <p className="text-muted-foreground text-sm">{feature.description}</p>
+                    </CardContent>
+                </Card>
+              ))}
+          </div>
         </section>
 
+        {/* Pricing Section */}
         <section id="pricing" className="mt-12">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">
@@ -265,32 +220,78 @@ export default function UpgradePage() {
             </span>
           </div>
           <div className="mt-12 grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-4xl mx-auto items-start">
-            <PricingCard
-              plan="Free"
-              price="$0"
-              description="Get a feel for our platform with essential tracking tools."
-              features={['Real-time Whale Feed', '5 Watchlist Items', '5 Active Alerts', 'Weekly Digest']}
-              ctaText={user ? 'Your Current Plan' : 'Get Started Free'}
-              ctaAction={() => !user && router.push('/')}
-            />
-            <PricingCard
-              plan="Pro"
-              price={billingCycle === 'monthly' ? '$7' : '$6'}
-              pricePeriod="/ month"
-              description="Unlimited access to every tool for the serious on-chain analyst."
-              features={[
-                'Unlimited Watchlist',
-                'Unlimited Alerts & Advanced Builder',
-                'AI Insights & Daily Digest',
-                'Ad-Free Experience',
-              ]}
-              ctaText="Upgrade to Pro"
-              ctaAction={handleUpgradeClick}
-              highlight
-            />
+            {/* Free Plan Card */}
+             <Card className={'flex flex-col text-left'}>
+                <CardHeader>
+                  <CardTitle className="text-2xl">Free</CardTitle>
+                   <div className="flex items-baseline pt-4">
+                    <span className="text-4xl font-bold tracking-tight">$0</span>
+                  </div>
+                  <CardDescription>Get a feel for our platform with essential tracking tools.</CardDescription>
+                </CardHeader>
+                <CardContent className="flex-1">
+                  <ul className="space-y-3">
+                      {['Real-time Whale Feed', '5 Watchlist Items', '5 Active Alerts', 'Weekly Digest'].map((feature, index) => (
+                        <li key={index} className="flex items-center gap-3">
+                          <CheckCircle className="h-5 w-5 text-green-500 shrink-0" />
+                          <span>{feature}</span>
+                        </li>
+                      ))}
+                  </ul>
+                </CardContent>
+                <CardFooter>
+                  <Button
+                    className="w-full"
+                    size="lg"
+                    onClick={() => !user && setAuthDialogOpen(true)}
+                    variant={'outline'}
+                    disabled={!!user}
+                  >
+                    {user ? 'Your Current Plan' : 'Get Started Free'}
+                  </Button>
+                </CardFooter>
+            </Card>
+            
+             {/* Pro Plan Card */}
+            <Card className={'flex flex-col text-left border-primary ring-2 ring-primary shadow-lg'}>
+                <CardHeader>
+                  <div className="flex justify-between items-center">
+                    <CardTitle className="text-2xl">Pro</CardTitle>
+                    <div className="flex items-center gap-2 text-sm font-bold text-primary">
+                      <Star className="h-5 w-5" />
+                      Most Popular
+                    </div>
+                  </div>
+                  <div className="flex items-baseline pt-4">
+                    <span className="text-4xl font-bold tracking-tight">{billingCycle === 'monthly' ? '$7' : '$6'}</span>
+                    <span className="ml-1 text-xl font-medium text-muted-foreground">/ month</span>
+                  </div>
+                  <CardDescription>Unlimited access to every tool for the serious on-chain analyst.</CardDescription>
+                </CardHeader>
+                <CardContent className="flex-1">
+                   <ul className="space-y-3">
+                      {['Unlimited Watchlist', 'Unlimited Alerts & Advanced Builder', 'AI Insights & Daily Digest', 'Ad-Free Experience'].map((feature, index) => (
+                        <li key={index} className="flex items-center gap-3">
+                          <CheckCircle className="h-5 w-5 text-green-500 shrink-0" />
+                          <span>{feature}</span>
+                        </li>
+                      ))}
+                  </ul>
+                </CardContent>
+                <CardFooter>
+                  <Button
+                    className="w-full"
+                    size="lg"
+                    onClick={handleUpgradeClick}
+                  >
+                    Upgrade to Pro
+                  </Button>
+                </CardFooter>
+            </Card>
           </div>
         </section>
 
+        {/* Feature Comparison Section */}
         <section id="comparison" className="mt-24">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">
@@ -370,7 +371,8 @@ export default function UpgradePage() {
             </div>
           </div>
         </section>
-
+        
+        {/* FAQ Section */}
         <section id="faq" className="mt-24 max-w-3xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">
@@ -395,7 +397,3 @@ export default function UpgradePage() {
     </>
   );
 }
-
-    
-
-    
