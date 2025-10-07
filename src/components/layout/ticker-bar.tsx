@@ -1,21 +1,16 @@
+
 'use client';
 import { cn } from '@/lib/utils';
 import { Triangle } from 'lucide-react';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
-const mockTickerData = [
-  { symbol: 'BTC', price: '68,500.00', change: 3.45, dir: 'up' },
-  { symbol: 'ETH', price: '3,550.00', change: 5.7, dir: 'up' },
-  { symbol: 'XRP', price: '0.48', change: -12.32, dir: 'down' },
-  { symbol: 'USDT', price: '1.00', change: -0.02, dir: 'down' },
-  { symbol: 'BNB', price: '580.00', change: 3.02, dir: 'up' },
-  { symbol: 'USDC', price: '1.00', change: 0.0, dir: 'down' },
-  { symbol: 'SOL', price: '150.25', change: 8.12, dir: 'up' },
-  { symbol: 'ADA', price: '0.45', change: -1.5, dir: 'down' },
-  { symbol: 'DOGE', price: '0.15', change: 2.5, dir: 'up' },
-];
+type TickerItemData = {
+  symbol: string;
+  price: string;
+  change: number;
+};
 
-const TickerItem = ({ item }: { item: typeof mockTickerData[0] }) => {
+const TickerItem = ({ item }: { item: TickerItemData }) => {
     const isUp = item.change >= 0;
     const isDown = item.change < 0;
   
@@ -37,9 +32,38 @@ const TickerItem = ({ item }: { item: typeof mockTickerData[0] }) => {
     );
   };
   
-
 export const TickerBar = () => {
-    const extendedData = [...mockTickerData, ...mockTickerData];
+    const [data, setData] = useState<TickerItemData[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        // In a real app, you would fetch this data from an API.
+        // For now, we simulate a loading state and then show nothing,
+        // as the API is not yet integrated.
+        const timer = setTimeout(() => {
+            // e.g., fetch('/api/ticker').then(res => res.json()).then(setData);
+            setLoading(false);
+            // We set empty data because we don't have mock data anymore.
+            setData([]); 
+        }, 2000);
+        return () => clearTimeout(timer);
+    }, []);
+
+    const extendedData = data.length > 0 ? [...data, ...data] : [];
+
+    if (loading) {
+      return (
+         <div className="relative w-full overflow-hidden bg-muted/50 border-b h-10 flex items-center">
+            <p className='text-xs text-muted-foreground px-4 animate-pulse'>Fetching market data...</p>
+         </div>
+      )
+    }
+
+    if (data.length === 0) {
+      // Don't render the bar if there's no data to show.
+      return null;
+    }
+
   return (
     <div className="relative w-full overflow-hidden bg-muted/50 border-b h-10">
       <div className="absolute top-0 left-0 h-full flex items-center animate-scroll">

@@ -1,6 +1,6 @@
 
 'use client';
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   Card,
   CardContent,
@@ -17,7 +17,6 @@ import {
 } from '@/components/ui/select';
 import { Input } from './ui/input';
 import { Search, Filter, ChevronsUpDown, ArrowRight } from 'lucide-react';
-import { mockWhaleTxs } from '@/lib/mock-data';
 import { Button } from './ui/button';
 import TransactionCard from './transaction-card';
 import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
@@ -27,9 +26,44 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible"
 import Link from 'next/link';
+import { Skeleton } from './ui/skeleton';
+import type { WhaleTransaction } from '@/lib/types';
+
+
+function TransactionCardSkeleton() {
+    return (
+        <Card className="w-full p-3 sm:p-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                 <div className="flex items-center gap-3 shrink-0">
+                    <Skeleton className="h-10 w-10 rounded-full" />
+                    <div>
+                        <Skeleton className="h-6 w-24" />
+                        <Skeleton className="h-4 w-16 mt-1" />
+                    </div>
+                </div>
+                 <div className="flex-1 w-full min-w-0">
+                     <div className="flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-4">
+                        <Skeleton className="h-6 w-full md:max-w-xs" />
+                        <Skeleton className="h-6 w-full md:max-w-xs" />
+                    </div>
+                </div>
+                <div className="flex items-center self-start sm:self-center justify-end gap-1 sm:gap-2 w-full sm:w-auto">
+                    <Skeleton className="h-6 w-16 hidden xs:inline-flex" />
+                    <Skeleton className="h-4 w-12" />
+                    <Skeleton className="h-8 w-8" />
+                    <Skeleton className="h-8 w-8" />
+                </div>
+            </div>
+        </Card>
+    )
+}
+
 
 export function WhaleFeed({ isPreview = false }: { isPreview?: boolean }) {
   
+  const [transactions, setTransactions] = useState<WhaleTransaction[]>([]);
+  const [loading, setLoading] = useState(true);
+
   const [currentPage, setCurrentPage] = useState(1);
   const [tokenFilter, setTokenFilter] = useState('');
   const [chainFilter, setChainFilter] = useState('all');
@@ -37,9 +71,23 @@ export function WhaleFeed({ isPreview = false }: { isPreview?: boolean }) {
 
   const transactionsPerPage = isPreview ? 5 : 10;
   
+  // API Call Simulation
+  useEffect(() => {
+    setLoading(true);
+    // In a real app, you would fetch data from an API here.
+    // For now, we simulate a network delay.
+    const timer = setTimeout(() => {
+      // Example: fetch('/api/whale-feed').then(res => res.json()).then(setTransactions)
+      setTransactions([]); // Set to empty array to wait for API integration
+      setLoading(false);
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, []);
+
 
   const handleNextPage = () => {
-    if (currentPage * transactionsPerPage < mockWhaleTxs.length) {
+    if (currentPage * transactionsPerPage < filteredTransactions.length) {
       setCurrentPage(currentPage + 1);
     }
   };
@@ -51,18 +99,18 @@ export function WhaleFeed({ isPreview = false }: { isPreview?: boolean }) {
   };
 
   const filteredTransactions = useMemo(() => {
-    let transactions = mockWhaleTxs;
+    let txs = transactions;
     if(tokenFilter) {
-      transactions = transactions.filter(tx => tx.token.symbol.toLowerCase().includes(tokenFilter.toLowerCase()));
+      txs = txs.filter(tx => tx.token.symbol.toLowerCase().includes(tokenFilter.toLowerCase()));
     }
     if(chainFilter !== 'all') {
-      transactions = transactions.filter(tx => tx.network.toLowerCase() === chainFilter);
+      txs = txs.filter(tx => tx.network.toLowerCase() === chainFilter);
     }
     if(typeFilter !== 'all') {
-       transactions = transactions.filter(tx => tx.type.toLowerCase() === typeFilter);
+       txs = txs.filter(tx => tx.type.toLowerCase() === typeFilter);
     }
-    return transactions;
-  }, [tokenFilter, chainFilter, typeFilter]);
+    return txs;
+  }, [transactions, tokenFilter, chainFilter, typeFilter]);
 
   const totalPages = Math.ceil(filteredTransactions.length / transactionsPerPage);
   
@@ -201,7 +249,9 @@ export function WhaleFeed({ isPreview = false }: { isPreview?: boolean }) {
             </CardHeader>
             <CardContent>
                 <div className="space-y-3">
-                    {currentTransactions.length > 0 ? (
+                    {loading ? (
+                       [...Array(isPreview ? 5 : 10)].map((_, i) => <TransactionCardSkeleton key={i} />)
+                    ) : currentTransactions.length > 0 ? (
                       currentTransactions.map((tx) => (
                         <TransactionCard key={tx.id} tx={tx} />
                       ))
@@ -219,7 +269,7 @@ export function WhaleFeed({ isPreview = false }: { isPreview?: boolean }) {
                         </Button>
                     </div>
                 )}
-                {!isPreview && filteredTransactions.length > transactionsPerPage && <PaginationControls />}
+                {!isPreview && !loading && filteredTransactions.length > transactionsPerPage && <PaginationControls />}
             </CardContent>
         </Card>
   );

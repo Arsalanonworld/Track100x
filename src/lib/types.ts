@@ -50,4 +50,23 @@ export type WatchlistItem = {
     userId: string;
 };
 
+export type WhaleTransaction = {
+  id: string;
+  txHash: string;
+  from: string;
+  fromShort: string;
+  fromTags?: string[];
+  to: string;
+  toShort: string;
+  toTags?: string[];
+  token: {
+    symbol: string;
+    name: string;
+  };
+  tokenAmount: string;
+  value: string;
+  network: string;
+  time: string;
+  type: 'transfer' | 'swap' | string;
+};
     

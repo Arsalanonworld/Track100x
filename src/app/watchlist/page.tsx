@@ -106,9 +106,8 @@ function WatchlistItemCard({ item, onUpdate, onRemove }: { item: WatchlistItem, 
                                         {item.identifier}
                                     </a>
                                 )}
-                                 <div className='text-sm text-muted-foreground pt-1 flex items-center gap-4'>
-                                    <p>Net Worth: <span className='text-green-500 font-medium'>$1.2M</span></p>
-                                    <p>7d P&L: <span className='text-red-500 font-medium'>-$50.2k</span></p>
+                                 <div className='text-xs text-muted-foreground pt-1'>
+                                    <p>Net Worth & P/L: <span className='italic'>Fetching data...</span></p>
                                  </div>
                                 </>
                            ) : (
@@ -276,7 +275,7 @@ export default function WatchlistPage() {
                                 user={user}
                                 onItemAdded={handleItemAdded}
                                 onAlertCreate={handleOpenEditor}
-                                atLimit={watchlistAtLimit}
+                                atLimit={!!watchlistAtLimit}
                                 isLoading={isLoading}
                              />
                         </div>
@@ -323,4 +322,3 @@ export default function WatchlistPage() {
     </Dialog>
   );
 }
-
