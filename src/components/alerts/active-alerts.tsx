@@ -35,6 +35,7 @@ import {
 import { AlertEditorDialog } from '../alert-editor-dialog';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
+import { Skeleton } from '../ui/skeleton';
 
 
 const iconMap = {
@@ -42,13 +43,12 @@ const iconMap = {
   token: <Zap className="h-4 w-4 text-muted-foreground" />,
 };
 
-export default function ActiveAlerts() {
+export default function ActiveAlerts({ onNewAlert }: { onNewAlert: () => void}) {
     const { toast } = useToast();
     const [isEditorOpen, setIsEditorOpen] = useState(false);
     const [selectedAlert, setSelectedAlert] = useState<Alert | null>(null);
     const { user, loading: userLoading, claims } = useUser();
     const firestore = useFirestore();
-    const isPro = claims?.plan === 'pro';
 
     const alertsQuery = useMemo(() => {
         if (user && firestore) {
@@ -61,11 +61,6 @@ export default function ActiveAlerts() {
     
     const handleEdit = (alert: Alert) => {
         setSelectedAlert(alert);
-        setIsEditorOpen(true);
-    };
-
-    const handleCreateNew = () => {
-        setSelectedAlert(null);
         setIsEditorOpen(true);
     };
 
@@ -112,97 +107,85 @@ export default function ActiveAlerts() {
 
     return (
         <Dialog open={isEditorOpen} onOpenChange={handleCloseEditor}>
-            <Card>
-                <CardHeader>
-                  <div>
-                      <CardTitle>Your Active Alerts</CardTitle>
-                      <CardDescription>
-                          {isPro 
-                              ? `You have ${alertCount} active alerts.`
-                              : `You have ${alertCount} of 5 active alerts.`}
-                      </CardDescription>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                <div className="space-y-4">
-                    {isLoading && <p>Loading alerts...</p>}
-                    {!isLoading && alerts && alerts.length > 0 ? (
-                    alerts.map(alert => (
-                        <div
-                        key={alert.id}
-                        className={cn(
-                            'p-3 rounded-lg border flex items-center justify-between gap-4',
-                            !alert.enabled && 'bg-muted/50'
-                        )}
-                        >
-                        <div className="flex items-center gap-3 flex-1 min-w-0">
-                            <div className="p-2 bg-secondary rounded-md">
-                                {iconMap[alert.alertType]}
-                            </div>
-                            <div className='min-w-0'>
-                                <p className="font-semibold text-sm truncate">{alert.walletId || alert.token}</p>
-                                <p className="text-xs text-muted-foreground truncate">
-                                    Rule: {alert.rule}
-                                </p>
-                            </div>
-                        </div>
-                        <div className="flex items-center justify-end gap-1">
-                             <Switch
-                                checked={alert.enabled}
-                                onCheckedChange={() => toggleAlert(alert)}
-                                aria-label="Toggle alert"
-                            />
-                            <DialogTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleEdit(alert)}>
-                                    <Pencil className="h-4 w-4" />
-                                </Button>
-                            </DialogTrigger>
-                            <AlertDialog>
-                              <AlertDialogTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive">
-                                    <Trash2 className="h-4 w-4" />
-                                </Button>
-                              </AlertDialogTrigger>
-                              <AlertDialogContent>
-                                <AlertDialogHeader>
-                                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                                  <AlertDialogDescription>
-                                    This action cannot be undone. This will permanently delete your alert.
-                                  </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                  <AlertDialogAction
-                                    onClick={() => deleteAlert(alert)}
-                                    className="bg-destructive hover:bg-destructive/90"
-                                  >
-                                    Delete
-                                  </AlertDialogAction>
-                                </AlertDialogFooter>
-                              </AlertDialogContent>
-                            </AlertDialog>
-
-                        </div>
-                        </div>
-                    ))
-                    ) : !isLoading && (
-                    <div className="flex flex-col items-center justify-center text-center text-muted-foreground p-8 border-2 border-dashed rounded-lg">
-                        <Bell className="h-10 w-10 mb-4" />
-                        <p className="font-semibold">No active alerts found.</p>
-                        <p className="text-sm">
-                        Create an alert to get started with real-time tracking.
-                        </p>
+            <div className="space-y-4">
+                {isLoading ? (
+                    <div className='space-y-3'>
+                        <Skeleton className="h-16 w-full" />
+                        <Skeleton className="h-16 w-full" />
+                        <Skeleton className="h-16 w-full" />
                     </div>
+                ) : alerts && alerts.length > 0 ? (
+                alerts.map(alert => (
+                    <div
+                    key={alert.id}
+                    className={cn(
+                        'p-3 rounded-lg border flex items-center justify-between gap-4',
+                        !alert.enabled && 'bg-muted/50'
                     )}
+                    >
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                        <div className="p-2 bg-secondary rounded-md">
+                            {iconMap[alert.alertType]}
+                        </div>
+                        <div className='min-w-0'>
+                            <p className="font-semibold text-sm truncate">{alert.walletId || alert.token}</p>
+                            <p className="text-xs text-muted-foreground truncate">
+                                Rule: {alert.rule}
+                            </p>
+                        </div>
+                    </div>
+                    <div className="flex items-center justify-end gap-1">
+                         <Switch
+                            checked={alert.enabled}
+                            onCheckedChange={() => toggleAlert(alert)}
+                            aria-label="Toggle alert"
+                        />
+                        <DialogTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleEdit(alert)}>
+                                <Pencil className="h-4 w-4" />
+                            </Button>
+                        </DialogTrigger>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive">
+                                <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                This action cannot be undone. This will permanently delete your alert.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => deleteAlert(alert)}
+                                className="bg-destructive hover:bg-destructive/90"
+                              >
+                                Delete
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+
+                    </div>
+                    </div>
+                ))
+                ) : !isLoading && (
+                <div className="flex flex-col items-center justify-center text-center text-muted-foreground p-8 border-2 border-dashed rounded-lg">
+                    <Bell className="h-10 w-10 mb-4" />
+                    <p className="font-semibold">No active alerts found.</p>
+                    <Button variant="link" size="sm" className="mt-2" onClick={onNewAlert}>Create one now</Button>
                 </div>
-                </CardContent>
-            </Card>
-            <AlertEditorDialog 
+                )}
+            </div>
+            {isEditorOpen && <AlertEditorDialog 
                 onOpenChange={handleCloseEditor} 
                 alert={selectedAlert || undefined}
-            />
+            />}
         </Dialog>
     );
 }
 
-    
