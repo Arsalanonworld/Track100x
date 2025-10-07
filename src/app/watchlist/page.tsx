@@ -201,6 +201,7 @@ export default function WatchlistPage() {
   const { toast } = useToast();
   const [refreshKey, setRefreshKey] = useState(0);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [editorEntity, setEditorEntity] = useState<{type: 'wallet' | 'token', identifier: string} | undefined>(undefined);
 
   const isPro = claims?.plan === 'pro';
 
@@ -252,6 +253,11 @@ export default function WatchlistPage() {
       });
   }
 
+  const handleOpenEditor = (entity?: {type: 'wallet' | 'token', identifier: string}) => {
+    setEditorEntity(entity);
+    setIsEditorOpen(true);
+  }
+
   const isLoading = userLoading || (user && watchlistLoading);
 
   const pageDescription = isPro
@@ -271,14 +277,10 @@ export default function WatchlistPage() {
                 <div className='grid grid-cols-1 lg:grid-cols-3 gap-8 items-start'>
                     <div className='lg:col-span-2 space-y-6'>
                         <div className="flex items-center flex-wrap p-1.5 rounded-full border bg-card shadow-sm max-w-xl">
-                           <AddItemForm atLimit={!!watchlistAtLimit} onAdd={() => setRefreshKey(k => k + 1)}/>
-                           <Separator orientation="vertical" className="h-6 mx-1" />
-                           <DialogTrigger asChild>
-                              <Button variant="ghost" onClick={() => setIsEditorOpen(true)} className="h-10 rounded-full px-4 shrink-0">
-                                <BellPlus className="h-4 w-4 mr-2"/>
-                                Create Alert
-                              </Button>
-                           </DialogTrigger>
+                           <AddItemForm 
+                             atLimit={!!watchlistAtLimit} 
+                             onItemConfirm={(entity) => handleOpenEditor(entity)}
+                           />
                         </div>
                         
                         {watchlistAtLimit && (
@@ -313,13 +315,15 @@ export default function WatchlistPage() {
                             )}
                         </div>
                     </div>
-                    <div className='lg:col-span-1 space-y-6 lg:mt-[124px]'>
-                       <AlertsPanel onNewAlert={() => setIsEditorOpen(true)} />
+                    <div className='lg:col-span-1 space-y-6 lg:mt-[76px]'>
+                       <AlertsPanel onNewAlert={() => handleOpenEditor()} />
                     </div>
                 </div>
             </div>
         </div>
-         <AlertEditorDialog onOpenChange={setIsEditorOpen} />
+         <AlertEditorDialog onOpenChange={setIsEditorOpen} entity={editorEntity} />
     </Dialog>
   );
 }
+
+    

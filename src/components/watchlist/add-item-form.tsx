@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Plus, Search } from 'lucide-react';
+import { Plus, Search, BellPlus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useUser, useFirestore } from '@/firebase';
 import { collection, addDoc, serverTimestamp, query, where, getDocs } from 'firebase/firestore';
@@ -15,23 +15,23 @@ import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { tokenLibrary } from '@/lib/tokens';
 
-export function AddItemForm({ atLimit, onAdd }: { atLimit: boolean; onAdd: () => void }) {
+export function AddItemForm({ atLimit, onItemConfirm }: { atLimit: boolean; onItemConfirm: (entity: {identifier: string, type: 'wallet' | 'token'}) => void }) {
   const [identifier, setIdentifier] = useState('');
   const [alias, setAlias] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isAliasModalOpen, setIsAliasModalOpen] = useState(false);
   const [itemToAdd, setItemToAdd] = useState<{ identifier: string; type: 'wallet' | 'token' } | null>(null);
 
-  const { user } = useUser();
-  const firestore = useFirestore();
+  const { user, firestore } = useUser();
   const { toast } = useToast();
 
   const isWalletAddress = (str: string) => /^0x[a-fA-F0-9]{40}$/.test(str);
   const isKnownToken = (str: string) => !!tokenLibrary[str.toUpperCase()];
 
-  const handleAddClick = () => {
+  const handleCreateAlertClick = () => {
     if (!identifier) {
-      toast({ variant: 'destructive', title: 'Input Required', description: 'Please enter a wallet address or token symbol.' });
+      // If no identifier, just open the generic alert editor
+      onItemConfirm({identifier: '', type: 'wallet'});
       return;
     }
 
@@ -44,39 +44,42 @@ export function AddItemForm({ atLimit, onAdd }: { atLimit: boolean; onAdd: () =>
 
     if (isWalletAddress(trimmedIdentifier)) {
       setItemToAdd({ identifier: trimmedIdentifier, type: 'wallet' });
-      setIsAliasModalOpen(true);
+      setIsAliasModalOpen(true); // Ask for alias before proceeding
     } else if (isKnownToken(trimmedIdentifier)) {
-      confirmAddItem(trimmedIdentifier.toUpperCase(), 'token', '');
+      confirmAndOpenAlert(trimmedIdentifier.toUpperCase(), 'token', '');
     } else {
-      toast({ variant: 'destructive', title: 'Invalid Input', description: 'Please enter a valid wallet address or a known token symbol.' });
+      // Not a valid address or known token, open generic alert creator
+      onItemConfirm({identifier: '', type: 'wallet'});
     }
   };
   
-  const confirmAddItem = async (id: string, type: 'wallet' | 'token', name: string) => {
-    if (!user || !firestore) return;
+  const confirmAndOpenAlert = async (id: string, type: 'wallet' | 'token', name: string) => {
+    if (!user || !firestore) {
+        onItemConfirm({ identifier: id, type: type });
+        return;
+    };
     setIsSubmitting(true);
     
     try {
+      // Check if already on watchlist
       const q = query(collection(firestore, `users/${user.uid}/watchlist`), where("identifier", "==", id));
       const querySnapshot = await getDocs(q);
 
-      if (!querySnapshot.empty) {
-        toast({ variant: 'destructive', title: 'Already Watched', description: `${id} is already on your watchlist.` });
-        return;
+      if (querySnapshot.empty) {
+        const newDoc: Omit<WatchlistItem, 'id' | 'createdAt'> & { createdAt: any } = {
+            identifier: id,
+            type: type,
+            name: name,
+            userId: user.uid,
+            createdAt: serverTimestamp(),
+        };
+        await addDoc(collection(firestore, `users/${user.uid}/watchlist`), newDoc);
+        toast({ title: 'Item Added!', description: `${id} has been added to your watchlist.` });
       }
-
-      const newDoc: Omit<WatchlistItem, 'id' | 'createdAt'> & { createdAt: any } = {
-        identifier: id,
-        type: type,
-        name: name,
-        userId: user.uid,
-        createdAt: serverTimestamp(),
-      };
-
-      await addDoc(collection(firestore, `users/${user.uid}/watchlist`), newDoc);
-      toast({ title: 'Item Added!', description: `${id} has been added to your watchlist.` });
-      onAdd();
       
+      // Proceed to open alert editor
+      onItemConfirm({ identifier: id, type: type });
+
     } catch (error) {
       console.error("Error adding to watchlist:", error);
       const permissionError = new FirestorePermissionError({
@@ -95,7 +98,7 @@ export function AddItemForm({ atLimit, onAdd }: { atLimit: boolean; onAdd: () =>
 
   const handleWalletAliasSubmit = () => {
     if (itemToAdd) {
-      confirmAddItem(itemToAdd.identifier, itemToAdd.type, alias);
+      confirmAndOpenAlert(itemToAdd.identifier, itemToAdd.type, alias);
     }
   };
 
@@ -106,19 +109,19 @@ export function AddItemForm({ atLimit, onAdd }: { atLimit: boolean; onAdd: () =>
                 <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2"/>
                 <Input 
                     id="add-item-input"
-                    placeholder="Paste address or enter token..."
+                    placeholder="Paste address or token to create alert..."
                     value={identifier}
                     onChange={(e) => setIdentifier(e.target.value)}
                     disabled={atLimit}
                     className="pl-9 bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0 h-10"
                     onKeyDown={(e) => {
-                        if (e.key === 'Enter') handleAddClick();
+                        if (e.key === 'Enter') handleCreateAlertClick();
                     }}
                 />
             </div>
-            <Button onClick={handleAddClick} disabled={atLimit || !identifier} className="shrink-0 rounded-full h-10 px-4 sm:px-6">
-                <Plus className="h-4 w-4 sm:mr-2"/>
-                <span className="hidden sm:inline">Add</span>
+            <Button onClick={handleCreateAlertClick} disabled={atLimit} className="shrink-0 rounded-full h-10 px-4 sm:px-6">
+                <BellPlus className="h-4 w-4 sm:mr-2"/>
+                <span className="hidden sm:inline">Create Alert</span>
             </Button>
         </div>
       <Dialog open={isAliasModalOpen} onOpenChange={setIsAliasModalOpen}>
@@ -126,7 +129,7 @@ export function AddItemForm({ atLimit, onAdd }: { atLimit: boolean; onAdd: () =>
           <DialogHeader>
             <DialogTitle>Add Wallet to Watchlist</DialogTitle>
             <DialogDescription>
-              Optionally, add an alias for <span className='font-mono bg-muted p-1 rounded-sm'>{itemToAdd?.identifier}</span>.
+              This wallet will be added to your watchlist. Optionally, add an alias for <span className='font-mono bg-muted p-1 rounded-sm'>{itemToAdd?.identifier}</span>.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-2">
@@ -134,9 +137,12 @@ export function AddItemForm({ atLimit, onAdd }: { atLimit: boolean; onAdd: () =>
             <Input id="alias" value={alias} onChange={(e) => setAlias(e.target.value)} placeholder="e.g., My Trading Wallet"/>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsAliasModalOpen(false)}>Cancel</Button>
+            <Button variant="ghost" onClick={() => {
+                if(itemToAdd) onItemConfirm(itemToAdd);
+                setIsAliasModalOpen(false);
+            }}>Skip</Button>
             <Button onClick={handleWalletAliasSubmit} disabled={isSubmitting}>
-              {isSubmitting ? 'Adding...' : 'Confirm'}
+              {isSubmitting ? 'Adding...' : 'Save & Continue'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -144,3 +150,5 @@ export function AddItemForm({ atLimit, onAdd }: { atLimit: boolean; onAdd: () =>
     </>
   );
 }
+
+    
