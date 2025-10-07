@@ -38,7 +38,7 @@ export function Combobox({ options, value, onChange, placeholder, emptyMessage }
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full justify-between pl-9"
+          className="w-full justify-between"
         >
           {value
             ? options.find((option) => option.value.toLowerCase() === value.toLowerCase())?.label
@@ -57,14 +57,14 @@ export function Combobox({ options, value, onChange, placeholder, emptyMessage }
                   key={option.value}
                   value={option.value}
                   onSelect={(currentValue) => {
-                    onChange(currentValue.toLowerCase() === value.toLowerCase() ? "" : currentValue)
+                    onChange(value && currentValue.toLowerCase() === value.toLowerCase() ? "" : currentValue)
                     setOpen(false)
                   }}
                 >
                   <Check
                     className={cn(
                       "mr-2 h-4 w-4",
-                      value.toLowerCase() === option.value.toLowerCase() ? "opacity-100" : "opacity-0"
+                      value && value.toLowerCase() === option.value.toLowerCase() ? "opacity-100" : "opacity-0"
                     )}
                   />
                   {option.label}
