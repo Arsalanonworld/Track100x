@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Plus, Search } from 'lucide-react';
+import { Plus, Search, BellPlus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useUser, useFirestore } from '@/firebase';
 import { collection, addDoc, serverTimestamp, query, where, getDocs } from 'firebase/firestore';
@@ -16,12 +16,18 @@ import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { tokenLibrary } from '@/lib/tokens';
 
-export function AddItemForm({ atLimit, onItemAdded }: { atLimit: boolean; onItemAdded: () => void; }) {
+type WatchlistActionFormProps = {
+    atLimit: boolean;
+    onItemAdded: () => void;
+    onAlertCreate: (entity: { type: 'wallet' | 'token'; identifier: string }) => void;
+};
+
+export function WatchlistActionForm({ atLimit, onItemAdded, onAlertCreate }: WatchlistActionFormProps) {
   const [identifier, setIdentifier] = useState('');
   const [alias, setAlias] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isAliasModalOpen, setIsAliasModalOpen] = useState(false);
-  const [itemToAdd, setItemToAdd] = useState<{ identifier: string; type: 'wallet' | 'token' } | null>(null);
+  const [itemToAdd, setItemToAdd] = useState<{ identifier: string; type: 'wallet' | 'token'; action: 'add' | 'alert' } | null>(null);
 
   const { user, firestore } = useUser();
   const { toast } = useToast();
@@ -29,10 +35,10 @@ export function AddItemForm({ atLimit, onItemAdded }: { atLimit: boolean; onItem
   const isWalletAddress = (str: string) => /^0x[a-fA-F0-9]{40}$/.test(str);
   const isKnownToken = (str: string) => !!tokenLibrary[str.toUpperCase()];
 
-  const handleAddItem = async () => {
+  const handleAction = async (action: 'add' | 'alert') => {
     if (!identifier) return;
 
-    if (atLimit) {
+    if (atLimit && action === 'add') {
       toast({ variant: 'destructive', title: 'Watchlist Limit Reached', description: 'Please upgrade to add more items.' });
       return;
     }
@@ -40,16 +46,16 @@ export function AddItemForm({ atLimit, onItemAdded }: { atLimit: boolean; onItem
     const trimmedIdentifier = identifier.trim();
 
     if (isWalletAddress(trimmedIdentifier)) {
-      setItemToAdd({ identifier: trimmedIdentifier, type: 'wallet' });
+      setItemToAdd({ identifier: trimmedIdentifier, type: 'wallet', action });
       setIsAliasModalOpen(true);
     } else if (isKnownToken(trimmedIdentifier)) {
-      await confirmAndAddItem(trimmedIdentifier.toUpperCase(), 'token', '');
+      await confirmAndAddItem(trimmedIdentifier.toUpperCase(), 'token', '', action);
     } else {
       toast({ variant: 'destructive', title: 'Invalid Input', description: 'Please enter a valid wallet address or a known token symbol.' });
     }
   };
   
-  const confirmAndAddItem = async (id: string, type: 'wallet' | 'token', name: string) => {
+  const confirmAndAddItem = async (id: string, type: 'wallet' | 'token', name: string, action: 'add' | 'alert') => {
     if (!user || !firestore) {
         toast({ variant: 'destructive', title: 'Not Logged In', description: 'You must be logged in to add items.' });
         return;
@@ -60,9 +66,7 @@ export function AddItemForm({ atLimit, onItemAdded }: { atLimit: boolean; onItem
       const q = query(collection(firestore, `users/${user.uid}/watchlist`), where("identifier", "==", id));
       const querySnapshot = await getDocs(q);
 
-      if (!querySnapshot.empty) {
-        toast({ title: 'Already Watching', description: `${id} is already on your watchlist.` });
-      } else {
+      if (querySnapshot.empty) {
         const newDoc: Omit<WatchlistItem, 'id' | 'createdAt'> & { createdAt: any } = {
             identifier: id,
             type: type,
@@ -75,8 +79,12 @@ export function AddItemForm({ atLimit, onItemAdded }: { atLimit: boolean; onItem
         onItemAdded();
       }
       
+      if (action === 'alert') {
+        onAlertCreate({ type, identifier: id });
+      }
+
     } catch (error) {
-      console.error("Error adding to watchlist:", error);
+      console.error("Error in watchlist action:", error);
       const permissionError = new FirestorePermissionError({
         path: `users/${user.uid}/watchlist`,
         operation: 'create',
@@ -94,7 +102,7 @@ export function AddItemForm({ atLimit, onItemAdded }: { atLimit: boolean; onItem
 
   const handleWalletAliasSubmit = () => {
     if (itemToAdd) {
-      confirmAndAddItem(itemToAdd.identifier, itemToAdd.type, alias);
+      confirmAndAddItem(itemToAdd.identifier, itemToAdd.type, alias, itemToAdd.action);
     }
   };
 
@@ -105,20 +113,26 @@ export function AddItemForm({ atLimit, onItemAdded }: { atLimit: boolean; onItem
                 <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2"/>
                 <Input 
                     id="add-item-input"
-                    placeholder="Paste address or token symbol to watch..."
+                    placeholder="Paste address or token symbol..."
                     value={identifier}
                     onChange={(e) => setIdentifier(e.target.value)}
-                    disabled={atLimit || isSubmitting}
+                    disabled={isSubmitting}
                     className="pl-9 bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0 h-10"
                     onKeyDown={(e) => {
-                        if (e.key === 'Enter') handleAddItem();
+                        if (e.key === 'Enter') handleAction('add');
                     }}
                 />
             </div>
-            <Button onClick={handleAddItem} disabled={atLimit || isSubmitting || !identifier} className="shrink-0 rounded-full h-10 px-4 sm:px-6">
-                <Plus className="h-4 w-4 sm:mr-2"/>
-                <span className="hidden sm:inline">Add</span>
-            </Button>
+            <div className="flex items-center gap-1">
+                <Button onClick={() => handleAction('add')} disabled={atLimit || isSubmitting || !identifier} className="shrink-0 rounded-full h-10 px-4 sm:px-6" variant="outline">
+                    <Plus className="h-4 w-4 sm:mr-2"/>
+                    <span className="hidden sm:inline">Add to Watchlist</span>
+                </Button>
+                <Button onClick={() => handleAction('alert')} disabled={isSubmitting || !identifier} className="shrink-0 rounded-full h-10 px-4 sm:px-6">
+                    <BellPlus className="h-4 w-4 sm:mr-2"/>
+                    <span className="hidden sm:inline">Create Alert</span>
+                </Button>
+            </div>
         </div>
       <Dialog open={isAliasModalOpen} onOpenChange={setIsAliasModalOpen}>
         <DialogContent>
@@ -135,7 +149,7 @@ export function AddItemForm({ atLimit, onItemAdded }: { atLimit: boolean; onItem
           <DialogFooter className="pt-4">
             <Button variant="ghost" onClick={() => setIsAliasModalOpen(false)}>Cancel</Button>
             <Button onClick={handleWalletAliasSubmit} disabled={isSubmitting}>
-              {isSubmitting ? 'Adding...' : 'Add to Watchlist'}
+              {isSubmitting ? 'Saving...' : 'Confirm'}
             </Button>
           </DialogFooter>
         </DialogContent>

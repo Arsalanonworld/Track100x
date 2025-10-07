@@ -35,10 +35,9 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { CryptoIcon } from '@/components/crypto-icon';
 import { getExplorerUrl } from '@/lib/explorers';
-import { AddItemForm } from '@/components/watchlist/add-item-form';
+import { WatchlistActionForm } from '@/components/watchlist/watchlist-action-form';
 import { tokenLibrary } from '@/lib/tokens';
 import { AlertsPanel } from '@/components/watchlist/alerts-panel';
-import { Separator } from '@/components/ui/separator';
 
 
 const WATCHLIST_LIMIT_FREE = 5;
@@ -281,15 +280,7 @@ export default function WatchlistPage() {
 
                 <div className='grid grid-cols-1 lg:grid-cols-3 gap-8 items-start'>
                     <div className='lg:col-span-2 space-y-6'>
-                         <div className="flex flex-col sm:flex-row gap-2">
-                             <div className="flex-1">
-                                <AddItemForm atLimit={!!watchlistAtLimit} onItemAdded={handleItemAdded} />
-                            </div>
-                            <Button onClick={() => handleOpenEditor()} className="w-full sm:w-auto">
-                                <BellPlus className="h-4 w-4 mr-2" />
-                                Create New Alert
-                            </Button>
-                        </div>
+                         <WatchlistActionForm atLimit={!!watchlistAtLimit} onItemAdded={handleItemAdded} onAlertCreate={handleOpenEditor} />
                         
                         {watchlistAtLimit && (
                             <Card className="text-center p-8 space-y-4 rounded-lg bg-card border shadow-lg border-primary">
@@ -316,14 +307,14 @@ export default function WatchlistPage() {
                                     <Eye className="h-10 w-10 mb-4" />
                                     <p className="font-semibold text-lg">Your watchlist is empty.</p>
                                     <p className="text-sm max-w-xs mx-auto">
-                                       Use the form above or add wallets and tokens directly from the Whale Feed.
+                                       Use the form above to add wallets or tokens to your watchlist.
                                     </p>
                                 </div>
                                )
                             )}
                         </div>
                     </div>
-                    <div className='lg:col-span-1 space-y-6 lg:mt-[76px]'>
+                    <div className='lg:col-span-1 lg:mt-[76px]'>
                        <AlertsPanel onNewAlert={() => handleOpenEditor()} />
                     </div>
                 </div>
