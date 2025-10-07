@@ -48,7 +48,7 @@ export const CreateAlertDialog = ({
           {finalEntity ? (
             <>
               Set up a notification for:{' '}
-              <span className="font-mono text-foreground">
+              <span className="font-mono text-foreground bg-muted p-1 rounded-sm">
                 {finalEntity.identifier}
               </span>
             </>
@@ -101,5 +101,3 @@ export const CreateAlertDialog = ({
     </DialogContent>
   );
 };
-
-    

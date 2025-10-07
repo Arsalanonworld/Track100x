@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/collapsible"
 import { useToast } from "@/hooks/use-toast";
 import { getExplorerUrl } from "@/lib/explorers";
-import { Dialog } from "./ui/dialog";
+import { Dialog, DialogTrigger } from "./ui/dialog";
 import { CreateAlertDialog } from "./create-alert-dialog";
 import { WatchlistButton } from "./track-button";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuLabel } from "./ui/dropdown-menu";
@@ -126,7 +126,7 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
                                             </Button>
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent onClick={(e) => e.stopPropagation()}>
-                                            <DropdownMenuLabel>Create Alert For</DropdownMenuLabel>
+                                            <DropdownMenuLabel>Create Quick Alert For</DropdownMenuLabel>
                                             <DropdownMenuSeparator />
                                             <DropdownMenuItem onClick={() => openAlertEditor('token', tx.token.symbol)}>Token: {tx.token.symbol}</DropdownMenuItem>
                                             <DropdownMenuItem onClick={() => openAlertEditor('wallet', tx.from)}>Sender: {tx.fromShort}</DropdownMenuItem>
