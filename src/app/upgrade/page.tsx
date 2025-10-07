@@ -32,6 +32,7 @@ import { useUser } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { AuthDialog } from '@/components/auth/auth-dialog';
 import { Bell, Eye } from 'lucide-react';
+import { StickyScrollFeatures } from '@/components/sticky-scroll-features';
 
 
 // ----------------- Data -----------------
@@ -84,6 +85,11 @@ const featureHighlights = [
         icon: <Newspaper className="h-8 w-8 text-primary"/>,
         title: 'AI Insights & Daily Digest',
         description: 'Get AI-generated summaries and a daily digest of the most important whale movements and market signals.',
+    },
+     {
+        icon: <ShieldCheck className="h-8 w-8 text-primary" />,
+        title: 'Ad-Free Experience',
+        description: 'Enjoy a clean, uninterrupted interface focused solely on the data and insights that matter.',
     },
 ];
 
@@ -178,31 +184,6 @@ const PricingCard = ({
   </Card>
 );
 
-const ProFeatures = () => {
-    return (
-        <section className="py-16 sm:py-24">
-             <div className="text-center mb-12">
-                <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">
-                    An Unfair Advantage is Waiting
-                </h2>
-                <p className="max-w-2xl mx-auto mt-4 text-muted-foreground">
-                    Here's what you unlock with a Pro membership.
-                </p>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {featureHighlights.map((feature, index) => (
-                    <div key={index} className="bg-card border rounded-xl p-6 flex flex-col items-center text-center">
-                        <div className="flex-shrink-0">{feature.icon}</div>
-                        <h3 className="text-lg font-bold mt-4 mb-2">{feature.title}</h3>
-                        <p className="text-muted-foreground text-sm flex-1">{feature.description}</p>
-                    </div>
-                ))}
-            </div>
-        </section>
-    );
-};
-
-
 export default function UpgradePage() {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('yearly');
   const { user, loading, claims } = useUser();
@@ -257,7 +238,9 @@ export default function UpgradePage() {
           </div>
         </section>
 
-        <ProFeatures />
+        <section className="py-16 sm:py-24">
+          <StickyScrollFeatures features={featureHighlights} />
+        </section>
 
         <section id="pricing" className="mt-12">
           <div className="text-center mb-12">
@@ -412,5 +395,7 @@ export default function UpgradePage() {
     </>
   );
 }
+
+    
 
     
