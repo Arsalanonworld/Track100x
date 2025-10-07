@@ -101,12 +101,12 @@ export function AddItemForm({ atLimit, onAdd }: { atLimit: boolean; onAdd: () =>
 
   return (
     <>
-      <div className="flex flex-1 gap-2 p-2 rounded-full border bg-card shadow-sm max-w-xl">
+      <div className="flex flex-1 items-center">
             <div className="relative flex-1">
                 <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2"/>
                 <Input 
                     id="add-item-input"
-                    placeholder="Paste wallet address or enter token symbol..."
+                    placeholder="Paste address or enter token..."
                     value={identifier}
                     onChange={(e) => setIdentifier(e.target.value)}
                     disabled={atLimit}
@@ -116,7 +116,7 @@ export function AddItemForm({ atLimit, onAdd }: { atLimit: boolean; onAdd: () =>
                     }}
                 />
             </div>
-            <Button onClick={handleAddClick} disabled={atLimit || !identifier} className="shrink-0 rounded-full h-10 px-6">
+            <Button onClick={handleAddClick} disabled={atLimit || !identifier} className="shrink-0 rounded-full h-10 px-4 sm:px-6">
                 <Plus className="h-4 w-4 sm:mr-2"/>
                 <span className="hidden sm:inline">Add</span>
             </Button>

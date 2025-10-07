@@ -37,6 +37,7 @@ import { getExplorerUrl } from '@/lib/explorers';
 import { AddItemForm } from '@/components/watchlist/add-item-form';
 import { tokenLibrary } from '@/lib/tokens';
 import { AlertsPanel } from '@/components/watchlist/alerts-panel';
+import { Separator } from '@/components/ui/separator';
 
 
 const WATCHLIST_LIMIT_FREE = 5;
@@ -269,10 +270,11 @@ export default function WatchlistPage() {
 
                 <div className='grid grid-cols-1 lg:grid-cols-3 gap-8 items-start'>
                     <div className='lg:col-span-2 space-y-6'>
-                        <div className="flex flex-col sm:flex-row gap-2">
+                        <div className="flex items-center flex-wrap gap-2 p-1.5 rounded-full border bg-card shadow-sm max-w-xl">
                            <AddItemForm atLimit={!!watchlistAtLimit} onAdd={() => setRefreshKey(k => k + 1)}/>
+                           <Separator orientation="vertical" className="h-6 mx-1" />
                            <DialogTrigger asChild>
-                              <Button onClick={() => setIsEditorOpen(true)} className="w-full sm:w-auto">
+                              <Button variant="ghost" onClick={() => setIsEditorOpen(true)} className="h-10 rounded-full px-4 shrink-0">
                                 <BellPlus className="h-4 w-4 mr-2"/>
                                 Create Alert
                               </Button>
