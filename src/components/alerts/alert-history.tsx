@@ -7,15 +7,7 @@ import Link from "next/link";
 import { Button } from "../ui/button";
 import { useState, useEffect } from "react";
 import { Skeleton } from "../ui/skeleton";
-
-type TriggeredAlert = {
-    id: string;
-    rule: string;
-    entity: string;
-    time: string;
-    value: string;
-    target?: string;
-};
+import { triggeredAlerts as mockAlerts, type TriggeredAlert } from '@/lib/mock-data';
 
 
 export default function AlertHistory() {
@@ -27,7 +19,7 @@ export default function AlertHistory() {
         setLoading(true);
         const timer = setTimeout(() => {
             // Example: fetch('/api/alerts/history').then(res => res.json()).then(setTriggeredAlerts);
-            setTriggeredAlerts([]); // Set to empty array as we have no API yet.
+            setTriggeredAlerts(mockAlerts);
             setLoading(false);
         }, 1500);
         return () => clearTimeout(timer);

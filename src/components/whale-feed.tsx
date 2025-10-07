@@ -28,6 +28,7 @@ import {
 import Link from 'next/link';
 import { Skeleton } from './ui/skeleton';
 import type { WhaleTransaction } from '@/lib/types';
+import { whaleTransactions as mockTransactions } from '@/lib/mock-data';
 
 
 function TransactionCardSkeleton() {
@@ -78,7 +79,7 @@ export function WhaleFeed({ isPreview = false }: { isPreview?: boolean }) {
     // For now, we simulate a network delay.
     const timer = setTimeout(() => {
       // Example: fetch('/api/whale-feed').then(res => res.json()).then(setTransactions)
-      setTransactions([]); // Set to empty array to wait for API integration
+      setTransactions(mockTransactions);
       setLoading(false);
     }, 1500);
 
@@ -262,7 +263,7 @@ export function WhaleFeed({ isPreview = false }: { isPreview?: boolean }) {
                       </div>
                     )}
                 </div>
-                {isPreview && (
+                {isPreview && !loading && transactions.length > 0 && (
                     <div className="text-center mt-6">
                         <Button asChild variant="outline">
                            <Link href="/feed">View full feed <ArrowRight className="h-4 w-4 ml-2" /></Link>

@@ -10,17 +10,8 @@ import { Bell, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "../ui/badge";
 import { useState, useEffect } from "react";
-import type { WhaleTransaction } from "@/lib/types";
+import { triggeredAlerts as mockAlerts, type TriggeredAlert } from '@/lib/mock-data';
 
-// This is a mock type. Replace with your actual alert type.
-type TriggeredAlert = {
-    id: string;
-    rule: string;
-    entity: string;
-    time: string;
-    value: string;
-    target?: string;
-}
 
 export default function NotificationBell() {
     const [alerts, setAlerts] = useState<TriggeredAlert[]>([]);
@@ -31,7 +22,7 @@ export default function NotificationBell() {
         setLoading(true);
         const timer = setTimeout(() => {
             // Example: fetch('/api/alerts/triggered').then(res => res.json()).then(setAlerts);
-            setAlerts([]); // Set to empty array as we have no API yet
+            setAlerts(mockAlerts);
             setLoading(false);
         }, 1500);
         return () => clearTimeout(timer);
