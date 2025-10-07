@@ -64,6 +64,11 @@ export default function ActiveAlerts() {
         setIsEditorOpen(true);
     };
 
+    const handleCreateNew = () => {
+        setSelectedAlert(null);
+        setIsEditorOpen(true);
+    };
+
     const handleCloseEditor = () => {
         setSelectedAlert(null);
         setIsEditorOpen(false);
@@ -119,7 +124,7 @@ export default function ActiveAlerts() {
                         </CardDescription>
                     </div>
                     <DialogTrigger asChild>
-                        <Button>Create New Alert</Button>
+                        <Button onClick={handleCreateNew}>Create New Alert</Button>
                     </DialogTrigger>
                   </div>
                 </CardHeader>
