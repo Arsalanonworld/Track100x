@@ -1,3 +1,4 @@
+
 'use client';
 import { useState, useMemo } from 'react';
 import { Button } from "@/components/ui/button";
@@ -113,7 +114,7 @@ export default function AlertBuilder({ onSave, onCancel, alert, entity }: { onSa
             return;
         }
 
-        const newOrUpdatedAlert: any = {
+        const newOrUpdatedAlert: Omit<Alert, 'id' | 'createdAt'> = {
             type: 'advanced',
             alertType: alertType,
             rule: 'Advanced Rule',
@@ -149,7 +150,8 @@ export default function AlertBuilder({ onSave, onCancel, alert, entity }: { onSa
 
         } else { // Create new alert
             const alertsCol = collection(firestore, `users/${user.uid}/alerts`);
-            addDoc(alertsCol, { ...newOrUpdatedAlert, createdAt: serverTimestamp() })
+            const dataToSave = { ...newOrUpdatedAlert, createdAt: serverTimestamp() };
+            addDoc(alertsCol, dataToSave)
             .then(() => {
                 toast({
                     title: 'Alert Saved',
@@ -161,7 +163,7 @@ export default function AlertBuilder({ onSave, onCancel, alert, entity }: { onSa
                 const permissionError = new FirestorePermissionError({
                     path: alertsCol.path,
                     operation: 'create',
-                    requestResourceData: { ...newOrUpdatedAlert, createdAt: 'Server-side timestamp' },
+                    requestResourceData: { ...dataToSave, createdAt: 'Server-side timestamp' },
                 });
                 errorEmitter.emit('permission-error', permissionError);
             });

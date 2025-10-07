@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Bell, Pencil, Trash2, Wallet, Zap } from 'lucide-react';
@@ -108,12 +109,19 @@ export default function ActiveAlerts() {
         <Dialog open={isEditorOpen} onOpenChange={handleCloseEditor}>
             <Card>
                 <CardHeader>
-                  <CardTitle>Your Active Alerts</CardTitle>
-                  <CardDescription>
-                      {isPro 
-                        ? `You have ${alertCount} active alerts.`
-                        : `You have ${alertCount} of 5 active alerts.`}
-                  </CardDescription>
+                  <div className='flex justify-between items-center'>
+                    <div>
+                        <CardTitle>Your Active Alerts</CardTitle>
+                        <CardDescription>
+                            {isPro 
+                                ? `You have ${alertCount} active alerts.`
+                                : `You have ${alertCount} of 5 active alerts.`}
+                        </CardDescription>
+                    </div>
+                    <DialogTrigger asChild>
+                        <Button>Create New Alert</Button>
+                    </DialogTrigger>
+                  </div>
                 </CardHeader>
                 <CardContent>
                 <div className="space-y-4">
@@ -144,13 +152,11 @@ export default function ActiveAlerts() {
                                 onCheckedChange={() => toggleAlert(alert)}
                                 aria-label="Toggle alert"
                             />
-                            {isPro && (
-                                <DialogTrigger asChild>
-                                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleEdit(alert)}>
-                                        <Pencil className="h-4 w-4" />
-                                    </Button>
-                                </DialogTrigger>
-                            )}
+                            <DialogTrigger asChild>
+                                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleEdit(alert)}>
+                                    <Pencil className="h-4 w-4" />
+                                </Button>
+                            </DialogTrigger>
                             <AlertDialog>
                               <AlertDialogTrigger asChild>
                                 <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive">
@@ -191,12 +197,10 @@ export default function ActiveAlerts() {
                 </div>
                 </CardContent>
             </Card>
-            {selectedAlert && (
-                <AlertEditorDialog 
-                    onOpenChange={handleCloseEditor} 
-                    alert={selectedAlert}
-                />
-            )}
+            <AlertEditorDialog 
+                onOpenChange={handleCloseEditor} 
+                alert={selectedAlert || undefined}
+            />
         </Dialog>
     );
 }

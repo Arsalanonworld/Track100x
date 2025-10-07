@@ -79,7 +79,7 @@ export function QuickAlertConfigurator({ entity, alert, onSubmitted }: QuickAler
                  break;
             case 'exchangeInteraction':
                 ruleDescription = `Wallet interacts with a CEX`;
-                threshold = 0;
+                threshold = value; // Value is optional for this rule
                 break;
 
             // Token Rules
@@ -93,7 +93,7 @@ export function QuickAlertConfigurator({ entity, alert, onSubmitted }: QuickAler
                  break;
         }
 
-        const alertData: any = {
+        const alertData: Omit<Alert, 'id' | 'createdAt'> = {
             type: 'quick',
             alertType: alertType,
             rule: ruleType,
@@ -104,7 +104,7 @@ export function QuickAlertConfigurator({ entity, alert, onSubmitted }: QuickAler
 
         if (alertType === 'wallet') {
             alertData.walletId = identifier;
-            if (ruleType === 'transactionValue') {
+            if (ruleType === 'transactionValue' || ruleType === 'exchangeInteraction') {
                 alertData.direction = direction;
                 alertData.tokenFilter = token;
             }
@@ -112,23 +112,25 @@ export function QuickAlertConfigurator({ entity, alert, onSubmitted }: QuickAler
             alertData.token = identifier;
         }
 
+        const dataToSave: any = alertData;
+
         if (alert) {
             const alertRef = doc(firestore, `users/${user.uid}/alerts`, alert.id);
-            updateDoc(alertRef, alertData).then(() => {
+            updateDoc(alertRef, dataToSave).then(() => {
                 toast({ title: 'Alert Updated', description: ruleDescription });
                 onSubmitted();
             }).catch(async (serverError) => {
-                 const permissionError = new FirestorePermissionError({ path: alertRef.path, operation: 'update', requestResourceData: alertData });
+                 const permissionError = new FirestorePermissionError({ path: alertRef.path, operation: 'update', requestResourceData: dataToSave });
                  errorEmitter.emit('permission-error', permissionError);
             }).finally(() => setIsSubmitting(false));
         } else {
             const alertsCol = collection(firestore, `users/${user.uid}/alerts`);
-            alertData.createdAt = serverTimestamp();
-            addDoc(alertsCol, alertData).then(() => {
+            dataToSave.createdAt = serverTimestamp();
+            addDoc(alertsCol, dataToSave).then(() => {
                 toast({ title: 'Alert Created', description: ruleDescription });
                 onSubmitted();
             }).catch(async (serverError) => {
-                const permissionError = new FirestorePermissionError({ path: alertsCol.path, operation: 'create', requestResourceData: {...alertData, createdAt: 'Server-side timestamp'} });
+                const permissionError = new FirestorePermissionError({ path: alertsCol.path, operation: 'create', requestResourceData: {...dataToSave, createdAt: 'Server-side timestamp'} });
                 errorEmitter.emit('permission-error', permissionError);
             }).finally(() => setIsSubmitting(false));
         }
@@ -312,8 +314,8 @@ export function QuickAlertConfigurator({ entity, alert, onSubmitted }: QuickAler
                 </Select>
             </div>
             {renderContent()}
-            <div className="flex justify-end gap-2 pt-4">
-                <Button variant="outline" onClick={onSubmitted}>Cancel</Button>
+            <div className="flex justify-end gap-2 pt-4 border-t mt-4">
+                <Button variant="ghost" onClick={onSubmitted}>Cancel</Button>
                 <Button onClick={handleSave} disabled={isSubmitting}>
                     {isSubmitting ? <Loader2 className="animate-spin" /> : alert ? "Save Changes" : "Create Alert"}
                 </Button>

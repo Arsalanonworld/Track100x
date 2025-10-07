@@ -37,12 +37,23 @@
         "alertType": { "type": "string", "enum": ["wallet", "token"] },
         "walletId": { "type": "string" },
         "token": { "type": "string" },
-        "rule": { "type": "string" },
+        "rule": {
+          "type": "string",
+          "enum": [
+            "transactionValue",
+            "tokenBalanceChange",
+            "dormancy",
+            "exchangeInteraction",
+            "newWhaleTransaction",
+            "liquidityShift",
+            "Advanced Rule"
+          ]
+        },
         "threshold": { "type": "number" },
         "enabled": { "type": "boolean" },
         "createdAt": { "type": "string", "format": "date-time" },
         "userId": { "type": "string" },
-        "direction": { "type": "string", "enum": ["in", "out", "any"]},
+        "direction": { "type": "string", "enum": ["in", "out", "any"] },
         "tokenFilter": { "type": "string" }
       },
       "required": ["type", "alertType", "rule", "enabled", "createdAt", "userId"]

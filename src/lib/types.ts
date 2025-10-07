@@ -26,6 +26,7 @@ export type Alert = {
     enabled: boolean;
     createdAt: any; // Firebase Timestamp
     userId: string;
+    // Quick Alert specific fields
     direction?: 'in' | 'out' | 'any';
     tokenFilter?: string;
 };

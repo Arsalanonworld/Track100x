@@ -4,7 +4,7 @@
 import { useMemo, useState } from 'react';
 import PageHeader from '@/components/page-header';
 import { Button } from '@/components/ui/button';
-import { Trash2, BellPlus, ArrowRight, Pencil, Check, X, Lock, Wallet, LineChart } from 'lucide-react';
+import { Trash2, BellPlus, ArrowRight, Pencil, Check, X, Lock, Wallet, LineChart, Eye } from 'lucide-react';
 import { useUser, useCollection, useFirestore } from '@/firebase';
 import { collection, query, doc, deleteDoc, updateDoc } from 'firebase/firestore';
 import type { Alert, WatchlistItem } from '@/lib/types';
@@ -64,19 +64,19 @@ function WatchlistItemCard({ item, onUpdate, onRemove }: { item: WatchlistItem, 
     };
     
     const tokenData: any = {
-        'ETH': { price: '$3,550.00' },
-        'WIF': { price: '$2.50' },
-        'PEPE': { price: '$0.000012' },
-        'SOL': { price: '$150.25' },
-        'BTC': { price: '$68,500.00'},
-        'USDT': { price: '$1.00'},
-        'USDC': { price: '$1.00'},
+        'ETH': { price: '$3,550.00', change: '+2.5%' },
+        'WIF': { price: '$2.50', change: '-5.2%' },
+        'PEPE': { price: '$0.000012', change: '+12.1%' },
+        'SOL': { price: '$150.25', change: '+1.8%' },
+        'BTC': { price: '$68,500.00', change: '+0.5%'},
+        'USDT': { price: '$1.00', change: '+0.0%' },
+        'USDC': { price: '$1.00', change: '+0.0%' },
     }
     
     if (!item.identifier) return null;
 
     const currentToken = tokenLibrary[item.identifier.toUpperCase()];
-    const currentTokenMockPrice = tokenData[item.identifier.toUpperCase()];
+    const currentTokenMockData = tokenData[item.identifier.toUpperCase()];
 
     return (
         <Dialog open={isAlertEditorOpen} onOpenChange={setIsAlertEditorOpen}>
@@ -133,12 +133,12 @@ function WatchlistItemCard({ item, onUpdate, onRemove }: { item: WatchlistItem, 
                                         </h3>
                                         <p className="text-sm text-muted-foreground font-mono">{item.identifier}</p>
                                         
-                                        {currentTokenMockPrice && (
-                                            <p className='text-sm mt-2'>Price: <span className='text-foreground font-medium'>{currentTokenMockPrice.price}</span></p>
+                                        {currentTokenMockData && (
+                                            <div className='flex items-center gap-3 text-sm mt-2'>
+                                                <span className='text-foreground font-medium'>{currentTokenMockData.price}</span>
+                                                <span className={currentTokenMockData.change.startsWith('+') ? 'text-green-500' : 'text-red-500'}>{currentTokenMockData.change}</span>
+                                            </div>
                                         )}
-                                    </div>
-                                    <div className='flex justify-end items-center h-full'>
-                                       
                                     </div>
                                 </div>
                            )}
@@ -146,6 +146,12 @@ function WatchlistItemCard({ item, onUpdate, onRemove }: { item: WatchlistItem, 
 
                         {/* Actions */}
                         <div className='flex items-center gap-1'>
+                            <Button variant="outline" size="sm" asChild>
+                                <Link href="/feed">
+                                    <Eye className="h-4 w-4 sm:mr-2" />
+                                    <span className="hidden sm:inline">View on Feed</span>
+                                </Link>
+                            </Button>
                             <DialogTrigger asChild>
                                 <Button variant="outline" size="sm" onClick={() => setIsAlertEditorOpen(true)}>
                                     <BellPlus className="h-4 w-4 sm:mr-2" />
@@ -154,16 +160,15 @@ function WatchlistItemCard({ item, onUpdate, onRemove }: { item: WatchlistItem, 
                             </DialogTrigger>
                              <AlertDialog>
                                 <AlertDialogTrigger asChild>
-                                    <Button variant="outline" size="sm" className="text-destructive hover:text-destructive hover:bg-destructive/5">
-                                        <Trash2 className="h-4 w-4 sm:mr-2" />
-                                        <span className="hidden sm:inline">Remove</span>
+                                    <Button variant="outline" size="icon" className="text-destructive hover:text-destructive hover:bg-destructive/5 h-9 w-9">
+                                        <Trash2 className="h-4 w-4" />
                                     </Button>
                                 </AlertDialogTrigger>
                                 <AlertDialogContent>
                                     <AlertDialogHeader>
                                     <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                                     <AlertDialogDescription>
-                                        This will permanently remove <span className='font-mono bg-muted p-1 rounded-sm'>{item.name || item.identifier}</span> from your watchlist.
+                                        This will permanently remove <span className='font-mono bg-muted p-1 rounded-sm'>{item.name || item.identifier}</span> from your watchlist and delete any associated alerts.
                                     </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
@@ -200,8 +205,9 @@ function WatchlistSkeleton() {
                                 <Skeleton className="h-4 w-1/3 rounded-md" />
                             </div>
                             <div className="flex items-center gap-2">
-                                <Skeleton className="h-9 w-20 rounded-md" />
-                                <Skeleton className="h-9 w-20 rounded-md" />
+                                <Skeleton className="h-9 w-24 rounded-md" />
+                                <Skeleton className="h-9 w-24 rounded-md" />
+                                <Skeleton className="h-9 w-9 rounded-md" />
                             </div>
                         </div>
                     </CardContent>
@@ -249,6 +255,7 @@ export default function WatchlistPage() {
             title: `${item.type === 'wallet' ? 'Wallet' : 'Token'} Removed`,
             description: `${item.name || item.identifier} removed from your watchlist.`
         });
+        // TODO: Also delete associated alerts
       })
       .catch(async (serverError) => {
         const permissionError = new FirestorePermissionError({
@@ -316,6 +323,7 @@ export default function WatchlistPage() {
                     ) : (
                        !isLoading && (
                         <div className="flex flex-col items-center justify-center text-center text-muted-foreground p-8 rounded-lg border-2 border-dashed">
+                            <Eye className="h-10 w-10 mb-4" />
                             <p className="font-semibold text-lg">Your watchlist is empty.</p>
                             <p className="text-sm max-w-xs mx-auto">
                                Use the form above or add wallets and tokens directly from the Whale Feed.
@@ -339,7 +347,6 @@ export default function WatchlistPage() {
 
                 <div className="space-y-8 pt-8">
                      <div className='space-y-4'>
-                        <h2 className='text-2xl font-bold tracking-tight'>Alerts</h2>
                         <ActiveAlerts />
                      </div>
                      <AlertHistory />
