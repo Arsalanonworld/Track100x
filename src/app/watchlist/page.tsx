@@ -146,12 +146,6 @@ function WatchlistItemCard({ item, onUpdate, onRemove }: { item: WatchlistItem, 
 
                         {/* Actions */}
                         <div className='flex items-center gap-1'>
-                            <Button variant="outline" size="sm" asChild>
-                                <Link href="/feed">
-                                    <Eye className="h-4 w-4 sm:mr-2" />
-                                    <span className="hidden sm:inline">View on Feed</span>
-                                </Link>
-                            </Button>
                             <DialogTrigger asChild>
                                 <Button variant="outline" size="sm" onClick={() => setIsAlertEditorOpen(true)}>
                                     <BellPlus className="h-4 w-4 sm:mr-2" />
@@ -205,7 +199,6 @@ function WatchlistSkeleton() {
                                 <Skeleton className="h-4 w-1/3 rounded-md" />
                             </div>
                             <div className="flex items-center gap-2">
-                                <Skeleton className="h-9 w-24 rounded-md" />
                                 <Skeleton className="h-9 w-24 rounded-md" />
                                 <Skeleton className="h-9 w-9 rounded-md" />
                             </div>
