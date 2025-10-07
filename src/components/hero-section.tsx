@@ -1,7 +1,7 @@
 
 'use client';
 import { useState, useEffect, useRef } from 'react';
-import { Bell, Eye, CheckCircle } from "lucide-react";
+import { Bell, Eye, Search, Wallet } from "lucide-react";
 import { WhaleIcon } from "./icons/whale-icon";
 
 const phrases = [
@@ -29,21 +29,21 @@ const phrases = [
 
 const features = [
     {
-        icon: <WhaleIcon className="h-5 w-5 text-muted-foreground" />,
-        label: "Real-Time Feed"
+        icon: <Wallet className="h-5 w-5 text-muted-foreground" />,
+        label: "Wallet Intelligence"
     },
     {
-        icon: <Eye className="h-5 w-5 text-muted-foreground" />,
-        label: "Simple Watchlist"
+        icon: <Search className="h-5 w-5 text-muted-foreground" />,
+        label: "On-Chain Analytics"
     },
     {
         icon: <Bell className="h-5 w-5 text-muted-foreground" />,
-        label: "Telegram Alerts"
+        label: "Custom Smart Alerts"
     },
     {
-        icon: <CheckCircle className="h-5 w-5 text-muted-foreground" />,
-        label: "Free to Use"
-    }
+        icon: <WhaleIcon className="h-5 w-5 text-muted-foreground" />,
+        label: "Real-Time Whale Feed"
+    },
 ];
 
 export default function HeroSection() {
