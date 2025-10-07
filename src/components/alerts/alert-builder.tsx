@@ -1,14 +1,14 @@
 
 
 'use client';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from '../ui/label';
-import { Plus, Bot, X } from 'lucide-react';
+import { Plus, Bot, X, ArrowRightLeft } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import type { Alert, WatchlistItem } from '@/lib/types';
+import type { Alert, AlertCondition, WatchlistItem } from '@/lib/types';
 import { useUser, useFirestore, useCollection } from '@/firebase';
 import { doc, updateDoc, addDoc, collection, serverTimestamp, query } from 'firebase/firestore';
 import { errorEmitter } from '@/firebase/error-emitter';
@@ -17,21 +17,23 @@ import { Combobox } from '../ui/combobox';
 import { Card } from '../ui/card';
 import { Badge } from '../ui/badge';
 import Link from 'next/link';
+import { Switch } from '../ui/switch';
+import { cn } from '@/lib/utils';
 
 const triggerTypes = [
   // Wallet-centric
-  { value: "transactionValue", label: "Transaction Value (Single TX)", group: "Wallet", pro: false },
+  { value: "transactionValue", label: "Transaction Value", group: "Wallet", pro: false },
   { value: "repeatedLargeTransfers", label: "Repeated Large Transfers", group: "Wallet", pro: true },
-  { value: "balanceChange", label: "Balance Change Percentage", group: "Wallet", pro: false },
-  { value: "netWorthChange", label: "Net Worth Change (USD)", group: "Wallet", pro: true },
+  { value: "balanceChange", label: "Balance Change", group: "Wallet", pro: false },
+  { value: "netWorthChange", label: "Net Worth Change", group: "Wallet", pro: true },
   { value: "dormancy", label: "Dormancy / Activation", group: "Wallet", pro: false },
   { value: "firstTimeTokenInteraction", label: "First-time Token Interaction", group: "Wallet", pro: true },
   { value: "exchangeInteraction", label: "Exchange Interaction (CEX)", group: "Wallet", pro: false },
   { value: "bridgeActivity", label: "Bridge/Cross-Chain Activity", group: "Wallet", pro: true },
-  { value: "contractInteraction", label: "Contract Interaction (Deploy/Call)", group: "Wallet", pro: true },
+  { value: "contractInteraction", label: "Contract Interaction", group: "Wallet", pro: true },
   { value: "counterpartyPair", label: "Counterparty Pair Alert", group: "Wallet", pro: true },
   // Token-centric
-  { value: "priceChange", label: "Price Change (Market)", group: "Token", pro: false },
+  { value: "priceChange", label: "Price Change", group: "Token", pro: false },
   { value: "newWhaleTransaction", label: "New Whale Transaction", group: "Token", pro: false },
   { value: "multipleWhaleEntries", label: "Multiple Whale Entries", group: "Token", pro: true },
   { value: "liquidityPoolChange", label: "Liquidity Pool Change", group: "Token", pro: false },
@@ -42,7 +44,10 @@ const triggerTypes = [
 ];
 
 
-const Condition = ({ index, onRemove }: { index: number, onRemove: (index: number) => void}) => {
+const Condition = ({ index, onRemove, condition, updateCondition, entityType }: { index: number, onRemove: (index: number) => void, condition: any, updateCondition: (index: number, newCondition: any) => void, entityType: 'wallet' | 'token' }) => {
+    
+    const relevantTriggers = triggerTypes.filter(t => t.group.toLowerCase() === entityType);
+
     return (
         <div className="p-4 border rounded-lg space-y-4 relative bg-background">
              <Button variant="ghost" size="icon" className="absolute top-1 right-1 h-6 w-6" onClick={() => onRemove(index)}>
@@ -51,13 +56,13 @@ const Condition = ({ index, onRemove }: { index: number, onRemove: (index: numbe
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                  <div className="space-y-2">
                     <Label>Trigger Type</Label>
-                    <Select>
+                    <Select value={condition.type} onValueChange={(val) => updateCondition(index, {...condition, type: val})}>
                         <SelectTrigger>
                             <SelectValue placeholder="Select a trigger..." />
                         </SelectTrigger>
                         <SelectContent>
-                            {triggerTypes.map(type => 
-                            <SelectItem key={type.value} value={type.value}>
+                            {relevantTriggers.map(type => 
+                            <SelectItem key={type.value} value={type.value} disabled={type.pro}>
                                 {type.label} {type.pro && '(Pro)'}
                             </SelectItem>)}
                         </SelectContent>
@@ -73,14 +78,13 @@ const Condition = ({ index, onRemove }: { index: number, onRemove: (index: numbe
                             <SelectItem value="greater_than">Is greater than</SelectItem>
                             <SelectItem value="less_than">Is less than</SelectItem>
                             <SelectItem value="equals">Equals</SelectItem>
-                            <SelectItem value="contains">Contains</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>
             </div>
             <div className="space-y-2">
                 <Label>Value</Label>
-                <Input placeholder="e.g., 10 for %, 1000 for $, or a wallet address" />
+                <Input placeholder="e.g., 1000000 for USD, 10 for %" value={condition.threshold} onChange={(e) => updateCondition(index, {...condition, threshold: e.target.value})}/>
             </div>
         </div>
     );
@@ -88,12 +92,23 @@ const Condition = ({ index, onRemove }: { index: number, onRemove: (index: numbe
 
 
 export default function AlertBuilder({ onSave, onCancel, alert, entity }: { onSave: () => void, onCancel?: () => void, alert?: Alert, entity?: { type: 'wallet' | 'token', identifier: string } }) {
-    const [conditions, setConditions] = useState([{}]);
+    const [conditions, setConditions] = useState<AlertCondition[]>(alert?.conditions || [{ type: '', threshold: 1000000 }]);
+    const [logicalOperator, setLogicalOperator] = useState<'AND' | 'OR'>(alert?.logicalOperator || 'AND');
     const { user } = useUser();
     const firestore = useFirestore();
     const { toast } = useToast();
     const [identifier, setIdentifier] = useState(alert?.walletId || alert?.token || entity?.identifier || '');
     const [alertType, setAlertType] = useState<'wallet' | 'token'>(alert?.alertType || entity?.type || 'wallet');
+    const [name, setName] = useState(alert?.name || '');
+
+    useEffect(() => {
+        const initialType = alert?.alertType || entity?.type || 'wallet';
+        setAlertType(initialType);
+        const firstRule = triggerTypes.find(t => t.group.toLowerCase() === initialType)?.value || '';
+        setConditions(alert?.conditions || [{ type: firstRule, threshold: 1000000 }]);
+        setIdentifier(alert?.walletId || alert?.token || entity?.identifier || '');
+    }, [alert, entity]);
+
 
     const watchlistQuery = useMemo(() => {
         if (user && firestore) {
@@ -104,20 +119,26 @@ export default function AlertBuilder({ onSave, onCancel, alert, entity }: { onSa
     
     const { data: watchlistItems } = useCollection<WatchlistItem>(watchlistQuery);
 
-    const walletOptions = useMemo(() => {
-        return watchlistItems?.filter(item => item.type === 'wallet').map(item => ({
+    const comboboxOptions = useMemo(() => {
+        return watchlistItems?.map(item => ({
             value: item.identifier,
-            label: item.name ? `${item.name} (${item.identifier.slice(0, 6)}...${item.identifier.slice(-4)})` : item.identifier,
+            label: item.name ? `${item.name} (${item.identifier.slice(0, 6)}...${item.identifier.slice(-4)}) [${item.type}]` : `${item.identifier} [${item.type}]`,
         })) || [];
     }, [watchlistItems]);
-
-
+    
     const addCondition = () => {
-        setConditions([...conditions, {}]);
+        const firstRuleForType = triggerTypes.find(t => t.group.toLowerCase() === alertType)?.value || '';
+        setConditions([...conditions, { type: firstRuleForType, threshold: 1000000 }]);
     };
 
     const removeCondition = (index: number) => {
         setConditions(conditions.filter((_, i) => i !== index));
+    }
+
+    const updateCondition = (index: number, newCondition: AlertCondition) => {
+        const newConditions = [...conditions];
+        newConditions[index] = newCondition;
+        setConditions(newConditions);
     }
     
     const handleSave = () => {
@@ -135,9 +156,11 @@ export default function AlertBuilder({ onSave, onCancel, alert, entity }: { onSa
             type: 'advanced',
             alertType: alertType,
             rule: 'Advanced Rule',
-            threshold: 1000000,
             enabled: true,
             userId: user.uid,
+            conditions,
+            logicalOperator,
+            name,
         };
 
         if (alertType === 'wallet') {
@@ -187,47 +210,81 @@ export default function AlertBuilder({ onSave, onCancel, alert, entity }: { onSa
         }
     }
 
-    const linkedIdentifier = alert?.walletId || alert?.token || entity?.identifier;
+    const linkedIdentifier = entity?.identifier;
+
+    const rulePreview = conditions.map(c => `(${triggerTypes.find(t => t.value === c.type)?.label || '...'} > ${c.threshold})`).join(` ${logicalOperator} `);
 
     return (
         <div className="space-y-6">
-            {!linkedIdentifier && (
-                <div className="space-y-2">
-                    <Label>Target Wallet or Token</Label>
-                    <Combobox
-                        options={walletOptions}
-                        value={identifier}
-                        onChange={setIdentifier}
-                        placeholder="Select from watchlist or paste address..."
-                        emptyMessage="No wallets in watchlist."
-                    />
-                </div>
-            )}
+            <div className='space-y-2'>
+                <Label>Alert Name (Optional)</Label>
+                <Input value={name} onChange={e => setName(e.target.value)} placeholder="e.g., Monitor Vitalik's ETH sales" />
+            </div>
 
-            {linkedIdentifier && (
-                <div>
-                    <h3 className="font-semibold text-sm text-muted-foreground">Linked Entity</h3>
-                    <p className="text-foreground text-sm font-mono bg-muted px-2 py-1 rounded-md mt-1 inline-block">{linkedIdentifier}</p>
+            <div className="grid grid-cols-2 gap-4">
+                 <div className="space-y-2">
+                    <Label>Target Type</Label>
+                    <Select value={alertType} onValueChange={(v) => setAlertType(v as 'wallet' | 'token')} disabled={!!linkedIdentifier}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="wallet">Wallet</SelectItem>
+                            <SelectItem value="token">Token</SelectItem>
+                        </SelectContent>
+                    </Select>
                 </div>
-            )}
+                <div className="space-y-2">
+                    <Label>Target Identifier</Label>
+                    {linkedIdentifier ? (
+                         <p className="text-foreground text-sm font-mono bg-muted px-3 py-2 rounded-md mt-1 block h-10 truncate">{linkedIdentifier}</p>
+                    ) : (
+                        <Combobox
+                            options={comboboxOptions}
+                            value={identifier}
+                            onChange={setIdentifier}
+                            placeholder="Select from watchlist or paste address..."
+                            emptyMessage="No matching items in watchlist."
+                        />
+                    )}
+                </div>
+            </div>
             
             <div className="space-y-4">
-                {conditions.map((_, index) => (
-                    <div key={index}>
-                         <Condition index={index} onRemove={removeCondition}/>
+                <Label>Conditions</Label>
+                {conditions.map((c, index) => (
+                    <div key={index} className='space-y-4'>
+                        <Condition index={index} onRemove={removeCondition} condition={c} updateCondition={updateCondition} entityType={alertType}/>
+                        {index < conditions.length - 1 && (
+                            <div className="flex items-center justify-center">
+                               <div className="relative">
+                                  <div className='absolute inset-0 flex items-center'>
+                                        <span className='w-full border-t'></span>
+                                  </div>
+                                   <div className='relative flex justify-center'>
+                                        <Button 
+                                            variant="secondary" 
+                                            size="sm"
+                                            onClick={() => setLogicalOperator(logicalOperator === 'AND' ? 'OR' : 'AND')}
+                                            className="font-mono text-xs h-6 px-2"
+                                        >
+                                            {logicalOperator}
+                                        </Button>
+                                   </div>
+                               </div>
+                            </div>
+                        )}
                     </div>
                 ))}
             </div>
 
             <Button variant="outline" onClick={addCondition}>
                 <Plus className="h-4 w-4 mr-2" />
-                Add Condition (AND/OR)
+                Add Condition
             </Button>
 
             <div className="p-4 border rounded-lg space-y-2 bg-muted/50">
                  <h3 className="font-semibold text-sm text-muted-foreground">Rule Preview</h3>
                  <p className="text-sm text-foreground bg-background p-3 rounded-md font-mono">
-                    ALERT IF (Large Transaction is greater than $1,000,000)
+                    ALERT IF {rulePreview}
                  </p>
             </div>
 

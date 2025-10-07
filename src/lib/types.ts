@@ -14,6 +14,12 @@ export type UserProfile = {
   alertsCount?: number;
 };
 
+export type AlertCondition = {
+  type: string; // e.g., 'transactionValue', 'priceChange'
+  threshold: number;
+  direction?: 'in' | 'out' | 'any';
+  tokenFilter?: string;
+};
 
 export type Alert = {
     id: string;
@@ -29,6 +35,10 @@ export type Alert = {
     // Quick Alert specific fields
     direction?: 'in' | 'out' | 'any';
     tokenFilter?: string;
+    // Advanced Alert specific fields
+    conditions?: AlertCondition[];
+    logicalOperator?: 'AND' | 'OR';
+    name?: string;
 };
 
 export type WatchlistItem = {
