@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useMemo, useState } from 'react';
@@ -272,7 +271,11 @@ export default function WatchlistPage() {
 
                 <div className='grid grid-cols-1 lg:grid-cols-3 gap-8 items-start'>
                     <div className='lg:col-span-2 space-y-6'>
-                         <WatchlistActionForm onItemAdded={handleItemAdded} onAlertCreate={handleOpenEditor} />
+                         <WatchlistActionForm 
+                            onItemAdded={handleItemAdded} 
+                            onAlertCreate={handleOpenEditor} 
+                            atLimit={watchlistAtLimit} 
+                        />
                         
                         {watchlistAtLimit && (
                             <Card className="text-center p-8 space-y-4 rounded-lg bg-card border shadow-lg border-primary">
