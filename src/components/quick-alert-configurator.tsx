@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState } from "react";
@@ -14,10 +13,12 @@ import { useUser, useFirestore } from "@/firebase";
 import { addDoc, collection, doc, serverTimestamp, updateDoc } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
-import { Loader2, Lock } from "lucide-react";
+import { Loader2, Lock, Bot } from "lucide-react";
+import Link from "next/link";
+import { Card } from "./ui/card";
 
 type WalletRuleType = 'transactionValue' | 'balanceChange' | 'dormancy' | 'exchangeInteraction';
-type TokenRuleType = 'newWhaleTransaction' | 'liquidityShift' | 'priceChange';
+type TokenRuleType = 'newWhaleTransaction' | 'liquidityPoolChange' | 'priceChange';
 
 interface QuickAlertConfiguratorProps {
     entity?: {
@@ -91,7 +92,7 @@ export function QuickAlertConfigurator({ entity, alert, onSubmitted }: QuickAler
                  ruleDescription = `New whale transaction > $${(value / 1000000).toFixed(1)}M`;
                  threshold = value;
                  break;
-            case 'liquidityShift':
+            case 'liquidityPoolChange':
                  ruleDescription = `Liquidity changes by > ${percentage}%`;
                  threshold = percentage;
                  break;
@@ -291,7 +292,7 @@ export function QuickAlertConfigurator({ entity, alert, onSubmitted }: QuickAler
                             </div>
                         </div>
                     );
-                case 'liquidityShift':
+                case 'liquidityPoolChange':
                      return (
                         <div className="space-y-4">
                             <div>
@@ -333,13 +334,42 @@ export function QuickAlertConfigurator({ entity, alert, onSubmitted }: QuickAler
                             <>
                                 <SelectItem value="priceChange">Price Change</SelectItem>
                                 <SelectItem value="newWhaleTransaction">Whale Buy/Sell</SelectItem>
-                                <SelectItem value="liquidityShift">DEX Liquidity Change</SelectItem>
+                                <SelectItem value="liquidityPoolChange">DEX Liquidity Change</SelectItem>
                             </>
                         )}
                     </SelectContent>
                 </Select>
             </div>
             {renderContent()}
+
+             <div className="space-y-2">
+                <Label>Delivery Channel</Label>
+                <Card>
+                    <div className='flex items-center justify-between p-3'>
+                        <div className='flex items-center gap-3'>
+                            <Bot className="h-5 w-5 text-muted-foreground" />
+                            <div>
+                                <p className='font-medium'>Telegram Alerts</p>
+                                <p className='text-xs text-muted-foreground'>Instant notifications</p>
+                            </div>
+                        </div>
+                        {isPro ? (
+                             <Button variant="outline" size="sm" asChild>
+                               <Link href="/account">Manage</Link>
+                            </Button>
+                        ) : (
+                            <Button variant="outline" size="sm" asChild>
+                               <Link href="/upgrade">
+                                   <Lock className="h-3 w-3 mr-2"/>
+                                   Upgrade to Pro
+                               </Link>
+                            </Button>
+                        )}
+                    </div>
+                </Card>
+            </div>
+
+
             <div className="flex justify-end gap-2 pt-4 border-t mt-4">
                 <Button variant="ghost" onClick={onSubmitted}>Cancel</Button>
                 <Button onClick={handleSave} disabled={isSubmitting}>

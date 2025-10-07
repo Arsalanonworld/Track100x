@@ -46,7 +46,7 @@
             "dormancy",
             "exchangeInteraction",
             "newWhaleTransaction",
-            "liquidityShift",
+            "liquidityPoolChange",
             "repeatedLargeTransfers",
             "netWorthChange",
             "firstTimeTokenInteraction",
@@ -122,3 +122,5 @@
     }
   }
 }
+
+    

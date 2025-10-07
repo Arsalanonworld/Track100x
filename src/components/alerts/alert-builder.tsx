@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from '../ui/label';
-import { Plus, Bot, X, ArrowRightLeft } from 'lucide-react';
+import { Plus, Bot, X, Lock } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import type { Alert, AlertCondition, WatchlistItem } from '@/lib/types';
 import { useUser, useFirestore, useCollection } from '@/firebase';
@@ -15,10 +15,7 @@ import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { Combobox } from '../ui/combobox';
 import { Card } from '../ui/card';
-import { Badge } from '../ui/badge';
 import Link from 'next/link';
-import { Switch } from '../ui/switch';
-import { cn } from '@/lib/utils';
 
 const triggerTypes = [
   // Wallet-centric
@@ -94,7 +91,8 @@ const Condition = ({ index, onRemove, condition, updateCondition, entityType }: 
 export default function AlertBuilder({ onSave, onCancel, alert, entity }: { onSave: () => void, onCancel?: () => void, alert?: Alert, entity?: { type: 'wallet' | 'token', identifier: string } }) {
     const [conditions, setConditions] = useState<AlertCondition[]>(alert?.conditions || [{ type: '', threshold: 1000000 }]);
     const [logicalOperator, setLogicalOperator] = useState<'AND' | 'OR'>(alert?.logicalOperator || 'AND');
-    const { user } = useUser();
+    const { user, claims } = useUser();
+    const isPro = claims?.plan === 'pro';
     const firestore = useFirestore();
     const { toast } = useToast();
     const [identifier, setIdentifier] = useState(alert?.walletId || alert?.token || entity?.identifier || '');
@@ -212,7 +210,7 @@ export default function AlertBuilder({ onSave, onCancel, alert, entity }: { onSa
 
     const linkedIdentifier = entity?.identifier;
 
-    const rulePreview = conditions.map(c => `(${triggerTypes.find(t => t.value === c.type)?.label || '...'} > ${c.threshold})`).join(` ${logicalOperator} `);
+    const rulePreview = conditions.map(c => `(${(triggerTypes.find(t => t.value === c.type)?.label || '...')})`).join(` ${logicalOperator} `);
 
     return (
         <div className="space-y-6">
@@ -288,18 +286,32 @@ export default function AlertBuilder({ onSave, onCancel, alert, entity }: { onSa
                  </p>
             </div>
 
-            <Card className="p-4">
-                 <h3 className="font-semibold mb-2">Delivery Channel</h3>
-                 <div className='flex items-center justify-between p-3 border rounded-lg bg-background'>
-                    <div className='flex items-center gap-3'>
-                        <Bot className="h-5 w-5 text-muted-foreground" />
-                        <p className='font-medium'>Telegram</p>
+            <div className="space-y-2">
+                <Label>Delivery Channel</Label>
+                <Card>
+                    <div className='flex items-center justify-between p-3'>
+                        <div className='flex items-center gap-3'>
+                            <Bot className="h-5 w-5 text-muted-foreground" />
+                            <div>
+                                <p className='font-medium'>Telegram Alerts</p>
+                                <p className='text-xs text-muted-foreground'>Instant notifications</p>
+                            </div>
+                        </div>
+                        {isPro ? (
+                            <Button variant="outline" size="sm" asChild>
+                                <Link href="/account">Manage</Link>
+                            </Button>
+                        ) : (
+                            <Button variant="outline" size="sm" asChild>
+                                <Link href="/upgrade">
+                                    <Lock className="h-3 w-3 mr-2"/>
+                                    Upgrade to Pro
+                                </Link>
+                            </Button>
+                        )}
                     </div>
-                     <Button variant="outline" size="sm" asChild>
-                       <Link href="/account">Connect</Link>
-                    </Button>
-                </div>
-            </Card>
+                </Card>
+            </div>
 
 
             <div className="flex justify-end gap-2 pt-4 border-t">
@@ -309,5 +321,3 @@ export default function AlertBuilder({ onSave, onCancel, alert, entity }: { onSa
         </div>
     );
 }
-
-    
