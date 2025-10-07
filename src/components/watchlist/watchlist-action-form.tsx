@@ -1,36 +1,38 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Plus, Search, BellPlus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { useUser, useFirestore, useCollection } from '@/firebase';
+import { useFirestore } from '@/firebase';
 import { collection, addDoc, serverTimestamp, query, where, getDocs } from 'firebase/firestore';
 import type { WatchlistItem } from '@/lib/types';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { tokenLibrary } from '@/lib/tokens';
+import type { User } from 'firebase/auth';
 
 
 type WatchlistActionFormProps = {
+    user: User | null;
     onItemAdded: () => void;
     onAlertCreate: (entity: { type: 'wallet' | 'token'; identifier: string }) => void;
     atLimit: boolean;
     isLoading: boolean;
 };
 
-export function WatchlistActionForm({ onItemAdded, onAlertCreate, atLimit, isLoading }: WatchlistActionFormProps) {
+export function WatchlistActionForm({ user, onItemAdded, onAlertCreate, atLimit, isLoading }: WatchlistActionFormProps) {
   const [identifier, setIdentifier] = useState('');
   const [alias, setAlias] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isAliasModalOpen, setIsAliasModalOpen] = useState(false);
   const [itemToAdd, setItemToAdd] = useState<{ identifier: string; type: 'wallet' | 'token'; action: 'add' | 'alert' } | null>(null);
 
-  const { user, firestore } = useUser();
+  const firestore = useFirestore();
   const { toast } = useToast();
 
   const isWalletAddress = (str: string) => /^0x[a-fA-F0-9]{40}$/.test(str);

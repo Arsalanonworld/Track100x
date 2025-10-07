@@ -273,9 +273,10 @@ export default function WatchlistPage() {
                     <div className='lg:col-span-2 space-y-6'>
                         <div className="flex flex-col sm:flex-row gap-2">
                              <WatchlistActionForm 
+                                user={user}
                                 onItemAdded={handleItemAdded}
                                 onAlertCreate={handleOpenEditor}
-                                atLimit={watchlistAtLimit || false}
+                                atLimit={watchlistAtLimit}
                                 isLoading={isLoading}
                              />
                         </div>
@@ -322,3 +323,4 @@ export default function WatchlistPage() {
     </Dialog>
   );
 }
+
