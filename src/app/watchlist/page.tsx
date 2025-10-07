@@ -5,7 +5,7 @@
 import { useMemo, useState } from 'react';
 import PageHeader from '@/components/page-header';
 import { Button } from '@/components/ui/button';
-import { Trash2, BellPlus, Pencil, Check, X, Lock, Wallet, Eye } from 'lucide-react';
+import { Trash2, BellPlus, Pencil, Check, X, Lock, Wallet, Eye, Plus } from 'lucide-react';
 import { useUser, useCollection, useFirestore } from '@/firebase';
 import { collection, query, doc, deleteDoc, updateDoc } from 'firebase/firestore';
 import type { Alert, WatchlistItem } from '@/lib/types';
@@ -258,6 +258,10 @@ export default function WatchlistPage() {
     setEditorEntity(entity);
     setIsEditorOpen(true);
   }
+  
+  const handleItemAdded = () => {
+    setRefreshKey(prev => prev + 1);
+  }
 
   const isLoading = userLoading || (user && watchlistLoading);
 
@@ -277,11 +281,14 @@ export default function WatchlistPage() {
 
                 <div className='grid grid-cols-1 lg:grid-cols-3 gap-8 items-start'>
                     <div className='lg:col-span-2 space-y-6'>
-                        <div className="flex items-center flex-wrap p-1.5 rounded-full border bg-card shadow-sm max-w-xl">
-                           <AddItemForm 
-                             atLimit={!!watchlistAtLimit} 
-                             onItemConfirm={(entity) => handleOpenEditor(entity)}
-                           />
+                         <div className="flex flex-col sm:flex-row gap-2">
+                             <div className="flex-1">
+                                <AddItemForm atLimit={!!watchlistAtLimit} onItemAdded={handleItemAdded} />
+                            </div>
+                            <Button onClick={() => handleOpenEditor()} className="w-full sm:w-auto">
+                                <BellPlus className="h-4 w-4 mr-2" />
+                                Create New Alert
+                            </Button>
                         </div>
                         
                         {watchlistAtLimit && (
@@ -326,5 +333,3 @@ export default function WatchlistPage() {
     </Dialog>
   );
 }
-
-    
