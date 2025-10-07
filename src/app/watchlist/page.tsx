@@ -124,13 +124,6 @@ function WatchlistItemCard({ item, onUpdate, onRemove }: { item: WatchlistItem, 
 
                         {/* Actions */}
                         <div className='flex items-center gap-1'>
-                             {item.type === 'wallet' && (
-                                <Button variant="outline" size="icon" className="h-9 w-9" asChild>
-                                    <Link href={`/feed?address=${item.identifier}`}>
-                                        <Eye className="h-4 w-4" />
-                                    </Link>
-                                </Button>
-                            )}
                             <DialogTrigger asChild>
                                 <Button variant="outline" size="icon" className="h-9 w-9" onClick={() => setIsAlertEditorOpen(true)}>
                                     <BellPlus className="h-4 w-4" />
