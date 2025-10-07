@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -7,6 +8,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuGroup,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -100,24 +102,20 @@ export function UserNav() {
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
-           <DropdownMenuItem asChild>
-              <Link href="/account">
-                <User className="mr-2 h-4 w-4" />
-                <span>Account</span>
+          <DropdownMenuGroup>
+            <DropdownMenuItem asChild>
+                <Link href="/account">
+                  <User className="mr-2 h-4 w-4" />
+                  <span>Account</span>
+                </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href="/watchlist">
+                  <Eye className="mr-2 h-4 w-4" />
+                  <span>Watchlist</span>
               </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-             <Link href="/watchlist">
-                <Eye className="mr-2 h-4 w-4" />
-                <span>Watchlist</span>
-            </Link>
-            </DropdownMenuItem>
-          {isPro && (
-            <DropdownMenuItem disabled>
-              <DollarSign className="mr-2 h-4 w-4" />
-              <span>Manage Subscription</span>
-            </DropdownMenuItem>
-          )}
+              </DropdownMenuItem>
+          </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={async () => await logout()}>
             <LogOut className="mr-2 h-4 w-4" />
