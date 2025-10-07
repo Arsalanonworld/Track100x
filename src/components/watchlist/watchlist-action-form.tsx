@@ -15,6 +15,7 @@ import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { tokenLibrary } from '@/lib/tokens';
 import type { User } from 'firebase/auth';
+import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '../ui/tooltip';
 
 
 type WatchlistActionFormProps = {
@@ -137,14 +138,26 @@ export function WatchlistActionForm({ user, onItemAdded, onAlertCreate, atLimit,
                 />
             </div>
             <div className="flex items-center gap-1">
-                <Button onClick={() => handleAction('add')} disabled={atLimit || isFormDisabled || !identifier} className="shrink-0 rounded-full h-10 px-4 sm:px-6" variant="outline">
-                    <Plus className="h-4 w-4 sm:mr-2"/>
-                    <span className="hidden sm:inline">Add to Watchlist</span>
-                </Button>
-                <Button onClick={() => handleAction('alert')} disabled={isFormDisabled || !identifier} className="shrink-0 rounded-full h-10 px-4 sm:px-6">
-                    <BellPlus className="h-4 w-4 sm:mr-2"/>
-                    <span className="hidden sm:inline">Create Alert</span>
-                </Button>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Button onClick={() => handleAction('add')} disabled={atLimit || isFormDisabled || !identifier} className="shrink-0 rounded-full h-10 px-3 sm:px-4" variant="outline">
+                            <Plus className="h-4 w-4 sm:mr-2"/>
+                            <span className="hidden sm:inline">Watch</span>
+                        </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Add to Watchlist</TooltipContent>
+                  </Tooltip>
+                   <Tooltip>
+                    <TooltipTrigger asChild>
+                       <Button onClick={() => handleAction('alert')} disabled={isFormDisabled || !identifier} className="shrink-0 rounded-full h-10 px-3 sm:px-4">
+                            <BellPlus className="h-4 w-4 sm:mr-2"/>
+                            <span className="hidden sm:inline">Alert</span>
+                        </Button>
+                    </TooltipTrigger>
+                     <TooltipContent>Create Alert</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
             </div>
         </div>
       <Dialog open={isAliasModalOpen} onOpenChange={setIsAliasModalOpen}>

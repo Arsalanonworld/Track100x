@@ -116,7 +116,7 @@ export default function HeroSection() {
                     <span>{text}</span>
                     <span className="animate-blinking-cursor w-1 sm:w-1.5 h-8 sm:h-12 ml-1 bg-primary"></span>
                 </h1>
-                 <p className="max-w-2xl mx-auto mt-4 text-base sm:text-lg text-muted-foreground">
+                 <p className="max-w-3xl mx-auto mt-4 text-base sm:text-lg text-muted-foreground">
                     The ultimate wallet intelligence platform. Track whale transactions and get real-time smart alerts.
                 </p>
                  <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 sm:gap-x-8">

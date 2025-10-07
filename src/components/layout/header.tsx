@@ -19,8 +19,10 @@ export const LogoIcon = () => (
       strokeLinejoin="round"
       className="h-7 w-7 text-primary"
     >
-      <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
-      <path d="M7 12h2l2-3 2 3h2" />
+      <path d="M7 12c0 3.31 2.69 6 6 6s6-2.69 6-6-2.69-6-6-6" />
+      <path d="M12 18c-3.31 0-6-2.69-6-6" />
+      <path d="M12 6a4 4 0 0 1 4 4" />
+      <path d="M16 12a2 2 0 0 1-2 2" />
     </svg>
 );
 
@@ -35,7 +37,7 @@ export default function Header() {
                     <MobileNav />
                      <Link href="/" className="mr-6 flex items-center space-x-2">
                         <LogoIcon />
-                        <span className="hidden font-bold sm:inline-block">Track100x</span>
+                        <span className="font-bold inline-block">Track100x</span>
                     </Link>
                     <MainNav />
                 </div>

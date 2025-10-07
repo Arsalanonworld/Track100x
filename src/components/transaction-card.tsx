@@ -69,9 +69,9 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
                 <Card className="w-full hover:shadow-lg transition-shadow duration-200 group/card overflow-hidden">
                     <CollapsibleTrigger asChild>
                         <div className="cursor-pointer p-3 sm:p-4">
-                            <div className="grid grid-cols-1 md:grid-cols-[auto_1fr_auto] items-center gap-3 md:gap-6">
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                                 {/* Left Side: Amount & Token */}
-                                <div className="flex items-center gap-3 w-full sm:w-auto">
+                                <div className="flex items-center gap-3 shrink-0">
                                     <CryptoIcon token={tx.token.symbol} className="h-10 w-10"/>
                                     <div>
                                         <p className="font-bold text-lg">{tx.tokenAmount}</p>
@@ -83,7 +83,7 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
                                 <div className="flex-1 w-full min-w-0">
                                     <div className="flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-4">
                                         {/* From */}
-                                        <div className="flex items-center gap-2 text-sm w-full md:w-auto md:justify-end">
+                                        <div className="flex items-center gap-2 text-sm w-full md:max-w-xs">
                                             <span className="text-muted-foreground w-10 hidden md:inline">From</span>
                                             <Link href={getExplorerUrl(tx.network, tx.from, 'address')} target="_blank" rel="noopener noreferrer" className="font-mono hover:underline truncate">
                                                 {tx.fromShort}
@@ -99,7 +99,7 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
                                         <ArrowRight className="h-4 w-4 text-muted-foreground hidden md:block shrink-0" />
                                         
                                         {/* To */}
-                                        <div className="flex items-center gap-2 text-sm w-full md:w-auto">
+                                        <div className="flex items-center gap-2 text-sm w-full md:max-w-xs">
                                             <span className="text-muted-foreground w-10 hidden md:inline">To</span>
                                              <Link href={getExplorerUrl(tx.network, tx.to, 'address')} target="_blank" rel="noopener noreferrer" className="font-mono hover:underline truncate">
                                                 {tx.toShort}
@@ -115,9 +115,9 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
                                 </div>
 
                                 {/* Right Side: Actions and Details Toggle */}
-                                <div className="flex items-center self-center justify-end gap-1 sm:gap-2">
+                                <div className="flex items-center self-start sm:self-center justify-end gap-1 sm:gap-2 w-full sm:w-auto">
                                     <Badge variant="outline" className="hidden xs:inline-flex">{tx.network}</Badge>
-                                    <span className="text-xs text-muted-foreground whitespace-nowrap">{tx.time}</span>
+                                    <span className="text-xs text-muted-foreground whitespace-nowrap ml-auto sm:ml-0">{tx.time}</span>
                                     
                                      <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
