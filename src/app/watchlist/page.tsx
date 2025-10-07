@@ -146,6 +146,14 @@ function WatchlistItemCard({ item, onUpdate, onRemove }: { item: WatchlistItem, 
 
                         {/* Actions */}
                         <div className='flex items-center gap-1'>
+                             {item.type === 'wallet' && (
+                                <Button variant="outline" size="sm" asChild>
+                                    <Link href={`/feed?address=${item.identifier}`}>
+                                        <Eye className="h-4 w-4 sm:mr-2" />
+                                        <span className="hidden sm:inline">View on Feed</span>
+                                    </Link>
+                                </Button>
+                            )}
                             <DialogTrigger asChild>
                                 <Button variant="outline" size="sm" onClick={() => setIsAlertEditorOpen(true)}>
                                     <BellPlus className="h-4 w-4 sm:mr-2" />
@@ -294,7 +302,7 @@ export default function WatchlistPage() {
                         description={pageDescription}
                         action={
                              <DialogTrigger asChild>
-                                <Button>Create New Alert</Button>
+                                <Button onClick={() => setIsEditorOpen(true)}>Create New Alert</Button>
                             </DialogTrigger>
                         }
                     />

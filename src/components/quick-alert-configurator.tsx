@@ -16,7 +16,7 @@ import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { Loader2, Lock } from "lucide-react";
 
-type WalletRuleType = 'transactionValue' | 'tokenBalanceChange' | 'dormancy' | 'exchangeInteraction';
+type WalletRuleType = 'transactionValue' | 'balanceChange' | 'dormancy' | 'exchangeInteraction';
 type TokenRuleType = 'newWhaleTransaction' | 'liquidityShift';
 
 interface QuickAlertConfiguratorProps {
@@ -69,7 +69,7 @@ export function QuickAlertConfigurator({ entity, alert, onSubmitted }: QuickAler
                 ruleDescription = `Value of ${directionText} txn > $${(value / 1000000).toFixed(1)}M ${token ? `of ${token}` : ''}`;
                 threshold = value;
                 break;
-            case 'tokenBalanceChange':
+            case 'balanceChange':
                 ruleDescription = `Balance of ${token || 'any token'} changes by > ${percentage}%`;
                 threshold = percentage;
                 break;
@@ -196,7 +196,7 @@ export function QuickAlertConfigurator({ entity, alert, onSubmitted }: QuickAler
                             </div>
                         </div>
                     );
-                case 'tokenBalanceChange':
+                case 'balanceChange':
                     return (
                          <div className="space-y-4">
                             <div>
@@ -300,7 +300,7 @@ export function QuickAlertConfigurator({ entity, alert, onSubmitted }: QuickAler
                         {isWallet ? (
                             <>
                                 <SelectItem value="transactionValue">Large Transaction</SelectItem>
-                                <SelectItem value="tokenBalanceChange">Token Balance Spike</SelectItem>
+                                <SelectItem value="balanceChange">Token Balance Spike</SelectItem>
                                 <SelectItem value="dormancy">Dormant Wallet Activated</SelectItem>
                                 <SelectItem value="exchangeInteraction">Exchange Interaction</SelectItem>
                             </>

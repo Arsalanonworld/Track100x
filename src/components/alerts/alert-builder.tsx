@@ -18,10 +18,16 @@ import { Badge } from '../ui/badge';
 import Link from 'next/link';
 
 const triggerTypes = [
-  { value: "Large Transaction", pro: false },
-  { value: "Balance/Value Change", pro: false },
-  { value: "Counterparty Interaction", pro: false },
-  { value: "Price Change", pro: false },
+  { value: "transactionValue", label: "Transaction Value (Single TX)", pro: false },
+  { value: "repeatedLargeTransfers", label: "Repeated Large Transfers", pro: true },
+  { value: "balanceChange", label: "Balance Change Percentage", pro: false },
+  { value: "netWorthChange", label: "Net Worth Change (USD)", pro: true },
+  { value: "dormancy", label: "Dormancy / Activation", pro: false },
+  { value: "firstTimeTokenInteraction", label: "First-time Token Interaction", pro: true },
+  { value: "exchangeInteraction", label: "Exchange Interaction (CEX)", pro: false },
+  { value: "bridgeActivity", label: "Bridge/Cross-Chain Activity", pro: true },
+  { value: "contractInteraction", label: "Contract Interaction (Deploy/Call)", pro: true },
+  { value: "counterpartyPair", label: "Counterparty Pair Alert", pro: true },
 ];
 
 
@@ -41,7 +47,7 @@ const Condition = ({ index, onRemove }: { index: number, onRemove: (index: numbe
                         <SelectContent>
                             {triggerTypes.map(type => 
                             <SelectItem key={type.value} value={type.value}>
-                                {type.value}
+                                {type.label} {type.pro && '(Pro)'}
                             </SelectItem>)}
                         </SelectContent>
                     </Select>
