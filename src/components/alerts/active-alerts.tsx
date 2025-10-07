@@ -31,7 +31,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { CreateAlertDialog } from '../create-alert-dialog';
+import { AlertEditorDialog } from '../alert-editor-dialog';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 
@@ -105,7 +105,7 @@ export default function ActiveAlerts() {
     const alertCount = alerts?.length || 0;
 
     return (
-        <Dialog open={isEditorOpen} onOpenChange={setIsEditorOpen}>
+        <Dialog open={isEditorOpen} onOpenChange={handleCloseEditor}>
             <Card>
                 <CardHeader>
                   <CardTitle>Your Active Alerts</CardTitle>
@@ -192,7 +192,7 @@ export default function ActiveAlerts() {
                 </CardContent>
             </Card>
             {selectedAlert && (
-                <CreateAlertDialog 
+                <AlertEditorDialog 
                     onOpenChange={handleCloseEditor} 
                     alert={selectedAlert}
                 />

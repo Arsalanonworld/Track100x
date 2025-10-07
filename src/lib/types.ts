@@ -21,7 +21,7 @@ export type Alert = {
     alertType: 'wallet' | 'token';
     walletId?: string;
     token?: string;
-    rule: 'transactionValue' | 'dormancy' | 'tokenBalanceChange' | 'exchangeInteraction' | 'newWhaleTransaction' | 'liquidityShift' | string;
+    rule: string;
     threshold?: number;
     enabled: boolean;
     createdAt: any; // Firebase Timestamp

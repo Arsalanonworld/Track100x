@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useMemo, useState } from 'react';
@@ -27,7 +28,7 @@ import {
 import { FeatureLock } from '@/components/feature-lock';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
-import { CreateAlertDialog } from '@/components/create-alert-dialog';
+import { AlertEditorDialog } from '@/components/alert-editor-dialog';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
@@ -176,7 +177,7 @@ function WatchlistItemCard({ item, onUpdate, onRemove }: { item: WatchlistItem, 
                 </CardContent>
             </Card>
              {isAlertEditorOpen && (
-                <CreateAlertDialog 
+                <AlertEditorDialog 
                     onOpenChange={setIsAlertEditorOpen} 
                     entity={{ type: item.type, identifier: item.identifier }}
                 />
