@@ -2,34 +2,47 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Plus, Search, BellPlus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { useUser, useFirestore } from '@/firebase';
+import { useUser, useFirestore, useCollection } from '@/firebase';
 import { collection, addDoc, serverTimestamp, query, where, getDocs } from 'firebase/firestore';
 import type { WatchlistItem } from '@/lib/types';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { tokenLibrary } from '@/lib/tokens';
 
+const WATCHLIST_LIMIT_FREE = 5;
+
 type WatchlistActionFormProps = {
-    atLimit: boolean;
     onItemAdded: () => void;
     onAlertCreate: (entity: { type: 'wallet' | 'token'; identifier: string }) => void;
 };
 
-export function WatchlistActionForm({ atLimit, onItemAdded, onAlertCreate }: WatchlistActionFormProps) {
+export function WatchlistActionForm({ onItemAdded, onAlertCreate }: WatchlistActionFormProps) {
   const [identifier, setIdentifier] = useState('');
   const [alias, setAlias] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isAliasModalOpen, setIsAliasModalOpen] = useState(false);
   const [itemToAdd, setItemToAdd] = useState<{ identifier: string; type: 'wallet' | 'token'; action: 'add' | 'alert' } | null>(null);
 
-  const { user, firestore } = useUser();
+  const { user, firestore, claims } = useUser();
+  const isPro = claims?.plan === 'pro';
+
+  const watchlistQuery = useMemo(() => {
+    if (user && firestore) {
+      return query(collection(firestore, `users/${user.uid}/watchlist`));
+    }
+    return null;
+  }, [user, firestore]);
+  const { data: watchlist } = useCollection<WatchlistItem>(watchlistQuery);
+
+  const watchlistAtLimit = !isPro && watchlist && watchlist.length >= WATCHLIST_LIMIT_FREE;
+
   const { toast } = useToast();
 
   const isWalletAddress = (str: string) => /^0x[a-fA-F0-9]{40}$/.test(str);
@@ -38,7 +51,7 @@ export function WatchlistActionForm({ atLimit, onItemAdded, onAlertCreate }: Wat
   const handleAction = async (action: 'add' | 'alert') => {
     if (!identifier) return;
 
-    if (atLimit && action === 'add') {
+    if (watchlistAtLimit && action === 'add') {
       toast({ variant: 'destructive', title: 'Watchlist Limit Reached', description: 'Please upgrade to add more items.' });
       return;
     }
@@ -124,7 +137,7 @@ export function WatchlistActionForm({ atLimit, onItemAdded, onAlertCreate }: Wat
                 />
             </div>
             <div className="flex items-center gap-1">
-                <Button onClick={() => handleAction('add')} disabled={atLimit || isSubmitting || !identifier} className="shrink-0 rounded-full h-10 px-4 sm:px-6" variant="outline">
+                <Button onClick={() => handleAction('add')} disabled={watchlistAtLimit || isSubmitting || !identifier} className="shrink-0 rounded-full h-10 px-4 sm:px-6" variant="outline">
                     <Plus className="h-4 w-4 sm:mr-2"/>
                     <span className="hidden sm:inline">Add to Watchlist</span>
                 </Button>

@@ -5,7 +5,7 @@
 import { useMemo, useState } from 'react';
 import PageHeader from '@/components/page-header';
 import { Button } from '@/components/ui/button';
-import { Trash2, BellPlus, Pencil, Check, X, Lock, Wallet, Eye, Plus } from 'lucide-react';
+import { Trash2, BellPlus, Pencil, Check, X, Lock, Wallet, Eye } from 'lucide-react';
 import { useUser, useCollection, useFirestore } from '@/firebase';
 import { collection, query, doc, deleteDoc, updateDoc } from 'firebase/firestore';
 import type { Alert, WatchlistItem } from '@/lib/types';
@@ -117,7 +117,7 @@ function WatchlistItemCard({ item, onUpdate, onRemove }: { item: WatchlistItem, 
                                     <h3 className='text-lg font-semibold truncate'>
                                         {currentToken?.name || item.name || item.identifier}
                                     </h3>
-                                    <p className="text-sm text-muted-foreground font-mono">{item.identifier}</p>
+                                    <p className="font-mono text-sm text-muted-foreground">{item.identifier}</p>
                                 </div>
                            )}
                         </div>
@@ -176,7 +176,6 @@ function WatchlistSkeleton() {
                                 <Skeleton className="h-4 w-1/3 rounded-md" />
                             </div>
                             <div className="flex items-center gap-2">
-                                <Skeleton className="h-9 w-9 rounded-md" />
                                 <Skeleton className="h-9 w-9 rounded-md" />
                                 <Skeleton className="h-9 w-9 rounded-md" />
                             </div>
@@ -273,7 +272,7 @@ export default function WatchlistPage() {
 
                 <div className='grid grid-cols-1 lg:grid-cols-3 gap-8 items-start'>
                     <div className='lg:col-span-2 space-y-6'>
-                         <WatchlistActionForm atLimit={!!watchlistAtLimit} onItemAdded={handleItemAdded} onAlertCreate={handleOpenEditor} />
+                         <WatchlistActionForm onItemAdded={handleItemAdded} onAlertCreate={handleOpenEditor} />
                         
                         {watchlistAtLimit && (
                             <Card className="text-center p-8 space-y-4 rounded-lg bg-card border shadow-lg border-primary">
