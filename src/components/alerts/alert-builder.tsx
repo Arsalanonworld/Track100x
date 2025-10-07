@@ -1,4 +1,5 @@
 
+
 'use client';
 import { useState, useMemo } from 'react';
 import { Button } from "@/components/ui/button";
@@ -18,16 +19,26 @@ import { Badge } from '../ui/badge';
 import Link from 'next/link';
 
 const triggerTypes = [
-  { value: "transactionValue", label: "Transaction Value (Single TX)", pro: false },
-  { value: "repeatedLargeTransfers", label: "Repeated Large Transfers", pro: true },
-  { value: "balanceChange", label: "Balance Change Percentage", pro: false },
-  { value: "netWorthChange", label: "Net Worth Change (USD)", pro: true },
-  { value: "dormancy", label: "Dormancy / Activation", pro: false },
-  { value: "firstTimeTokenInteraction", label: "First-time Token Interaction", pro: true },
-  { value: "exchangeInteraction", label: "Exchange Interaction (CEX)", pro: false },
-  { value: "bridgeActivity", label: "Bridge/Cross-Chain Activity", pro: true },
-  { value: "contractInteraction", label: "Contract Interaction (Deploy/Call)", pro: true },
-  { value: "counterpartyPair", label: "Counterparty Pair Alert", pro: true },
+  // Wallet-centric
+  { value: "transactionValue", label: "Transaction Value (Single TX)", group: "Wallet", pro: false },
+  { value: "repeatedLargeTransfers", label: "Repeated Large Transfers", group: "Wallet", pro: true },
+  { value: "balanceChange", label: "Balance Change Percentage", group: "Wallet", pro: false },
+  { value: "netWorthChange", label: "Net Worth Change (USD)", group: "Wallet", pro: true },
+  { value: "dormancy", label: "Dormancy / Activation", group: "Wallet", pro: false },
+  { value: "firstTimeTokenInteraction", label: "First-time Token Interaction", group: "Wallet", pro: true },
+  { value: "exchangeInteraction", label: "Exchange Interaction (CEX)", group: "Wallet", pro: false },
+  { value: "bridgeActivity", label: "Bridge/Cross-Chain Activity", group: "Wallet", pro: true },
+  { value: "contractInteraction", label: "Contract Interaction (Deploy/Call)", group: "Wallet", pro: true },
+  { value: "counterpartyPair", label: "Counterparty Pair Alert", group: "Wallet", pro: true },
+  // Token-centric
+  { value: "priceChange", label: "Price Change (Market)", group: "Token", pro: false },
+  { value: "newWhaleTransaction", label: "New Whale Transaction", group: "Token", pro: false },
+  { value: "multipleWhaleEntries", label: "Multiple Whale Entries", group: "Token", pro: true },
+  { value: "liquidityPoolChange", label: "Liquidity Pool Change", group: "Token", pro: false },
+  { value: "tokenSupplyEvents", label: "Token Supply Events", group: "Token", pro: true },
+  { value: "exchangeFlowSurge", label: "Exchange Flow Surge", group: "Token", pro: true },
+  { value: "newHolderSpike", label: "New Holder Spike", group: "Token", pro: true },
+  { value: "rugHoneypotDetector", label: "Rug/Honeypot Detector", group: "Token", pro: true },
 ];
 
 
@@ -241,3 +252,5 @@ export default function AlertBuilder({ onSave, onCancel, alert, entity }: { onSa
         </div>
     );
 }
+
+    

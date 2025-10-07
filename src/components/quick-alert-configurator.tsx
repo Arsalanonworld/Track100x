@@ -17,7 +17,7 @@ import { FirestorePermissionError } from "@/firebase/errors";
 import { Loader2, Lock } from "lucide-react";
 
 type WalletRuleType = 'transactionValue' | 'balanceChange' | 'dormancy' | 'exchangeInteraction';
-type TokenRuleType = 'newWhaleTransaction' | 'liquidityShift';
+type TokenRuleType = 'newWhaleTransaction' | 'liquidityShift' | 'priceChange';
 
 interface QuickAlertConfiguratorProps {
     entity?: {
@@ -39,7 +39,7 @@ export function QuickAlertConfigurator({ entity, alert, onSubmitted }: QuickAler
     const [value, setValue] = useState(alert?.threshold || 1000000);
     const [direction, setDirection] = useState<'in' | 'out' | 'any'>(alert?.direction || 'any');
     const [token, setToken] = useState(alert?.tokenFilter || '');
-    const [percentage, setPercentage] = useState(alert?.threshold || 5);
+    const [percentage, setPercentage] = useState(alert?.threshold || 10);
     const [days, setDays] = useState(alert?.threshold || 30);
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -83,6 +83,10 @@ export function QuickAlertConfigurator({ entity, alert, onSubmitted }: QuickAler
                 break;
 
             // Token Rules
+             case 'priceChange':
+                ruleDescription = `Price change > ${percentage}%`;
+                threshold = percentage;
+                break;
             case 'newWhaleTransaction':
                  ruleDescription = `New whale transaction > $${(value / 1000000).toFixed(1)}M`;
                  threshold = value;
@@ -204,9 +208,9 @@ export function QuickAlertConfigurator({ entity, alert, onSubmitted }: QuickAler
                                 <Select value={String(percentage)} onValueChange={(val) => setPercentage(Number(val))}>
                                     <SelectTrigger><SelectValue /></SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="5">&gt; 5%</SelectItem>
                                         <SelectItem value="10">&gt; 10%</SelectItem>
                                         <SelectItem value="25">&gt; 25%</SelectItem>
+                                        <SelectItem value="50">&gt; 50%</SelectItem>
                                     </SelectContent>
                                 </Select>
                                 <p className="text-xs text-muted-foreground mt-1">Notify when a token balance changes by this percentage.</p>
@@ -225,9 +229,9 @@ export function QuickAlertConfigurator({ entity, alert, onSubmitted }: QuickAler
                                 <Select value={String(days)} onValueChange={(val) => setDays(Number(val))}>
                                     <SelectTrigger><SelectValue/></SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="7">7 days</SelectItem>
                                         <SelectItem value="30">30 days</SelectItem>
                                         <SelectItem value="90">90 days</SelectItem>
+                                        <SelectItem value="365">365 days</SelectItem>
                                     </SelectContent>
                                 </Select>
                                 <p className="text-xs text-muted-foreground mt-1">Alert if wallet shows no activity for this period.</p>
@@ -251,17 +255,38 @@ export function QuickAlertConfigurator({ entity, alert, onSubmitted }: QuickAler
             }
         } else { // Rules for Token
             switch(ruleType as TokenRuleType) {
+                 case 'priceChange':
+                    return (
+                        <div className="space-y-4">
+                            <div>
+                                <Label>Percentage Threshold</Label>
+                                <Select value={String(percentage)} onValueChange={(val) => setPercentage(Number(val))}>
+                                    <SelectTrigger><SelectValue /></SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="5">&gt; 5%</SelectItem>
+                                        <SelectItem value="10">&gt; 10%</SelectItem>
+                                        <SelectItem value="20">&gt; 20%</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <p className="text-xs text-muted-foreground mt-1">Notify when the token price changes by this percentage in 24h.</p>
+                            </div>
+                        </div>
+                    );
                 case 'newWhaleTransaction':
                     return (
                         <div className="space-y-4">
                              <div>
                                 <Label>Transaction Value Threshold (USD)</Label>
-                                <Input 
-                                    type="number" 
-                                    value={value} 
-                                    onChange={(e) => setValue(Number(e.target.value))}
-                                    placeholder="e.g., 100000"
-                                />
+                                 <Select value={String(value)} onValueChange={(v) => setValue(Number(v))}>
+                                    <SelectTrigger>
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="100000">$100,000</SelectItem>
+                                        <SelectItem value="500000">$500,000</SelectItem>
+                                        <SelectItem value="1000000">$1,000,000</SelectItem>
+                                    </SelectContent>
+                                </Select>
                                 <p className="text-xs text-muted-foreground mt-1">Notify for new whale transactions for this token over the specified value.</p>
                             </div>
                         </div>
@@ -274,9 +299,9 @@ export function QuickAlertConfigurator({ entity, alert, onSubmitted }: QuickAler
                                 <Select value={String(percentage)} onValueChange={(val) => setPercentage(Number(val))}>
                                     <SelectTrigger><SelectValue/></SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="5">&gt; 5%</SelectItem>
                                         <SelectItem value="10">&gt; 10%</SelectItem>
-                                        <SelectItem value="20">&gt; 20%</SelectItem>
+                                        <SelectItem value="25">&gt; 25%</SelectItem>
+                                        <SelectItem value="50">&gt; 50%</SelectItem>
                                     </SelectContent>
                                 </Select>
                                 <p className="text-xs text-muted-foreground mt-1">For changes in a token's main liquidity pool.</p>
@@ -306,6 +331,7 @@ export function QuickAlertConfigurator({ entity, alert, onSubmitted }: QuickAler
                             </>
                         ) : (
                             <>
+                                <SelectItem value="priceChange">Price Change</SelectItem>
                                 <SelectItem value="newWhaleTransaction">Whale Buy/Sell</SelectItem>
                                 <SelectItem value="liquidityShift">DEX Liquidity Change</SelectItem>
                             </>
@@ -324,3 +350,5 @@ export function QuickAlertConfigurator({ entity, alert, onSubmitted }: QuickAler
     )
 
 }
+
+    

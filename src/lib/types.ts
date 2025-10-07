@@ -21,7 +21,7 @@ export type Alert = {
     alertType: 'wallet' | 'token';
     walletId?: string;
     token?: string;
-    rule: string;
+    rule: string; // See backend.json for full list of enums
     threshold?: number;
     enabled: boolean;
     createdAt: any; // Firebase Timestamp
@@ -39,3 +39,5 @@ export type WatchlistItem = {
     createdAt: any; // Firebase Timestamp
     userId: string;
 };
+
+    

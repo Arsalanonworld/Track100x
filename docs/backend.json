@@ -53,6 +53,12 @@
             "bridgeActivity",
             "contractInteraction",
             "counterpartyPair",
+            "priceChange",
+            "multipleWhaleEntries",
+            "tokenSupplyEvents",
+            "exchangeFlowSurge",
+            "newHolderSpike",
+            "rugHoneypotDetector",
             "Advanced Rule"
           ]
         },
@@ -116,3 +122,5 @@
     }
   }
 }
+
+    
