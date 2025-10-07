@@ -109,7 +109,7 @@ function WatchlistItemCard({ item, onUpdate, onRemove }: { item: WatchlistItem, 
                                  <div className='text-sm text-muted-foreground pt-1 flex items-center gap-4'>
                                     <p>Net Worth: <span className='text-green-500 font-medium'>$1.2M</span></p>
                                     <p>7d P&L: <span className='text-red-500 font-medium'>-$50.2k</span></p>
-                                </div>
+                                 </div>
                                 </>
                            ) : (
                                 <div>
@@ -265,16 +265,19 @@ export default function WatchlistPage() {
                 <PageHeader
                     title="Your Watchlist"
                     description={pageDescription}
-                    action={
-                        <DialogTrigger asChild>
-                            <Button onClick={() => setIsEditorOpen(true)}>Create New Alert</Button>
-                        </DialogTrigger>
-                    }
                 />
 
                 <div className='grid grid-cols-1 lg:grid-cols-3 gap-8 items-start'>
                     <div className='lg:col-span-2 space-y-6'>
-                        <AddItemForm atLimit={!!watchlistAtLimit} onAdd={() => setRefreshKey(k => k + 1)}/>
+                        <div className="flex flex-col sm:flex-row gap-2">
+                           <AddItemForm atLimit={!!watchlistAtLimit} onAdd={() => setRefreshKey(k => k + 1)}/>
+                           <DialogTrigger asChild>
+                              <Button onClick={() => setIsEditorOpen(true)} className="w-full sm:w-auto">
+                                <BellPlus className="h-4 w-4 mr-2"/>
+                                Create Alert
+                              </Button>
+                           </DialogTrigger>
+                        </div>
                         
                         {watchlistAtLimit && (
                             <Card className="text-center p-8 space-y-4 rounded-lg bg-card border shadow-lg border-primary">
