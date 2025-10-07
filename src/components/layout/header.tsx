@@ -19,8 +19,8 @@ export const LogoIcon = () => (
       strokeLinejoin="round"
       className="h-7 w-7 text-primary"
     >
-        <path d="M4 4l4 12 4-8 4 8 4-12"/>
-        <path d="M4 16h16"/>
+      <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+      <path d="M7 12h2l2-3 2 3h2" />
     </svg>
 );
 
