@@ -15,8 +15,8 @@ import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { Loader2, Lock } from "lucide-react";
 
-type WalletRuleType = 'transactionValue' | 'tokenBalanceChange' | 'portfolioValueChange' | 'pnlChange' | 'dormancy';
-type TokenRuleType = 'priceChange' | 'newWhaleTransaction' | 'liquidityShift';
+type WalletRuleType = 'transactionValue' | 'tokenBalanceChange' | 'dormancy';
+type TokenRuleType = 'newWhaleTransaction' | 'liquidityShift';
 
 interface QuickAlertConfiguratorProps {
     entity?: {
@@ -33,7 +33,7 @@ export function QuickAlertConfigurator({ entity, alert, onSubmitted }: QuickAler
     const isPro = claims?.plan === 'pro';
 
     const isWallet = (entity?.type === 'wallet' || alert?.alertType === 'wallet');
-    const [ruleType, setRuleType] = useState<WalletRuleType | TokenRuleType | string>(alert?.rule || (isWallet ? 'transactionValue' : 'priceChange'));
+    const [ruleType, setRuleType] = useState<WalletRuleType | TokenRuleType | string>(alert?.rule || (isWallet ? 'transactionValue' : 'newWhaleTransaction'));
 
     const [value, setValue] = useState(alert?.threshold || 1000000);
     const [direction, setDirection] = useState(alert?.direction || 'any');
@@ -72,24 +72,12 @@ export function QuickAlertConfigurator({ entity, alert, onSubmitted }: QuickAler
                 ruleDescription = `Balance of ${token || 'any token'} changes by > ${percentage}%`;
                 threshold = percentage;
                 break;
-            case 'portfolioValueChange':
-                ruleDescription = `Portfolio value changes by > ${percentage}% in 24h`;
-                threshold = percentage;
-                break;
-            case 'pnlChange':
-                 ruleDescription = `7d PnL changes by > ${percentage}%`;
-                 threshold = percentage;
-                 break;
             case 'dormancy':
                  ruleDescription = `Wallet is inactive for > ${days} days`;
                  threshold = days;
                  break;
 
             // Token Rules
-            case 'priceChange':
-                ruleDescription = `Price of ${identifier} changes by > ${percentage}% in 24h`;
-                threshold = percentage;
-                break;
             case 'newWhaleTransaction':
                  ruleDescription = `New whale transaction > $${(value / 1000000).toFixed(1)}M`;
                  threshold = value;
@@ -111,8 +99,10 @@ export function QuickAlertConfigurator({ entity, alert, onSubmitted }: QuickAler
 
         if (alertType === 'wallet') {
             alertData.walletId = identifier;
-            alertData.direction = direction;
-            alertData.tokenFilter = token;
+            if (ruleType === 'transactionValue') {
+                alertData.direction = direction;
+                alertData.tokenFilter = token;
+            }
         } else {
             alertData.token = identifier;
         }
@@ -221,40 +211,6 @@ export function QuickAlertConfigurator({ entity, alert, onSubmitted }: QuickAler
                             </div>
                         </div>
                     );
-                case 'portfolioValueChange':
-                     return (
-                        <div className="space-y-4">
-                            <div>
-                                <Label>Percentage Threshold (24h)</Label>
-                                <Select value={String(percentage)} onValueChange={(val) => setPercentage(Number(val))}>
-                                    <SelectTrigger><SelectValue/></SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="1">&gt; 1%</SelectItem>
-                                        <SelectItem value="5">&gt; 5%</SelectItem>
-                                        <SelectItem value="10">&gt; 10%</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                                <p className="text-xs text-muted-foreground mt-1">Notify when the wallet's total value changes by this percentage.</p>
-                            </div>
-                        </div>
-                    );
-                 case 'pnlChange':
-                    return (
-                        <div className="space-y-4">
-                            <div>
-                                <Label>PnL Change Threshold (7d)</Label>
-                                <Select value={String(percentage)} onValueChange={(val) => setPercentage(Number(val))}>
-                                    <SelectTrigger><SelectValue/></SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="5">&gt; 5%</SelectItem>
-                                        <SelectItem value="10">&gt; 10%</SelectItem>
-                                        <SelectItem value="20">&gt; 20%</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                                <p className="text-xs text-muted-foreground mt-1">For wallets on the Leaderboard.</p>
-                            </div>
-                        </div>
-                    );
                 case 'dormancy':
                     return (
                         <div className="space-y-4">
@@ -276,22 +232,6 @@ export function QuickAlertConfigurator({ entity, alert, onSubmitted }: QuickAler
             }
         } else { // Rules for Token
             switch(ruleType as TokenRuleType) {
-                case 'priceChange':
-                     return (
-                        <div className="space-y-4">
-                            <div>
-                                <Label>Percentage Threshold (24h)</Label>
-                                <Select value={String(percentage)} onValueChange={(val) => setPercentage(Number(val))}>
-                                    <SelectTrigger><SelectValue/></SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="1">&gt; 1%</SelectItem>
-                                        <SelectItem value="5">&gt; 5%</SelectItem>
-                                        <SelectItem value="10">&gt; 10%</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                        </div>
-                    );
                 case 'newWhaleTransaction':
                     return (
                         <div className="space-y-4">
@@ -333,24 +273,21 @@ export function QuickAlertConfigurator({ entity, alert, onSubmitted }: QuickAler
         <div className="space-y-6">
              <div className="space-y-2">
                 <Label>Rule Type</Label>
-                <Select value={ruleType} onValueChange={(value) => setRuleType(value as WalletRuleType | TokenRuleType)}>
+                <Select value={ruleType} onValueChange={(value) => setRuleType(value)}>
                     <SelectTrigger>
                         <SelectValue placeholder="Select a rule type" />
                     </SelectTrigger>
                     <SelectContent>
                         {isWallet ? (
                             <>
-                                <SelectItem value="transactionValue">Transaction Value</SelectItem>
-                                <SelectItem value="tokenBalanceChange">Token Balance Change %</SelectItem>
-                                <SelectItem value="portfolioValueChange">Portfolio Value Change %</SelectItem>
-                                <SelectItem value="pnlChange">PnL Change (7d) %</SelectItem>
-                                <SelectItem value="dormancy">Dormancy Status</SelectItem>
+                                <SelectItem value="transactionValue">Large Transaction</SelectItem>
+                                <SelectItem value="tokenBalanceChange">Token Balance Spike</SelectItem>
+                                <SelectItem value="dormancy">Dormant Wallet Activated</SelectItem>
                             </>
                         ) : (
                             <>
-                                <SelectItem value="priceChange">Price Change %</SelectItem>
-                                <SelectItem value="newWhaleTransaction">New Whale Transaction</SelectItem>
-                                <SelectItem value="liquidityShift">Liquidity Shift %</SelectItem>
+                                <SelectItem value="newWhaleTransaction">Whale Buy/Sell</SelectItem>
+                                <SelectItem value="liquidityShift">DEX Liquidity Change</SelectItem>
                             </>
                         )}
                     </SelectContent>
@@ -367,5 +304,3 @@ export function QuickAlertConfigurator({ entity, alert, onSubmitted }: QuickAler
     )
 
 }
-
-    
