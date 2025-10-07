@@ -61,7 +61,7 @@ const Condition = ({ index, onRemove, condition, updateCondition, entityType, is
                             {relevantTriggers.map(type => 
                             <SelectItem key={type.value} value={type.value} disabled={type.pro && !isPro}>
                                 <div className='flex items-center gap-2'>
-                                  {type.label} {type.pro && <Lock className='h-3 w-3' />}
+                                  {type.label} {type.pro && !isPro && <Lock className='h-3 w-3' />}
                                 </div>
                             </SelectItem>)}
                         </SelectContent>
@@ -339,4 +339,3 @@ export default function AlertBuilder({ onSave, onCancel, alert, entity }: { onSa
     );
 }
 
-    

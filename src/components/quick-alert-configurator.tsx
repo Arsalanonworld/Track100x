@@ -182,14 +182,14 @@ export function QuickAlertConfigurator({ entity, alert, onSubmitted }: QuickAler
                                 <p className="text-xs text-muted-foreground mt-1">Notify for transactions over this value.</p>
                             </div>
                             <div>
-                                <Label className="flex items-center gap-2">Direction {(!isPro && ruleType === 'transactionValue') && <Lock className="h-3 w-3"/>}</Label>
-                                <RadioGroup value={(isPro || ruleType !== 'transactionValue') ? direction : 'any'} onValueChange={(v) => setDirection(v as 'in' | 'out' | 'any')} className="flex gap-4 pt-2" disabled={!isPro && ruleType === 'transactionValue'}>
+                                <Label className="flex items-center gap-2">Direction {(!isPro) && <Lock className="h-3 w-3"/>}</Label>
+                                <RadioGroup value={isPro ? direction : 'any'} onValueChange={(v) => setDirection(v as 'in' | 'out' | 'any')} className="flex gap-4 pt-2" disabled={!isPro}>
                                     <div className="flex items-center space-x-2">
-                                        <RadioGroupItem value="in" id="in" disabled={!isPro && ruleType === 'transactionValue'}/>
+                                        <RadioGroupItem value="in" id="in" disabled={!isPro}/>
                                         <Label htmlFor="in" className={!isPro ? 'text-muted-foreground' : ''}>Incoming</Label>
                                     </div>
                                     <div className="flex items-center space-x-2">
-                                        <RadioGroupItem value="out" id="out" disabled={!isPro && ruleType === 'transactionValue'}/>
+                                        <RadioGroupItem value="out" id="out" disabled={!isPro}/>
                                         <Label htmlFor="out" className={!isPro ? 'text-muted-foreground' : ''}>Outgoing</Label>
                                     </div>
                                     <div className="flex items-center space-x-2">
