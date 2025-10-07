@@ -73,6 +73,7 @@ export const AlertEditorDialog = ({
             <TabsTrigger value="quick">Quick Alert</TabsTrigger>
             <TabsTrigger value="advanced">
               <div className="flex items-center gap-2">
+                {!isPro && <Lock className="h-3 w-3" />}
                 <span>Advanced Builder</span>
               </div>
             </TabsTrigger>

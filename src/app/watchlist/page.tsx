@@ -271,12 +271,14 @@ export default function WatchlistPage() {
 
                 <div className='grid grid-cols-1 lg:grid-cols-3 gap-8 items-start'>
                     <div className='lg:col-span-2 space-y-6'>
-                         <WatchlistActionForm 
-                            onItemAdded={handleItemAdded} 
-                            onAlertCreate={handleOpenEditor} 
-                            atLimit={watchlistAtLimit} 
-                            isLoading={isLoading}
-                        />
+                        <div className="flex flex-col sm:flex-row gap-2">
+                             <WatchlistActionForm 
+                                onItemAdded={handleItemAdded}
+                                onAlertCreate={handleOpenEditor}
+                                atLimit={watchlistAtLimit || false}
+                                isLoading={isLoading}
+                             />
+                        </div>
                         
                         {watchlistAtLimit && (
                             <Card className="text-center p-8 space-y-4 rounded-lg bg-card border shadow-lg border-primary">

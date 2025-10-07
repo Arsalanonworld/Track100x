@@ -4,6 +4,7 @@ import React, { useState, useMemo } from 'react';
 import {
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
@@ -152,7 +153,10 @@ export function WhaleFeed({ isPreview = false }: { isPreview?: boolean }) {
         <Card className="border-x-0 sm:border-x">
             <CardHeader>
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                  <CardTitle className="flex-1 whitespace-nowrap">Real-Time Whale Feed</CardTitle>
+                  <div className="flex-1">
+                    <CardTitle>Real-Time Whale Feed</CardTitle>
+                    <CardDescription>A live stream of significant on-chain transactions.</CardDescription>
+                  </div>
                   
                   {!isPreview && (
                     <>

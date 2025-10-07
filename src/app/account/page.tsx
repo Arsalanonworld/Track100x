@@ -136,8 +136,6 @@ export default function AccountPage() {
                     </div>
                     <p className="text-muted-foreground mt-2">You have full access to all Track100x features.</p>
                     <Separator className="my-6" />
-                    <p className="text-sm font-semibold">Next billing date: <span className="font-normal">January 1, 2025</span></p>
-                    <p className="text-sm font-semibold">Price: <span className="font-normal">$79/year (Billed Annually)</span></p>
                     <Button variant="outline" className="mt-4" disabled>Manage Subscription</Button>
                      <p className="text-xs text-muted-foreground mt-2">Redirect to Stripe/LemonSqueezy not implemented.</p>
                   </div>
