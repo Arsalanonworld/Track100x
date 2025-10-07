@@ -114,18 +114,13 @@ export default function ActiveAlerts() {
         <Dialog open={isEditorOpen} onOpenChange={handleCloseEditor}>
             <Card>
                 <CardHeader>
-                  <div className='flex justify-between items-center'>
-                    <div>
-                        <CardTitle>Your Active Alerts</CardTitle>
-                        <CardDescription>
-                            {isPro 
-                                ? `You have ${alertCount} active alerts.`
-                                : `You have ${alertCount} of 5 active alerts.`}
-                        </CardDescription>
-                    </div>
-                    <DialogTrigger asChild>
-                        <Button onClick={handleCreateNew}>Create New Alert</Button>
-                    </DialogTrigger>
+                  <div>
+                      <CardTitle>Your Active Alerts</CardTitle>
+                      <CardDescription>
+                          {isPro 
+                              ? `You have ${alertCount} active alerts.`
+                              : `You have ${alertCount} of 5 active alerts.`}
+                      </CardDescription>
                   </div>
                 </CardHeader>
                 <CardContent>
@@ -209,3 +204,5 @@ export default function ActiveAlerts() {
         </Dialog>
     );
 }
+
+    

@@ -4,7 +4,7 @@
 import { useMemo, useState } from 'react';
 import PageHeader from '@/components/page-header';
 import { Button } from '@/components/ui/button';
-import { Trash2, BellPlus, ArrowRight, Pencil, Check, X, Lock, Wallet, LineChart, Eye } from 'lucide-react';
+import { Trash2, BellPlus, ArrowRight, Pencil, Check, X, Lock, Wallet, Eye } from 'lucide-react';
 import { useUser, useCollection, useFirestore } from '@/firebase';
 import { collection, query, doc, deleteDoc, updateDoc } from 'firebase/firestore';
 import type { Alert, WatchlistItem } from '@/lib/types';
@@ -215,6 +215,7 @@ export default function WatchlistPage() {
   const firestore = useFirestore();
   const { toast } = useToast();
   const [refreshKey, setRefreshKey] = useState(0);
+  const [isEditorOpen, setIsEditorOpen] = useState(false);
 
   const isPro = claims?.plan === 'pro';
 
@@ -284,68 +285,80 @@ export default function WatchlistPage() {
 
 
   return (
-        <div className="relative">
-            {!user && !userLoading && <FeatureLock />}
-            <div className="space-y-8">
-                <PageHeader
-                    title="Your Watchlist"
-                    description={pageDescription}
-                />
+        <Dialog open={isEditorOpen} onOpenChange={setIsEditorOpen}>
+            <div className="relative">
+                {!user && !userLoading && <FeatureLock />}
+                <div className="space-y-8">
+                    <PageHeader
+                        title="Your Watchlist"
+                        description={pageDescription}
+                        action={
+                             <DialogTrigger asChild>
+                                <Button>Create New Alert</Button>
+                            </DialogTrigger>
+                        }
+                    />
 
-                <AddItemForm atLimit={!!watchlistAtLimit} onAdd={() => setRefreshKey(k => k + 1)}/>
+                    <AddItemForm atLimit={!!watchlistAtLimit} onAdd={() => setRefreshKey(k => k + 1)}/>
 
-                {watchlistAtLimit && (
-                    <Card className="text-center p-8 space-y-4 rounded-lg bg-card border shadow-lg border-primary">
-                        <Lock className="w-8 h-8 text-primary mx-auto" />
-                        <h3 className="text-2xl font-bold">Watchlist Limit Reached</h3>
-                        <p className="text-muted-foreground max-w-sm mx-auto">
-                            You've reached the limit of ${WATCHLIST_LIMIT_FREE} items for the Free plan. Upgrade to track unlimited wallets and tokens.
-                        </p>
-                        <Button asChild>
-                            <Link href="/upgrade">Upgrade to Pro <ArrowRight className='w-4 h-4 ml-2'/></Link>
-                        </Button>
-                    </Card>
-                )}
-
-                <div className="space-y-4">
-                    <h2 className='text-2xl font-bold tracking-tight'>Tracked Items</h2>
-                    {isLoading ? <WatchlistSkeleton /> : watchlist && watchlist.length > 0 ? (
-                        watchlist.map((item) => (
-                           <WatchlistItemCard key={item.id} item={item} onUpdate={handleUpdate} onRemove={handleRemove} />
-                        ))
-                    ) : (
-                       !isLoading && (
-                        <div className="flex flex-col items-center justify-center text-center text-muted-foreground p-8 rounded-lg border-2 border-dashed">
-                            <Eye className="h-10 w-10 mb-4" />
-                            <p className="font-semibold text-lg">Your watchlist is empty.</p>
-                            <p className="text-sm max-w-xs mx-auto">
-                               Use the form above or add wallets and tokens directly from the Whale Feed.
+                    {watchlistAtLimit && (
+                        <Card className="text-center p-8 space-y-4 rounded-lg bg-card border shadow-lg border-primary">
+                            <Lock className="w-8 h-8 text-primary mx-auto" />
+                            <h3 className="text-2xl font-bold">Watchlist Limit Reached</h3>
+                            <p className="text-muted-foreground max-w-sm mx-auto">
+                                You've reached the limit of ${WATCHLIST_LIMIT_FREE} items for the Free plan. Upgrade to track unlimited wallets and tokens.
                             </p>
-                        </div>
-                       )
+                            <Button asChild>
+                                <Link href="/upgrade">Upgrade to Pro <ArrowRight className='w-4 h-4 ml-2'/></Link>
+                            </Button>
+                        </Card>
                     )}
-                </div>
-                 {alertsAtLimit && (
-                    <Card className="text-center p-8 space-y-4 rounded-lg bg-card border shadow-lg border-primary">
-                        <Lock className="w-8 h-8 text-primary mx-auto" />
-                        <h3 className="text-2xl font-bold">Alert Limit Reached</h3>
-                        <p className="text-muted-foreground max-w-sm mx-auto">
-                            You've reached the limit of ${ALERT_LIMIT_FREE} alerts for the Free plan. Upgrade to create unlimited alerts.
-                        </p>
-                        <Button asChild>
-                            <Link href="/upgrade">Upgrade to Pro <ArrowRight className='w-4 h-4 ml-2'/></Link>
-                        </Button>
-                    </Card>
-                )}
 
-                <div className="space-y-8 pt-8">
-                     <div className='space-y-4'>
-                        <ActiveAlerts />
-                     </div>
-                     <AlertHistory />
-                </div>
+                    <div className="space-y-4">
+                        <h2 className='text-2xl font-bold tracking-tight'>Tracked Items</h2>
+                        {isLoading ? <WatchlistSkeleton /> : watchlist && watchlist.length > 0 ? (
+                            watchlist.map((item) => (
+                               <WatchlistItemCard key={item.id} item={item} onUpdate={handleUpdate} onRemove={handleRemove} />
+                            ))
+                        ) : (
+                           !isLoading && (
+                            <div className="flex flex-col items-center justify-center text-center text-muted-foreground p-8 rounded-lg border-2 border-dashed">
+                                <Eye className="h-10 w-10 mb-4" />
+                                <p className="font-semibold text-lg">Your watchlist is empty.</p>
+                                <p className="text-sm max-w-xs mx-auto">
+                                   Use the form above or add wallets and tokens directly from the Whale Feed.
+                                </p>
+                            </div>
+                           )
+                        )}
+                    </div>
+                     {alertsAtLimit && (
+                        <Card className="text-center p-8 space-y-4 rounded-lg bg-card border shadow-lg border-primary">
+                            <Lock className="w-8 h-8 text-primary mx-auto" />
+                            <h3 className="text-2xl font-bold">Alert Limit Reached</h3>
+                            <p className="text-muted-foreground max-w-sm mx-auto">
+                                You've reached the limit of ${ALERT_LIMIT_FREE} alerts for the Free plan. Upgrade to create unlimited alerts.
+                            </p>
+                            <Button asChild>
+                                <Link href="/upgrade">Upgrade to Pro <ArrowRight className='w-4 h-4 ml-2'/></Link>
+                            </Button>
+                        </Card>
+                    )}
 
+                    <div className="space-y-8 pt-8">
+                         <div className='space-y-4'>
+                            <ActiveAlerts />
+                         </div>
+                         <AlertHistory />
+                    </div>
+
+                </div>
             </div>
-        </div>
+             <AlertEditorDialog 
+                onOpenChange={setIsEditorOpen} 
+            />
+        </Dialog>
   );
 }
+
+    
