@@ -42,7 +42,7 @@
         "enabled": { "type": "boolean" },
         "createdAt": { "type": "string", "format": "date-time" },
         "userId": { "type": "string" },
-        "direction": { "type": "string", "enum": ["incoming", "outgoing", "any"]},
+        "direction": { "type": "string", "enum": ["in", "out", "any"]},
         "tokenFilter": { "type": "string" }
       },
       "required": ["type", "alertType", "rule", "enabled", "createdAt", "userId"]

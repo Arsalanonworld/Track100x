@@ -11,6 +11,7 @@ export type UserProfile = {
   photoURL: string | null;
   plan: UserPlan;
   createdAt: any; // Can be Timestamp or FieldValue
+  alertsCount?: number;
 };
 
 
@@ -20,12 +21,12 @@ export type Alert = {
     alertType: 'wallet' | 'token';
     walletId?: string;
     token?: string;
-    rule: string;
+    rule: 'transactionValue' | 'dormancy' | 'tokenBalanceChange' | 'exchangeInteraction' | 'newWhaleTransaction' | 'liquidityShift' | string;
     threshold?: number;
     enabled: boolean;
     createdAt: any; // Firebase Timestamp
     userId: string;
-    direction?: 'incoming' | 'outgoing' | 'any';
+    direction?: 'in' | 'out' | 'any';
     tokenFilter?: string;
 };
 

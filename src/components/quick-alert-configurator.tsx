@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState } from "react";
@@ -15,7 +16,7 @@ import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { Loader2, Lock } from "lucide-react";
 
-type WalletRuleType = 'transactionValue' | 'tokenBalanceChange' | 'dormancy';
+type WalletRuleType = 'transactionValue' | 'tokenBalanceChange' | 'dormancy' | 'exchangeInteraction';
 type TokenRuleType = 'newWhaleTransaction' | 'liquidityShift';
 
 interface QuickAlertConfiguratorProps {
@@ -36,7 +37,7 @@ export function QuickAlertConfigurator({ entity, alert, onSubmitted }: QuickAler
     const [ruleType, setRuleType] = useState<WalletRuleType | TokenRuleType | string>(alert?.rule || (isWallet ? 'transactionValue' : 'newWhaleTransaction'));
 
     const [value, setValue] = useState(alert?.threshold || 1000000);
-    const [direction, setDirection] = useState(alert?.direction || 'any');
+    const [direction, setDirection] = useState<'in' | 'out' | 'any'>(alert?.direction || 'any');
     const [token, setToken] = useState(alert?.tokenFilter || '');
     const [percentage, setPercentage] = useState(alert?.threshold || 5);
     const [days, setDays] = useState(alert?.threshold || 30);
@@ -76,6 +77,10 @@ export function QuickAlertConfigurator({ entity, alert, onSubmitted }: QuickAler
                  ruleDescription = `Wallet is inactive for > ${days} days`;
                  threshold = days;
                  break;
+            case 'exchangeInteraction':
+                ruleDescription = `Wallet interacts with a CEX`;
+                threshold = 0;
+                break;
 
             // Token Rules
             case 'newWhaleTransaction':
@@ -167,7 +172,7 @@ export function QuickAlertConfigurator({ entity, alert, onSubmitted }: QuickAler
                             </div>
                             <div>
                                 <Label className="flex items-center gap-2">Direction {!isPro && <Lock className="h-3 w-3"/>}</Label>
-                                <RadioGroup value={isPro ? direction : 'any'} onValueChange={setDirection} className="flex gap-4 pt-2" disabled={!isPro}>
+                                <RadioGroup value={isPro ? direction : 'any'} onValueChange={(v) => setDirection(v as 'in' | 'out' | 'any')} className="flex gap-4 pt-2" disabled={!isPro}>
                                     <div className="flex items-center space-x-2">
                                         <RadioGroupItem value="in" id="in" disabled={!isPro}/>
                                         <Label htmlFor="in" className={!isPro ? 'text-muted-foreground' : ''}>Incoming</Label>
@@ -197,7 +202,6 @@ export function QuickAlertConfigurator({ entity, alert, onSubmitted }: QuickAler
                                 <Select value={String(percentage)} onValueChange={(val) => setPercentage(Number(val))}>
                                     <SelectTrigger><SelectValue /></SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="1">&gt; 1%</SelectItem>
                                         <SelectItem value="5">&gt; 5%</SelectItem>
                                         <SelectItem value="10">&gt; 10%</SelectItem>
                                         <SelectItem value="25">&gt; 25%</SelectItem>
@@ -226,6 +230,19 @@ export function QuickAlertConfigurator({ entity, alert, onSubmitted }: QuickAler
                                 </Select>
                                 <p className="text-xs text-muted-foreground mt-1">Alert if wallet shows no activity for this period.</p>
                             </div>
+                        </div>
+                    );
+                case 'exchangeInteraction':
+                    return (
+                        <div className="space-y-2">
+                            <p className="text-sm">This alert will trigger whenever the wallet sends funds to, or receives funds from, a known centralized exchange (CEX) address.</p>
+                             <Label>Value Threshold (USD, Optional)</Label>
+                             <Input 
+                                type="number" 
+                                value={value} 
+                                onChange={(e) => setValue(Number(e.target.value))}
+                                placeholder="e.g. 10000"
+                            />
                         </div>
                     );
                 default: return null;
@@ -283,6 +300,7 @@ export function QuickAlertConfigurator({ entity, alert, onSubmitted }: QuickAler
                                 <SelectItem value="transactionValue">Large Transaction</SelectItem>
                                 <SelectItem value="tokenBalanceChange">Token Balance Spike</SelectItem>
                                 <SelectItem value="dormancy">Dormant Wallet Activated</SelectItem>
+                                <SelectItem value="exchangeInteraction">Exchange Interaction</SelectItem>
                             </>
                         ) : (
                             <>
