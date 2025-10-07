@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -21,10 +22,12 @@ export const AlertEditorDialog = ({
   onOpenChange,
   entity,
   alert,
+  forceQuick = false,
 }: {
   onOpenChange: (open: boolean) => void;
   entity?: { type: 'wallet' | 'token'; identifier: string };
   alert?: Alert;
+  forceQuick?: boolean;
 }) => {
   const [activeTab, setActiveTab] = useState<'quick' | 'advanced'>(
     alert?.type || 'quick'
@@ -39,6 +42,8 @@ export const AlertEditorDialog = ({
   const finalEntity = alert
     ? { type: alert.alertType, identifier: alert.walletId || alert.token || '' }
     : entity;
+
+  const showTabs = isPro && !forceQuick;
 
   return (
     <DialogContent className="max-w-2xl">
@@ -58,6 +63,7 @@ export const AlertEditorDialog = ({
         </DialogDescription>
       </DialogHeader>
 
+      {showTabs ? (
         <Tabs
           value={activeTab}
           onValueChange={value => setActiveTab(value as 'quick' | 'advanced')}
@@ -65,9 +71,8 @@ export const AlertEditorDialog = ({
         >
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="quick">Quick Alert</TabsTrigger>
-            <TabsTrigger value="advanced" disabled={!isPro}>
+            <TabsTrigger value="advanced">
               <div className="flex items-center gap-2">
-                 {!isPro && <Lock className="h-3 w-3" />}
                 <span>Advanced Builder</span>
               </div>
             </TabsTrigger>
@@ -80,29 +85,23 @@ export const AlertEditorDialog = ({
             />
           </TabsContent>
           <TabsContent value="advanced" className="pt-6">
-             {isPro ? (
-                 <AlertBuilder 
-                    onSave={handleSubmitted}
-                    onCancel={() => onOpenChange(false)}
-                    entity={finalEntity}
-                    alert={alert}
-                />
-             ) : (
-                <Card className="text-center p-8 space-y-4 rounded-lg bg-card border shadow-lg border-primary">
-                    <div className='mx-auto bg-primary/10 w-12 h-12 flex items-center justify-center rounded-full'>
-                        <Zap className="w-6 h-6 text-primary" />
-                    </div>
-                    <h3 className="text-2xl font-bold">Unlock the Advanced Builder</h3>
-                    <p className="text-muted-foreground max-w-sm mx-auto">
-                        Create complex, multi-conditional alerts to precisely monitor market events.
-                    </p>
-                    <Button asChild>
-                        <Link href="/upgrade">Upgrade to Pro</Link>
-                    </Button>
-                </Card>
-             )}
+             <AlertBuilder 
+                onSave={handleSubmitted}
+                onCancel={() => onOpenChange(false)}
+                entity={finalEntity}
+                alert={alert}
+            />
           </TabsContent>
         </Tabs>
+      ) : (
+        <div className='pt-6'>
+          <QuickAlertConfigurator
+              onSubmitted={handleSubmitted}
+              entity={finalEntity}
+              alert={alert}
+            />
+        </div>
+      )}
     </DialogContent>
   );
 };

@@ -154,6 +154,7 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
                 <AlertEditorDialog 
                     onOpenChange={setIsAlertEditorOpen}
                     entity={alertEntity}
+                    forceQuick={true}
                 />
             )}
         </Dialog>
