@@ -120,11 +120,12 @@ export default function AlertBuilder({ onSave, onCancel, alert, entity }: { onSa
     const { data: watchlistItems } = useCollection<WatchlistItem>(watchlistQuery);
 
     const comboboxOptions = useMemo(() => {
-        return watchlistItems?.map(item => ({
+        const filteredItems = watchlistItems?.filter(item => item.type === alertType) || [];
+        return filteredItems.map(item => ({
             value: item.identifier,
-            label: item.name ? `${item.name} (${item.identifier.slice(0, 6)}...${item.identifier.slice(-4)}) [${item.type}]` : `${item.identifier} [${item.type}]`,
+            label: item.name ? `${item.name} (${item.identifier.slice(0, 6)}...${item.identifier.slice(-4)})` : item.identifier,
         })) || [];
-    }, [watchlistItems]);
+    }, [watchlistItems, alertType]);
     
     const addCondition = () => {
         const firstRuleForType = triggerTypes.find(t => t.group.toLowerCase() === alertType)?.value || '';
@@ -235,11 +236,15 @@ export default function AlertBuilder({ onSave, onCancel, alert, entity }: { onSa
                 <Label>Alert Name (Optional)</Label>
                 <Input value={name} onChange={e => setName(e.target.value)} placeholder="e.g., Monitor Vitalik's ETH sales" />
             </div>
-
-            <div className="grid grid-cols-2 gap-4">
-                 <div className="space-y-2">
+            
+            {!linkedIdentifier && (
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
                     <Label>Target Type</Label>
-                    <Select value={alertType} onValueChange={(v) => setAlertType(v as 'wallet' | 'token')} disabled={!!linkedIdentifier}>
+                    <Select value={alertType} onValueChange={(v) => {
+                        setAlertType(v as 'wallet' | 'token');
+                        setIdentifier('');
+                    }}>
                         <SelectTrigger><SelectValue /></SelectTrigger>
                         <SelectContent>
                             <SelectItem value="wallet">Wallet</SelectItem>
@@ -248,20 +253,17 @@ export default function AlertBuilder({ onSave, onCancel, alert, entity }: { onSa
                     </Select>
                 </div>
                 <div className="space-y-2">
-                    <Label>Target Identifier</Label>
-                    {linkedIdentifier ? (
-                         <p className="text-foreground text-sm font-mono bg-muted px-3 py-2 rounded-md mt-1 block h-10 truncate">{linkedIdentifier}</p>
-                    ) : (
-                        <Combobox
-                            options={comboboxOptions}
-                            value={identifier}
-                            onChange={setIdentifier}
-                            placeholder="Select from watchlist or paste address..."
-                            emptyMessage="No matching items in watchlist."
-                        />
-                    )}
+                    <Label>{alertType === 'wallet' ? 'Wallet Address' : 'Token Symbol'}</Label>
+                    <Combobox
+                        options={comboboxOptions}
+                        value={identifier}
+                        onChange={setIdentifier}
+                        placeholder={alertType === 'wallet' ? 'Select from watchlist or paste...' : 'Select or type...'}
+                        emptyMessage="No matching items in watchlist."
+                    />
                 </div>
             </div>
+            )}
             
             <div className="space-y-4">
                 <Label>Conditions</Label>
@@ -338,4 +340,3 @@ export default function AlertBuilder({ onSave, onCancel, alert, entity }: { onSa
         </div>
     );
 }
-

@@ -2,21 +2,22 @@
 
 'use client';
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import type { Alert } from "@/lib/types";
-import { useUser, useFirestore } from "@/firebase";
-import { addDoc, collection, doc, serverTimestamp, updateDoc } from "firebase/firestore";
+import type { Alert, WatchlistItem } from "@/lib/types";
+import { useUser, useFirestore, useCollection } from "@/firebase";
+import { addDoc, collection, doc, serverTimestamp, updateDoc, query } from "firebase/firestore";
 import { errorEmitter } from "@/firebase/error-emitter";
 import { FirestorePermissionError } from "@/firebase/errors";
 import { Loader2, Lock, Bot } from "lucide-react";
 import Link from "next/link";
 import { Card } from "./ui/card";
+import { Combobox } from "./ui/combobox";
 
 type WalletRuleType = 'transactionValue' | 'balanceChange' | 'dormancy' | 'exchangeInteraction';
 type TokenRuleType = 'newWhaleTransaction' | 'liquidityPoolChange' | 'priceChange';
@@ -35,9 +36,12 @@ export function QuickAlertConfigurator({ entity, alert, onSubmitted }: QuickAler
     const firestore = useFirestore();
     const isPro = claims?.plan === 'pro';
 
-    const isWallet = (entity?.type === 'wallet' || alert?.alertType === 'wallet');
+    const [alertType, setAlertType] = useState<'wallet' | 'token'>(alert?.alertType || entity?.type || 'wallet');
+    const isWallet = alertType === 'wallet';
+    
     const [ruleType, setRuleType] = useState<WalletRuleType | TokenRuleType | string>(alert?.rule || (isWallet ? 'transactionValue' : 'priceChange'));
 
+    const [identifier, setIdentifier] = useState(alert?.walletId || alert?.token || entity?.identifier || '');
     const [value, setValue] = useState(alert?.threshold || 1000000);
     const [direction, setDirection] = useState<'in' | 'out' | 'any'>(alert?.direction || 'any');
     const [token, setToken] = useState(alert?.tokenFilter || '');
@@ -45,6 +49,24 @@ export function QuickAlertConfigurator({ entity, alert, onSubmitted }: QuickAler
     const [days, setDays] = useState(alert?.threshold || 30);
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+     const watchlistQuery = useMemo(() => {
+        if (user && firestore) {
+          return query(collection(firestore, `users/${user.uid}/watchlist`));
+        }
+        return null;
+      }, [user, firestore]);
+    
+    const { data: watchlistItems } = useCollection<WatchlistItem>(watchlistQuery);
+
+    const comboboxOptions = useMemo(() => {
+        const filteredItems = watchlistItems?.filter(item => item.type === alertType) || [];
+        return filteredItems.map(item => ({
+            value: item.identifier,
+            label: item.name ? `${item.name} (${item.identifier.slice(0, 6)}...${item.identifier.slice(-4)})` : item.identifier,
+        })) || [];
+    }, [watchlistItems, alertType]);
+
 
     const handleSave = () => {
         if (!user || !firestore) {
@@ -56,12 +78,19 @@ export function QuickAlertConfigurator({ entity, alert, onSubmitted }: QuickAler
             return;
         }
 
+        if (!identifier) {
+            toast({
+                variant: 'destructive',
+                title: 'Target Required',
+                description: `Please select a ${alertType} to monitor.`,
+            });
+            return;
+        }
+
         setIsSubmitting(true);
         
         let ruleDescription = '';
         let threshold = 0;
-        const alertType = isWallet ? 'wallet' : 'token';
-        const identifier = entity?.identifier || alert?.walletId || alert?.token || '';
 
 
         switch (ruleType) {
@@ -185,11 +214,11 @@ export function QuickAlertConfigurator({ entity, alert, onSubmitted }: QuickAler
                                 <Label className="flex items-center gap-2">Direction {(!isPro) && <Lock className="h-3 w-3"/>}</Label>
                                 <RadioGroup value={isPro ? direction : 'any'} onValueChange={(v) => setDirection(v as 'in' | 'out' | 'any')} className="flex gap-4 pt-2" disabled={!isPro}>
                                     <div className="flex items-center space-x-2">
-                                        <RadioGroupItem value="in" id="in" disabled={!isPro}/>
+                                        <RadioGroupItem value="in" id="in"/>
                                         <Label htmlFor="in" className={!isPro ? 'text-muted-foreground' : ''}>Incoming</Label>
                                     </div>
                                     <div className="flex items-center space-x-2">
-                                        <RadioGroupItem value="out" id="out" disabled={!isPro}/>
+                                        <RadioGroupItem value="out" id="out"/>
                                         <Label htmlFor="out" className={!isPro ? 'text-muted-foreground' : ''}>Outgoing</Label>
                                     </div>
                                     <div className="flex items-center space-x-2">
@@ -318,8 +347,38 @@ export function QuickAlertConfigurator({ entity, alert, onSubmitted }: QuickAler
         }
     }
 
+    const linkedIdentifier = entity?.identifier;
+
     return (
         <div className="space-y-6">
+            {!linkedIdentifier && (
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                    <Label>Target Type</Label>
+                    <Select value={alertType} onValueChange={(v) => {
+                        setAlertType(v as 'wallet' | 'token');
+                        setIdentifier('');
+                        setRuleType(v === 'wallet' ? 'transactionValue' : 'priceChange');
+                    }}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="wallet">Wallet</SelectItem>
+                            <SelectItem value="token">Token</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+                <div className="space-y-2">
+                    <Label>{alertType === 'wallet' ? 'Wallet Address' : 'Token Symbol'}</Label>
+                    <Combobox
+                        options={comboboxOptions}
+                        value={identifier}
+                        onChange={setIdentifier}
+                        placeholder={alertType === 'wallet' ? 'Select from watchlist or paste...' : 'Select or type...'}
+                        emptyMessage="No matching items in watchlist."
+                    />
+                </div>
+            </div>
+            )}
              <div className="space-y-2">
                 <Label>Rule Type</Label>
                 <Select value={ruleType} onValueChange={(value) => setRuleType(value)}>
@@ -384,7 +443,3 @@ export function QuickAlertConfigurator({ entity, alert, onSubmitted }: QuickAler
     )
 
 }
-
-    
-
-    
