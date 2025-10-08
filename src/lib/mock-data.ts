@@ -1,4 +1,5 @@
 
+
 import type { WhaleTransaction, TriggeredAlert, LeaderboardWallet } from './types';
 
 
@@ -214,6 +215,7 @@ export const leaderboardData: LeaderboardWallet[] = [
     {
         address: '0xde0b295669a9fd93d5f28d9ec85e40f4cb697bae',
         alias: 'Meme Mogul',
+        netWorth: '$12.5M',
         pnl7d: 125.75,
         pnl24h: 15.2,
         winRate: 88,
@@ -224,6 +226,7 @@ export const leaderboardData: LeaderboardWallet[] = [
     {
         address: '0x742d54eC7E1E43D35eaA64324f40f28E23744e88',
         alias: 'DeFi Duke',
+        netWorth: '$8.2M',
         pnl7d: 88.2,
         pnl24h: 5.1,
         winRate: 72,
@@ -234,6 +237,7 @@ export const leaderboardData: LeaderboardWallet[] = [
     {
         address: '0xbe0eb53f46cd790cd13851d5eff43d12404d33e8',
         alias: 'Alpha Seeker',
+        netWorth: '$25.1M',
         pnl7d: 75.9,
         pnl24h: -2.3,
         winRate: 65,
@@ -244,6 +248,7 @@ export const leaderboardData: LeaderboardWallet[] = [
     {
         address: '0xf977814e90da44bfa03b6295a0616a897441acec',
         alias: 'Solana Surfer',
+        netWorth: '$5.8M',
         pnl7d: 68.4,
         pnl24h: 22.8,
         winRate: 75,
@@ -254,6 +259,7 @@ export const leaderboardData: LeaderboardWallet[] = [
     {
         address: '0xfa52274dd61e1643d2205169732f291140b340b3',
         alias: 'NFT King',
+        netWorth: '$2.3M',
         pnl7d: 45.1,
         pnl24h: 0.5,
         winRate: 55,
@@ -264,6 +270,7 @@ export const leaderboardData: LeaderboardWallet[] = [
      {
         address: '0x503828976D22510aad0201ac7EC88293211D2383',
         alias: 'The Accumulator',
+        netWorth: '$55.6M',
         pnl7d: 22.5,
         pnl24h: 1.2,
         winRate: 95,
@@ -272,4 +279,5 @@ export const leaderboardData: LeaderboardWallet[] = [
         tags: ['Blue Chips']
     },
 ];
+
 

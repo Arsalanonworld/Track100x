@@ -82,6 +82,7 @@ export type TriggeredAlert = {
 export type LeaderboardWallet = {
     address: string;
     alias: string;
+    netWorth: string;
     pnl7d: number;
     pnl24h: number;
     winRate: number;
@@ -89,4 +90,5 @@ export type LeaderboardWallet = {
     lastActive: string;
     tags?: string[];
 };
+
 
