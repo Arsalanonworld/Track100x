@@ -1,4 +1,3 @@
-
 import type { WhaleTransaction, TriggeredAlert, LeaderboardWallet } from './types';
 
 
@@ -212,69 +211,73 @@ export const triggeredAlerts: TriggeredAlert[] = [
 
 export const leaderboardData: LeaderboardWallet[] = [
     {
-        rank: 1,
-        address: '0xde0b295669a9fd93d5f28d9ec85e40f4cb697bae',
-        alias: 'Meme Mogul',
-        pnl7d: 125.75,
-        pnl24h: 15.2,
-        winRate: 88,
-        trades: 42,
-        lastActive: '3h ago',
-        tags: ['Memecoins', 'High Volume']
+        address: '0x123456789012345678901234567890123456abcd',
+        netWorth: '$55.20M',
+        topHolding: { token: 'WETH', percentage: 45 },
+        pnl7d: 23.45,
+        activity: 88
     },
     {
-        rank: 2,
-        address: '0x742d35cc6634c0532925a3b844bc454e4438f44e',
-        alias: 'DeFi Duke',
-        pnl7d: 88.2,
-        pnl24h: 5.1,
-        winRate: 72,
-        trades: 112,
-        lastActive: '30m ago',
-        tags: ['DeFi', 'Yield Farming']
+        address: '0x345678901234567890123456789012345678defg',
+        netWorth: '$48.10M',
+        topHolding: { token: 'WIF', percentage: 60 },
+        pnl7d: 18.20,
+        activity: 120
     },
     {
-        rank: 3,
-        address: '0xbe0eb53f46cd790cd13851d5eff43d12404d33e8',
-        alias: 'Alpha Seeker',
-        pnl7d: 75.9,
-        pnl24h: -2.3,
-        winRate: 65,
-        trades: 89,
-        lastActive: '1d ago',
-        tags: ['Altcoins']
+        address: '0x567890123456789012345678901234567890ghij',
+        netWorth: '$32.80M',
+        topHolding: { token: 'PEPE', percentage: 30 },
+        pnl7d: 56.00,
+        activity: 250
     },
     {
-        rank: 4,
-        address: '0xf977814e90da44bfa03b6295a0616a897441acec',
-        alias: 'Solana Surfer',
-        pnl7d: 68.4,
-        pnl24h: 22.8,
-        winRate: 75,
-        trades: 68,
-        lastActive: '1h ago',
-        tags: ['Solana Eco']
+        address: '0x789012345678901234567890123456789012jklm',
+        netWorth: '$29.20M',
+        topHolding: { token: 'BONK', percentage: 75 },
+        pnl7d: -8.20,
+        activity: 31
     },
-     {
-        rank: 5,
-        address: '0xfa52274dd61e1643d2205169732f29114bc240b3',
-        alias: 'NFT King',
-        pnl7d: 45.1,
-        pnl24h: 0.5,
-        winRate: 55,
-        trades: 25,
-        lastActive: '8h ago',
-        tags: ['NFTs']
+    {
+        address: '0x901234567890123456789012345678901234mnop',
+        netWorth: '$17.50M',
+        topHolding: { token: 'USDT', percentage: 90 },
+        pnl7d: 9.50,
+        activity: 55
     },
-     {
-        rank: 6,
-        address: '0x503828976d22510aad0201ac7ec88293211d2383',
-        alias: 'The Accumulator',
-        pnl7d: 22.5,
-        pnl24h: 1.2,
-        winRate: 95,
-        trades: 15,
-        lastActive: '3d ago',
-        tags: ['Blue Chips']
-    }
+    {
+        address: '0xab1234567890123456789012345678901234f123',
+        netWorth: '$15.30M',
+        topHolding: { token: 'ETH', percentage: 50 },
+        pnl7d: 4.50,
+        activity: 42
+    },
+    {
+        address: '0xcd4567890123456789012345678901234567e456',
+        netWorth: '$11.90M',
+        topHolding: { token: 'USDC', percentage: 80 },
+        pnl7d: 12.80,
+        activity: 99
+    },
+    {
+        address: '0xef7890123456789012345678901234567890d789',
+        netWorth: '$8.70M',
+        topHolding: { token: 'RNDR', percentage: 40 },
+        pnl7d: -31.00,
+        activity: 180
+    },
+    {
+        address: '0x1a2b3c4d5e6f1a2b3c4d5e6f1a2b3c4d5e6fb3c4',
+        netWorth: '$6.10M',
+        topHolding: { token: 'LINK', percentage: 25 },
+        pnl7d: 7.80,
+        activity: 34
+    },
+    {
+        address: '0x2b3c4d5e6f1a2b3c4d5e6f1a2b3c4d5e6f1ac5d6',
+        netWorth: '$4.50M',
+        topHolding: { token: 'JUP', percentage: 35 },
+        pnl7d: 6.20,
+        activity: 72
+    },
 ];

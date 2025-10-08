@@ -12,7 +12,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { leaderboardData } from '@/lib/mock-data';
-import { ArrowRight, Copy } from 'lucide-react';
+import { ArrowRight, Copy, Wallet2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/card';
 import Link from 'next/link';
@@ -49,7 +49,7 @@ const WalletCell = ({ alias, address }: { alias: string, address: string}) => {
 }
 
 export function LeaderboardPreview() {
-  const topWallets = leaderboardData.slice(0, 3);
+  const topWallets = leaderboardData ? leaderboardData.slice(0, 3) : [];
 
   return (
     <section className="py-16 sm:py-24">
@@ -64,7 +64,7 @@ export function LeaderboardPreview() {
             <Card key={wallet.address} className="flex flex-col">
                 <CardHeader>
                     <div className="flex items-center justify-between">
-                        <WalletCell alias={wallet.alias} address={wallet.address} />
+                        <WalletCell alias={wallet.address.slice(0,6)} address={wallet.address} />
                         <div className="flex flex-col items-end">
                             <p className="text-xs text-muted-foreground">7d P&L</p>
                             <PnlCell value={wallet.pnl7d} />
@@ -74,16 +74,16 @@ export function LeaderboardPreview() {
                 <CardContent className="flex-1 space-y-3">
                      <div className="flex justify-between text-sm">
                         <span className="text-muted-foreground">Win Rate</span>
-                        <span className="font-medium">{wallet.winRate}%</span>
+                        <span className="font-medium">{wallet.activity}%</span>
                      </div>
                      <div className="flex justify-between text-sm">
                         <span className="text-muted-foreground">Trades (7d)</span>
-                        <span className="font-medium">{wallet.trades}</span>
+                        <span className="font-medium">{wallet.activity}</span>
                      </div>
                 </CardContent>
                  <div className='p-6 pt-0'>
                     <div className="flex items-center gap-2 flex-wrap">
-                        {wallet.tags.map(tag => <Badge key={tag} variant="secondary">{tag}</Badge>)}
+                        {/* Placeholder for tags */}
                     </div>
                 </div>
             </Card>

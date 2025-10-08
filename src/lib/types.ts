@@ -80,13 +80,12 @@ export type TriggeredAlert = {
 };
 
 export type LeaderboardWallet = {
-    rank: number;
     address: string;
-    alias: string;
+    netWorth: string;
+    topHolding: {
+        token: string;
+        percentage: number;
+    };
     pnl7d: number;
-    pnl24h: number;
-    winRate: number;
-    trades: number;
-    lastActive: string;
-    tags: string[];
+    activity: number;
 };

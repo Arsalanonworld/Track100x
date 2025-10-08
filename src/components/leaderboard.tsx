@@ -9,87 +9,81 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { leaderboardData, type LeaderboardWallet } from '@/lib/mock-data';
-import { Percent, Copy, Search } from 'lucide-react';
+import { Search, ArrowUp, ArrowDown, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/card';
-import { WatchlistButton } from './track-button';
+import { Card, CardContent } from './ui/card';
 import { getExplorerUrl } from '@/lib/explorers';
 import { useState, useMemo } from 'react';
 import { Input } from './ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { useToast } from '@/hooks/use-toast';
+import { Dialog, DialogTrigger } from './ui/dialog';
+import { AlertEditorDialog } from './alert-editor-dialog';
 
-const allTags = [...new Set(leaderboardData.flatMap(w => w.tags))];
 
 const PnlCell = ({ value }: { value: number }) => (
     <TableCell className={cn("font-medium text-sm", value >= 0 ? "text-green-500" : "text-red-500")}>
-      {value >= 0 ? '+' : ''}{value.toFixed(2)}%
+        <div className='flex items-center gap-1.5'>
+            {value >= 0 ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />}
+            <span>{Math.abs(value).toFixed(2)}%</span>
+        </div>
     </TableCell>
 );
-  
-const RankCell = ({ rank }: { rank: number }) => {
-    const rankColors: { [key: number]: string } = {
-        1: 'text-yellow-500 border-yellow-500/50 bg-yellow-500/10',
-        2: 'text-gray-400 border-gray-400/50 bg-gray-400/10',
-        3: 'text-amber-700 dark:text-amber-600 border-amber-700/50 bg-amber-700/10'
-    };
 
+const WalletCell = ({ address }: { address: string}) => {
     return (
-        <TableCell className="font-bold text-base text-center">
-            <div className={cn('w-8 h-8 mx-auto rounded-full flex items-center justify-center', rankColors[rank])}>
-               {rank}
-            </div>
+        <TableCell>
+            <a href={getExplorerUrl('ethereum', address, 'address')} target="_blank" rel="noopener noreferrer" className='font-mono text-sm hover:text-primary transition-colors' onClick={(e) => e.stopPropagation()}>
+                {address.slice(0, 6)}...{address.slice(-4)}
+            </a>
         </TableCell>
     )
 }
 
-const WalletCell = ({ alias, address }: { alias: string, address: string}) => {
-    const { toast } = useToast();
-    
-    const copyAddress = (e: React.MouseEvent) => {
-        e.stopPropagation();
-        e.preventDefault();
-        navigator.clipboard.writeText(address);
-        toast({ title: 'Address Copied!' });
-    };
-
+const TopHoldingCell = ({ holding }: { holding: { token: string, percentage: number }}) => {
     return (
         <TableCell>
-            <div className="font-semibold text-base">{alias}</div>
-            <div className="flex items-center gap-2">
-                <a href={getExplorerUrl('ethereum', address, 'address')} target="_blank" rel="noopener noreferrer" className='font-mono text-xs text-muted-foreground hover:text-primary transition-colors' onClick={(e) => e.stopPropagation()}>
-                    {address.slice(0, 6)}...{address.slice(-4)}
-                </a>
-                <Button variant="ghost" size="icon" className="h-6 w-6" onClick={copyAddress}><Copy className="h-3 w-3"/></Button>
-            </div>
+            <div className='font-medium'>{holding.token} <span className='text-muted-foreground'>({holding.percentage}%)</span></div>
         </TableCell>
     )
 }
 
 
 export function Leaderboard() {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [tagFilter, setTagFilter] = useState('all');
-  const [sortKey, setSortKey] = useState<keyof LeaderboardWallet | 'pnl7d'>('pnl7d');
+  const [tokenFilter, setTokenFilter] = useState('');
+  const [chainFilter, setChainFilter] = useState('all');
+  const [sortKey, setSortKey] = useState<keyof LeaderboardWallet | 'netWorth'>('netWorth');
+  const [alertEntity, setAlertEntity] = useState<{type: 'wallet', identifier: string} | null>(null);
+  const [isAlertEditorOpen, setIsAlertEditorOpen] = useState(false);
+
+  const handleAlertClick = (e: React.MouseEvent, address: string) => {
+    e.stopPropagation();
+    setAlertEntity({type: 'wallet', identifier: address});
+    setIsAlertEditorOpen(true);
+  }
 
   const sortedAndFilteredData = useMemo(() => {
     let data = [...leaderboardData];
 
-    if (searchTerm) {
+    if (tokenFilter) {
         data = data.filter(wallet => 
-            wallet.alias.toLowerCase().includes(searchTerm.toLowerCase()) || 
-            wallet.address.toLowerCase().includes(searchTerm.toLowerCase())
+            wallet.topHolding.token.toLowerCase().includes(tokenFilter.toLowerCase()) ||
+            wallet.address.toLowerCase().includes(tokenFilter.toLowerCase())
         );
     }
     
-    if (tagFilter !== 'all') {
-        data = data.filter(wallet => wallet.tags.includes(tagFilter));
-    }
+    // Placeholder for chain filter logic if needed in future
+    // if (chainFilter !== 'all') { ... }
     
     data.sort((a, b) => {
+        if (sortKey === 'netWorth') {
+            const valA = parseFloat(a.netWorth.replace('$', '').replace('M', ''));
+            const valB = parseFloat(b.netWorth.replace('$', '').replace('M', ''));
+            return valB - valA;
+        }
+
         const valA = a[sortKey as keyof LeaderboardWallet];
         const valB = b[sortKey as keyof LeaderboardWallet];
 
@@ -97,115 +91,85 @@ export function Leaderboard() {
             return valB - valA; // Sort descending for numbers
         }
         
-        // For rank, sort ascending
-        if(sortKey === 'rank') {
-            if (typeof valA === 'number' && typeof valB === 'number') {
-                return valA - valB;
-            }
-        }
-        
-        // Fallback for other types
-        if (valA! > valB!) return -1;
-        if (valA! < valB!) return 1;
         return 0;
     });
 
     return data;
-  }, [searchTerm, tagFilter, sortKey]);
+  }, [tokenFilter, sortKey]);
 
   return (
-    <Card>
-        <CardHeader>
-             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                 <div>
-                    <CardTitle>Top Wallet Leaderboard</CardTitle>
-                    <CardDescription>Discover top-performing wallets based on their recent activity and profitability.</CardDescription>
-                 </div>
-                 <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
-                    <div className="relative w-full sm:w-auto">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input 
-                            placeholder="Search by alias or address" 
-                            className="pl-9 w-full sm:w-[250px]"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                    </div>
-                     <Select value={tagFilter} onValueChange={setTagFilter}>
-                        <SelectTrigger className="w-full sm:w-[150px]">
-                            <SelectValue placeholder="Filter by Tag" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="all">All Tags</SelectItem>
-                            {allTags.map(tag => <SelectItem key={tag} value={tag}>{tag}</SelectItem>)}
-                        </SelectContent>
-                     </Select>
-                     <Select value={sortKey} onValueChange={(val) => setSortKey(val as keyof LeaderboardWallet)}>
-                        <SelectTrigger className="w-full sm:w-[150px]">
-                            <SelectValue placeholder="Sort By" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="rank">Rank</SelectItem>
-                            <SelectItem value="pnl7d">7d P&L</SelectItem>
-                            <SelectItem value="pnl24h">24h P&L</SelectItem>
-                            <SelectItem value="winRate">Win Rate</SelectItem>
-                            <SelectItem value="trades">Trades</SelectItem>
-                        </SelectContent>
-                     </Select>
-                 </div>
+    <Dialog open={isAlertEditorOpen} onOpenChange={setIsAlertEditorOpen}>
+        <div className="space-y-4">
+            <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
+                <div className="relative w-full sm:w-auto sm:flex-1 md:max-w-xs">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input 
+                        placeholder="Filter by top token..." 
+                        className="pl-9 w-full"
+                        value={tokenFilter}
+                        onChange={(e) => setTokenFilter(e.target.value)}
+                    />
+                </div>
+                    <Select value={chainFilter} onValueChange={setChainFilter}>
+                    <SelectTrigger className="w-full sm:w-[180px]">
+                        <SelectValue placeholder="Filter by Tag" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="all">All Chains</SelectItem>
+                        <SelectItem value="ethereum">Ethereum</SelectItem>
+                        <SelectItem value="solana">Solana</SelectItem>
+                    </SelectContent>
+                    </Select>
             </div>
-        </CardHeader>
-        <CardContent className="p-0">
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[80px] text-center">Rank</TableHead>
-                  <TableHead>Wallet</TableHead>
-                  <TableHead>7d P&L</TableHead>
-                  <TableHead>24h P&L</TableHead>
-                  <TableHead>Win Rate</TableHead>
-                  <TableHead># of Trades (7d)</TableHead>
-                  <TableHead>Last Active</TableHead>
-                  <TableHead>Tags</TableHead>
-                  <TableHead className="text-right w-[100px]">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {sortedAndFilteredData.length > 0 ? sortedAndFilteredData.map((wallet) => (
-                  <TableRow key={wallet.address} className="cursor-pointer hover:bg-muted/50">
-                    <RankCell rank={wallet.rank} />
-                    <WalletCell alias={wallet.alias} address={wallet.address} />
-                    <PnlCell value={wallet.pnl7d} />
-                    <PnlCell value={wallet.pnl24h} />
-                    <TableCell>
-                        <div className="flex items-center gap-1.5">
-                            <Percent className='h-4 w-4 text-muted-foreground' />
-                            <span className='font-medium'>{wallet.winRate}%</span>
-                        </div>
-                    </TableCell>
-                    <TableCell>{wallet.trades}</TableCell>
-                    <TableCell>{wallet.lastActive}</TableCell>
-                    <TableCell>
-                        <div className="flex items-center gap-1 flex-wrap">
-                            {wallet.tags.map(tag => <Badge key={tag} variant="secondary">{tag}</Badge>)}
-                        </div>
-                    </TableCell>
-                    <TableCell className="text-right">
-                        <WatchlistButton identifier={wallet.address} type="wallet" />
-                    </TableCell>
-                  </TableRow>
-                )) : (
-                    <TableRow>
-                        <TableCell colSpan={9} className="h-24 text-center">
-                            No wallets found.
-                        </TableCell>
-                    </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </div>
-        </CardContent>
-      </Card>
+            <Card>
+                <CardContent className="p-0">
+                <div className="overflow-x-auto">
+                    <Table>
+                    <TableHeader>
+                        <TableRow>
+                        <TableHead className="w-[60px] text-center">#</TableHead>
+                        <TableHead>Wallet</TableHead>
+                        <TableHead>Net Worth</TableHead>
+                        <TableHead>Top Holding</TableHead>
+                        <TableHead>7d PnL</TableHead>
+                        <TableHead>7d Activity</TableHead>
+                        <TableHead className="text-right w-[100px]">Actions</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {sortedAndFilteredData.length > 0 ? sortedAndFilteredData.map((wallet, index) => (
+                        <TableRow key={wallet.address} className="cursor-pointer hover:bg-muted/50">
+                            <TableCell className='text-center text-muted-foreground'>{index + 1}</TableCell>
+                            <WalletCell address={wallet.address} />
+                            <TableCell className="font-medium">{wallet.netWorth}</TableCell>
+                            <TopHoldingCell holding={wallet.topHolding} />
+                            <PnlCell value={wallet.pnl7d} />
+                            <TableCell>{wallet.activity} txns</TableCell>
+                            <TableCell className="text-right">
+                                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => handleAlertClick(e, wallet.address)}>
+                                    <Zap className="h-4 w-4" />
+                                </Button>
+                            </TableCell>
+                        </TableRow>
+                        )) : (
+                            <TableRow>
+                                <TableCell colSpan={7} className="h-24 text-center">
+                                    No wallets found.
+                                </TableCell>
+                            </TableRow>
+                        )}
+                    </TableBody>
+                    </Table>
+                </div>
+                </CardContent>
+            </Card>
+        </div>
+         {alertEntity && (
+            <AlertEditorDialog
+                onOpenChange={setIsAlertEditorOpen}
+                entity={alertEntity}
+            />
+        )}
+    </Dialog>
   );
 }
