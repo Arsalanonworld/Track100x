@@ -58,5 +58,4 @@ export const StickyScrollFeatures = ({
     </div>
   );
 };
-
     
