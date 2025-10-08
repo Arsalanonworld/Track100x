@@ -14,14 +14,15 @@ export const LogoIcon = () => (
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth="1.5"
+      strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
       className="h-7 w-7 text-primary"
     >
-      <path d="M3 12C3 12 5.5 7 12 7C18.5 7 21 12 21 12" />
-      <path d="M21 12C21 12 18.5 17 12 17C5.5 17 3 12 3 12" />
-      <circle cx="12" cy="12" r="2" />
+      <path d="M12 8L12 16" />
+      <path d="M9 13L12 16L15 13" />
+      <path d="M17.65 6.35a9 9 0 1 1-11.3 0" />
+      <path d="M15.53 8.47a5 5 0 1 1-7.06 0" />
     </svg>
 );
 
