@@ -21,7 +21,6 @@ export const LogoIcon = () => (
     >
       <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
       <circle cx="12" cy="12" r="3" />
-      <path d="m12 9 1.5 1.5M13.5 9h-3" />
     </svg>
 );
 
