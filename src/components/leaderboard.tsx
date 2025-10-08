@@ -23,21 +23,11 @@ import { Input } from './ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { useToast } from '@/hooks/use-toast';
 
-const TrendingUpIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M18 6L18 12L12 12" />
-        <path d="M6 18L18 6" />
-    </svg>
-)
-
 const allTags = [...new Set(leaderboardData.flatMap(w => w.tags))];
 
 const PnlCell = ({ value }: { value: number }) => (
     <TableCell className={cn("font-medium text-sm", value >= 0 ? "text-green-500" : "text-red-500")}>
-      <div className='flex items-center gap-1'>
-        {value >= 0 ? <TrendingUpIcon /> : <TrendingDown className="h-4 w-4" />}
-        {value.toFixed(2)}%
-      </div>
+      {value >= 0 ? '+' : ''}{value.toFixed(2)}%
     </TableCell>
 );
   
