@@ -13,7 +13,7 @@ export const HomePageCta = () => {
             <Link href="/watchlist" passHref>
               <AnimatedButton size="lg">
                   Create a Free Alert
-                  <ArrowRight className="ml-2" />
+                  <ArrowRight className="ml-2 h-4 w-4" />
               </AnimatedButton>
             </Link>
         </div>
