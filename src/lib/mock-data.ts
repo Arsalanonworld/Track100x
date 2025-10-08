@@ -212,72 +212,58 @@ export const triggeredAlerts: TriggeredAlert[] = [
 ];
 
 export const leaderboardData: LeaderboardWallet[] = [
-    {
-        address: '0xde0b295669a9fd93d5f28d9ec85e40f4cb697bae',
-        alias: 'Meme Mogul',
-        netWorth: '$12.5M',
-        pnl7d: 125.75,
-        pnl24h: 15.2,
-        winRate: 88,
-        trades: 42,
-        lastActive: '3h ago',
-        tags: ['Memecoins', 'High Volume']
-    },
-    {
-        address: '0x742d54eC7E1E43D35eaA64324f40f28E23744e88',
-        alias: 'DeFi Duke',
-        netWorth: '$8.2M',
-        pnl7d: 88.2,
-        pnl24h: 5.1,
-        winRate: 72,
-        trades: 112,
-        lastActive: '30m ago',
-        tags: ['DeFi', 'Yield Farming']
-    },
-    {
-        address: '0xbe0eb53f46cd790cd13851d5eff43d12404d33e8',
-        alias: 'Alpha Seeker',
-        netWorth: '$25.1M',
-        pnl7d: 75.9,
-        pnl24h: -2.3,
-        winRate: 65,
-        trades: 89,
-        lastActive: '1d ago',
-        tags: ['Altcoins']
-    },
-    {
-        address: '0xf977814e90da44bfa03b6295a0616a897441acec',
-        alias: 'Solana Surfer',
-        netWorth: '$5.8M',
-        pnl7d: 68.4,
-        pnl24h: 22.8,
-        winRate: 75,
-        trades: 68,
-        lastActive: '1h ago',
-        tags: ['Solana Eco']
-    },
-    {
-        address: '0xfa52274dd61e1643d2205169732f291140b340b3',
-        alias: 'NFT King',
-        netWorth: '$2.3M',
-        pnl7d: 45.1,
-        pnl24h: 0.5,
-        winRate: 55,
-        trades: 25,
-        lastActive: '8h ago',
-        tags: ['NFTs']
-    },
-     {
-        address: '0x503828976D22510aad0201ac7EC88293211D2383',
-        alias: 'The Accumulator',
-        netWorth: '$55.6M',
-        pnl7d: 22.5,
-        pnl24h: 1.2,
-        winRate: 95,
-        trades: 15,
-        lastActive: '3d ago',
-        tags: ['Blue Chips']
-    },
+  {
+    address: '0xde0b295669a9fd93d5f28d9ec85e40f4cb697bae',
+    netWorth: '$12.5M',
+    topHolding: { token: 'WIF', percentage: 45 },
+    pnl7d: 125.75,
+    pnl24h: 15.2,
+    activity: 88,
+    tags: ['Memecoin'],
+  },
+  {
+    address: '0x742d54eC7E1E43D35eaA64324f40f28E23744e88',
+    netWorth: '$8.2M',
+    topHolding: { token: 'ETH', percentage: 60 },
+    pnl7d: 88.2,
+    pnl24h: 5.1,
+    activity: 72,
+    tags: ['DeFi'],
+  },
+  {
+    address: '0xbe0eb53f46cd790cd13851d5eff43d12404d33e8',
+    netWorth: '$25.1M',
+    topHolding: { token: 'BTC', percentage: 80 },
+    pnl7d: 75.9,
+    pnl24h: -2.3,
+    activity: 65,
+    tags: ['DeFi'],
+  },
+  {
+    address: '0xf977814e90da44bfa03b6295a0616a897441acec',
+    netWorth: '$5.8M',
+    topHolding: { token: 'SOL', percentage: 70 },
+    pnl7d: 68.4,
+    pnl24h: 22.8,
+    activity: 75,
+    tags: ['Airdrop'],
+  },
+  {
+    address: '0xfa52274dd61e1643d2205169732f291140b340b3',
+    netWorth: '$2.3M',
+    topHolding: { token: 'RNDR', percentage: 30 },
+    pnl7d: 45.1,
+    pnl24h: 0.5,
+    activity: 55,
+    tags: ['NFT'],
+  },
+  {
+    address: '0x503828976D22510aad0201ac7EC88293211D2383',
+    netWorth: '$55.6M',
+    topHolding: { token: 'USDC', percentage: 90 },
+    pnl7d: 22.5,
+    pnl24h: 1.2,
+    activity: 95,
+    tags: ['NFT'],
+  },
 ];
-
-
