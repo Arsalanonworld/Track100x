@@ -4,7 +4,7 @@
 import * as React from "react"
 import Link, { type LinkProps } from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { Menu, Rss, Eye } from "lucide-react"
+import { Menu, Rss, Eye, Trophy } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -18,6 +18,7 @@ export function MobileNav() {
 
   const navItems = [
       { href: '/feed', label: 'Whale Feed', icon: Rss, visible: true },
+      { href: '/leaderboard', label: 'Leaderboard', icon: Trophy, visible: true },
       { href: '/watchlist', label: 'Watchlist', icon: Eye, visible: true },
   ];
 

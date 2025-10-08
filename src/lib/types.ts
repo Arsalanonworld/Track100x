@@ -70,3 +70,23 @@ export type WhaleTransaction = {
   type: 'transfer' | 'swap' | string;
 };
     
+export type TriggeredAlert = {
+    id: string;
+    rule: string;
+    entity: string;
+    time: string;
+    value: string;
+    target?: string;
+};
+
+export type LeaderboardWallet = {
+    rank: number;
+    address: string;
+    alias: string;
+    pnl7d: number;
+    pnl24h: number;
+    winRate: number;
+    trades: number;
+    lastActive: string;
+    tags: string[];
+};

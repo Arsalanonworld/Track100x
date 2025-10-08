@@ -13,6 +13,7 @@ export function MainNav() {
 
     const navItems = [
         { href: '/feed', label: 'Whale Feed', visible: true },
+        { href: '/leaderboard', label: 'Leaderboard', visible: true },
         { href: '/watchlist', label: 'Watchlist', visible: true },
     ];
     

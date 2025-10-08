@@ -1,15 +1,5 @@
 
-import type { WhaleTransaction } from './types';
-
-// This is a mock type for demonstration. In a real app, it would be in types.ts
-export type TriggeredAlert = {
-    id: string;
-    rule: string;
-    entity: string;
-    time: string;
-    value: string;
-    target?: string;
-};
+import type { WhaleTransaction, TriggeredAlert, LeaderboardWallet } from './types';
 
 
 export const whaleTransactions: WhaleTransaction[] = [
@@ -218,4 +208,73 @@ export const triggeredAlerts: TriggeredAlert[] = [
         time: '3h ago',
         value: 'Wallet active after 98 days',
     }
-]
+];
+
+export const leaderboardData: LeaderboardWallet[] = [
+    {
+        rank: 1,
+        address: '0xde0b295669a9fd93d5f28d9ec85e40f4cb697bae',
+        alias: 'Meme Mogul',
+        pnl7d: 125.75,
+        pnl24h: 15.2,
+        winRate: 88,
+        trades: 42,
+        lastActive: '3h ago',
+        tags: ['Memecoins', 'High Volume']
+    },
+    {
+        rank: 2,
+        address: '0x742d35cc6634c0532925a3b844bc454e4438f44e',
+        alias: 'DeFi Duke',
+        pnl7d: 88.2,
+        pnl24h: 5.1,
+        winRate: 72,
+        trades: 112,
+        lastActive: '30m ago',
+        tags: ['DeFi', 'Yield Farming']
+    },
+    {
+        rank: 3,
+        address: '0xbe0eb53f46cd790cd13851d5eff43d12404d33e8',
+        alias: 'Alpha Seeker',
+        pnl7d: 75.9,
+        pnl24h: -2.3,
+        winRate: 65,
+        trades: 89,
+        lastActive: '1d ago',
+        tags: ['Altcoins']
+    },
+    {
+        rank: 4,
+        address: '0xf977814e90da44bfa03b6295a0616a897441acec',
+        alias: 'Solana Surfer',
+        pnl7d: 68.4,
+        pnl24h: 22.8,
+        winRate: 75,
+        trades: 68,
+        lastActive: '1h ago',
+        tags: ['Solana Eco']
+    },
+     {
+        rank: 5,
+        address: '0xfa52274dd61e1643d2205169732f29114bc240b3',
+        alias: 'NFT King',
+        pnl7d: 45.1,
+        pnl24h: 0.5,
+        winRate: 55,
+        trades: 25,
+        lastActive: '8h ago',
+        tags: ['NFTs']
+    },
+     {
+        rank: 6,
+        address: '0x503828976d22510aad0201ac7ec88293211d2383',
+        alias: 'The Accumulator',
+        pnl7d: 22.5,
+        pnl24h: 1.2,
+        winRate: 95,
+        trades: 15,
+        lastActive: '3d ago',
+        tags: ['Blue Chips']
+    }
+];
