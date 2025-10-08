@@ -88,4 +88,5 @@ export type LeaderboardWallet = {
     };
     pnl7d: number;
     activity: number;
+    tags?: string[];
 };

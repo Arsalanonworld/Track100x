@@ -215,69 +215,79 @@ export const leaderboardData: LeaderboardWallet[] = [
         netWorth: '$55.20M',
         topHolding: { token: 'WETH', percentage: 45 },
         pnl7d: 23.45,
-        activity: 88
+        activity: 88,
+        tags: ['DeFi', 'Airdrop']
     },
     {
         address: '0x345678901234567890123456789012345678defg',
         netWorth: '$48.10M',
         topHolding: { token: 'WIF', percentage: 60 },
         pnl7d: 18.20,
-        activity: 120
+        activity: 120,
+        tags: ['Memecoin', 'Solana']
     },
     {
         address: '0x567890123456789012345678901234567890ghij',
         netWorth: '$32.80M',
         topHolding: { token: 'PEPE', percentage: 30 },
         pnl7d: 56.00,
-        activity: 250
+        activity: 250,
+        tags: ['Memecoin']
     },
     {
         address: '0x789012345678901234567890123456789012jklm',
         netWorth: '$29.20M',
         topHolding: { token: 'BONK', percentage: 75 },
         pnl7d: -8.20,
-        activity: 31
+        activity: 31,
+        tags: ['Memecoin', 'Solana']
     },
     {
         address: '0x901234567890123456789012345678901234mnop',
         netWorth: '$17.50M',
         topHolding: { token: 'USDT', percentage: 90 },
         pnl7d: 9.50,
-        activity: 55
+        activity: 55,
+        tags: ['Stablecoin']
     },
     {
         address: '0xab1234567890123456789012345678901234f123',
         netWorth: '$15.30M',
         topHolding: { token: 'ETH', percentage: 50 },
         pnl7d: 4.50,
-        activity: 42
+        activity: 42,
+        tags: ['DeFi']
     },
     {
         address: '0xcd4567890123456789012345678901234567e456',
         netWorth: '$11.90M',
         topHolding: { token: 'USDC', percentage: 80 },
         pnl7d: 12.80,
-        activity: 99
+        activity: 99,
+        tags: ['Stablecoin']
     },
     {
         address: '0xef7890123456789012345678901234567890d789',
         netWorth: '$8.70M',
         topHolding: { token: 'RNDR', percentage: 40 },
         pnl7d: -31.00,
-        activity: 180
+        activity: 180,
+        tags: ['AI', 'DePIN']
     },
     {
         address: '0x1a2b3c4d5e6f1a2b3c4d5e6f1a2b3c4d5e6fb3c4',
         netWorth: '$6.10M',
         topHolding: { token: 'LINK', percentage: 25 },
         pnl7d: 7.80,
-        activity: 34
+        activity: 34,
+        tags: ['Oracle', 'DeFi']
     },
     {
         address: '0x2b3c4d5e6f1a2b3c4d5e6f1a2b3c4d5e6f1ac5d6',
         netWorth: '$4.50M',
         topHolding: { token: 'JUP', percentage: 35 },
         pnl7d: 6.20,
-        activity: 72
+        activity: 72,
+        tags: ['DEX', 'Solana']
     },
 ];
