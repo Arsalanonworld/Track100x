@@ -12,11 +12,10 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { leaderboardData, type LeaderboardWallet } from '@/lib/mock-data';
-import { ArrowRight, Trophy, TrendingDown, Percent, Copy, Search } from 'lucide-react';
+import { Percent, Copy, Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/card';
 import { WatchlistButton } from './track-button';
-import Link from 'next/link';
 import { getExplorerUrl } from '@/lib/explorers';
 import { useState, useMemo } from 'react';
 import { Input } from './ui/input';

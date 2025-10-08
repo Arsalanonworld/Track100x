@@ -6,10 +6,10 @@ export const whaleTransactions: WhaleTransaction[] = [
   {
     id: '1',
     txHash: '0xabc...def',
-    from: '0x1234...5678',
+    from: '0x1234567890123456789012345678901234567890',
     fromShort: '0x1234',
     fromTags: ['Whale'],
-    to: '0x9876...5432',
+    to: '0x9876543210987654321098765432109876543210',
     toShort: 'Binance',
     toTags: ['CEX'],
     token: {
@@ -25,10 +25,10 @@ export const whaleTransactions: WhaleTransaction[] = [
   {
     id: '2',
     txHash: '0xghi...jkl',
-    from: '0xabcd...ef12',
+    from: '0xabcdef1234567890abcdef1234567890abcdef12',
     fromShort: '0xabcd',
     fromTags: [],
-    to: '0xfedc...ba98',
+    to: '0xfedcba9876543210fedcba9876543210fedcba98',
     toShort: 'Uniswap',
     toTags: ['DEX'],
     token: {
@@ -43,10 +43,10 @@ export const whaleTransactions: WhaleTransaction[] = [
   },
     {
     id: '3',
-    txHash: '0x mno...pqr',
-    from: '0x5555...6666',
+    txHash: '0x mnopqr',
+    from: '0x5555555555555555555555555555555555555555',
     fromShort: '0x5555',
-    to: '0x7777...8888',
+    to: '0x7777777777777777777777777777777777777777',
     toShort: '0x7777',
     token: {
       symbol: 'USDT',
@@ -60,10 +60,10 @@ export const whaleTransactions: WhaleTransaction[] = [
   },
   {
     id: '4',
-    txHash: '0xstu...vwx',
-    from: '0x9999...aaaa',
+    txHash: '0xstuvwx',
+    from: '0x9999999999999999999999999999999999999999',
     fromShort: '0x9999',
-    to: '0xbbbb...cccc',
+    to: '0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
     toShort: '0xbbbb',
     fromTags: ['Whale'],
     token: {
@@ -78,10 +78,10 @@ export const whaleTransactions: WhaleTransaction[] = [
   },
   {
     id: '5',
-    txHash: '0xdef...abc',
-    from: '0xdddd...eeee',
+    txHash: '0xdefabc',
+    from: '0xdddddddddddddddddddddddddddddddddddddddd',
     fromShort: '0xdddd',
-    to: '0xffff...gggg',
+    to: '0xffffffffffffffffffffffffffffffffffffffff',
     toShort: '0xffff',
     token: {
       symbol: 'BONK',
@@ -95,10 +95,10 @@ export const whaleTransactions: WhaleTransaction[] = [
   },
    {
     id: '6',
-    txHash: '0xzyx...wvu',
-    from: '0x1a2b...3c4d',
+    txHash: '0xzyxwvu',
+    from: '0x1a2b3c4d5e6f1a2b3c4d5e6f1a2b3c4d5e6f1a2b',
     fromShort: '0x1a2b',
-    to: '0x5e6f...7g8h',
+    to: '0x5e6f7g8h9i1j5e6f7g8h9i1j5e6f7g8h9i1j5e6f',
     toShort: 'Coinbase',
     toTags: ['CEX'],
     token: {
@@ -113,10 +113,10 @@ export const whaleTransactions: WhaleTransaction[] = [
   },
   {
     id: '7',
-    txHash: '0xabc...123',
-    from: '0x9876...fedc',
+    txHash: '0xabc123',
+    from: '0x9876fedcba9876fedcba9876fedcba9876fedcba',
     fromShort: '0x9876',
-    to: '0x1234...abcd',
+    to: '0x1234abcd1234abcd1234abcd1234abcd1234abcd',
     toShort: '0x1234',
     fromTags: ['Whale'],
     token: {
@@ -131,10 +131,10 @@ export const whaleTransactions: WhaleTransaction[] = [
   },
   {
     id: '8',
-    txHash: '0x456...def',
-    from: '0x11aa...22bb',
+    txHash: '0x456def',
+    from: '0x11aa22bb33cc44dd55ee66ff77gg88hh99ii00jj',
     fromShort: '0x11aa',
-    to: '0x33cc...44dd',
+    to: '0x33cc44dd55ee66ff77gg88hh99ii00jj11kk22ll',
     toShort: 'AAVE',
     toTags: ['Protocol'],
     token: {
@@ -149,10 +149,10 @@ export const whaleTransactions: WhaleTransaction[] = [
   },
   {
     id: '9',
-    txHash: '0x789...ghi',
-    from: '0xeeff...gg00',
+    txHash: '0x789ghi',
+    from: '0xeeffgg00hhii112233445566778899aabbccdde',
     fromShort: '0xeeff',
-to: '0xa1b2...c3d4',
+to: '0xa1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2',
     toShort: '0xa1b2',
     token: {
       symbol: 'AVAX',
@@ -166,11 +166,11 @@ to: '0xa1b2...c3d4',
   },
   {
     id: '10',
-    txHash: '0xjkl...mno',
-    from: '0xf0e1...d2c3',
+    txHash: '0xjklmno',
+    from: '0xf0e1d2c3b4a59687f0e1d2c3b4a59687f0e1d2c3',
     fromShort: '0xf0e1',
     fromTags: ['Whale'],
-    to: '0xb4a5...9687',
+    to: '0xb4a59687f0e1d2c3b4a59687f0e1d2c3b4a59687',
     toShort: '0xb4a5',
     token: {
       symbol: 'DOGE',
