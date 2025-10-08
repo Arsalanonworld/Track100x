@@ -12,19 +12,26 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { leaderboardData, type LeaderboardWallet } from '@/lib/mock-data';
-import { ArrowRight, Trophy, TrendingUp, TrendingDown, Percent } from 'lucide-react';
+import { ArrowRight, Trophy, TrendingDown, Percent } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Card, CardContent } from './ui/card';
 import { WatchlistButton } from './track-button';
 import Link from 'next/link';
 import { getExplorerUrl } from '@/lib/explorers';
 
+const TrendingUpIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-trending-up">
+        <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/>
+        <polyline points="16 7 22 7 22 13"/>
+    </svg>
+)
+
 export function Leaderboard() {
   
   const PnlCell = ({ value }: { value: number }) => (
     <TableCell className={cn("font-medium", value >= 0 ? "text-green-500" : "text-red-500")}>
       <div className='flex items-center gap-1'>
-        {value >= 0 ? <TrendingUp className="h-4 w-4"/> : <TrendingDown className="h-4 w-4" />}
+        {value >= 0 ? <TrendingUpIcon /> : <TrendingDown className="h-4 w-4" />}
         {value.toFixed(2)}%
       </div>
     </TableCell>
