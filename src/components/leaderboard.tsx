@@ -21,7 +21,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Dialog, DialogTrigger } from './ui/dialog';
 import { AlertEditorDialog } from './alert-editor-dialog';
 import { Badge } from './ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { CryptoIcon } from './crypto-icon';
 
 
@@ -127,84 +126,87 @@ const LeaderboardTable = ({ data }: { data: LeaderboardWallet[] }) => {
 
 
 export function Leaderboard() {
-  const [tokenFilter, setTokenFilter] = useState('');
+  const [searchFilter, setSearchFilter] = useState('');
   const [tagFilter, setTagFilter] = useState('all');
-  const [activeTab, setActiveTab] = useState('smart-money');
+  const [sortBy, setSortBy] = useState('pnl7d');
 
-  const topWhalesData = useMemo(() => {
-    let data = [...leaderboardData];
-     data.sort((a, b) => {
-        const valA = parseFloat(a.netWorth.replace('$', '').replace('M', ''));
-        const valB = parseFloat(b.netWorth.replace('$', '').replace('M', ''));
-        return valB - valA;
+  const allTags = useMemo(() => {
+    const tags = new Set<string>();
+    leaderboardData.forEach(wallet => {
+        wallet.tags?.forEach(tag => tags.add(tag));
     });
-    return data;
-  }, []);
-  
-  const smartMoneyData = useMemo(() => {
-     let data = [...leaderboardData];
-     data.sort((a, b) => b.pnl7d - a.pnl7d);
-     return data;
+    return ['all', ...Array.from(tags)];
   }, []);
 
-  const topHoldersData = useMemo(() => {
-    if (!tokenFilter) return [];
-    
-    let data = [...leaderboardData].filter(wallet => 
-        wallet.topHolding.token.toLowerCase().includes(tokenFilter.toLowerCase())
-    );
+  const filteredAndSortedData = useMemo(() => {
+    let data = [...leaderboardData];
 
-    // This is mock logic. Real implementation would sort by amount of the filtered token.
-    data.sort((a, b) => b.topHolding.percentage - a.topHolding.percentage);
+    // Filter by search
+    if (searchFilter) {
+        data = data.filter(wallet => 
+            wallet.address.toLowerCase().includes(searchFilter.toLowerCase()) ||
+            wallet.topHolding.token.toLowerCase().includes(searchFilter.toLowerCase())
+        );
+    }
     
+    // Filter by tag
+    if (tagFilter !== 'all') {
+        data = data.filter(wallet => wallet.tags?.includes(tagFilter));
+    }
+    
+    // Sort
+    data.sort((a, b) => {
+        switch (sortBy) {
+            case 'netWorth':
+                const valA = parseFloat(a.netWorth.replace('$', '').replace('M', ''));
+                const valB = parseFloat(b.netWorth.replace('$', '').replace('M', ''));
+                return valB - valA;
+            case 'activity':
+                return b.activity - a.activity;
+            case 'pnl7d':
+            default:
+                return b.pnl7d - a.pnl7d;
+        }
+    });
+
     return data;
-  }, [tokenFilter])
+  }, [searchFilter, tagFilter, sortBy]);
 
 
   return (
         <div className="space-y-6">
-            <Tabs value={activeTab} onValueChange={setActiveTab}>
-                <TabsList className="grid grid-cols-2 sm:grid-cols-3 h-auto">
-                    <TabsTrigger value="smart-money" className="py-2.5">
-                        <Trophy className="h-4 w-4 mr-2"/> Smart Money
-                    </TabsTrigger>
-                    <TabsTrigger value="top-whales" className="py-2.5">
-                        <Flame className="h-4 w-4 mr-2"/> Top Whales
-                    </TabsTrigger>
-                    <TabsTrigger value="top-holders" className="py-2.5">
-                       <Coins className="h-4 w-4 mr-2"/> Top Holders
-                    </TabsTrigger>
-                </TabsList>
-                <TabsContent value="smart-money">
-                    <p className="text-muted-foreground mb-4 text-sm max-w-2xl">
-                        Wallets with the highest realized and unrealized profits.
-                    </p>
-                    <LeaderboardTable data={smartMoneyData} />
-                </TabsContent>
-                <TabsContent value="top-whales">
-                     <p className="text-muted-foreground mb-4 text-sm max-w-2xl">
-                       The largest wallets by net worth across all tracked tokens.
-                    </p>
-                    <LeaderboardTable data={topWhalesData} />
-                </TabsContent>
-                <TabsContent value="top-holders">
-                    <p className="text-muted-foreground mb-4 text-sm max-w-2xl">
-                       Find the biggest holders of a specific token.
-                    </p>
-                     <div className="flex flex-col sm:flex-row gap-2 w-full mb-4">
-                        <div className="relative w-full sm:w-auto sm:flex-1 md:max-w-xs">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                            <Input 
-                                placeholder="Filter by token (e.g., WIF)" 
-                                className="pl-9 w-full"
-                                value={tokenFilter}
-                                onChange={(e) => setTokenFilter(e.target.value)}
-                            />
-                        </div>
-                    </div>
-                    <LeaderboardTable data={topHoldersData} />
-                </TabsContent>
-            </Tabs>
+            <div className="flex flex-col sm:flex-row gap-2 w-full">
+                <div className="relative w-full sm:w-auto sm:flex-1 md:max-w-xs">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input 
+                        placeholder="Filter by address or token..." 
+                        className="pl-9 w-full"
+                        value={searchFilter}
+                        onChange={(e) => setSearchFilter(e.target.value)}
+                    />
+                </div>
+                 <Select value={tagFilter} onValueChange={setTagFilter}>
+                    <SelectTrigger className='sm:max-w-[180px]'>
+                        <SelectValue placeholder="Filter by tag..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {allTags.map(tag => (
+                           <SelectItem key={tag} value={tag}>{tag === 'all' ? 'All Tags' : tag}</SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+                <Select value={sortBy} onValueChange={setSortBy}>
+                    <SelectTrigger className='sm:max-w-[180px]'>
+                        <SelectValue placeholder="Sort by..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="pnl7d">Sort by 7d PnL</SelectItem>
+                        <SelectItem value="netWorth">Sort by Net Worth</SelectItem>
+                        <SelectItem value="activity">Sort by Activity</SelectItem>
+                    </SelectContent>
+                </Select>
+            </div>
+            <LeaderboardTable data={filteredAndSortedData} />
         </div>
   );
 }
