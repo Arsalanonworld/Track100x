@@ -230,7 +230,7 @@ export const leaderboardData: LeaderboardWallet[] = [
     pnl7d: 125.75,
     pnl24h: 15.2,
     activity: 88,
-    tags: ['Memecoin'],
+    tags: ['Smart Money', 'Memecoin Sniper'],
   },
   {
     address: '0x742d54eC7E1E43D35eaA64324f40f28E23744e88',
@@ -239,7 +239,7 @@ export const leaderboardData: LeaderboardWallet[] = [
     pnl7d: 88.2,
     pnl24h: 5.1,
     activity: 72,
-    tags: ['DeFi'],
+    tags: ['Smart Money', 'DeFi Farmer'],
   },
   {
     address: '0xbe0eb53f46cd790cd13851d5eff43d12404d33e8',
@@ -248,7 +248,7 @@ export const leaderboardData: LeaderboardWallet[] = [
     pnl7d: 75.9,
     pnl24h: -2.3,
     activity: 65,
-    tags: ['DeFi'],
+    tags: ['Top Whale'],
   },
   {
     address: '0xf977814e90da44bfa03b6295a0616a897441acec',
@@ -257,7 +257,7 @@ export const leaderboardData: LeaderboardWallet[] = [
     pnl7d: 68.4,
     pnl24h: 22.8,
     activity: 75,
-    tags: ['Airdrop'],
+    tags: ['Airdrop Farmer'],
   },
   {
     address: '0xfa52274dd61e1643d2205169732f291140b340b3',
@@ -266,7 +266,7 @@ export const leaderboardData: LeaderboardWallet[] = [
     pnl7d: 45.1,
     pnl24h: 0.5,
     activity: 55,
-    tags: ['NFT'],
+    tags: ['NFT Whale'],
   },
   {
     address: '0x503828976D22510aad0201ac7EC88293211D2383',
@@ -275,7 +275,7 @@ export const leaderboardData: LeaderboardWallet[] = [
     pnl7d: 22.5,
     pnl24h: 1.2,
     activity: 95,
-    tags: ['NFT'],
+    tags: ['Top Whale', 'Stablecoin King'],
   },
 ];
 
