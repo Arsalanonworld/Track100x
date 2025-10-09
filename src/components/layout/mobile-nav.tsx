@@ -18,7 +18,6 @@ export function MobileNav() {
 
   const navItems = [
       { href: '/feed', label: 'Whale Feed', icon: Rss, visible: true },
-      { href: '/chart', label: 'Chart', icon: BarChart3, visible: true },
       { href: '/leaderboard', label: 'Leaderboard', icon: Trophy, visible: true },
       { href: '/watchlist', label: 'Watchlist', icon: Eye, visible: true },
   ];
