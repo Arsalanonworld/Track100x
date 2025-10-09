@@ -11,17 +11,18 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { leaderboardData, type LeaderboardWallet } from '@/lib/mock-data';
-import { Search, ArrowUp, ArrowDown, Zap } from 'lucide-react';
+import { Search, ArrowUp, ArrowDown, Zap, Trophy, Flame, Coins } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Card, CardContent } from './ui/card';
 import { getExplorerUrl } from '@/lib/explorers';
 import { useState, useMemo } from 'react';
 import { Input } from './ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogTrigger } from './ui/dialog';
 import { AlertEditorDialog } from './alert-editor-dialog';
 import { Badge } from './ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { CryptoIcon } from './crypto-icon';
 
 
 const PnlCell = ({ value }: { value: number }) => (
@@ -46,99 +47,26 @@ const WalletCell = ({ address }: { address: string}) => {
 const TopHoldingCell = ({ holding }: { holding: { token: string, percentage: number }}) => {
     return (
         <TableCell>
-            <div className='font-medium'>{holding.token} <span className='text-muted-foreground'>({holding.percentage}%)</span></div>
+           <div className='flex items-center gap-2 font-medium'>
+                <CryptoIcon token={holding.token} className='h-5 w-5'/>
+                {holding.token} <span className='text-muted-foreground'>({holding.percentage}%)</span>
+           </div>
         </TableCell>
     )
 }
 
+const LeaderboardTable = ({ data }: { data: LeaderboardWallet[] }) => {
+    const [alertEntity, setAlertEntity] = useState<{type: 'wallet', identifier: string} | null>(null);
+    const [isAlertEditorOpen, setIsAlertEditorOpen] = useState(false);
 
-export function Leaderboard() {
-  const [tokenFilter, setTokenFilter] = useState('');
-  const [chainFilter, setChainFilter] = useState('all');
-  const [tagFilter, setTagFilter] = useState('all');
-  const [sortKey, setSortKey] = useState<keyof LeaderboardWallet | 'netWorth'>('netWorth');
-  const [alertEntity, setAlertEntity] = useState<{type: 'wallet', identifier: string} | null>(null);
-  const [isAlertEditorOpen, setIsAlertEditorOpen] = useState(false);
-
-  const handleAlertClick = (e: React.MouseEvent, address: string) => {
-    e.stopPropagation();
-    setAlertEntity({type: 'wallet', identifier: address});
-    setIsAlertEditorOpen(true);
-  }
-
-  const sortedAndFilteredData = useMemo(() => {
-    let data = [...leaderboardData];
-
-    if (tokenFilter) {
-        data = data.filter(wallet => 
-            wallet.topHolding.token.toLowerCase().includes(tokenFilter.toLowerCase()) ||
-            wallet.address.toLowerCase().includes(tokenFilter.toLowerCase())
-        );
+    const handleAlertClick = (e: React.MouseEvent, address: string) => {
+        e.stopPropagation();
+        setAlertEntity({type: 'wallet', identifier: address});
+        setIsAlertEditorOpen(true);
     }
     
-    // Placeholder for chain filter logic if needed in future
-    // if (chainFilter !== 'all') { ... }
-
-    if (tagFilter !== 'all') {
-      data = data.filter(wallet => wallet.tags?.includes(tagFilter));
-    }
-    
-    data.sort((a, b) => {
-        if (sortKey === 'netWorth') {
-            const valA = parseFloat(a.netWorth.replace('$', '').replace('M', ''));
-            const valB = parseFloat(b.netWorth.replace('$', '').replace('M', ''));
-            return valB - valA;
-        }
-
-        const valA = a[sortKey as keyof LeaderboardWallet];
-        const valB = b[sortKey as keyof LeaderboardWallet];
-
-        if (typeof valA === 'number' && typeof valB === 'number') {
-            return valB - valA; // Sort descending for numbers
-        }
-        
-        return 0;
-    });
-
-    return data;
-  }, [tokenFilter, chainFilter, tagFilter, sortKey]);
-
-  return (
-    <Dialog open={isAlertEditorOpen} onOpenChange={setIsAlertEditorOpen}>
-        <div className="space-y-4">
-            <div className="flex flex-col sm:flex-row gap-2 w-full">
-                <div className="relative w-full sm:w-auto sm:flex-1 md:max-w-xs">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input 
-                        placeholder="Filter by wallet or token..." 
-                        className="pl-9 w-full"
-                        value={tokenFilter}
-                        onChange={(e) => setTokenFilter(e.target.value)}
-                    />
-                </div>
-                 <Select value={chainFilter} onValueChange={setChainFilter}>
-                    <SelectTrigger className="w-full sm:w-auto sm:min-w-[160px]">
-                        <SelectValue placeholder="All Chains" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="all">All Chains</SelectItem>
-                        <SelectItem value="ethereum">Ethereum</SelectItem>
-                        <SelectItem value="solana">Solana</SelectItem>
-                    </SelectContent>
-                </Select>
-                 <Select value={tagFilter} onValueChange={setTagFilter}>
-                    <SelectTrigger className="w-full sm:w-auto sm:min-w-[160px]">
-                        <SelectValue placeholder="All Tags" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="all">All Tags</SelectItem>
-                        <SelectItem value="Memecoin">Memecoin</SelectItem>
-                        <SelectItem value="DeFi">DeFi</SelectItem>
-                        <SelectItem value="NFT">NFT</SelectItem>
-                        <SelectItem value="Airdrop">Airdrop</SelectItem>
-                    </SelectContent>
-                </Select>
-            </div>
+    return (
+        <Dialog open={isAlertEditorOpen} onOpenChange={setIsAlertEditorOpen}>
             <Card>
                 <CardContent className="p-0">
                 <div className="overflow-x-auto">
@@ -156,9 +84,9 @@ export function Leaderboard() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {sortedAndFilteredData.length > 0 ? sortedAndFilteredData.map((wallet, index) => (
+                        {data.length > 0 ? data.map((wallet, index) => (
                         <TableRow key={wallet.address} className="cursor-pointer hover:bg-muted/50">
-                            <TableCell className='text-center text-muted-foreground'>{index + 1}</TableCell>
+                            <TableCell className='text-center text-muted-foreground font-medium'>{index + 1}</TableCell>
                             <WalletCell address={wallet.address} />
                             <TableCell className="font-medium">{wallet.netWorth}</TableCell>
                             <TopHoldingCell holding={wallet.topHolding} />
@@ -178,7 +106,7 @@ export function Leaderboard() {
                         )) : (
                             <TableRow>
                                 <TableCell colSpan={8} className="h-24 text-center">
-                                    No wallets found.
+                                    No wallets found for this criteria.
                                 </TableCell>
                             </TableRow>
                         )}
@@ -187,13 +115,96 @@ export function Leaderboard() {
                 </div>
                 </CardContent>
             </Card>
+             {alertEntity && (
+                <AlertEditorDialog
+                    onOpenChange={setIsAlertEditorOpen}
+                    entity={alertEntity}
+                />
+            )}
+        </Dialog>
+    )
+}
+
+
+export function Leaderboard() {
+  const [tokenFilter, setTokenFilter] = useState('');
+  const [tagFilter, setTagFilter] = useState('all');
+  const [activeTab, setActiveTab] = useState('smart-money');
+
+  const topWhalesData = useMemo(() => {
+    let data = [...leaderboardData];
+     data.sort((a, b) => {
+        const valA = parseFloat(a.netWorth.replace('$', '').replace('M', ''));
+        const valB = parseFloat(b.netWorth.replace('$', '').replace('M', ''));
+        return valB - valA;
+    });
+    return data;
+  }, []);
+  
+  const smartMoneyData = useMemo(() => {
+     let data = [...leaderboardData];
+     data.sort((a, b) => b.pnl7d - a.pnl7d);
+     return data;
+  }, []);
+
+  const topHoldersData = useMemo(() => {
+    if (!tokenFilter) return [];
+    
+    let data = [...leaderboardData].filter(wallet => 
+        wallet.topHolding.token.toLowerCase().includes(tokenFilter.toLowerCase())
+    );
+
+    // This is mock logic. Real implementation would sort by amount of the filtered token.
+    data.sort((a, b) => b.topHolding.percentage - a.topHolding.percentage);
+    
+    return data;
+  }, [tokenFilter])
+
+
+  return (
+        <div className="space-y-6">
+            <Tabs value={activeTab} onValueChange={setActiveTab}>
+                <TabsList className="grid grid-cols-2 sm:grid-cols-3 h-auto">
+                    <TabsTrigger value="smart-money" className="py-2.5">
+                        <Trophy className="h-4 w-4 mr-2"/> Smart Money
+                    </TabsTrigger>
+                    <TabsTrigger value="top-whales" className="py-2.5">
+                        <Flame className="h-4 w-4 mr-2"/> Top Whales
+                    </TabsTrigger>
+                    <TabsTrigger value="top-holders" className="py-2.5">
+                       <Coins className="h-4 w-4 mr-2"/> Top Holders
+                    </TabsTrigger>
+                </TabsList>
+                <TabsContent value="smart-money">
+                    <p className="text-muted-foreground mb-4 text-sm max-w-2xl">
+                        Wallets with the highest realized and unrealized profits.
+                    </p>
+                    <LeaderboardTable data={smartMoneyData} />
+                </TabsContent>
+                <TabsContent value="top-whales">
+                     <p className="text-muted-foreground mb-4 text-sm max-w-2xl">
+                       The largest wallets by net worth across all tracked tokens.
+                    </p>
+                    <LeaderboardTable data={topWhalesData} />
+                </TabsContent>
+                <TabsContent value="top-holders">
+                    <p className="text-muted-foreground mb-4 text-sm max-w-2xl">
+                       Find the biggest holders of a specific token.
+                    </p>
+                     <div className="flex flex-col sm:flex-row gap-2 w-full mb-4">
+                        <div className="relative w-full sm:w-auto sm:flex-1 md:max-w-xs">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                            <Input 
+                                placeholder="Filter by token (e.g., WIF)" 
+                                className="pl-9 w-full"
+                                value={tokenFilter}
+                                onChange={(e) => setTokenFilter(e.target.value)}
+                            />
+                        </div>
+                    </div>
+                    <LeaderboardTable data={topHoldersData} />
+                </TabsContent>
+            </Tabs>
         </div>
-         {alertEntity && (
-            <AlertEditorDialog
-                onOpenChange={setIsAlertEditorOpen}
-                entity={alertEntity}
-            />
-        )}
-    </Dialog>
   );
 }
