@@ -22,6 +22,7 @@ import { Dialog, DialogTrigger } from './ui/dialog';
 import { AlertEditorDialog } from './alert-editor-dialog';
 import { Badge } from './ui/badge';
 import { CryptoIcon } from './crypto-icon';
+import { Skeleton } from './ui/skeleton';
 
 
 const PnlCell = ({ value }: { value: number }) => (
@@ -54,7 +55,23 @@ const TopHoldingCell = ({ holding }: { holding: { token: string, percentage: num
     )
 }
 
-const LeaderboardTable = ({ data }: { data: LeaderboardWallet[] }) => {
+function TableSkeleton() {
+    return (
+        <div className="space-y-2">
+            {[...Array(10)].map((_, i) => (
+                <div key={i} className="flex items-center p-4 h-[73px] rounded-lg bg-card border">
+                     <Skeleton className="h-6 w-8" />
+                     <Skeleton className="h-6 w-32 ml-4" />
+                     <Skeleton className="h-6 w-24 ml-12" />
+                     <Skeleton className="h-6 w-32 ml-12" />
+                     <Skeleton className="h-6 w-24 ml-auto" />
+                </div>
+            ))}
+        </div>
+    )
+}
+
+const LeaderboardTable = ({ data, isLoading }: { data: LeaderboardWallet[], isLoading: boolean }) => {
     const [alertEntity, setAlertEntity] = useState<{type: 'wallet', identifier: string} | null>(null);
     const [isAlertEditorOpen, setIsAlertEditorOpen] = useState(false);
 
@@ -64,6 +81,10 @@ const LeaderboardTable = ({ data }: { data: LeaderboardWallet[] }) => {
         setIsAlertEditorOpen(true);
     }
     
+    if (isLoading) {
+        return <TableSkeleton />;
+    }
+
     return (
         <Dialog open={isAlertEditorOpen} onOpenChange={setIsAlertEditorOpen}>
             <Card>
@@ -129,6 +150,15 @@ export function Leaderboard() {
   const [searchFilter, setSearchFilter] = useState('');
   const [tagFilter, setTagFilter] = useState('all');
   const [sortBy, setSortBy] = useState('pnl7d');
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulate data loading
+    const timer = setTimeout(() => {
+        setIsLoading(false);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, []);
 
   const allTags = useMemo(() => {
     const tags = new Set<string>();
@@ -206,7 +236,7 @@ export function Leaderboard() {
                     </SelectContent>
                 </Select>
             </div>
-            <LeaderboardTable data={filteredAndSortedData} />
+            <LeaderboardTable data={filteredAndSortedData} isLoading={isLoading} />
         </div>
   );
 }
