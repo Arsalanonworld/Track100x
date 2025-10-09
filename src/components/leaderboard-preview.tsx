@@ -65,16 +65,20 @@ const WalletPodiumCard = ({ wallet, rank }: { wallet: typeof leaderboardData[0],
                  <WalletCell alias="View on Etherscan" address={wallet.address} />
             </CardHeader>
             <CardContent className="flex-1 flex flex-col justify-between">
-                <div className='flex justify-around items-center'>
-                    <PnlCell value={wallet.pnl7d} label="7d P&L" />
-                     <div className='text-center'>
+                <div className='grid grid-cols-2 gap-4'>
+                    <PnlCell value={wallet.pnl7d} label="7d P&L" className="col-span-2"/>
+                     <div className='text-center border-t pt-4'>
                         <p className='text-xs text-muted-foreground'>Win Rate</p>
-                        <p className='font-semibold text-lg'>{wallet.activity}%</p>
+                        <p className='font-semibold text-lg'>{wallet.pnl24h.toFixed(0)}%</p>
+                    </div>
+                     <div className='text-center border-t pt-4'>
+                        <p className='text-xs text-muted-foreground'>Trades (7d)</p>
+                        <p className='font-semibold text-lg'>{wallet.activity}</p>
                     </div>
                 </div>
             </CardContent>
-             <div className='p-6 pt-2 text-center'>
-                <div className="flex items-center justify-center gap-2 flex-wrap">
+             <div className='p-6 pt-4 text-center'>
+                <div className="flex items-center justify-center gap-2 flex-wrap min-h-[24px]">
                     {wallet.tags?.map(tag => <Badge key={tag} variant={isFirst ? "default" : "secondary"}>{tag}</Badge>)}
                 </div>
             </div>
@@ -96,7 +100,7 @@ export function LeaderboardPreview() {
           Discover and learn from the top-performing traders in real-time.
         </p>
       </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-y-8 md:gap-x-0 items-center max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-y-8 md:gap-x-0 items-end max-w-6xl mx-auto">
             {/* Rank 2 */}
             <div className="md:order-1">
                  <WalletPodiumCard wallet={topWallets[1]} rank={2} />
