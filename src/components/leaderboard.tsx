@@ -15,7 +15,7 @@ import { Search, ArrowUp, ArrowDown, Zap, Trophy, Flame, Coins } from 'lucide-re
 import { cn } from '@/lib/utils';
 import { Card, CardContent } from './ui/card';
 import { getExplorerUrl } from '@/lib/explorers';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Input } from './ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Dialog, DialogTrigger } from './ui/dialog';
