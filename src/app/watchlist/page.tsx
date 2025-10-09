@@ -295,7 +295,7 @@ export default function WatchlistPage() {
                         
                         <div className="space-y-4">
                             <h2 className='text-2xl font-bold tracking-tight'>Tracked Items</h2>
-                            {isLoading ? <WatchlistSkeleton /> : watchlist && watchlist.length > 0 ? (
+                            {isLoading ? <WatchlistSkeleton /> : user && watchlist && watchlist.length > 0 ? (
                                 watchlist.map((item) => (
                                    <WatchlistItemCard key={item.id} item={item} onUpdate={handleUpdate} onRemove={handleRemove} />
                                 ))

@@ -17,12 +17,7 @@ export function MainNav() {
         { href: '/watchlist', label: 'Watchlist', visible: true },
     ];
     
-    const visibleItems = navItems.filter(item => {
-        if (!user && (item.href === '/watchlist')) {
-            return false;
-        }
-        return item.visible;
-    });
+    const visibleItems = navItems.filter(item => item.visible);
 
   return (
     <nav className="hidden md:flex items-center space-x-6 text-sm font-medium">
