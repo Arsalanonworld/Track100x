@@ -47,8 +47,10 @@ export const whaleTransactions: WhaleTransaction[] = [
     txHash: '0x mnopqr',
     from: '0x5555555555555555555555555555555555555555',
     fromShort: '0x5555',
+    fromTags: [],
     to: '0x7777777777777777777777777777777777777777',
     toShort: '0x7777',
+    toTags: [],
     token: {
       symbol: 'USDT',
       name: 'Tether',
@@ -64,9 +66,10 @@ export const whaleTransactions: WhaleTransaction[] = [
     txHash: '0xstuvwx',
     from: '0x9999999999999999999999999999999999999999',
     fromShort: '0x9999',
+    fromTags: ['Whale'],
     to: '0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
     toShort: '0xbbbb',
-    fromTags: ['Whale'],
+    toTags: [],
     token: {
       symbol: 'WBTC',
       name: 'Wrapped BTC',
@@ -82,8 +85,10 @@ export const whaleTransactions: WhaleTransaction[] = [
     txHash: '0xdefabc',
     from: '0xdddddddddddddddddddddddddddddddddddddddd',
     fromShort: '0xdddd',
+    fromTags: [],
     to: '0xffffffffffffffffffffffffffffffffffffffff',
     toShort: '0xffff',
+    toTags: [],
     token: {
       symbol: 'BONK',
       name: 'Bonk',
@@ -99,6 +104,7 @@ export const whaleTransactions: WhaleTransaction[] = [
     txHash: '0xzyxwvu',
     from: '0x1a2b3c4d5e6f1a2b3c4d5e6f1a2b3c4d5e6f1a2b',
     fromShort: '0x1a2b',
+    fromTags: [],
     to: '0x5e6f7g8h9i1j5e6f7g8h9i1j5e6f7g8h9i1j5e6f',
     toShort: 'Coinbase',
     toTags: ['CEX'],
@@ -120,6 +126,7 @@ export const whaleTransactions: WhaleTransaction[] = [
     fromTags: ['Whale'],
     to: '0x1234abcd1234abcd1234abcd1234abcd1234abcd',
     toShort: '0x1234',
+    toTags: [],
     token: {
       symbol: 'SHIB',
       name: 'Shiba Inu',
@@ -135,6 +142,7 @@ export const whaleTransactions: WhaleTransaction[] = [
     txHash: '0x456def',
     from: '0x11aa22bb33cc44dd55ee66ff77gg88hh99ii00jj',
     fromShort: '0x11aa',
+    fromTags: [],
     to: '0x33cc44dd55ee66ff77gg88hh99ii00jj11kk22ll',
     toShort: 'AAVE',
     toTags: ['Protocol'],
@@ -153,8 +161,10 @@ export const whaleTransactions: WhaleTransaction[] = [
     txHash: '0x789ghi',
     from: '0xeeffgg00hhii112233445566778899aabbccdde',
     fromShort: '0xeeff',
-to: '0xa1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2',
+    fromTags: [],
+    to: '0xa1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2',
     toShort: '0xa1b2',
+    toTags: [],
     token: {
       symbol: 'AVAX',
       name: 'Avalanche',
@@ -173,6 +183,7 @@ to: '0xa1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2',
     fromTags: ['Whale'],
     to: '0xb4a59687f0e1d2c3b4a59687f0e1d2c3b4a59687',
     toShort: '0xb4a5',
+    toTags: [],
     token: {
       symbol: 'DOGE',
       name: 'Dogecoin',
@@ -267,3 +278,5 @@ export const leaderboardData: LeaderboardWallet[] = [
     tags: ['NFT'],
   },
 ];
+
+    

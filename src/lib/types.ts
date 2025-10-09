@@ -88,3 +88,5 @@ export type LeaderboardWallet = {
     activity: number;
     tags?: string[];
 };
+
+    
