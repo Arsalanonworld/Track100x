@@ -4,7 +4,7 @@
 import { Card } from "@/components/ui/card";
 import type { WhaleTransaction } from "@/lib/mock-data";
 import Link from "next/link";
-import { Copy, ChevronDown, BellPlus, ArrowUpRight, ArrowRight } from "lucide-react";
+import { Copy, ChevronDown, BellPlus, ArrowUpRight, ArrowRight, Zap } from "lucide-react";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { cn } from "@/lib/utils";
@@ -123,7 +123,7 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
                                      <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
                                              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => e.stopPropagation()}>
-                                                <BellPlus className="h-4 w-4" />
+                                                <Zap className="h-4 w-4" />
                                             </Button>
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent onClick={(e) => e.stopPropagation()}>
