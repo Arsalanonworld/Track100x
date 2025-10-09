@@ -9,10 +9,10 @@ export const whaleTransactions: WhaleTransaction[] = [
     txHash: '0xabc...def',
     from: '0x1234567890123456789012345678901234567890',
     fromShort: '0x1234',
-    fromTags: ['Whale'],
+    fromTags: ['Whale (Anonymous)'],
     to: '0x9876543210987654321098765432109876543210',
     toShort: 'Binance',
-    toTags: ['CEX'],
+    toTags: ['Exchange Wallet'],
     token: {
       symbol: 'ETH',
       name: 'Ethereum',
@@ -31,7 +31,7 @@ export const whaleTransactions: WhaleTransaction[] = [
     fromTags: [],
     to: '0xfedcba9876543210fedcba9876543210fedcba98',
     toShort: 'Uniswap',
-    toTags: ['DEX'],
+    toTags: ['DeFi Protocol'],
     token: {
       symbol: 'WIF',
       name: 'dogwifhat',
@@ -66,7 +66,7 @@ export const whaleTransactions: WhaleTransaction[] = [
     txHash: '0xstuvwx',
     from: '0x9999999999999999999999999999999999999999',
     fromShort: '0x9999',
-    fromTags: ['Whale'],
+    fromTags: ['Whale (Anonymous)'],
     to: '0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
     toShort: '0xbbbb',
     toTags: [],
@@ -107,7 +107,7 @@ export const whaleTransactions: WhaleTransaction[] = [
     fromTags: [],
     to: '0x5e6f7g8h9i1j5e6f7g8h9i1j5e6f7g8h9i1j5e6f',
     toShort: 'Coinbase',
-    toTags: ['CEX'],
+    toTags: ['Exchange Wallet'],
     token: {
       symbol: 'LINK',
       name: 'Chainlink',
@@ -123,7 +123,7 @@ export const whaleTransactions: WhaleTransaction[] = [
     txHash: '0xabc123',
     from: '0x9876fedcba9876fedcba9876fedcba9876fedcba',
     fromShort: '0x9876',
-    fromTags: ['Whale'],
+    fromTags: ['Whale (Anonymous)'],
     to: '0x1234abcd1234abcd1234abcd1234abcd1234abcd',
     toShort: '0x1234',
     toTags: [],
@@ -145,7 +145,7 @@ export const whaleTransactions: WhaleTransaction[] = [
     fromTags: [],
     to: '0x33cc44dd55ee66ff77gg88hh99ii00jj11kk22ll',
     toShort: 'AAVE',
-    toTags: ['Protocol'],
+    toTags: ['DeFi Protocol'],
     token: {
       symbol: 'USDC',
       name: 'USD Coin',
@@ -180,7 +180,7 @@ export const whaleTransactions: WhaleTransaction[] = [
     txHash: '0xjklmno',
     from: '0xf0e1d2c3b4a59687f0e1d2c3b4a59687f0e1d2c3',
     fromShort: '0xf0e1',
-    fromTags: ['Whale'],
+    fromTags: ['Whale (Anonymous)'],
     to: '0xb4a59687f0e1d2c3b4a59687f0e1d2c3b4a59687',
     toShort: '0xb4a5',
     toTags: [],
@@ -230,7 +230,7 @@ export const leaderboardData: LeaderboardWallet[] = [
     pnl7d: 125.75,
     pnl24h: 15.2,
     activity: 88,
-    tags: ['Smart Money', 'Memecoin Sniper'],
+    tags: ['Smart Money', 'VC Fund'],
   },
   {
     address: '0x742d54eC7E1E43D35eaA64324f40f28E23744e88',
@@ -248,7 +248,7 @@ export const leaderboardData: LeaderboardWallet[] = [
     pnl7d: 75.9,
     pnl24h: -2.3,
     activity: 65,
-    tags: ['Top Whale'],
+    tags: ['Whale (Anonymous)'],
   },
   {
     address: '0xf977814e90da44bfa03b6295a0616a897441acec',
@@ -257,7 +257,7 @@ export const leaderboardData: LeaderboardWallet[] = [
     pnl7d: 68.4,
     pnl24h: 22.8,
     activity: 75,
-    tags: ['Airdrop Farmer'],
+    tags: ['Influencer Wallet'],
   },
   {
     address: '0xfa52274dd61e1643d2205169732f291140b340b3',
@@ -266,7 +266,7 @@ export const leaderboardData: LeaderboardWallet[] = [
     pnl7d: 45.1,
     pnl24h: 0.5,
     activity: 55,
-    tags: ['NFT Whale'],
+    tags: ['Market Maker'],
   },
   {
     address: '0x503828976D22510aad0201ac7EC88293211D2383',
@@ -275,7 +275,7 @@ export const leaderboardData: LeaderboardWallet[] = [
     pnl7d: 22.5,
     pnl24h: 1.2,
     activity: 95,
-    tags: ['Top Whale', 'Stablecoin King'],
+    tags: ['Whale (Anonymous)', 'Exchange Wallet'],
   },
 ];
 
