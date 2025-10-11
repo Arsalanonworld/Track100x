@@ -53,8 +53,10 @@ const WalletPodiumCard = ({ wallet, rank }: { wallet: typeof leaderboardData[0],
 
     return (
         <Card className={cn(
-            "flex flex-col transform transition-transform duration-300 w-full",
-             isFirst ? "md:scale-110 bg-card border-primary shadow-2xl z-10" : "md:scale-95 shadow-lg",
+            "flex flex-col transform transition-all duration-300 w-full",
+             isFirst 
+                ? "md:scale-110 bg-card border-primary shadow-2xl z-10 hover:shadow-primary/30" 
+                : "md:scale-95 shadow-lg hover:shadow-xl hover:scale-100",
         )}>
             <CardHeader className="items-center text-center">
                 <div className='flex items-center gap-2'>
@@ -102,14 +104,14 @@ export function LeaderboardPreview() {
             </p>
         </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-y-8 md:gap-x-4 items-end max-w-6xl mx-auto">
-                {/* Rank 1 - Center on Desktop */}
-                <div className="md:order-2 flex justify-center">
-                    <WalletPodiumCard wallet={topWallets[0]} rank={1} />
-                </div>
-
                 {/* Rank 2 - Left on Desktop */}
                 <div className="md:order-1 flex justify-center">
                     <WalletPodiumCard wallet={topWallets[1]} rank={2} />
+                </div>
+                
+                {/* Rank 1 - Center on Desktop */}
+                <div className="md:order-2 flex justify-center">
+                    <WalletPodiumCard wallet={topWallets[0]} rank={1} />
                 </div>
 
                 {/* Rank 3 - Right on Desktop */}
