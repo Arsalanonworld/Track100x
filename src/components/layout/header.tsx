@@ -19,13 +19,12 @@ export const LogoIcon = () => (
       strokeLinejoin="round"
       className="h-7 w-7 text-primary"
     >
-      {/* Outer eye shape */}
-      <path d="M2 12C2 12 5 5 12 5C19 5 22 12 22 12C22 12 19 19 12 19C5 19 2 12 2 12Z" />
-      {/* Pupil / Radar Center */}
-      <circle cx="12" cy="12" r="2" fill="currentColor" />
-      {/* Radar arcs */}
-      <path d="M16 12a4 4 0 0 1-4 4" />
-      <path d="M12 8a4 4 0 0 1 4 4" />
+      <circle cx="12" cy="12" r="10" />
+      <circle cx="12" cy="12" r="6" />
+      <line x1="12" y1="2" x2="12" y2="22" />
+      <line x1="2" y1="12" x2="22" y2="12" />
+      <line x1="15" y1="9" x2="9" y2="15" strokeWidth="2.5" />
+      <line x1="9" y1="9" x2="15" y2="15" strokeWidth="2.5" />
     </svg>
 );
 
