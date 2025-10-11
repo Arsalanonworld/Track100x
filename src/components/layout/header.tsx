@@ -14,15 +14,18 @@ export const LogoIcon = () => (
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth="2.5"
+      strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
       className="h-7 w-7 text-primary"
     >
-      <path d="M5 10c-1.5 2-1.5 4 .5 6s4.5 2 6.5 0" />
-      <path d="M12 16c-2 2-4.5 2-6.5 0s-3.5-4-.5-6" />
-      <path d="M17 10l-2-2 2-2" />
-      <path d="M19 8h-4" />
+      {/* Outer eye shape */}
+      <path d="M2 12C2 12 5 5 12 5C19 5 22 12 22 12C22 12 19 19 12 19C5 19 2 12 2 12Z" />
+      {/* Pupil / Radar Center */}
+      <circle cx="12" cy="12" r="2" fill="currentColor" />
+      {/* Radar arcs */}
+      <path d="M16 12a4 4 0 0 1-4 4" />
+      <path d="M12 8a4 4 0 0 1 4 4" />
     </svg>
 );
 
