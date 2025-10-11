@@ -8,8 +8,8 @@ import { ThemeProvider } from '@/components/theme-provider';
 import { FirebaseProvider } from '@/firebase';
 
 export const metadata: Metadata = {
-  title: 'Track100x',
-  description: 'Track significant cryptocurrency transactions and wallet activities.',
+  title: 'Track100x | Blockchain Intelligence Platform',
+  description: 'Decode on-chain behavior and discover the next 100x opportunities before they become mainstream.',
 };
 
 export default function RootLayout({

@@ -32,7 +32,7 @@ export function Footer() {
               <span className="inline-block font-bold text-xl">Track100x</span>
             </Link>
             <p className="text-muted-foreground max-w-sm">
-              The Wallet Intelligence Platform. Monitor on-chain data, track wallets, and get real-time smart alerts.
+              The Blockchain Intelligence Platform for investors, traders, and researchers. Decode on-chain data and find alpha.
             </p>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 text-sm md:col-span-3">

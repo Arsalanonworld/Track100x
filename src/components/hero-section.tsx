@@ -5,26 +5,14 @@ import { Bell, Eye, Search, Wallet } from "lucide-react";
 import { WhaleIcon } from "./icons/whale-icon";
 
 const phrases = [
+    'Decode On-Chain Behavior.',
     'Follow the Smart Money.',
-    'Decode On-Chain Data.',
-    'Anticipate Market Moves.',
-    'Unlock Crypto Alpha.',
-    'Track Whale Wallets.',
-    'Real-Time Crypto Alerts.',
-    'Your On-Chain Edge.',
-    'See Transactions Happen Live.',
-    'Monitor Top Trader Wallets.',
-    'Never Miss a Big Move.',
-    'The Ultimate Wallet Intel.',
-    'Data-Driven Crypto Trading.',
-    'Find Narratives Before They Trend.',
-    'Copy-Trade the Pros.',
-    'Follow the On-Chain Flow.',
-    'From Noise to Signal.',
-    'Master On-Chain Analysis.',
-    'Get Notified, Act Faster.',
-    'Your Window into Crypto Whales.',
-    'Trade with Confidence.',
+    'Discover Alpha, Faster.',
+    'Analyze Wallet Movements.',
+    'Turn Data into Opportunity.',
+    'The On-Chain Research Hub.',
+    'Find Narratives Early.',
+    'Master Crypto Intelligence.',
 ];
 
 const features = [
@@ -34,15 +22,15 @@ const features = [
     },
     {
         icon: <Search className="h-5 w-5 text-muted-foreground" />,
-        label: "On-Chain Analytics"
+        label: "Ecosystem Research"
     },
     {
         icon: <Bell className="h-5 w-5 text-muted-foreground" />,
-        label: "Custom Smart Alerts"
+        label: "On-Chain Analytics"
     },
     {
         icon: <WhaleIcon className="h-5 w-5 text-muted-foreground" />,
-        label: "Real-Time Whale Feed"
+        label: "Real-Time Whale Flow"
     },
 ];
 
@@ -117,7 +105,7 @@ export default function HeroSection() {
                     <span className="animate-blinking-cursor w-1 sm:w-1.5 h-8 sm:h-12 ml-1 bg-primary"></span>
                 </h1>
                  <p className="max-w-3xl mx-auto mt-4 text-base sm:text-lg text-muted-foreground">
-                    The ultimate wallet intelligence platform. Track whale transactions and get real-time smart alerts.
+                    The Blockchain Intelligence Platform for investors, traders, and researchers.
                 </p>
                  <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 sm:gap-x-8">
                     {features.map((feature) => (
