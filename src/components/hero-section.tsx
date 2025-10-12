@@ -42,8 +42,8 @@ export default function HeroSection() {
     const lastUpdateTime = useRef(0);
     const frameId = useRef<number>();
 
-    const typingSpeed = 150;
-    const deletingSpeed = 100;
+    const typingSpeed = 200;
+    const deletingSpeed = 150;
     const delayAfterTyping = 2000;
     const [pauseTime, setPauseTime] = useState<number | null>(null);
 
