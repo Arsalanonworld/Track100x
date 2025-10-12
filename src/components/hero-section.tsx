@@ -54,36 +54,38 @@ export default function HeroSection() {
             } else {
                 setText(current => currentPhrase.substring(0, current.length + 1));
             }
+
+            const currentText = text;
+            let delay = isDeleting.current ? deletingSpeed : typingSpeed;
+
+            if (!isDeleting.current && currentText === currentPhrase) {
+                delay = delayAfterTyping;
+                isDeleting.current = true;
+            } else if (isDeleting.current && currentText === '') {
+                isDeleting.current = false;
+                phraseIndex.current = (phraseIndex.current + 1) % phrases.length;
+                delay = typingSpeed;
+            }
+
+             timeoutRef.current = setTimeout(handleTyping, delay);
         };
-
-        const currentPhrase = phrases[phraseIndex.current];
-        const currentText = text;
-
-        let delay = isDeleting.current ? deletingSpeed : typingSpeed;
-
-        if (!isDeleting.current && currentText === currentPhrase) {
-            delay = delayAfterTyping;
-            isDeleting.current = true;
-        } else if (isDeleting.current && currentText === '') {
-            isDeleting.current = false;
-            phraseIndex.current = (phraseIndex.current + 1) % phrases.length;
-            delay = typingSpeed;
-        }
-
-        timeoutRef.current = setTimeout(handleTyping, delay);
+        
+        handleTyping();
 
         return () => {
             if (timeoutRef.current) {
                 clearTimeout(timeoutRef.current);
             }
         };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [text]);
+
 
     return (
         <section className="relative overflow-hidden bg-gradient-to-b from-card to-background flex flex-col items-center justify-center min-h-[240px] py-12 md:min-h-[280px]">
             <div className="absolute inset-0 bg-[url('/grid.svg')] bg-repeat [mask-image:linear-gradient(to_bottom,white_5%,transparent_80%)] dark:opacity-20"></div>
             <div className="container mx-auto px-4 text-center relative">
-                <h1 className="relative text-3xl font-extrabold tracking-tighter sm:text-5xl lg:text-6xl text-foreground inline-flex items-center justify-center">
+                <h1 className="relative text-3xl font-extrabold tracking-tighter sm:text-5xl lg:text-6xl text-foreground inline-flex items-center justify-center min-h-[40px] sm:min-h-[64px] lg:min-h-[72px]">
                     <span>{text}</span>
                     <span className="animate-blinking-cursor w-1 sm:w-1.5 h-8 sm:h-12 ml-1 bg-primary"></span>
                 </h1>
@@ -102,3 +104,4 @@ export default function HeroSection() {
         </section>
     );
 }
+
