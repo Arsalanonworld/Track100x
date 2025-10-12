@@ -39,62 +39,44 @@ export default function HeroSection() {
     const [text, setText] = useState('');
     const phraseIndex = useRef(0);
     const isDeleting = useRef(false);
-    const lastUpdateTime = useRef(0);
-    const frameId = useRef<number>();
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     const typingSpeed = 200;
-    const deletingSpeed = 150;
+    const deletingSpeed = 100;
     const delayAfterTyping = 2000;
-    const [pauseTime, setPauseTime] = useState<number | null>(null);
 
     useEffect(() => {
-        const handleTyping = (currentTime: number) => {
-            if (!lastUpdateTime.current) {
-                lastUpdateTime.current = currentTime;
-            }
-
-            const deltaTime = currentTime - lastUpdateTime.current;
+        const handleTyping = () => {
             const currentPhrase = phrases[phraseIndex.current];
             
-            if (pauseTime && currentTime < pauseTime) {
-                frameId.current = requestAnimationFrame(handleTyping);
-                return;
+            if (isDeleting.current) {
+                setText(current => current.substring(0, current.length - 1));
+            } else {
+                setText(current => currentPhrase.substring(0, current.length + 1));
             }
-            setPauseTime(null);
-
-            const speed = isDeleting.current ? deletingSpeed : typingSpeed;
-
-            if (deltaTime > speed) {
-                lastUpdateTime.current = currentTime;
-                
-                if (isDeleting.current) {
-                    if (text.length > 0) {
-                        setText(current => current.substring(0, current.length - 1));
-                    } else {
-                        isDeleting.current = false;
-                        phraseIndex.current = (phraseIndex.current + 1) % phrases.length;
-                    }
-                } else {
-                    if (text.length < currentPhrase.length) {
-                        setText(current => currentPhrase.substring(0, current.length + 1));
-                    } else {
-                        setPauseTime(currentTime + delayAfterTyping);
-                        isDeleting.current = true;
-                    }
-                }
-            }
-            
-            frameId.current = requestAnimationFrame(handleTyping);
         };
-        
-        frameId.current = requestAnimationFrame(handleTyping);
-        
+
+        const currentPhrase = phrases[phraseIndex.current];
+        const currentText = text;
+
+        let delay = isDeleting.current ? deletingSpeed : typingSpeed;
+
+        if (!isDeleting.current && currentText === currentPhrase) {
+            delay = delayAfterTyping;
+            isDeleting.current = true;
+        } else if (isDeleting.current && currentText === '') {
+            isDeleting.current = false;
+            phraseIndex.current = (phraseIndex.current + 1) % phrases.length;
+            delay = typingSpeed;
+        }
+
+        timeoutRef.current = setTimeout(handleTyping, delay);
+
         return () => {
-            if (frameId.current) {
-                cancelAnimationFrame(frameId.current);
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
             }
         };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [text]);
 
     return (
