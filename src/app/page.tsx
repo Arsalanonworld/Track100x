@@ -11,22 +11,22 @@ import { LeaderboardPreview } from '@/components/leaderboard-preview';
 
 const featureHighlights = [
     {
-        icon: <Zap className="h-8 w-8 text-primary" />,
+        icon: <Zap />,
         title: 'Advanced Alert Builder',
         description: 'Create complex, multi-conditional alerts to precisely monitor specific on-chain events and strategies.',
     },
     {
-        icon: <Bell className="h-8 w-8 text-primary" />,
+        icon: <Bell />,
         title: 'Unlimited Telegram Alerts',
         description: 'Create unlimited alerts and get notified instantly via Telegram to never miss a move.',
     },
     {
-        icon: <Newspaper className="h-8 w-8 text-primary"/>,
+        icon: <Newspaper />,
         title: 'AI Insights & Daily Digest',
         description: 'Get AI-generated summaries and a daily digest of the most important whale movements and market signals.',
     },
      {
-        icon: <ShieldCheck className="h-8 w-8 text-primary" />,
+        icon: <ShieldCheck />,
         title: 'Ad-Free Experience',
         description: 'Enjoy a clean, uninterrupted interface focused solely on the data and insights that matter.',
     },
