@@ -2,7 +2,6 @@
 'use client';
 
 import React from 'react';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
 type Feature = {
@@ -27,23 +26,21 @@ export const StickyScrollFeatures = ({
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
             {features.map((feature, index) => (
-                <div key={index} className="relative group">
-                    <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/50 to-accent/50 rounded-lg blur opacity-50 group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
-                     <Card className="relative flex flex-col items-center text-center p-6 bg-card/95 h-full">
-                        <CardHeader className="p-0 items-center">
-                            <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                                {React.cloneElement(feature.icon as React.ReactElement, { className: 'h-6 w-6 text-primary' })}
-                            </div>
-                            <h3 className="text-lg font-bold mb-2">{feature.title}</h3>
-                        </CardHeader>
-                        <CardContent className="p-0 flex-1">
-                                <p className="text-muted-foreground text-sm">{feature.description}</p>
-                        </CardContent>
-                    </Card>
+                <div 
+                  key={index} 
+                  className="relative group flex flex-col items-center text-center p-6 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm h-full transition-all duration-300 hover:bg-white/10 hover:border-white/20"
+                >
+                    <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div className="relative z-10 flex flex-col items-center h-full">
+                      <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4 border border-primary/20">
+                          {React.cloneElement(feature.icon as React.ReactElement, { className: 'h-6 w-6 text-primary' })}
+                      </div>
+                      <h3 className="text-lg font-bold mb-2 text-foreground">{feature.title}</h3>
+                      <p className="text-muted-foreground text-sm flex-1">{feature.description}</p>
+                    </div>
                 </div>
             ))}
         </div>
     </section>
   );
 };
-    
