@@ -31,8 +31,8 @@ const DetailItem = ({ label, value, network, entityType }: { label: string; valu
     };
 
     return (
-        <div className="group/detail-item grid grid-cols-1 sm:grid-cols-[100px,1fr] items-start gap-1 sm:gap-4">
-            <span className="col-span-1 text-sm text-muted-foreground sm:text-right">{label}</span>
+        <div className="group/detail-item grid grid-cols-[80px,1fr] items-start gap-4">
+            <span className="col-span-1 text-sm text-muted-foreground text-left sm:text-right">{label}</span>
             <div className="col-span-1 flex items-center justify-between min-w-0">
                  <Link href={getExplorerUrl(network, value, entityType)} target="_blank" rel="noopener noreferrer" className="font-mono text-sm truncate hover:text-primary" onClick={(e) => e.stopPropagation()}>
                     {value}
@@ -63,15 +63,18 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
         setIsAlertEditorOpen(true);
     };
 
+    const uniqueTags = Array.from(new Set([...(tx.fromTags || []), ...(tx.toTags || [])]));
+
     return (
         <Dialog open={isAlertEditorOpen} onOpenChange={setIsAlertEditorOpen}>
             <Collapsible open={isOpen} onOpenChange={setIsOpen}>
                 <Card className="w-full hover:shadow-lg transition-shadow duration-200 group/card overflow-hidden">
                     <CollapsibleTrigger asChild>
                         <div className="cursor-pointer p-3 sm:p-4">
-                            <div className="grid grid-cols-[auto,1fr,auto] items-center gap-3 sm:gap-4">
+                            <div className="flex flex-col md:flex-row md:items-center md:gap-4">
+
                                 {/* Left Side: Amount & Token */}
-                                <div className="flex items-center gap-3">
+                                <div className="flex items-center gap-3 w-full md:w-auto md:min-w-[180px] shrink-0">
                                     <CryptoIcon token={tx.token.symbol} className="h-10 w-10"/>
                                     <div>
                                         <p className="font-bold text-lg">{tx.tokenAmount}</p>
@@ -80,53 +83,62 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
                                 </div>
 
                                 {/* Center: From/To Flow */}
-                                <div className="min-w-0">
-                                    <div className="flex flex-col md:flex-row md:items-center gap-2">
+                                <div className="flex-1 w-full min-w-0 pt-3 md:pt-0">
+                                    {/* Desktop View */}
+                                    <div className="hidden md:flex items-center gap-2 text-sm">
+                                        <div className="flex items-center gap-2 min-w-0">
+                                            <span className="text-muted-foreground">From</span>
+                                            <Link href={getExplorerUrl(tx.network, tx.from, 'address')} target="_blank" rel="noopener noreferrer" className="font-mono hover:underline truncate">
+                                                {tx.fromShort}
+                                            </Link>
+                                            <WatchlistButton type="wallet" identifier={tx.from} />
+                                            <div className="flex items-center gap-1.5">{tx.fromTags.map(tag => <Badge key={tag} variant="secondary">{tag}</Badge>)}</div>
+                                        </div>
+                                        <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0 mx-2" />
+                                        <div className="flex items-center gap-2 min-w-0">
+                                            <span className="text-muted-foreground">To</span>
+                                             <Link href={getExplorerUrl(tx.network, tx.to, 'address')} target="_blank" rel="noopener noreferrer" className="font-mono hover:underline truncate">
+                                                {tx.toShort}
+                                             </Link>
+                                            <WatchlistButton type="wallet" identifier={tx.to} />
+                                             <div className="flex items-center gap-1.5">{tx.toTags.map(tag => <Badge key={tag} variant="secondary">{tag}</Badge>)}</div>
+                                        </div>
+                                    </div>
+                                    {/* Mobile View */}
+                                    <div className="md:hidden space-y-1 text-sm">
                                         {/* From */}
-                                        <div className="flex items-center gap-2 text-sm min-w-0">
+                                        <div className="flex items-center gap-2">
                                             <span className="text-muted-foreground w-8">From</span>
                                             <Link href={getExplorerUrl(tx.network, tx.from, 'address')} target="_blank" rel="noopener noreferrer" className="font-mono hover:underline truncate">
                                                 {tx.fromShort}
                                             </Link>
                                             <WatchlistButton type="wallet" identifier={tx.from} />
-                                            {tx.fromTags && tx.fromTags.length > 0 && (
-                                                <div className="hidden sm:flex items-center gap-1.5">
-                                                    {tx.fromTags.map(tag => <Badge key={tag} variant="secondary">{tag}</Badge>)}
-                                                </div>
-                                            )}
                                         </div>
-                                        
-                                        <div className="md:px-2 flex items-center justify-center">
-                                          <ArrowRight className="h-4 w-4 text-muted-foreground hidden md:block shrink-0" />
-                                          <ArrowDown className="h-4 w-4 text-muted-foreground md:hidden shrink-0 ml-2" />
+                                        {/* Arrow */}
+                                        <div className="pl-4">
+                                            <ArrowDown className="h-4 w-4 text-muted-foreground" />
                                         </div>
-                                        
                                         {/* To */}
-                                        <div className="flex items-center gap-2 text-sm min-w-0">
+                                        <div className="flex items-center gap-2">
                                             <span className="text-muted-foreground w-8">To</span>
                                              <Link href={getExplorerUrl(tx.network, tx.to, 'address')} target="_blank" rel="noopener noreferrer" className="font-mono hover:underline truncate">
                                                 {tx.toShort}
                                              </Link>
                                             <WatchlistButton type="wallet" identifier={tx.to} />
-                                             {tx.toTags && tx.toTags.length > 0 && (
-                                                <div className="hidden sm:flex items-center gap-1.5">
-                                                    {tx.toTags.map(tag => <Badge key={tag} variant="secondary">{tag}</Badge>)}
-                                                </div>
-                                            )}
                                         </div>
                                     </div>
-                                    <div className="sm:hidden flex items-center gap-1.5 mt-2 flex-wrap">
-                                        {[...(tx.fromTags || []), ...(tx.toTags || [])].map(tag => <Badge key={tag} variant="secondary">{tag}</Badge>)}
-                                    </div>
                                 </div>
-
+                                
                                 {/* Right Side: Actions and Details Toggle */}
-                                <div className="flex flex-col items-end justify-between self-stretch">
-                                    <div className="flex items-center gap-2">
+                                <div className="w-full md:w-auto flex items-center justify-between md:justify-end mt-2 md:mt-0 gap-2 pl-0 md:pl-4">
+                                   <div className="flex items-center gap-2">
+                                        <div className="md:hidden flex items-center gap-1.5 flex-wrap">
+                                            {uniqueTags.slice(0, 2).map(tag => <Badge key={tag} variant="secondary">{tag}</Badge>)}
+                                        </div>
                                         <Badge variant="outline" className="hidden xs:inline-flex">{tx.network}</Badge>
                                         <span className="text-xs text-muted-foreground whitespace-nowrap">{tx.time}</span>
                                     </div>
-                                    <div className="flex items-center -mb-1 -mr-1">
+                                    <div className="flex items-center -mr-1">
                                          <DropdownMenu>
                                             <DropdownMenuTrigger asChild>
                                                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => e.stopPropagation()}>
