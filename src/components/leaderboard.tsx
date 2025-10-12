@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { leaderboardData, type LeaderboardWallet } from '@/lib/mock-data';
-import { Search, ArrowUp, ArrowDown, Zap, Trophy, Flame, Coins } from 'lucide-react';
+import { Search, ArrowUp, ArrowDown, Zap, Trophy, Flame, Coins, SlidersHorizontal } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Card, CardContent } from './ui/card';
 import { getExplorerUrl } from '@/lib/explorers';
@@ -23,6 +23,8 @@ import { AlertEditorDialog } from './alert-editor-dialog';
 import { Badge } from './ui/badge';
 import { CryptoIcon } from './crypto-icon';
 import { Skeleton } from './ui/skeleton';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuLabel, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu';
+import { Label } from './ui/label';
 
 
 const PnlCell = ({ value }: { value: number }) => (
@@ -209,37 +211,44 @@ export function Leaderboard() {
 
   return (
         <div className="space-y-6">
-            <div className="flex flex-col sm:flex-row gap-2 w-full">
-                <div className="relative w-full sm:w-auto sm:flex-1 md:max-w-xs">
+             <div className="flex flex-col sm:flex-row gap-2 w-full">
+                <div className="relative w-full flex-1">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input 
-                        placeholder="Filter by address or token..." 
+                        placeholder="Filter by address, tag, or token..." 
                         className="pl-9 w-full"
                         value={searchFilter}
                         onChange={(e) => setSearchFilter(e.target.value)}
                     />
                 </div>
-                 <Select value={tagFilter} onValueChange={setTagFilter}>
-                    <SelectTrigger className='sm:max-w-[180px]'>
-                        <SelectValue placeholder="Filter by tag..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {allTags.map(tag => (
-                           <SelectItem key={tag} value={tag}>{tag === 'all' ? 'All Tags' : tag}</SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-                <Select value={sortBy} onValueChange={setSortBy}>
-                    <SelectTrigger className='sm:max-w-[180px]'>
-                        <SelectValue placeholder="Sort by..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="pnl7d">Sort by 7d PnL</SelectItem>
-                        <SelectItem value="winRate">Sort by Win Rate</SelectItem>
-                        <SelectItem value="netWorth">Sort by Net Worth</SelectItem>
-                        <SelectItem value="activity">Sort by Activity</SelectItem>
-                    </SelectContent>
-                </Select>
+                 <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="outline" className='w-full sm:w-auto'>
+                             <SlidersHorizontal className="h-4 w-4 mr-2"/>
+                            Filters
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-56" align="end">
+                        <DropdownMenuLabel>Sort By</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuRadioGroup value={sortBy} onValueChange={setSortBy}>
+                            <DropdownMenuRadioItem value="pnl7d">7d PnL</DropdownMenuRadioItem>
+                            <DropdownMenuRadioItem value="winRate">Win Rate</DropdownMenuRadioItem>
+                            <DropdownMenuRadioItem value="netWorth">Net Worth</DropdownMenuRadioItem>
+                            <DropdownMenuRadioItem value="activity">Activity</DropdownMenuRadioItem>
+                        </DropdownMenuRadioGroup>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuLabel>Filter by Tag</DropdownMenuLabel>
+                         <DropdownMenuSeparator />
+                        <DropdownMenuRadioGroup value={tagFilter} onValueChange={setTagFilter}>
+                            {allTags.map(tag => (
+                                <DropdownMenuRadioItem key={tag} value={tag}>
+                                    {tag === 'all' ? 'All Tags' : tag}
+                                </DropdownMenuRadioItem>
+                            ))}
+                        </DropdownMenuRadioGroup>
+                    </DropdownMenuContent>
+                </DropdownMenu>
             </div>
             <LeaderboardTable data={filteredAndSortedData} isLoading={isLoading} />
         </div>
