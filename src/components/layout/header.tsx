@@ -7,6 +7,8 @@ import Link from "next/link";
 import NotificationBell from "./notification-bell";
 import { MobileNav } from "./mobile-nav";
 import { useUser } from "@/firebase";
+import { useState, useEffect } from 'react';
+import { cn } from "@/lib/utils";
 
 export const LogoIcon = () => (
     <svg
@@ -22,9 +24,28 @@ export const LogoIcon = () => (
 
 export default function Header() {
     const { user, claims } = useUser();
+    const [scrolled, setScrolled] = useState(false);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            const isScrolled = window.scrollY > 10;
+            if (isScrolled !== scrolled) {
+                setScrolled(isScrolled);
+            }
+        };
+
+        document.addEventListener('scroll', handleScroll);
+        return () => {
+            document.removeEventListener('scroll', handleScroll);
+        };
+    }, [scrolled]);
+
 
     return (
-        <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur-sm">
+        <header className={cn(
+            "sticky top-0 z-50 w-full transition-all duration-300",
+            scrolled ? "border-b bg-background/95 backdrop-blur-sm" : "bg-transparent"
+        )}>
             <div className="container flex h-16 items-center justify-between">
                 <div className="flex items-center">
                     <MobileNav />
