@@ -31,9 +31,9 @@ const DetailItem = ({ label, value, network, entityType }: { label: string; valu
     };
 
     return (
-        <div className="group/detail-item grid grid-cols-3 sm:grid-cols-4 items-start gap-2 sm:gap-4">
-            <span className="col-span-1 text-sm text-muted-foreground sm:text-right">{label}</span>
-            <div className="col-span-2 sm:col-span-3 flex items-center justify-between">
+        <div className="group/detail-item grid grid-cols-1 sm:grid-cols-4 items-start gap-1 sm:gap-4">
+            <span className="col-span-1 text-sm text-muted-foreground">{label}</span>
+            <div className="col-span-1 sm:col-span-3 flex items-center justify-between min-w-0">
                  <Link href={getExplorerUrl(network, value, entityType)} target="_blank" rel="noopener noreferrer" className="font-mono text-sm truncate hover:text-primary" onClick={(e) => e.stopPropagation()}>
                     {value}
                 </Link>
