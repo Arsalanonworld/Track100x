@@ -69,7 +69,7 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
                 <Card className="w-full hover:shadow-lg transition-shadow duration-200 group/card overflow-hidden">
                     <CollapsibleTrigger asChild>
                         <div className="cursor-pointer p-3 sm:p-4">
-                            <div className="grid grid-cols-[auto,1fr,auto] items-center gap-4">
+                            <div className="grid grid-cols-[auto,1fr,auto] items-center gap-3 sm:gap-4">
                                 {/* Left Side: Amount & Token */}
                                 <div className="flex items-center gap-3">
                                     <CryptoIcon token={tx.token.symbol} className="h-10 w-10"/>
@@ -81,16 +81,16 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
 
                                 {/* Center: From/To Flow */}
                                 <div className="min-w-0">
-                                    <div className="flex flex-col md:flex-row items-stretch md:items-center gap-2 md:gap-4">
+                                    <div className="flex flex-col md:flex-row items-stretch md:items-center gap-2">
                                         {/* From */}
                                         <div className="flex items-center gap-2 text-sm min-w-0">
-                                            <span className="text-muted-foreground w-10">From</span>
+                                            <span className="text-muted-foreground w-8">From</span>
                                             <Link href={getExplorerUrl(tx.network, tx.from, 'address')} target="_blank" rel="noopener noreferrer" className="font-mono hover:underline truncate">
                                                 {tx.fromShort}
                                             </Link>
                                             <WatchlistButton type="wallet" identifier={tx.from} />
                                             {tx.fromTags && tx.fromTags.length > 0 && (
-                                                <div className="flex items-center gap-1.5 ml-auto">
+                                                <div className="hidden sm:flex items-center gap-1.5">
                                                     {tx.fromTags.map(tag => <Badge key={tag} variant="secondary">{tag}</Badge>)}
                                                 </div>
                                             )}
@@ -98,18 +98,18 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
                                         
                                         <div className="md:px-2 flex items-center justify-center">
                                           <ArrowRight className="h-4 w-4 text-muted-foreground hidden md:block shrink-0" />
-                                          <ArrowDown className="h-4 w-4 text-muted-foreground md:hidden shrink-0" />
+                                          <ArrowDown className="h-4 w-4 text-muted-foreground md:hidden shrink-0 ml-2" />
                                         </div>
                                         
                                         {/* To */}
                                         <div className="flex items-center gap-2 text-sm min-w-0">
-                                            <span className="text-muted-foreground w-10">To</span>
+                                            <span className="text-muted-foreground w-8">To</span>
                                              <Link href={getExplorerUrl(tx.network, tx.to, 'address')} target="_blank" rel="noopener noreferrer" className="font-mono hover:underline truncate">
                                                 {tx.toShort}
                                              </Link>
                                             <WatchlistButton type="wallet" identifier={tx.to} />
                                              {tx.toTags && tx.toTags.length > 0 && (
-                                                <div className="flex items-center gap-1.5 ml-auto">
+                                                <div className="hidden sm:flex items-center gap-1.5">
                                                     {tx.toTags.map(tag => <Badge key={tag} variant="secondary">{tag}</Badge>)}
                                                 </div>
                                             )}
@@ -118,12 +118,12 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
                                 </div>
 
                                 {/* Right Side: Actions and Details Toggle */}
-                                <div className="flex flex-col-reverse xs:flex-row items-end xs:items-center justify-end gap-1 sm:gap-2">
+                                <div className="flex flex-col items-end justify-between self-stretch">
                                     <div className="flex items-center gap-2">
                                         <Badge variant="outline" className="hidden xs:inline-flex">{tx.network}</Badge>
                                         <span className="text-xs text-muted-foreground whitespace-nowrap">{tx.time}</span>
                                     </div>
-                                    <div className="flex items-center">
+                                    <div className="flex items-center -mb-1 -mr-1">
                                          <DropdownMenu>
                                             <DropdownMenuTrigger asChild>
                                                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => e.stopPropagation()}>
@@ -169,8 +169,3 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
 
 
 export default TransactionCard;
-
-    
-
-    
-
