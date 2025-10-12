@@ -70,11 +70,15 @@ export default function HeroSection() {
              timeoutRef.current = setTimeout(handleTyping, delay);
         };
         
-        handleTyping();
+        // This is a workaround to kickstart the effect since the dependency array is tricky
+        if (!timeoutRef.current) {
+            timeoutRef.current = setTimeout(handleTyping, typingSpeed);
+        }
 
         return () => {
             if (timeoutRef.current) {
                 clearTimeout(timeoutRef.current);
+                timeoutRef.current = null;
             }
         };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -82,7 +86,7 @@ export default function HeroSection() {
 
 
     return (
-        <section className="relative overflow-hidden bg-gradient-to-b from-card to-background flex flex-col items-center justify-center min-h-[240px] py-12 md:min-h-[280px]">
+        <section className="relative overflow-hidden bg-gradient-to-b from-card to-background flex flex-col items-center justify-center py-12">
             <div className="absolute inset-0 bg-[url('/grid.svg')] bg-repeat [mask-image:linear-gradient(to_bottom,white_5%,transparent_80%)] dark:opacity-20"></div>
             <div className="container mx-auto px-4 text-center relative">
                 <h1 className="relative text-3xl font-extrabold tracking-tighter sm:text-5xl lg:text-6xl text-foreground inline-flex items-center justify-center min-h-[40px] sm:min-h-[64px] lg:min-h-[72px]">
@@ -104,4 +108,3 @@ export default function HeroSection() {
         </section>
     );
 }
-
