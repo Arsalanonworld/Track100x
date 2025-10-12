@@ -17,19 +17,19 @@ const phrases = [
 
 const features = [
     {
-        icon: <Wallet className="h-5 w-5 text-muted-foreground" />,
+        icon: <Wallet className="h-5 w-5 text-primary" />,
         label: "Wallet Intelligence"
     },
     {
-        icon: <Search className="h-5 w-5 text-muted-foreground" />,
+        icon: <Search className="h-5 w-5 text-primary" />,
         label: "Ecosystem Research"
     },
     {
-        icon: <Bell className="h-5 w-5 text-muted-foreground" />,
+        icon: <Bell className="h-5 w-5 text-primary" />,
         label: "On-Chain Analytics"
     },
     {
-        icon: <WhaleIcon className="h-5 w-5 text-muted-foreground" />,
+        icon: <WhaleIcon className="h-5 w-5 text-primary" />,
         label: "Real-Time Whale Flow"
     },
 ];
@@ -107,11 +107,11 @@ export default function HeroSection() {
                  <p className="max-w-3xl mx-auto mt-4 text-base sm:text-lg text-muted-foreground">
                     The Blockchain Intelligence Platform for investors, traders, and researchers.
                 </p>
-                 <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 sm:gap-x-8">
+                 <div className="mt-8 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
                     {features.map((feature) => (
-                       <div key={feature.label} className="flex items-center gap-3">
+                       <div key={feature.label} className="flex items-center gap-2 bg-primary/5 border border-primary/20 rounded-full px-4 py-2 transition-all hover:bg-primary/10">
                             {feature.icon}
-                            <span className="text-sm font-medium text-muted-foreground">{feature.label}</span>
+                            <span className="text-sm font-medium text-primary-foreground">{feature.label}</span>
                        </div>
                     ))}
                 </div>
