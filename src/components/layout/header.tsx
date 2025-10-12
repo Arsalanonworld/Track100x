@@ -30,8 +30,8 @@ export default function Header() {
                     <MobileNav />
                      <Link href="/" className="mr-6 flex items-center space-x-2">
                         <LogoIcon />
-                        <span className="font-bold text-lg">
-                            Track<span className="font-semibold text-primary/90">100x</span>
+                        <span className="font-regular text-lg">
+                            Track<span className="font-extrabold text-primary">100x</span>
                         </span>
                     </Link>
                     <MainNav />
