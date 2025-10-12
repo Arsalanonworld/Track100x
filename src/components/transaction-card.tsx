@@ -31,9 +31,9 @@ const DetailItem = ({ label, value, network, entityType }: { label: string; valu
     };
 
     return (
-        <div className="group/detail-item grid grid-cols-[80px_1fr] items-center gap-4">
-            <span className="text-sm text-muted-foreground text-right">{label}</span>
-            <div className="flex items-center justify-between">
+        <div className="group/detail-item grid grid-cols-3 sm:grid-cols-4 items-center gap-4">
+            <span className="col-span-1 text-sm text-muted-foreground text-right">{label}</span>
+            <div className="col-span-2 sm:col-span-3 flex items-center justify-between">
                  <Link href={getExplorerUrl(network, value, entityType)} target="_blank" rel="noopener noreferrer" className="font-mono text-sm truncate hover:text-primary" onClick={(e) => e.stopPropagation()}>
                     {value}
                 </Link>
@@ -166,5 +166,7 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
 
 
 export default TransactionCard;
+
+    
 
     
