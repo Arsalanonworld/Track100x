@@ -3,7 +3,7 @@
 import { Card } from "@/components/ui/card";
 import type { WhaleTransaction } from "@/lib/mock-data";
 import Link from "next/link";
-import { Copy, ChevronDown, BellPlus, ArrowUpRight, ArrowRight, Zap, ArrowDown } from "lucide-react";
+import { Copy, ChevronDown, ArrowUpRight, ArrowRight, Zap, ArrowDown } from "lucide-react";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { cn } from "@/lib/utils";
@@ -31,9 +31,9 @@ const DetailItem = ({ label, value, network, entityType }: { label: string; valu
     };
 
     return (
-        <div className="group/detail-item grid grid-cols-1 sm:grid-cols-4 items-start sm:items-center gap-1 sm:gap-4">
+        <div className="group/detail-item grid grid-cols-3 sm:grid-cols-4 items-start gap-2 sm:gap-4">
             <span className="col-span-1 text-sm text-muted-foreground sm:text-right">{label}</span>
-            <div className="col-span-1 sm:col-span-3 flex items-center justify-between">
+            <div className="col-span-2 sm:col-span-3 flex items-center justify-between">
                  <Link href={getExplorerUrl(network, value, entityType)} target="_blank" rel="noopener noreferrer" className="font-mono text-sm truncate hover:text-primary" onClick={(e) => e.stopPropagation()}>
                     {value}
                 </Link>
@@ -69,9 +69,9 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
                 <Card className="w-full hover:shadow-lg transition-shadow duration-200 group/card overflow-hidden">
                     <CollapsibleTrigger asChild>
                         <div className="cursor-pointer p-3 sm:p-4">
-                            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                            <div className="grid grid-cols-[auto,1fr,auto] items-center gap-4">
                                 {/* Left Side: Amount & Token */}
-                                <div className="flex items-center gap-3 shrink-0">
+                                <div className="flex items-center gap-3">
                                     <CryptoIcon token={tx.token.symbol} className="h-10 w-10"/>
                                     <div>
                                         <p className="font-bold text-lg">{tx.tokenAmount}</p>
@@ -80,10 +80,10 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
                                 </div>
 
                                 {/* Center: From/To Flow */}
-                                <div className="flex-1 w-full min-w-0">
+                                <div className="min-w-0">
                                     <div className="flex flex-col md:flex-row items-stretch md:items-center gap-2 md:gap-4">
                                         {/* From */}
-                                        <div className="flex items-center gap-2 text-sm w-full md:max-w-xs">
+                                        <div className="flex items-center gap-2 text-sm min-w-0">
                                             <span className="text-muted-foreground w-10">From</span>
                                             <Link href={getExplorerUrl(tx.network, tx.from, 'address')} target="_blank" rel="noopener noreferrer" className="font-mono hover:underline truncate">
                                                 {tx.fromShort}
@@ -102,7 +102,7 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
                                         </div>
                                         
                                         {/* To */}
-                                        <div className="flex items-center gap-2 text-sm w-full md:max-w-xs">
+                                        <div className="flex items-center gap-2 text-sm min-w-0">
                                             <span className="text-muted-foreground w-10">To</span>
                                              <Link href={getExplorerUrl(tx.network, tx.to, 'address')} target="_blank" rel="noopener noreferrer" className="font-mono hover:underline truncate">
                                                 {tx.toShort}
@@ -118,28 +118,31 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
                                 </div>
 
                                 {/* Right Side: Actions and Details Toggle */}
-                                <div className="flex items-center self-start sm:self-center justify-end gap-1 sm:gap-2 w-full sm:w-auto">
-                                    <Badge variant="outline" className="hidden xs:inline-flex">{tx.network}</Badge>
-                                    <span className="text-xs text-muted-foreground whitespace-nowrap ml-auto sm:ml-0">{tx.time}</span>
-                                    
-                                     <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => e.stopPropagation()}>
-                                                <Zap className="h-4 w-4" />
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent onClick={(e) => e.stopPropagation()}>
-                                            <DropdownMenuLabel>Create Quick Alert For</DropdownMenuLabel>
-                                            <DropdownMenuSeparator />
-                                            <DropdownMenuItem onClick={() => openAlertEditor('token', tx.token.symbol)}>Token: {tx.token.symbol}</DropdownMenuItem>
-                                            <DropdownMenuItem onClick={() => openAlertEditor('wallet', tx.from)}>Sender: {tx.fromShort}</DropdownMenuItem>
-                                            <DropdownMenuItem onClick={() => openAlertEditor('wallet', tx.to)}>Receiver: {tx.toShort}</DropdownMenuItem>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
+                                <div className="flex flex-col-reverse xs:flex-row items-end xs:items-center justify-end gap-1 sm:gap-2">
+                                    <div className="flex items-center gap-2">
+                                        <Badge variant="outline" className="hidden xs:inline-flex">{tx.network}</Badge>
+                                        <span className="text-xs text-muted-foreground whitespace-nowrap">{tx.time}</span>
+                                    </div>
+                                    <div className="flex items-center">
+                                         <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                 <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => e.stopPropagation()}>
+                                                    <Zap className="h-4 w-4" />
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent onClick={(e) => e.stopPropagation()}>
+                                                <DropdownMenuLabel>Create Quick Alert For</DropdownMenuLabel>
+                                                <DropdownMenuSeparator />
+                                                <DropdownMenuItem onClick={() => openAlertEditor('token', tx.token.symbol)}>Token: {tx.token.symbol}</DropdownMenuItem>
+                                                <DropdownMenuItem onClick={() => openAlertEditor('wallet', tx.from)}>Sender: {tx.fromShort}</DropdownMenuItem>
+                                                <DropdownMenuItem onClick={() => openAlertEditor('wallet', tx.to)}>Receiver: {tx.toShort}</DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
 
-                                    <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0 data-[state=open]:bg-muted" aria-label="Toggle transaction details">
-                                        <ChevronDown className={cn("h-4 w-4 transition-transform", isOpen && "rotate-180")} />
-                                    </Button>
+                                        <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0 data-[state=open]:bg-muted" aria-label="Toggle transaction details">
+                                            <ChevronDown className={cn("h-4 w-4 transition-transform", isOpen && "rotate-180")} />
+                                        </Button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -170,3 +173,4 @@ export default TransactionCard;
     
 
     
+
