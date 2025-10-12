@@ -10,6 +10,17 @@ type TickerItemData = {
   change: number;
 };
 
+const mockTickerData: TickerItemData[] = [
+    { symbol: 'BTC', price: '68,450.21', change: 1.25 },
+    { symbol: 'ETH', price: '3,550.73', change: -0.52 },
+    { symbol: 'SOL', price: '168.99', change: 2.78 },
+    { symbol: 'WIF', price: '2.88', change: -5.14 },
+    { symbol: 'PEPE', price: '0.00001156', change: 8.45 },
+    { symbol: 'BONK', price: '0.00002812', change: 3.21 },
+    { symbol: 'DOGE', price: '0.1589', change: 0.15 },
+    { symbol: 'SHIB', price: '0.00002178', change: -1.99 },
+];
+
 const TickerItem = ({ item }: { item: TickerItemData }) => {
     const isUp = item.change >= 0;
     const isDown = item.change < 0;
@@ -38,18 +49,15 @@ export const TickerBar = () => {
 
     useEffect(() => {
         // In a real app, you would fetch this data from an API.
-        // For now, we simulate a loading state and then show nothing,
-        // as the API is not yet integrated.
         const timer = setTimeout(() => {
-            // e.g., fetch('/api/ticker').then(res => res.json()).then(setData);
             setLoading(false);
-            // We set empty data because we don't have mock data anymore.
-            setData([]); 
-        }, 2000);
+            setData(mockTickerData); 
+        }, 1500);
         return () => clearTimeout(timer);
     }, []);
 
-    const extendedData = data.length > 0 ? [...data, ...data] : [];
+    // Double the data for a seamless loop
+    const extendedData = data.length > 0 ? [...data, ...data, ...data, ...data] : [];
 
     if (loading) {
       return (
@@ -65,10 +73,13 @@ export const TickerBar = () => {
     }
 
   return (
-    <div className="relative w-full overflow-hidden bg-muted/50 border-b h-10">
-      <div className="absolute top-0 left-0 h-full flex items-center animate-scroll">
+    <div className="relative w-full overflow-hidden bg-muted/50 border-b h-10 group">
+      <div className="absolute top-0 left-0 h-full flex items-center animate-scroll group-hover:pause">
         {extendedData.map((item, index) => (
-          <TickerItem key={index} item={item} />
+          <React.Fragment key={index}>
+            <TickerItem item={item} />
+            <div className="w-px h-4 bg-border/50 shrink-0" />
+          </React.Fragment>
         ))}
       </div>
       <style jsx>{`
@@ -77,7 +88,10 @@ export const TickerBar = () => {
           to { transform: translateX(-50%); }
         }
         .animate-scroll {
-          animation: scroll 40s linear infinite;
+          animation: scroll 60s linear infinite;
+        }
+        .pause {
+          animation-play-state: paused;
         }
       `}</style>
     </div>
