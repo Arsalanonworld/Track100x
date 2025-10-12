@@ -1,10 +1,9 @@
 
-
 'use client';
 import { Card } from "@/components/ui/card";
 import type { WhaleTransaction } from "@/lib/mock-data";
 import Link from "next/link";
-import { Copy, ChevronDown, BellPlus, ArrowUpRight, ArrowRight, Zap } from "lucide-react";
+import { Copy, ChevronDown, BellPlus, ArrowUpRight, ArrowRight, Zap, ArrowDown } from "lucide-react";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { cn } from "@/lib/utils";
@@ -82,10 +81,10 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
 
                                 {/* Center: From/To Flow */}
                                 <div className="flex-1 w-full min-w-0">
-                                    <div className="flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-4">
+                                    <div className="flex flex-col md:flex-row items-stretch md:items-center gap-2 md:gap-4">
                                         {/* From */}
                                         <div className="flex items-center gap-2 text-sm w-full md:max-w-xs">
-                                            <span className="text-muted-foreground w-10 hidden md:inline">From</span>
+                                            <span className="text-muted-foreground w-10">From</span>
                                             <Link href={getExplorerUrl(tx.network, tx.from, 'address')} target="_blank" rel="noopener noreferrer" className="font-mono hover:underline truncate">
                                                 {tx.fromShort}
                                             </Link>
@@ -97,11 +96,14 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
                                             )}
                                         </div>
                                         
-                                        <ArrowRight className="h-4 w-4 text-muted-foreground hidden md:block shrink-0" />
+                                        <div className="md:px-2 flex items-center justify-center">
+                                          <ArrowRight className="h-4 w-4 text-muted-foreground hidden md:block shrink-0" />
+                                          <ArrowDown className="h-4 w-4 text-muted-foreground md:hidden shrink-0" />
+                                        </div>
                                         
                                         {/* To */}
                                         <div className="flex items-center gap-2 text-sm w-full md:max-w-xs">
-                                            <span className="text-muted-foreground w-10 hidden md:inline">To</span>
+                                            <span className="text-muted-foreground w-10">To</span>
                                              <Link href={getExplorerUrl(tx.network, tx.to, 'address')} target="_blank" rel="noopener noreferrer" className="font-mono hover:underline truncate">
                                                 {tx.toShort}
                                             </Link>
