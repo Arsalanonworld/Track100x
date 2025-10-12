@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Bell, Eye, Search, Wallet } from "lucide-react";
 import { WhaleIcon } from "./icons/whale-icon";
+import React from 'react';
 
 const phrases = [
     'Decode On-Chain Behavior.',
@@ -17,19 +18,19 @@ const phrases = [
 
 const features = [
     {
-        icon: <Wallet className="h-5 w-5 text-primary" />,
+        icon: <Wallet />,
         label: "Wallet Intelligence"
     },
     {
-        icon: <Search className="h-5 w-5 text-primary" />,
+        icon: <Search />,
         label: "Ecosystem Research"
     },
     {
-        icon: <Bell className="h-5 w-5 text-primary" />,
+        icon: <Bell />,
         label: "On-Chain Analytics"
     },
     {
-        icon: <WhaleIcon className="h-5 w-5 text-primary" />,
+        icon: <WhaleIcon />,
         label: "Real-Time Whale Flow"
     },
 ];
@@ -107,11 +108,11 @@ export default function HeroSection() {
                  <p className="max-w-3xl mx-auto mt-4 text-base sm:text-lg text-muted-foreground">
                     The Blockchain Intelligence Platform for investors, traders, and researchers.
                 </p>
-                 <div className="mt-8 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
+                 <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
                     {features.map((feature) => (
-                       <div key={feature.label} className="flex items-center gap-2 bg-primary/5 border border-primary/20 rounded-full px-4 py-2 transition-all hover:bg-primary/10">
-                            {feature.icon}
-                            <span className="text-sm font-medium text-primary-foreground">{feature.label}</span>
+                       <div key={feature.label} className="flex items-center gap-2">
+                            {React.cloneElement(feature.icon, { className: 'h-4 w-4' })}
+                            <span>{feature.label}</span>
                        </div>
                     ))}
                 </div>
