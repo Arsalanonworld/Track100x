@@ -31,9 +31,9 @@ const DetailItem = ({ label, value, network, entityType }: { label: string; valu
     };
 
     return (
-        <div className="group/detail-item grid grid-cols-1 sm:grid-cols-4 items-start gap-1 sm:gap-4">
-            <span className="col-span-1 text-sm text-muted-foreground">{label}</span>
-            <div className="col-span-1 sm:col-span-3 flex items-center justify-between min-w-0">
+        <div className="group/detail-item grid grid-cols-1 sm:grid-cols-[100px,1fr] items-start gap-1 sm:gap-4">
+            <span className="col-span-1 text-sm text-muted-foreground sm:text-right">{label}</span>
+            <div className="col-span-1 flex items-center justify-between min-w-0">
                  <Link href={getExplorerUrl(network, value, entityType)} target="_blank" rel="noopener noreferrer" className="font-mono text-sm truncate hover:text-primary" onClick={(e) => e.stopPropagation()}>
                     {value}
                 </Link>
@@ -81,7 +81,7 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
 
                                 {/* Center: From/To Flow */}
                                 <div className="min-w-0">
-                                    <div className="flex flex-col md:flex-row items-stretch md:items-center gap-2">
+                                    <div className="flex flex-col md:flex-row md:items-center gap-2">
                                         {/* From */}
                                         <div className="flex items-center gap-2 text-sm min-w-0">
                                             <span className="text-muted-foreground w-8">From</span>
@@ -114,6 +114,9 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
                                                 </div>
                                             )}
                                         </div>
+                                    </div>
+                                    <div className="sm:hidden flex items-center gap-1.5 mt-2 flex-wrap">
+                                        {[...(tx.fromTags || []), ...(tx.toTags || [])].map(tag => <Badge key={tag} variant="secondary">{tag}</Badge>)}
                                     </div>
                                 </div>
 
