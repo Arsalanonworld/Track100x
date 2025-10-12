@@ -55,11 +55,9 @@ export function UserNav() {
             <Button variant="ghost" onClick={() => openAuthDialog('login')}>
                 Login
             </Button>
-            <Link href="/upgrade" passHref>
-              <AnimatedButton>
-                  Upgrade
-              </AnimatedButton>
-            </Link>
+            <Button variant='outline' onClick={() => openAuthDialog('signup')}>
+                Sign Up
+            </Button>
         </div>
         <AuthDialog 
             open={isAuthDialogOpen} 

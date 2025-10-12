@@ -84,7 +84,7 @@ export type LeaderboardWallet = {
     netWorth: string;
     topHolding: { token: string; percentage: number };
     pnl7d: number;
-    pnl24h: number;
+    winRate: number;
     activity: number;
     tags?: string[];
 };

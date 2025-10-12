@@ -53,10 +53,10 @@ const WalletPodiumCard = ({ wallet, rank }: { wallet: typeof leaderboardData[0],
 
     return (
         <Card className={cn(
-            "flex flex-col transform transition-all duration-300 w-full",
-             isFirst 
-                ? "md:scale-110 bg-card border-primary shadow-2xl z-10 hover:shadow-primary/30" 
-                : "md:scale-95 shadow-lg hover:shadow-xl hover:scale-100",
+            "flex flex-col transform transition-all duration-300 w-full hover:shadow-primary/20",
+            isFirst 
+                ? "md:scale-105 bg-card border-primary shadow-2xl z-10" 
+                : "md:scale-100 shadow-lg hover:scale-[1.02] hover:shadow-xl",
         )}>
             <CardHeader className="items-center text-center">
                 <div className='flex items-center gap-2'>
@@ -70,8 +70,8 @@ const WalletPodiumCard = ({ wallet, rank }: { wallet: typeof leaderboardData[0],
                 <div className='grid grid-cols-2 gap-4'>
                     <PnlCell value={wallet.pnl7d} label="7d P&L" className="col-span-2 border-b pb-4"/>
                      <div className='text-center pt-4'>
-                        <p className='text-xs text-muted-foreground'>Win Rate</p>
-                        <p className='font-semibold text-lg'>{wallet.pnl24h.toFixed(0)}%</p>
+                        <p className='text-xs text-muted-foreground'>Win Rate (7d)</p>
+                        <p className='font-semibold text-lg'>{wallet.winRate.toFixed(0)}%</p>
                     </div>
                      <div className='text-center pt-4'>
                         <p className='text-xs text-muted-foreground'>Trades (7d)</p>

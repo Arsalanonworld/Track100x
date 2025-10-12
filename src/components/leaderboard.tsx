@@ -98,6 +98,7 @@ const LeaderboardTable = ({ data, isLoading }: { data: LeaderboardWallet[], isLo
                         <TableHead>Net Worth</TableHead>
                         <TableHead>Top Holding</TableHead>
                         <TableHead>7d PnL</TableHead>
+                        <TableHead>Win Rate (7d)</TableHead>
                         <TableHead>7d Activity</TableHead>
                         <TableHead>Tags</TableHead>
                         <TableHead className="text-right w-[100px]">Actions</TableHead>
@@ -111,6 +112,7 @@ const LeaderboardTable = ({ data, isLoading }: { data: LeaderboardWallet[], isLo
                             <TableCell className="font-medium">{wallet.netWorth}</TableCell>
                             <TopHoldingCell holding={wallet.topHolding} />
                             <PnlCell value={wallet.pnl7d} />
+                            <TableCell className="font-medium">{wallet.winRate.toFixed(1)}%</TableCell>
                             <TableCell>{wallet.activity} txns</TableCell>
                             <TableCell>
                               <div className="flex items-center gap-1 flex-wrap">
@@ -125,7 +127,7 @@ const LeaderboardTable = ({ data, isLoading }: { data: LeaderboardWallet[], isLo
                         </TableRow>
                         )) : (
                             <TableRow>
-                                <TableCell colSpan={8} className="h-24 text-center">
+                                <TableCell colSpan={9} className="h-24 text-center">
                                     No wallets found for this criteria.
                                 </TableCell>
                             </TableRow>
@@ -193,6 +195,8 @@ export function Leaderboard() {
                 return valB - valA;
             case 'activity':
                 return b.activity - a.activity;
+            case 'winRate':
+                return b.winRate - a.winRate;
             case 'pnl7d':
             default:
                 return b.pnl7d - a.pnl7d;
@@ -231,6 +235,7 @@ export function Leaderboard() {
                     </SelectTrigger>
                     <SelectContent>
                         <SelectItem value="pnl7d">Sort by 7d PnL</SelectItem>
+                        <SelectItem value="winRate">Sort by Win Rate</SelectItem>
                         <SelectItem value="netWorth">Sort by Net Worth</SelectItem>
                         <SelectItem value="activity">Sort by Activity</SelectItem>
                     </SelectContent>
