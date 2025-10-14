@@ -1,7 +1,7 @@
 
 'use client';
 
-import { Bell, Pencil, Trash2, Wallet, Zap } from 'lucide-react';
+import { Bell, Pencil, Trash2, Wallet, Zap, PlusCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -36,11 +36,12 @@ import { AlertEditorDialog } from '../alert-editor-dialog';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { Skeleton } from '../ui/skeleton';
+import { CryptoIcon } from '../crypto-icon';
 
 
 const iconMap = {
   wallet: <Wallet className="h-4 w-4 text-muted-foreground" />,
-  token: <Zap className="h-4 w-4 text-muted-foreground" />,
+  token: <CryptoIcon token="" className="h-4 w-4" />,
 };
 
 export default function ActiveAlerts({ onNewAlert }: { onNewAlert: () => void}) {
@@ -107,12 +108,12 @@ export default function ActiveAlerts({ onNewAlert }: { onNewAlert: () => void}) 
 
     return (
         <Dialog open={isEditorOpen} onOpenChange={handleCloseEditor}>
-            <div className="space-y-4">
+            <div className="space-y-3">
                 {isLoading ? (
                     <div className='space-y-3'>
-                        <Skeleton className="h-16 w-full" />
-                        <Skeleton className="h-16 w-full" />
-                        <Skeleton className="h-16 w-full" />
+                        <Skeleton className="h-16 w-full rounded-lg" />
+                        <Skeleton className="h-16 w-full rounded-lg" />
+                        <Skeleton className="h-16 w-full rounded-lg" />
                     </div>
                 ) : alerts && alerts.length > 0 ? (
                 alerts.map(alert => (
@@ -125,7 +126,7 @@ export default function ActiveAlerts({ onNewAlert }: { onNewAlert: () => void}) 
                     >
                     <div className="flex items-center gap-3 flex-1 min-w-0">
                         <div className="p-2 bg-secondary rounded-md">
-                            {iconMap[alert.alertType]}
+                            {alert.alertType === 'token' ? <CryptoIcon token={alert.token} className='h-4 w-4'/> : <Wallet className="h-4 w-4 text-muted-foreground"/>}
                         </div>
                         <div className='min-w-0'>
                             <p className="font-semibold text-sm truncate">{alert.walletId || alert.token}</p>
@@ -174,11 +175,11 @@ export default function ActiveAlerts({ onNewAlert }: { onNewAlert: () => void}) 
                     </div>
                 ))
                 ) : !isLoading && (
-                <div className="flex flex-col items-center justify-center text-center text-muted-foreground p-8 border-2 border-dashed rounded-lg">
-                    <Bell className="h-10 w-10 mb-4" />
-                    <p className="font-semibold">No active alerts found.</p>
-                    <Button variant="link" size="sm" className="mt-2" onClick={onNewAlert}>Create one now</Button>
-                </div>
+                <button onClick={onNewAlert} className="w-full flex flex-col items-center justify-center text-center text-muted-foreground p-8 border-2 border-dashed rounded-lg hover:bg-muted/50 hover:border-primary/50 transition-colors">
+                    <PlusCircle className="h-10 w-10 mb-4" />
+                    <p className="font-semibold text-foreground">Create a New Alert</p>
+                    <p className="text-sm">You have no active alerts.</p>
+                </button>
                 )}
             </div>
             {isEditorOpen && <AlertEditorDialog 
@@ -188,4 +189,3 @@ export default function ActiveAlerts({ onNewAlert }: { onNewAlert: () => void}) 
         </Dialog>
     );
 }
-

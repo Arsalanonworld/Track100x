@@ -95,7 +95,7 @@ export function LeaderboardPreview() {
   if (topWallets.length < 3) return null;
 
   return (
-    <section className="py-16 sm:py-24 bg-gradient-to-b from-background to-muted/20">
+    <section className="py-16 sm:py-24 bg-gradient-to-b from-background to-card/50">
        <div className="container mx-auto">
         <div className="text-center mb-16">
             <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">Follow the Smartest Wallets</h2>

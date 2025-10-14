@@ -338,8 +338,8 @@ export default function PortfolioPage() {
             <h2 className="text-2xl font-bold tracking-tight mb-4">Wallet Analytics</h2>
             {wallets && wallets.length === 0 && !isLoading ? (
                  <Card>
-                    <CardContent className="p-8 text-center text-muted-foreground">
-                        <Eye className="h-10 w-10 mx-auto mb-4" />
+                    <CardContent className="p-8 text-center text-muted-foreground border-2 border-dashed rounded-lg">
+                        <WalletIcon className="h-10 w-10 mx-auto mb-4" />
                         <h3 className='text-xl font-semibold text-foreground'>No Wallets Added</h3>
                         <p>You haven't added any wallets to your watchlist yet.</p>
                         <Button asChild className='mt-4'>
