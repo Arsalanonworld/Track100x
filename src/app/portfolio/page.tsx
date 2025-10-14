@@ -46,11 +46,11 @@ const portfolioData = {
     ]
   },
   allocations: [
-    { name: 'Ethereum (ETH)', value: 40, color: 'var(--chart-1)' },
-    { name: 'Bitcoin (WBTC)', value: 30, color: 'var(--chart-2)' },
-    { name: 'Solana (SOL)', value: 15, color: 'var(--chart-3)' },
-    { name: 'Memecoins', value: 10, color: 'var(--chart-4)' },
-    { name: 'Stablecoins', value: 5, color: 'var(--chart-5)' },
+    { name: 'Ethereum (ETH)', value: 40, color: 'hsl(var(--chart-1))' },
+    { name: 'Bitcoin (WBTC)', value: 30, color: 'hsl(var(--chart-2))' },
+    { name: 'Solana (SOL)', value: 15, color: 'hsl(var(--chart-3))' },
+    { name: 'Memecoins', value: 10, color: 'hsl(var(--chart-4))' },
+    { name: 'Stablecoins', value: 5, color: 'hsl(var(--chart-5))' },
   ],
 };
 
@@ -171,6 +171,7 @@ export default function PortfolioPage() {
   const wallets = useMemo(() => watchlist?.filter(item => item.type === 'wallet') || [], [watchlist]);
   
   const isLoading = userLoading || watchlistLoading;
+  const hasWallets = wallets.length > 0;
 
   React.useEffect(() => {
     if (!isLoading && !isPro) {
@@ -197,7 +198,7 @@ export default function PortfolioPage() {
           title="Portfolio & Analytics"
           description="A centralized view of your on-chain holdings and performance."
           action={
-              <Button variant="outline" disabled={!isPro}>
+              <Button variant="outline" disabled={!isPro || !hasWallets}>
                   <Download className="mr-2 h-4 w-4" />
                   Export CSV
                   {!isPro && <Lock className="ml-2 h-3 w-3" />}
@@ -207,122 +208,141 @@ export default function PortfolioPage() {
 
         {/* Section 1: Portfolio Overview */}
         <section id="overview">
-          <Card>
-            <CardHeader>
-              <CardTitle>Portfolio Overview</CardTitle>
-              <CardDescription>Aggregated view of your on-chain wealth.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-8">
-              {/* Net Worth and Time Selector */}
-              <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
-                <div>
-                  <p className="text-sm text-muted-foreground">Total Net Worth</p>
-                  <p className="text-4xl font-bold">${portfolioData.netWorth.toLocaleString()}</p>
-                  <PnlBadge value={portfolioData.change24h} />
-                </div>
-                <Select value={timeRange} onValueChange={(val) => setTimeRange(val as '7d' | '30d' | 'all')}>
-                  <SelectTrigger className="w-full sm:w-[180px]">
-                    <SelectValue placeholder="Select time range" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="7d">Last 7 Days</SelectItem>
-                    <SelectItem value="30d" disabled={!isPro}>
-                      <div className="flex items-center gap-2">Last 30 Days {!isPro && <Lock className='h-3 w-3' />}</div>
-                    </SelectItem>
-                    <SelectItem value="all" disabled={!isPro}>
-                      <div className="flex items-center gap-2">All Time {!isPro && <Lock className='h-3 w-3' />}</div>
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              {/* Main Charts */}
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                  {/* Portfolio Over Time */}
-                  <div className="lg:col-span-2">
-                      <h3 className="font-semibold mb-4">Net Worth Over Time</h3>
-                      <div className="h-[300px]">
-                          <ChartContainer config={{value: {label: 'Net Worth', color: 'hsl(var(--primary))'}}} className='h-full w-full'>
-                              <AreaChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-                                  <CartesianGrid vertical={false} strokeDasharray="3 3" />
-                                  <XAxis dataKey="name" tick={{ fill: 'hsl(var(--muted-foreground))' }} fontSize={12} axisLine={false} tickLine={false} />
-                                  <YAxis tickFormatter={(value) => `$${(Number(value) / 1000)}k`} tick={{ fill: 'hsl(var(--muted-foreground))' }} fontSize={12} axisLine={false} tickLine={false} />
-                                  <Tooltip
-                                      cursor={{ stroke: 'hsl(var(--border))' }}
-                                      content={({ active, payload, label }) => active && payload && payload.length && (
-                                          <ChartTooltipContent
-                                            label={label}
-                                            payload={payload.map((p) => ({
-                                                ...p,
-                                                value: (p.value as number).toLocaleString('en-US', {
-                                                  style: 'currency',
-                                                  currency: 'USD',
-                                                  minimumFractionDigits: 0,
-                                                  maximumFractionDigits: 0,
-                                                })
-                                            }))}
-                                          />
-                                      )}
-                                  />
-                                  <Area type="monotone" dataKey="value" stroke="hsl(var(--primary))" fill="hsl(var(--primary))" fillOpacity={0.1} />
-                              </AreaChart>
-                          </ChartContainer>
-                      </div>
+           {hasWallets ? (
+             <Card>
+                <CardHeader>
+                  <CardTitle>Portfolio Overview</CardTitle>
+                  <CardDescription>Aggregated view of your on-chain wealth from your watched wallets.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-8">
+                  {/* Net Worth and Time Selector */}
+                  <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
+                    <div>
+                      <p className="text-sm text-muted-foreground">Total Net Worth</p>
+                      <p className="text-4xl font-bold">${portfolioData.netWorth.toLocaleString()}</p>
+                      <PnlBadge value={portfolioData.change24h} />
+                    </div>
+                    <Select value={timeRange} onValueChange={(val) => setTimeRange(val as '7d' | '30d' | 'all')}>
+                      <SelectTrigger className="w-full sm:w-[180px]">
+                        <SelectValue placeholder="Select time range" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="7d">Last 7 Days</SelectItem>
+                        <SelectItem value="30d" disabled={!isPro}>
+                          <div className="flex items-center gap-2">Last 30 Days {!isPro && <Lock className='h-3 w-3' />}</div>
+                        </SelectItem>
+                        <SelectItem value="all" disabled={!isPro}>
+                          <div className="flex items-center gap-2">All Time {!isPro && <Lock className='h-3 w-3' />}</div>
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
+                  
+                  {/* Main Charts */}
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                      {/* Portfolio Over Time */}
+                      <div className="lg:col-span-2">
+                          <h3 className="font-semibold mb-4">Net Worth Over Time</h3>
+                          <div className="h-[300px]">
+                              <ChartContainer config={{value: {label: 'Net Worth', color: 'hsl(var(--primary))'}}} className='h-full w-full'>
+                                  <AreaChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                                      <CartesianGrid vertical={false} strokeDasharray="3 3" />
+                                      <XAxis dataKey="name" tick={{ fill: 'hsl(var(--muted-foreground))' }} fontSize={12} axisLine={false} tickLine={false} />
+                                      <YAxis tickFormatter={(value) => `$${(Number(value) / 1000)}k`} tick={{ fill: 'hsl(var(--muted-foreground))' }} fontSize={12} axisLine={false} tickLine={false} />
+                                      <Tooltip
+                                          cursor={{ stroke: 'hsl(var(--border))' }}
+                                          content={({ active, payload, label }) => active && payload && payload.length && (
+                                              <ChartTooltipContent
+                                                label={label}
+                                                payload={payload.map((p) => ({
+                                                    ...p,
+                                                    value: (p.value as number).toLocaleString('en-US', {
+                                                      style: 'currency',
+                                                      currency: 'USD',
+                                                      minimumFractionDigits: 0,
+                                                      maximumFractionDigits: 0,
+                                                    })
+                                                }))}
+                                              />
+                                          )}
+                                      />
+                                      <Area type="monotone" dataKey="value" stroke="hsl(var(--primary))" fill="hsl(var(--primary))" fillOpacity={0.1} />
+                                  </AreaChart>
+                              </ChartContainer>
+                          </div>
+                      </div>
 
-                  {/* Asset Allocation */}
-                  <div>
-                      <h3 className="font-semibold mb-4">Asset Allocation</h3>
-                      <div className="h-[300px]">
-                          <ChartContainer config={{}} className="h-full w-full">
-                            <PieChart>
-                                  <Tooltip
-                                  content={({ active, payload }) => {
-                                    if (active && payload && payload.length) {
-                                      return (
-                                        <ChartTooltipContent
-                                          payload={payload.map((p) => ({
-                                              ...p,
-                                              name: p.name,
-                                              value: `${p.value}%`
-                                          }))}
-                                        />
-                                      )
-                                    }
-                                    return null
-                                  }}
-                                  />
-                                  <Pie 
-                                      activeIndex={activeIndex}
-                                      activeShape={renderActiveShape}
-                                      data={portfolioData.allocations} 
-                                      dataKey="value" 
-                                      nameKey="name" 
-                                      cx="50%" 
-                                      cy="50%" 
-                                      outerRadius={90}
-                                      innerRadius={70}
-                                      labelLine={false}
-                                      onMouseEnter={onPieEnter}
-                                  >
-                                      {portfolioData.allocations.map((entry, index) => (
-                                          <Cell key={`cell-${index}`} fill={entry.color} />
-                                      ))}
-                                  </Pie>
-                                  <Legend iconType='circle' />
-                              </PieChart>
-                          </ChartContainer>
+                      {/* Asset Allocation */}
+                      <div>
+                          <h3 className="font-semibold mb-4">Asset Allocation</h3>
+                          <div className="h-[300px]">
+                              <ChartContainer config={{}} className="h-full w-full">
+                                <PieChart>
+                                      <Tooltip
+                                      content={({ active, payload }) => {
+                                        if (active && payload && payload.length) {
+                                          return (
+                                            <ChartTooltipContent
+                                              payload={payload.map((p) => ({
+                                                  ...p,
+                                                  name: p.name,
+                                                  value: `${p.value}%`
+                                              }))}
+                                            />
+                                          )
+                                        }
+                                        return null
+                                      }}
+                                      />
+                                      <Pie 
+                                          activeIndex={activeIndex}
+                                          activeShape={renderActiveShape}
+                                          data={portfolioData.allocations} 
+                                          dataKey="value" 
+                                          nameKey="name" 
+                                          cx="50%" 
+                                          cy="50%" 
+                                          outerRadius={90}
+                                          innerRadius={70}
+                                          labelLine={false}
+                                          onMouseEnter={onPieEnter}
+                                      >
+                                          {portfolioData.allocations.map((entry, index) => (
+                                              <Cell key={`cell-${index}`} fill={entry.color} />
+                                          ))}
+                                      </Pie>
+                                      <Legend iconType='circle' />
+                                  </PieChart>
+                              </ChartContainer>
+                          </div>
                       </div>
                   </div>
-              </div>
-            </CardContent>
-          </Card>
+                </CardContent>
+              </Card>
+           ) : (
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Portfolio Overview</CardTitle>
+                        <CardDescription>Aggregated view of your on-chain wealth.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="p-8 text-center text-muted-foreground border-2 border-dashed rounded-lg">
+                            <WalletIcon className="h-10 w-10 mx-auto mb-4" />
+                            <h3 className='text-xl font-semibold text-foreground'>Your Portfolio is Empty</h3>
+                            <p>Add wallets to your watchlist to see your portfolio overview.</p>
+                            <Button asChild className='mt-4'>
+                                <Link href="/watchlist">Go to Watchlist</Link>
+                            </Button>
+                        </div>
+                    </CardContent>
+                </Card>
+           )}
         </section>
 
         {/* Section 2: Wallet Analytics */}
         <section id="wallet-analytics">
               <h2 className="text-2xl font-bold tracking-tight my-8">Wallet Analytics</h2>
-              {wallets && wallets.length === 0 && !isLoading ? (
+              {!isLoading && !hasWallets ? (
                   <Card>
                       <CardContent className="p-8 text-center text-muted-foreground border-2 border-dashed rounded-lg">
                           <WalletIcon className="h-10 w-10 mx-auto mb-4" />
@@ -383,7 +403,7 @@ export default function PortfolioPage() {
         {/* Section 3: Token Holdings */}
         <section id="token-holdings">
           <h2 className="text-2xl font-bold tracking-tight my-8">Aggregated Token Holdings</h2>
-          {wallets && wallets.length > 0 ? (
+          {hasWallets ? (
             <Card>
               <CardContent className="p-8 text-center text-muted-foreground">
                 <p>Aggregated token holdings from your linked wallets will appear here.</p>
@@ -405,5 +425,3 @@ export default function PortfolioPage() {
     </div>
   );
 }
-
-    
