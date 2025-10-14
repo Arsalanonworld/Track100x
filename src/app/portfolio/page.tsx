@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import PageHeader from '@/components/page-header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend, Sector } from 'recharts';
@@ -9,15 +9,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ArrowUp, ArrowDown, Download, Users, Lock, Wallet as WalletIcon } from 'lucide-react';
+import { ArrowUp, ArrowDown, Download, Users, Lock, Wallet as WalletIcon, Eye } from 'lucide-react';
 import { CryptoIcon } from '@/components/crypto-icon';
 import { cn } from '@/lib/utils';
 import { ChartTooltip, ChartTooltipContent, ChartContainer } from '@/components/ui/chart';
 import React from 'react';
-import { useUser } from '@/firebase';
+import { useUser, useCollection, useFirestore } from '@/firebase';
 import { Skeleton } from '@/components/ui/skeleton';
 import { FeatureLockInline } from '@/components/feature-lock-inline';
 import Link from 'next/link';
+import type { WatchlistItem } from '@/lib/types';
+import { collection, query } from 'firebase/firestore';
 
 const portfolioData = {
   netWorth: 125834.54,
@@ -57,10 +59,11 @@ const portfolioData = {
   ]
 };
 
-const wallets = [
-    { alias: 'Main Trading', address: '0x123...abc', netWorth: 85000, tokens: 15, pnl7d: 12.4, inflow: 15000, outflow: 8000 },
-    { alias: 'Degenerate Gambles', address: '0x456...def', netWorth: 40834, tokens: 5, pnl7d: -5.2, inflow: 25000, outflow: 32000 },
-]
+// Mock data for wallet details, will be replaced by real data later
+const mockWalletDetails = {
+    netWorth: 85000, tokens: 15, pnl7d: 12.4, inflow: 15000, outflow: 8000
+}
+
 
 const PnlBadge = ({ value }: { value: number }) => (
   <Badge variant={value >= 0 ? "secondary" : "destructive"} className={cn(
@@ -124,7 +127,10 @@ const renderActiveShape = (props: any) => {
 function PageSkeleton() {
     return (
         <div className='space-y-8'>
-            <Skeleton className="h-12 w-1/3" />
+            <div className='flex justify-between items-center'>
+                 <Skeleton className="h-12 w-1/3" />
+                 <Skeleton className="h-10 w-32" />
+            </div>
             <div className="space-y-8">
                 <Card>
                     <CardHeader>
@@ -146,11 +152,17 @@ function PageSkeleton() {
                         </div>
                     </CardContent>
                 </Card>
-                <Skeleton className="h-10 w-1/4" />
+                <h2 className="text-2xl font-bold tracking-tight">Wallet Analytics</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <Skeleton className="h-48 w-full" />
                     <Skeleton className="h-48 w-full" />
                 </div>
+                 <h2 className="text-2xl font-bold tracking-tight">Token Holdings</h2>
+                 <Card>
+                    <CardContent className='p-0'>
+                        <Skeleton className="h-96 w-full" />
+                    </CardContent>
+                 </Card>
             </div>
         </div>
     )
@@ -159,15 +171,28 @@ function PageSkeleton() {
 export default function PortfolioPage() {
   const [timeRange, setTimeRange] = useState<'7d' | '30d' | 'all'>('30d');
   const [activeIndex, setActiveIndex] = useState(0);
-  const { user, claims, loading } = useUser();
+  const { user, claims, loading: userLoading } = useUser();
+  const firestore = useFirestore();
   const isPro = claims?.plan === 'pro';
+
+  const watchlistQuery = useMemo(() => {
+    if (user && firestore) {
+      return query(collection(firestore, `users/${user.uid}/watchlist`));
+    }
+    return null;
+  }, [user, firestore]);
+
+  const { data: watchlist, loading: watchlistLoading } = useCollection<WatchlistItem>(watchlistQuery);
+  const wallets = useMemo(() => watchlist?.filter(item => item.type === 'wallet') || [], [watchlist]);
+  
+  const isLoading = userLoading || watchlistLoading;
 
   React.useEffect(() => {
     // If user is free, default to 7d view and don't allow changing to longer views
-    if (!loading && !isPro) {
+    if (!isLoading && !isPro) {
       setTimeRange('7d');
     }
-  }, [loading, isPro]);
+  }, [isLoading, isPro]);
   
   const onPieEnter = (_: any, index: number) => {
     setActiveIndex(index);
@@ -176,7 +201,7 @@ export default function PortfolioPage() {
   const chartData = portfolioData.history[timeRange] || portfolioData.history['7d'];
   const displayWallets = isPro ? wallets : wallets.slice(0, 1);
 
-  if (loading) {
+  if (isLoading) {
     return <PageSkeleton />;
   }
 
@@ -311,47 +336,60 @@ export default function PortfolioPage() {
        {/* Section 2: Wallet Analytics */}
        <section id="wallet-analytics">
             <h2 className="text-2xl font-bold tracking-tight mb-4">Wallet Analytics</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {displayWallets.map(wallet => (
-                    <Card key={wallet.address}>
-                        <CardHeader className='flex-row items-center justify-between'>
-                            <div className="flex items-center gap-3">
-                                <WalletIcon className="h-6 w-6 text-primary" />
-                                <div>
-                                    <CardTitle className="text-xl">{wallet.alias}</CardTitle>
-                                    <p className="text-sm text-muted-foreground font-mono">{wallet.address}</p>
+            {wallets && wallets.length === 0 && !isLoading ? (
+                 <Card>
+                    <CardContent className="p-8 text-center text-muted-foreground">
+                        <Eye className="h-10 w-10 mx-auto mb-4" />
+                        <h3 className='text-xl font-semibold text-foreground'>No Wallets Added</h3>
+                        <p>You haven't added any wallets to your watchlist yet.</p>
+                        <Button asChild className='mt-4'>
+                            <Link href="/watchlist">Add a Wallet</Link>
+                        </Button>
+                    </CardContent>
+                </Card>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {displayWallets.map(wallet => (
+                        <Card key={wallet.id}>
+                            <CardHeader className='flex-row items-center justify-between'>
+                                <div className="flex items-center gap-3">
+                                    <WalletIcon className="h-6 w-6 text-primary" />
+                                    <div>
+                                        <CardTitle className="text-xl">{wallet.name || wallet.identifier}</CardTitle>
+                                        <p className="text-sm text-muted-foreground font-mono">{wallet.name ? wallet.identifier : ''}</p>
+                                    </div>
                                 </div>
-                            </div>
-                            <PnlBadge value={wallet.pnl7d} />
-                        </CardHeader>
-                        <CardContent className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
-                            <div>
-                                <p className="text-sm text-muted-foreground">Net Worth</p>
-                                <p className="font-bold text-lg">${wallet.netWorth.toLocaleString()}</p>
-                            </div>
-                             <div>
-                                <p className="text-sm text-muted-foreground">Tokens</p>
-                                <p className="font-bold text-lg">{wallet.tokens}</p>
-                            </div>
-                             <div>
-                                <p className="text-sm text-muted-foreground">Inflow (7d)</p>
-                                <p className="font-bold text-lg text-green-500">${wallet.inflow.toLocaleString()}</p>
-                            </div>
-                             <div>
-                                <p className="text-sm text-muted-foreground">Outflow (7d)</p>
-                                <p className="font-bold text-lg text-red-500">${wallet.outflow.toLocaleString()}</p>
-                            </div>
-                        </CardContent>
-                    </Card>
-                ))}
-                 {!isPro && (
-                   <FeatureLockInline
-                        title="Link Unlimited Wallets"
-                        description="Upgrade to Pro to link and analyze all of your wallets in one place."
-                        icon={<WalletIcon className="h-6 w-6 text-primary" />}
-                    />
-                 )}
-            </div>
+                                <PnlBadge value={mockWalletDetails.pnl7d} />
+                            </CardHeader>
+                            <CardContent className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+                                <div>
+                                    <p className="text-sm text-muted-foreground">Net Worth</p>
+                                    <p className="font-bold text-lg">${mockWalletDetails.netWorth.toLocaleString()}</p>
+                                </div>
+                                <div>
+                                    <p className="text-sm text-muted-foreground">Tokens</p>
+                                    <p className="font-bold text-lg">{mockWalletDetails.tokens}</p>
+                                </div>
+                                <div>
+                                    <p className="text-sm text-muted-foreground">Inflow (7d)</p>
+                                    <p className="font-bold text-lg text-green-500">${mockWalletDetails.inflow.toLocaleString()}</p>
+                                </div>
+                                <div>
+                                    <p className="text-sm text-muted-foreground">Outflow (7d)</p>
+                                    <p className="font-bold text-lg text-red-500">${mockWalletDetails.outflow.toLocaleString()}</p>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    ))}
+                    {!isPro && wallets.length > 1 && (
+                    <FeatureLockInline
+                            title="Link Unlimited Wallets"
+                            description="Upgrade to Pro to link and analyze all of your wallets in one place."
+                            icon={<WalletIcon className="h-6 w-6 text-primary" />}
+                        />
+                    )}
+                </div>
+            )}
        </section>
 
       {/* Section 3: Token Holdings */}
