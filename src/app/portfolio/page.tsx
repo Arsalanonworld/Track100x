@@ -52,12 +52,6 @@ const portfolioData = {
     { name: 'Memecoins', value: 10, color: 'var(--chart-4)' },
     { name: 'Stablecoins', value: 5, color: 'var(--chart-5)' },
   ],
-  topHoldings: [
-    { token: 'ETH', amount: '10.5', value: 36750, percentage: 29.2, pnl: 1250.5, pnlPercent: 3.5 },
-    { token: 'WBTC', amount: '0.5', value: 34225, percentage: 27.2, pnl: -550.2, pnlPercent: -1.6 },
-    { token: 'SOL', amount: '100', value: 16800, percentage: 13.3, pnl: 3200, pnlPercent: 23.5 },
-    { token: 'WIF', amount: '2000', value: 5760, percentage: 4.6, pnl: 800, pnlPercent: 16.1 },
-  ]
 };
 
 // Mock data for wallet details, will be replaced by real data later
@@ -85,17 +79,7 @@ const TokenPnlCell = ({ value, valuePercent }: { value: number, valuePercent: nu
 );
 
 const renderActiveShape = (props: any) => {
-  const RADIAN = Math.PI / 180;
-  const { cx, cy, midAngle, innerRadius, outerRadius, startAngle, endAngle, fill, payload, percent, value } = props;
-  const sin = Math.sin(-RADIAN * midAngle);
-  const cos = Math.cos(-RADIAN * midAngle);
-  const sx = cx + (outerRadius + 10) * cos;
-  const sy = cy + (outerRadius + 10) * sin;
-  const mx = cx + (outerRadius + 30) * cos;
-  const my = cy + (outerRadius + 30) * sin;
-  const ex = mx + (cos >= 0 ? 1 : -1) * 22;
-  const ey = my;
-  const textAnchor = cos >= 0 ? 'start' : 'end';
+  const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill, percent } = props;
 
   return (
     <g>
@@ -189,7 +173,6 @@ export default function PortfolioPage() {
   const isLoading = userLoading || watchlistLoading;
 
   React.useEffect(() => {
-    // If user is free, default to 7d view and don't allow changing to longer views
     if (!isLoading && !isPro) {
       setTimeRange('7d');
     }
@@ -323,7 +306,7 @@ export default function PortfolioPage() {
                                       onMouseEnter={onPieEnter}
                                   >
                                       {portfolioData.allocations.map((entry, index) => (
-                                          <Cell key={`cell-${index}`} fill={`hsl(${entry.color})`} />
+                                          <Cell key={`cell-${index}`} fill={entry.color} />
                                       ))}
                                   </Pie>
                                   <Legend iconType='circle' />
@@ -399,44 +382,28 @@ export default function PortfolioPage() {
 
         {/* Section 3: Token Holdings */}
         <section id="token-holdings">
-          <h2 className="text-2xl font-bold tracking-tight my-8">Token Holdings</h2>
-          <Card>
-              <CardContent className='p-0'>
-                  <Table>
-                      <TableHeader>
-                          <TableRow>
-                          <TableHead>Token</TableHead>
-                          <TableHead>Amount</TableHead>
-                          <TableHead>Value</TableHead>
-                          <TableHead>% of Portfolio</TableHead>
-                          <TableHead>Unrealized P&L</TableHead>
-                          <TableHead className="text-right">Actions</TableHead>
-                          </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                          {portfolioData.topHoldings.map(holding => (
-                              <TableRow key={holding.token}>
-                                  <TableCell>
-                                      <div className="flex items-center gap-3">
-                                          <CryptoIcon token={holding.token} className="h-8 w-8"/>
-                                          <span className="font-semibold">{holding.token}</span>
-                                      </div>
-                                  </TableCell>
-                                  <TableCell>{holding.amount}</TableCell>
-                                  <TableCell>${holding.value.toLocaleString()}</TableCell>
-                                  <TableCell>{holding.percentage}%</TableCell>
-                                  <TokenPnlCell value={holding.pnl} valuePercent={holding.pnlPercent} />
-                                  <TableCell className="text-right">
-                                      <Button variant="ghost" size="sm">Details</Button>
-                                  </TableCell>
-                              </TableRow>
-                          ))}
-                      </TableBody>
-                  </Table>
+          <h2 className="text-2xl font-bold tracking-tight my-8">Aggregated Token Holdings</h2>
+          {wallets && wallets.length > 0 ? (
+            <Card>
+              <CardContent className="p-8 text-center text-muted-foreground">
+                <p>Aggregated token holdings from your linked wallets will appear here.</p>
+                <p className="text-sm">Live data fetching from on-chain APIs is coming soon.</p>
               </CardContent>
-          </Card>
+            </Card>
+          ) : (
+            <Card>
+              <CardContent className="p-8 text-center text-muted-foreground">
+                <p>Add wallets to your watchlist to see your aggregated token holdings.</p>
+                <Button asChild variant="link" className="mt-2">
+                    <Link href="/watchlist">Go to Watchlist</Link>
+                </Button>
+              </CardContent>
+            </Card>
+          )}
         </section>
       </div>
     </div>
   );
 }
+
+    
