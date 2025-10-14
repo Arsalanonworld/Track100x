@@ -9,24 +9,39 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ArrowUp, ArrowDown, DollarSign, Wallet as WalletIcon } from 'lucide-react';
+import { ArrowUp, ArrowDown, Download, Users, Lock, Wallet as WalletIcon } from 'lucide-react';
 import { CryptoIcon } from '@/components/crypto-icon';
 import { cn } from '@/lib/utils';
 import { ChartTooltip, ChartTooltipContent, ChartContainer } from '@/components/ui/chart';
 import React from 'react';
-
+import { useUser } from '@/firebase';
+import { Skeleton } from '@/components/ui/skeleton';
+import { FeatureLockInline } from '@/components/feature-lock-inline';
+import Link from 'next/link';
 
 const portfolioData = {
   netWorth: 125834.54,
   change24h: 2.5,
   change7d: -1.2,
   change30d: 8.9,
-  history: [
-    { name: '30d ago', value: 115000 },
-    { name: '20d ago', value: 118000 },
-    { name: '10d ago', value: 112000 },
-    { name: 'Today', value: 125834.54 },
-  ],
+  history: {
+    '7d': [
+      { name: '7d ago', value: 124000 },
+      { name: 'Today', value: 125834.54 },
+    ],
+    '30d': [
+        { name: '30d ago', value: 115000 },
+        { name: '20d ago', value: 118000 },
+        { name: '10d ago', value: 112000 },
+        { name: 'Today', value: 125834.54 },
+    ],
+    'all': [
+        { name: '90d ago', value: 95000 },
+        { name: '60d ago', value: 110000 },
+        { name: '30d ago', value: 115000 },
+        { name: 'Today', value: 125834.54 },
+    ]
+  },
   allocations: [
     { name: 'Ethereum (ETH)', value: 40, color: 'var(--chart-1)' },
     { name: 'Bitcoin (WBTC)', value: 30, color: 'var(--chart-2)' },
@@ -106,19 +121,77 @@ const renderActiveShape = (props: any) => {
 };
 
 
+function PageSkeleton() {
+    return (
+        <div className='space-y-8'>
+            <Skeleton className="h-12 w-1/3" />
+            <div className="space-y-8">
+                <Card>
+                    <CardHeader>
+                        <Skeleton className="h-8 w-1/4" />
+                        <Skeleton className="h-4 w-1/2" />
+                    </CardHeader>
+                    <CardContent className="space-y-8">
+                        <div className="flex justify-between">
+                            <Skeleton className="h-12 w-1/3" />
+                            <Skeleton className="h-10 w-48" />
+                        </div>
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                            <div className="lg:col-span-2">
+                                <Skeleton className="h-[300px] w-full" />
+                            </div>
+                            <div>
+                                <Skeleton className="h-[300px] w-full" />
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+                <Skeleton className="h-10 w-1/4" />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <Skeleton className="h-48 w-full" />
+                    <Skeleton className="h-48 w-full" />
+                </div>
+            </div>
+        </div>
+    )
+}
+
 export default function PortfolioPage() {
-  const [timeRange, setTimeRange] = useState('30d');
+  const [timeRange, setTimeRange] = useState<'7d' | '30d' | 'all'>('30d');
   const [activeIndex, setActiveIndex] = useState(0);
+  const { user, claims, loading } = useUser();
+  const isPro = claims?.plan === 'pro';
+
+  React.useEffect(() => {
+    // If user is free, default to 7d view and don't allow changing to longer views
+    if (!loading && !isPro) {
+      setTimeRange('7d');
+    }
+  }, [loading, isPro]);
   
   const onPieEnter = (_: any, index: number) => {
     setActiveIndex(index);
   };
+  
+  const chartData = portfolioData.history[timeRange] || portfolioData.history['7d'];
+  const displayWallets = isPro ? wallets : wallets.slice(0, 1);
+
+  if (loading) {
+    return <PageSkeleton />;
+  }
 
   return (
     <div className="space-y-8">
       <PageHeader
         title="Portfolio & Analytics"
         description="A centralized view of your on-chain holdings and performance."
+        action={
+            <Button variant="outline" disabled={!isPro}>
+                <Download className="mr-2 h-4 w-4" />
+                Export CSV
+                {!isPro && <Lock className="ml-2 h-3 w-3" />}
+            </Button>
+        }
       />
 
       {/* Section 1: Portfolio Overview */}
@@ -136,15 +209,18 @@ export default function PortfolioPage() {
                 <p className="text-4xl font-bold">${portfolioData.netWorth.toLocaleString()}</p>
                 <PnlBadge value={portfolioData.change24h} />
               </div>
-              <Select value={timeRange} onValueChange={setTimeRange}>
+              <Select value={timeRange} onValueChange={(val) => setTimeRange(val as '7d' | '30d' | 'all')}>
                 <SelectTrigger className="w-full sm:w-[180px]">
                   <SelectValue placeholder="Select time range" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="24h">Last 24 Hours</SelectItem>
                   <SelectItem value="7d">Last 7 Days</SelectItem>
-                  <SelectItem value="30d">Last 30 Days</SelectItem>
-                  <SelectItem value="all">All Time</SelectItem>
+                  <SelectItem value="30d" disabled={!isPro}>
+                    <div className="flex items-center gap-2">Last 30 Days {!isPro && <Lock className='h-3 w-3' />}</div>
+                  </SelectItem>
+                  <SelectItem value="all" disabled={!isPro}>
+                     <div className="flex items-center gap-2">All Time {!isPro && <Lock className='h-3 w-3' />}</div>
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -156,7 +232,7 @@ export default function PortfolioPage() {
                     <h3 className="font-semibold mb-4">Net Worth Over Time</h3>
                     <div className="h-[300px]">
                         <ChartContainer config={{value: {label: 'Net Worth', color: 'hsl(var(--primary))'}}} className='h-full w-full'>
-                            <AreaChart data={portfolioData.history} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                            <AreaChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                                 <CartesianGrid vertical={false} strokeDasharray="3 3" />
                                 <XAxis dataKey="name" tick={{ fill: 'hsl(var(--muted-foreground))' }} fontSize={12} axisLine={false} tickLine={false} />
                                 <YAxis tickFormatter={(value) => `$${(Number(value) / 1000)}k`} tick={{ fill: 'hsl(var(--muted-foreground))' }} fontSize={12} axisLine={false} tickLine={false} />
@@ -236,7 +312,7 @@ export default function PortfolioPage() {
        <section id="wallet-analytics">
             <h2 className="text-2xl font-bold tracking-tight mb-4">Wallet Analytics</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {wallets.map(wallet => (
+                {displayWallets.map(wallet => (
                     <Card key={wallet.address}>
                         <CardHeader className='flex-row items-center justify-between'>
                             <div className="flex items-center gap-3">
@@ -268,6 +344,13 @@ export default function PortfolioPage() {
                         </CardContent>
                     </Card>
                 ))}
+                 {!isPro && (
+                   <FeatureLockInline
+                        title="Link Unlimited Wallets"
+                        description="Upgrade to Pro to link and analyze all of your wallets in one place."
+                        icon={<WalletIcon className="h-6 w-6 text-primary" />}
+                    />
+                 )}
             </div>
        </section>
 
@@ -310,6 +393,23 @@ export default function PortfolioPage() {
              </CardContent>
          </Card>
       </section>
+
+       <section id="pro-features">
+         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <FeatureLockInline
+                title="Benchmark Comparison"
+                description="Compare your portfolio performance against benchmarks like ETH, SOL, or BTC."
+                icon={<Users className="h-6 w-6 text-primary" />}
+                isLocked={!isPro}
+            />
+            <FeatureLockInline
+                title="Wallet Comparison Mode"
+                description="Analyze your wallets side-by-side with top traders from the leaderboard."
+                icon={<Users className="h-6 w-6 text-primary" />}
+                isLocked={!isPro}
+            />
+         </div>
+       </section>
 
     </div>
   );
