@@ -397,26 +397,9 @@ export default function PortfolioPage() {
               )}
         </section>
 
-        <section id="pro-features" className="py-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <FeatureLockInline
-                    title="Benchmark Comparison"
-                    description="Compare your portfolio performance against benchmarks like ETH, SOL, or BTC."
-                    icon={<Users className="h-6 w-6 text-primary" />}
-                    isLocked={!isPro}
-                />
-                <FeatureLockInline
-                    title="Wallet Comparison Mode"
-                    description="Analyze your wallets side-by-side with top traders from the leaderboard."
-                    icon={<Users className="h-6 w-6 text-primary" />}
-                    isLocked={!isPro}
-                />
-            </div>
-        </section>
-
         {/* Section 3: Token Holdings */}
         <section id="token-holdings">
-          <h2 className="text-2xl font-bold tracking-tight mb-4">Token Holdings</h2>
+          <h2 className="text-2xl font-bold tracking-tight my-8">Token Holdings</h2>
           <Card>
               <CardContent className='p-0'>
                   <Table>
