@@ -19,7 +19,7 @@ import Link from 'next/link';
 import type { WatchlistItem } from '@/lib/types';
 import { collection, query } from 'firebase/firestore';
 import { FeatureLock } from '@/components/feature-lock';
-import { Badge } from '../ui/badge';
+import { Badge } from '@/components/ui/badge';
 
 const portfolioData = {
   netWorth: 125834.54,
@@ -106,39 +106,14 @@ function PageSkeleton() {
                  <Skeleton className="h-12 w-1/3" />
                  <Skeleton className="h-10 w-32" />
             </div>
-            <div className="space-y-8">
-                <Card>
-                    <CardHeader>
-                        <Skeleton className="h-8 w-1/4" />
-                        <Skeleton className="h-4 w-1/2" />
-                    </CardHeader>
-                    <CardContent className="space-y-8">
-                        <div className="flex justify-between">
-                            <Skeleton className="h-12 w-1/3" />
-                            <Skeleton className="h-10 w-48" />
-                        </div>
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                            <div className="lg:col-span-2">
-                                <Skeleton className="h-[300px] w-full" />
-                            </div>
-                            <div>
-                                <Skeleton className="h-[300px] w-full" />
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-                <h2 className="text-2xl font-bold tracking-tight">Wallet Analytics</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <Skeleton className="h-48 w-full" />
-                    <Skeleton className="h-48 w-full" />
-                </div>
-                 <h2 className="text-2xl font-bold tracking-tight">Token Holdings</h2>
-                 <Card>
-                    <CardContent className='p-0'>
-                        <Skeleton className="h-96 w-full" />
-                    </CardContent>
-                 </Card>
-            </div>
+            <Card>
+                <CardContent className="p-8 text-center text-muted-foreground border-2 border-dashed rounded-lg">
+                    <Skeleton className="h-10 w-10 mx-auto mb-4 rounded-full" />
+                    <Skeleton className="h-6 w-1/2 mx-auto mb-2" />
+                    <Skeleton className="h-4 w-3/4 mx-auto mb-4" />
+                    <Skeleton className="h-10 w-32 mx-auto" />
+                </CardContent>
+            </Card>
         </div>
     )
 }
@@ -393,5 +368,3 @@ export default function PortfolioPage() {
     </div>
   );
 }
-
-    
