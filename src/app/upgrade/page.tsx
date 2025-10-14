@@ -7,7 +7,6 @@ import {
   XCircle,
   Star,
   ArrowRight,
-  Newspaper,
   ShieldCheck,
   Zap,
 } from 'lucide-react';
@@ -31,7 +30,7 @@ import { cn } from '@/lib/utils';
 import { useUser } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { AuthDialog } from '@/components/auth/auth-dialog';
-import { Bell, Eye } from 'lucide-react';
+import { Bell, Eye, Wallet } from 'lucide-react';
 
 
 // ----------------- Data -----------------
@@ -40,7 +39,7 @@ const features = [
     category: 'Core Features',
     items: [
       { name: 'Real-Time Whale Feed', free: true, pro: true },
-      { name: 'Wallet Analytics', free: true, pro: true },
+      { name: 'Leaderboard Access', free: true, pro: true },
       { name: 'Watchlist', free: '5 items', pro: 'Unlimited' },
     ],
   },
@@ -49,21 +48,20 @@ const features = [
     items: [
       { name: 'Quick Alerts', free: '5 active', pro: 'Unlimited' },
       { name: 'Advanced Alert Builder', free: false, pro: true },
-      { name: 'Telegram Alerts', free: false, pro: true },
     ],
   },
    {
-    category: 'Digests & Insights',
+    category: 'Portfolio & Analytics',
     items: [
-        { name: 'AI-Generated Insights', free: false, pro: true },
-        { name: 'Daily Digest', free: false, pro: true },
-        { name: 'Weekly Digest', free: true, pro: true },
+        { name: 'Link Wallets', free: '1 wallet', pro: 'Unlimited' },
+        { name: 'Historical Performance', free: '7-day history', pro: 'Full history' },
+        { name: 'CSV Export', free: false, pro: true },
+        { name: 'Benchmark Comparison', free: false, pro: true },
     ]
    },
   {
     category: 'Experience',
     items: [
-      { name: 'Advertisements & Affiliate Links', free: true, pro: false },
       { name: 'Priority Support', free: false, pro: true },
     ],
   },
@@ -76,19 +74,19 @@ const featureHighlights = [
         description: 'Create complex, multi-conditional alerts to precisely monitor specific on-chain events and strategies.',
     },
     {
-        icon: <Bell />,
-        title: 'Unlimited Telegram Alerts',
-        description: 'Create unlimited alerts and get notified instantly via Telegram to never miss a move.',
+        icon: <Eye />,
+        title: 'Unlimited Watchlist',
+        description: 'Track as many wallets and tokens as you want, without any limitations.',
     },
     {
-        icon: <Newspaper />,
-        title: 'AI Insights & Daily Digest',
-        description: 'Get AI-generated summaries and a daily digest of the most important whale movements and market signals.',
+        icon: <Wallet />,
+        title: 'Full Portfolio Analytics',
+        description: 'Link all your wallets and unlock complete historical data and performance insights.',
     },
      {
         icon: <ShieldCheck />,
-        title: 'Ad-Free Experience',
-        description: 'Enjoy a clean, uninterrupted interface focused solely on the data and insights that matter.',
+        title: 'Pro Support',
+        description: 'Get priority access to our support team for any questions or issues you may have.',
     },
 ];
 
@@ -107,11 +105,6 @@ const faqs = [
     question: 'What payment methods do you accept?',
     answer:
       'We accept all major credit cards. All payments are processed securely through our payment provider, Stripe.',
-  },
-  {
-    question: 'How do Telegram alerts work?',
-    answer:
-      'Once you subscribe to Pro, you can connect your Telegram account in your settings. Our bot will then send you instant notifications directly to your Telegram app whenever one of your alerts is triggered.',
   },
 ];
 
@@ -161,7 +154,7 @@ export default function UpgradePage() {
             Unlock Your Full On-Chain Potential
           </h1>
           <p className="max-w-2xl mx-auto mt-6 text-lg text-muted-foreground">
-            Go beyond the basics. Get unlimited alerts, access the advanced builder, receive AI-powered insights, and enjoy an ad-free experience.
+            Go beyond the basics. Get unlimited alerts, access the advanced builder, and track your entire portfolio with full historical data.
           </p>
           <div className="flex items-center justify-center gap-4 mt-8">
             <Button size="lg" onClick={handleUpgradeClick}>
@@ -236,7 +229,7 @@ export default function UpgradePage() {
                 </CardHeader>
                 <CardContent className="flex-1">
                   <ul className="space-y-3">
-                      {['Real-time Whale Feed', '5 Watchlist Items', '5 Active Alerts', 'Weekly Digest'].map((feature, index) => (
+                      {['Real-time Whale Feed', '5 Watchlist Items', '5 Active Alerts', '1 Linked Wallet'].map((feature, index) => (
                         <li key={index} className="flex items-center gap-3">
                           <CheckCircle className="h-5 w-5 text-green-500 shrink-0" />
                           <span>{feature}</span>
@@ -275,7 +268,7 @@ export default function UpgradePage() {
                 </CardHeader>
                 <CardContent className="flex-1">
                    <ul className="space-y-3">
-                      {['Unlimited Watchlist', 'Unlimited Alerts & Advanced Builder', 'AI Insights & Daily Digest', 'Ad-Free Experience'].map((feature, index) => (
+                      {['Unlimited Watchlist', 'Unlimited Alerts & Advanced Builder', 'Unlimited Linked Wallets', 'Full Portfolio History & Analytics'].map((feature, index) => (
                         <li key={index} className="flex items-center gap-3">
                           <CheckCircle className="h-5 w-5 text-green-500 shrink-0" />
                           <span>{feature}</span>
