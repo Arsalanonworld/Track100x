@@ -351,32 +351,34 @@ export default function PortfolioPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {displayWallets.map(wallet => (
                         <Card key={wallet.id}>
-                            <CardHeader className='flex-row items-center justify-between'>
-                                <div className="flex items-center gap-3">
-                                    <WalletIcon className="h-6 w-6 text-primary" />
-                                    <div>
-                                        <CardTitle className="text-xl">{wallet.name || wallet.identifier}</CardTitle>
-                                        <p className="text-sm text-muted-foreground font-mono">{wallet.name ? wallet.identifier : ''}</p>
-                                    </div>
-                                </div>
-                                <PnlBadge value={mockWalletDetails.pnl7d} />
+                            <CardHeader className='flex-row items-center justify-between space-y-0 pb-2'>
+                                <CardTitle className="text-base font-medium flex items-center gap-2">
+                                    <WalletIcon className="h-5 w-5 text-muted-foreground" />
+                                    {wallet.name || `${wallet.identifier.slice(0, 6)}...${wallet.identifier.slice(-4)}`}
+                                </CardTitle>
+                                {wallet.name && <Badge variant="outline">{`${wallet.identifier.slice(0, 6)}...${wallet.identifier.slice(-4)}`}</Badge>}
                             </CardHeader>
-                            <CardContent className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
-                                <div>
-                                    <p className="text-sm text-muted-foreground">Net Worth</p>
-                                    <p className="font-bold text-lg">${mockWalletDetails.netWorth.toLocaleString()}</p>
-                                </div>
-                                <div>
-                                    <p className="text-sm text-muted-foreground">Tokens</p>
-                                    <p className="font-bold text-lg">{mockWalletDetails.tokens}</p>
-                                </div>
-                                <div>
-                                    <p className="text-sm text-muted-foreground">Inflow (7d)</p>
-                                    <p className="font-bold text-lg text-green-500">${mockWalletDetails.inflow.toLocaleString()}</p>
-                                </div>
-                                <div>
-                                    <p className="text-sm text-muted-foreground">Outflow (7d)</p>
-                                    <p className="font-bold text-lg text-red-500">${mockWalletDetails.outflow.toLocaleString()}</p>
+                            <CardContent>
+                                <div className="text-2xl font-bold">${mockWalletDetails.netWorth.toLocaleString()}</div>
+                                <p className="text-xs text-muted-foreground">
+                                    <span className={cn(mockWalletDetails.pnl7d > 0 ? "text-green-500" : "text-red-500")}>
+                                        {mockWalletDetails.pnl7d > 0 ? "+" : ""}{mockWalletDetails.pnl7d.toFixed(2)}%
+                                    </span>
+                                    {' '}in last 7 days
+                                </p>
+                                <div className="mt-4 grid grid-cols-3 gap-4 text-sm">
+                                    <div>
+                                        <p className="text-muted-foreground">Tokens</p>
+                                        <p className="font-semibold">{mockWalletDetails.tokens}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-muted-foreground">Inflow (7d)</p>
+                                        <p className="font-semibold text-green-500">${mockWalletDetails.inflow.toLocaleString()}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-muted-foreground">Outflow (7d)</p>
+                                        <p className="font-semibold text-red-500">${mockWalletDetails.outflow.toLocaleString()}</p>
+                                    </div>
                                 </div>
                             </CardContent>
                         </Card>
@@ -452,5 +454,3 @@ export default function PortfolioPage() {
     </div>
   );
 }
-
-    
