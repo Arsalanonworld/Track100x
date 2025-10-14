@@ -18,27 +18,37 @@ export function FeatureLockInline({ title, description, icon, isLocked = true }:
   if (!isLocked) {
     // If the feature is not locked, you might want to render something else,
     // or nothing at all, depending on the use case.
-    return null; 
+    return (
+        <Card className="flex items-center p-6">
+            <div className="mr-4 w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                {icon}
+            </div>
+            <div>
+                <h3 className="text-lg font-bold">{title}</h3>
+                <p className="text-muted-foreground mt-1">{description}</p>
+            </div>
+        </Card>
+    );
   }
   
   return (
-    <Card className="flex flex-col items-center justify-center text-center p-6 bg-card border-2 border-dashed relative overflow-hidden">
+    <Card className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-6 bg-card border-2 border-dashed relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-t from-background/50 to-transparent"></div>
-        <div className="relative z-10">
-            <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+        <div className="relative z-10 flex items-center">
+            <div className="mr-4 w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                 {icon}
             </div>
-            <h3 className="text-xl font-bold">{title}</h3>
-            <p className="text-muted-foreground mt-2 mb-4 max-w-xs mx-auto">{description}</p>
-            <Button asChild size="sm">
-                <Link href="/upgrade">
-                    <Lock className="mr-2 h-4 w-4" />
-                    Upgrade to Pro
-                </Link>
-            </Button>
+            <div>
+                <h3 className="text-lg font-bold">{title}</h3>
+                <p className="text-muted-foreground mt-1 max-w-xs">{description}</p>
+            </div>
         </div>
+         <Button asChild size="sm" className="mt-4 sm:mt-0 shrink-0">
+            <Link href="/upgrade">
+                <Lock className="mr-2 h-4 w-4" />
+                Upgrade to Pro
+            </Link>
+        </Button>
     </Card>
   );
 }
-
-    
