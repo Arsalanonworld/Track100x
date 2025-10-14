@@ -4,7 +4,7 @@
 import { useState } from 'react';
 import PageHeader from '@/components/page-header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend, Sector } from 'recharts';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
@@ -13,6 +13,7 @@ import { ArrowUp, ArrowDown, DollarSign, Wallet as WalletIcon } from 'lucide-rea
 import { CryptoIcon } from '@/components/crypto-icon';
 import { cn } from '@/lib/utils';
 import { ChartTooltip, ChartTooltipContent, ChartContainer } from '@/components/ui/chart';
+import React from 'react';
 
 
 const portfolioData = {
@@ -27,11 +28,11 @@ const portfolioData = {
     { name: 'Today', value: 125834.54 },
   ],
   allocations: [
-    { name: 'Ethereum (ETH)', value: 40, color: '#8884d8' },
-    { name: 'Bitcoin (WBTC)', value: 30, color: '#f7931a' },
-    { name: 'Solana (SOL)', value: 15, color: '#00ffa3' },
-    { name: 'Memecoins', value: 10, color: '#ffc658' },
-    { name: 'Stablecoins', value: 5, color: '#00C49F' },
+    { name: 'Ethereum (ETH)', value: 40, color: 'var(--chart-1)' },
+    { name: 'Bitcoin (WBTC)', value: 30, color: 'var(--chart-2)' },
+    { name: 'Solana (SOL)', value: 15, color: 'var(--chart-3)' },
+    { name: 'Memecoins', value: 10, color: 'var(--chart-4)' },
+    { name: 'Stablecoins', value: 5, color: 'var(--chart-5)' },
   ],
   topHoldings: [
     { token: 'ETH', amount: '10.5', value: 36750, percentage: 29.2, pnl: 1250.5, pnlPercent: 3.5 },
@@ -64,9 +65,54 @@ const TokenPnlCell = ({ value, valuePercent }: { value: number, valuePercent: nu
   </TableCell>
 );
 
+const renderActiveShape = (props: any) => {
+  const RADIAN = Math.PI / 180;
+  const { cx, cy, midAngle, innerRadius, outerRadius, startAngle, endAngle, fill, payload, percent, value } = props;
+  const sin = Math.sin(-RADIAN * midAngle);
+  const cos = Math.cos(-RADIAN * midAngle);
+  const sx = cx + (outerRadius + 10) * cos;
+  const sy = cy + (outerRadius + 10) * sin;
+  const mx = cx + (outerRadius + 30) * cos;
+  const my = cy + (outerRadius + 30) * sin;
+  const ex = mx + (cos >= 0 ? 1 : -1) * 22;
+  const ey = my;
+  const textAnchor = cos >= 0 ? 'start' : 'end';
+
+  return (
+    <g>
+      <Sector
+        cx={cx}
+        cy={cy}
+        innerRadius={innerRadius}
+        outerRadius={outerRadius}
+        startAngle={startAngle}
+        endAngle={endAngle}
+        fill={fill}
+      />
+      <Sector
+        cx={cx}
+        cy={cy}
+        startAngle={startAngle}
+        endAngle={endAngle}
+        innerRadius={outerRadius + 6}
+        outerRadius={outerRadius + 10}
+        fill={fill}
+      />
+       <text x={cx} y={cy} dy={8} textAnchor="middle" fill="hsl(var(--foreground))" className="text-2xl font-bold">
+        {(percent * 100).toFixed(0)}%
+      </text>
+    </g>
+  );
+};
+
 
 export default function PortfolioPage() {
   const [timeRange, setTimeRange] = useState('30d');
+  const [activeIndex, setActiveIndex] = useState(0);
+  
+  const onPieEnter = (_: any, index: number) => {
+    setActiveIndex(index);
+  };
 
   return (
     <div className="space-y-8">
@@ -112,8 +158,8 @@ export default function PortfolioPage() {
                         <ChartContainer config={{value: {label: 'Net Worth', color: 'hsl(var(--primary))'}}} className='h-full w-full'>
                             <AreaChart data={portfolioData.history} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                                 <CartesianGrid vertical={false} strokeDasharray="3 3" />
-                                <XAxis dataKey="name" tick={{ fill: 'hsl(var(--muted-foreground))' }} fontSize={12} />
-                                <YAxis tickFormatter={(value) => `$${(Number(value) / 1000)}k`} tick={{ fill: 'hsl(var(--muted-foreground))' }} fontSize={12} />
+                                <XAxis dataKey="name" tick={{ fill: 'hsl(var(--muted-foreground))' }} fontSize={12} axisLine={false} tickLine={false} />
+                                <YAxis tickFormatter={(value) => `$${(Number(value) / 1000)}k`} tick={{ fill: 'hsl(var(--muted-foreground))' }} fontSize={12} axisLine={false} tickLine={false} />
                                 <Tooltip
                                     cursor={{ stroke: 'hsl(var(--border))' }}
                                     content={({ active, payload, label }) => active && payload && payload.length && (
@@ -142,24 +188,41 @@ export default function PortfolioPage() {
                      <h3 className="font-semibold mb-4">Asset Allocation</h3>
                      <div className="h-[300px]">
                         <ChartContainer config={{}} className="h-full w-full">
-                            <PieChart>
+                           <PieChart>
                                 <Tooltip
-                                 content={({ active, payload, label }) => active && payload && payload.length && (
-                                    <ChartTooltipContent
-                                      payload={payload.map((p) => ({
-                                          ...p,
-                                          name: p.name,
-                                          value: `${p.value}%`
-                                      }))}
-                                    />
-                                )}
+                                 content={({ active, payload }) => {
+                                  if (active && payload && payload.length) {
+                                    return (
+                                      <ChartTooltipContent
+                                        payload={payload.map((p) => ({
+                                            ...p,
+                                            name: p.name,
+                                            value: `${p.value}%`
+                                        }))}
+                                      />
+                                    )
+                                  }
+                                  return null
+                                }}
                                 />
-                                <Pie data={portfolioData.allocations} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={100} labelLine={false} label>
+                                <Pie 
+                                    activeIndex={activeIndex}
+                                    activeShape={renderActiveShape}
+                                    data={portfolioData.allocations} 
+                                    dataKey="value" 
+                                    nameKey="name" 
+                                    cx="50%" 
+                                    cy="50%" 
+                                    outerRadius={90}
+                                    innerRadius={70}
+                                    labelLine={false}
+                                    onMouseEnter={onPieEnter}
+                                >
                                     {portfolioData.allocations.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={entry.color} />
+                                        <Cell key={`cell-${index}`} fill={`hsl(${entry.color})`} />
                                     ))}
                                 </Pie>
-                                <Legend/>
+                                <Legend iconType='circle' />
                             </PieChart>
                         </ChartContainer>
                     </div>
@@ -251,3 +314,5 @@ export default function PortfolioPage() {
     </div>
   );
 }
+
+    
