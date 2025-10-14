@@ -60,7 +60,7 @@ export function WatchlistActionForm({ user, onItemAdded, onAlertCreate, atLimit,
     if (isWalletAddress(trimmedIdentifier)) {
       setItemToAdd({ identifier: trimmedIdentifier, type: 'wallet', action });
       setIsAliasModalOpen(true);
-    } else if (isKnownToken(trimmedIdentifier)) {
+    } else if (isKnownToken(trimmedIdentifier.toUpperCase())) {
       await confirmAndAddItem(trimmedIdentifier.toUpperCase(), 'token', '', action);
     } else {
       toast({ variant: 'destructive', title: 'Invalid Input', description: 'Please enter a valid wallet address or a known token symbol.' });
@@ -79,6 +79,12 @@ export function WatchlistActionForm({ user, onItemAdded, onAlertCreate, atLimit,
       const querySnapshot = await getDocs(q);
 
       if (querySnapshot.empty) {
+        if (atLimit) {
+            toast({ variant: 'destructive', title: 'Watchlist Limit Reached', description: 'Upgrade to add more items. Cannot create alert without adding to watchlist first.' });
+            setIsSubmitting(false);
+            setIsAliasModalOpen(false);
+            return;
+        }
         const newDoc: Omit<WatchlistItem, 'id' | 'createdAt'> & { createdAt: any } = {
             identifier: id,
             type: type,
@@ -89,6 +95,8 @@ export function WatchlistActionForm({ user, onItemAdded, onAlertCreate, atLimit,
         await addDoc(collection(firestore, `users/${user.uid}/watchlist`), newDoc);
         toast({ title: 'Item Added!', description: `${id} has been added to your watchlist.` });
         onItemAdded();
+      } else if (action === 'add') {
+          toast({ title: 'Already Watched', description: `${id} is already in your watchlist.` });
       }
       
       if (action === 'alert') {

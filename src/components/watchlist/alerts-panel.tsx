@@ -11,12 +11,12 @@ import { useUser, useCollection, useFirestore } from '@/firebase';
 import { collection, query } from 'firebase/firestore';
 import type { Alert } from '@/lib/types';
 import Link from 'next/link';
-import { ArrowRight, Lock } from 'lucide-react';
+import { ArrowRight, Lock, PlusCircle } from 'lucide-react';
 
 const ALERT_LIMIT_FREE = 5;
 
 export function AlertsPanel({ onNewAlert }: { onNewAlert: () => void }) {
-  const { user, claims } = useUser();
+  const { user, claims, loading: userLoading } = useUser();
   const firestore = useFirestore();
   const isPro = claims?.plan === 'pro';
 
@@ -28,6 +28,7 @@ export function AlertsPanel({ onNewAlert }: { onNewAlert: () => void }) {
   }, [user, firestore]);
 
   const { data: alerts, loading: alertsLoading } = useCollection<Alert>(alertsQuery);
+  const isLoading = userLoading || alertsLoading;
   const alertCount = alerts?.length || 0;
   const alertsAtLimit = !isPro && alerts && alerts.length >= ALERT_LIMIT_FREE;
 
@@ -60,7 +61,7 @@ export function AlertsPanel({ onNewAlert }: { onNewAlert: () => void }) {
             <TabsTrigger value="history">History</TabsTrigger>
           </TabsList>
           <TabsContent value="active" className="pt-4">
-            <ActiveAlerts onNewAlert={onNewAlert} />
+             <ActiveAlerts onNewAlert={onNewAlert} />
           </TabsContent>
           <TabsContent value="history" className="pt-4">
             <AlertHistory />

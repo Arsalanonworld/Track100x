@@ -14,15 +14,15 @@ export const AnimatedButton = React.forwardRef<HTMLButtonElement, AnimatedButton
     ({ className, shimmerClassName, children, ...props }, ref) => {
     return (
         <Button
+            {...props}
             className={cn(
-                "group relative overflow-hidden transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-primary/40",
+                "group relative overflow-hidden transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 shadow-lg hover:shadow-primary/40",
                 className
             )}
             ref={ref}
-            {...props}
         >
             <span className={cn(
-                "absolute inset-[-1000%] animate-[shimmer_4s_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#ffffff15_0%,#ffffff30_50%,#ffffff15_100%)] opacity-50 transition-opacity duration-500 group-hover:opacity-100",
+                "absolute inset-0 [--shimmer-width:100px] [background-image:linear-gradient(100deg,transparent_20%,theme(colors.white/0.1),transparent_80%)] [background-size:1000px_100%] animate-shimmer bg-no-repeat opacity-50 transition-opacity duration-500 group-hover:opacity-100",
                 shimmerClassName
             )} />
             <span className="relative z-10 flex items-center">
