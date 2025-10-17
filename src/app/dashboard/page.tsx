@@ -37,7 +37,7 @@ import { getExplorerUrl } from '@/lib/explorers';
 import { WatchlistActionForm } from '@/components/watchlist/watchlist-action-form';
 import { tokenLibrary } from '@/lib/tokens';
 import { AlertsPanel } from '@/components/watchlist/alerts-panel';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend, Sector } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ChartTooltipContent, ChartContainer } from '@/components/ui/chart';
 import React from 'react';
@@ -68,13 +68,6 @@ const portfolioData = {
         { name: 'Today', value: 125834.54 },
     ]
   },
-  allocations: [
-    { name: 'Ethereum (ETH)', value: 40, color: 'hsl(var(--chart-1))' },
-    { name: 'Bitcoin (WBTC)', value: 30, color: 'hsl(var(--chart-2))' },
-    { name: 'Solana (SOL)', value: 15, color: 'hsl(var(--chart-3))' },
-    { name: 'Memecoins', value: 10, color: 'hsl(var(--chart-4))' },
-    { name: 'Stablecoins', value: 5, color: 'hsl(var(--chart-5))' },
-  ],
 };
 
 const PnlBadge = ({ value }: { value: number }) => (
@@ -85,36 +78,6 @@ const PnlBadge = ({ value }: { value: number }) => (
     {value >= 0 ? '+' : ''}{value.toFixed(2)}%
   </Badge>
 );
-
-const renderActiveShape = (props: any) => {
-  const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill, percent } = props;
-
-  return (
-    <g>
-      <Sector
-        cx={cx}
-        cy={cy}
-        innerRadius={innerRadius}
-        outerRadius={outerRadius}
-        startAngle={startAngle}
-        endAngle={endAngle}
-        fill={fill}
-      />
-      <Sector
-        cx={cx}
-        cy={cy}
-        startAngle={startAngle}
-        endAngle={endAngle}
-        innerRadius={outerRadius + 6}
-        outerRadius={outerRadius + 10}
-        fill={fill}
-      />
-       <text x={cx} y={cy} dy={8} textAnchor="middle" fill="hsl(var(--foreground))" className="text-2xl font-bold">
-        {(percent * 100).toFixed(0)}%
-      </text>
-    </g>
-  );
-};
 
 
 function WatchlistItemCard({ item, onUpdate, onRemove }: { item: WatchlistItem, onUpdate: (id: string, name: string) => void, onRemove: (item: WatchlistItem) => void}) {
@@ -304,7 +267,6 @@ export default function DashboardPage() {
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [editorEntity, setEditorEntity] = useState<{type: 'wallet' | 'token', identifier: string} | undefined>(undefined);
   const [timeRange, setTimeRange] = useState<'7d' | '30d' | 'all'>('30d');
-  const [activeIndex, setActiveIndex] = useState(0);
 
   const isPro = claims?.plan === 'pro';
 
@@ -329,10 +291,6 @@ export default function DashboardPage() {
       setTimeRange('7d');
     }
   }, [isLoading, isPro]);
-  
-  const onPieEnter = (_: any, index: number) => {
-    setActiveIndex(index);
-  };
   
   const chartData = portfolioData.history[timeRange] || portfolioData.history['7d'];
 
@@ -441,84 +399,33 @@ export default function DashboardPage() {
                             </Select>
                           </div>
                           
-                          {/* Main Charts */}
-                          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                              {/* Portfolio Over Time */}
-                              <div className="lg:col-span-2">
-                                  <h3 className="font-semibold mb-4">Net Worth Over Time</h3>
-                                  <div className="h-[300px]">
-                                      <ChartContainer config={{value: {label: 'Net Worth', color: 'hsl(var(--primary))'}}} className='h-full w-full'>
-                                          <AreaChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-                                              <CartesianGrid vertical={false} strokeDasharray="3 3" />
-                                              <XAxis dataKey="name" tick={{ fill: 'hsl(var(--muted-foreground))' }} fontSize={12} axisLine={false} tickLine={false} />
-                                              <YAxis tickFormatter={(value) => `$${(Number(value) / 1000)}k`} tick={{ fill: 'hsl(var(--muted-foreground))' }} fontSize={12} axisLine={false} tickLine={false} />
-                                              <Tooltip
-                                                  cursor={{ stroke: 'hsl(var(--border))' }}
-                                                  content={({ active, payload, label }) => active && payload && payload.length && (
-                                                      <ChartTooltipContent
-                                                        label={label}
-                                                        payload={payload.map((p) => ({
-                                                            ...p,
-                                                            value: (p.value as number).toLocaleString('en-US', {
-                                                              style: 'currency',
-                                                              currency: 'USD',
-                                                              minimumFractionDigits: 0,
-                                                              maximumFractionDigits: 0,
-                                                            })
-                                                        }))}
-                                                      />
-                                                  )}
+                          {/* Main Chart */}
+                          <div className="h-[350px]">
+                              <ChartContainer config={{value: {label: 'Net Worth', color: 'hsl(var(--primary))'}}} className='h-full w-full'>
+                                  <AreaChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                                      <CartesianGrid vertical={false} strokeDasharray="3 3" />
+                                      <XAxis dataKey="name" tick={{ fill: 'hsl(var(--muted-foreground))' }} fontSize={12} axisLine={false} tickLine={false} />
+                                      <YAxis tickFormatter={(value) => `$${(Number(value) / 1000)}k`} tick={{ fill: 'hsl(var(--muted-foreground))' }} fontSize={12} axisLine={false} tickLine={false} />
+                                      <Tooltip
+                                          cursor={{ stroke: 'hsl(var(--border))' }}
+                                          content={({ active, payload, label }) => active && payload && payload.length && (
+                                              <ChartTooltipContent
+                                                label={label}
+                                                payload={payload.map((p) => ({
+                                                    ...p,
+                                                    value: (p.value as number).toLocaleString('en-US', {
+                                                      style: 'currency',
+                                                      currency: 'USD',
+                                                      minimumFractionDigits: 0,
+                                                      maximumFractionDigits: 0,
+                                                    })
+                                                }))}
                                               />
-                                              <Area type="monotone" dataKey="value" stroke="hsl(var(--primary))" fill="hsl(var(--primary))" fillOpacity={0.1} />
-                                          </AreaChart>
-                                      </ChartContainer>
-                                  </div>
-                              </div>
-
-                              {/* Asset Allocation */}
-                              <div>
-                                  <h3 className="font-semibold mb-4">Asset Allocation</h3>
-                                  <div className="h-[300px]">
-                                      <ChartContainer config={{}} className="h-full w-full">
-                                        <PieChart>
-                                              <Tooltip
-                                              content={({ active, payload }) => {
-                                                if (active && payload && payload.length) {
-                                                  return (
-                                                    <ChartTooltipContent
-                                                      payload={payload.map((p) => ({
-                                                          ...p,
-                                                          name: p.name,
-                                                          value: `${p.value}%`
-                                                      }))}
-                                                    />
-                                                  )
-                                                }
-                                                return null
-                                              }}
-                                              />
-                                              <Pie 
-                                                  activeIndex={activeIndex}
-                                                  activeShape={renderActiveShape}
-                                                  data={portfolioData.allocations} 
-                                                  dataKey="value" 
-                                                  nameKey="name" 
-                                                  cx="50%" 
-                                                  cy="50%" 
-                                                  outerRadius={90}
-                                                  innerRadius={70}
-                                                  labelLine={false}
-                                                  onMouseEnter={onPieEnter}
-                                              >
-                                                  {portfolioData.allocations.map((entry, index) => (
-                                                      <Cell key={`cell-${index}`} fill={entry.color} />
-                                                  ))}
-                                              </Pie>
-                                              <Legend iconType='circle' />
-                                          </PieChart>
-                                      </ChartContainer>
-                                  </div>
-                              </div>
+                                          )}
+                                      />
+                                      <Area type="monotone" dataKey="value" stroke="hsl(var(--primary))" fill="hsl(var(--primary))" fillOpacity={0.1} />
+                                  </AreaChart>
+                              </ChartContainer>
                           </div>
                         </CardContent>
                       </Card>
