@@ -38,11 +38,17 @@ const WalletCell = ({ alias, address }: { alias: string, address: string}) => {
         toast({ title: 'Address Copied!' });
     };
 
+    const openExplorer = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        e.preventDefault();
+        window.open(getExplorerUrl('ethereum', address, 'address'), '_blank');
+    }
+
     return (
         <div className="flex items-center gap-2">
-             <a href={getExplorerUrl('ethereum', address, 'address')} target="_blank" rel="noopener noreferrer" className='font-mono text-sm text-muted-foreground hover:text-primary transition-colors' onClick={(e) => e.stopPropagation()}>
+             <span onClick={openExplorer} className='font-mono text-sm text-muted-foreground hover:text-primary transition-colors cursor-pointer'>
                 {alias}
-            </a>
+            </span>
             <Button variant="ghost" size="icon" className="h-6 w-6 text-muted-foreground hover:text-primary" onClick={copyAddress}><Copy className="h-3 w-3"/></Button>
         </div>
     )
