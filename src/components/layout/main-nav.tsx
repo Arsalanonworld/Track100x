@@ -13,7 +13,7 @@ export function MainNav() {
 
     const navItems = [
         { href: '/feed', label: 'Whale Feed', visible: true },
-        { href: '/leaderboard', label: 'Leaderboard', visible: true },
+        { href: '/leaderboard', label: 'Explore', visible: true },
         { href: '/dashboard', label: 'Dashboard', visible: true },
     ];
     
@@ -28,7 +28,7 @@ export function MainNav() {
                     href={item.href}
                     className={cn(
                         "transition-colors hover:text-foreground",
-                        pathname.startsWith(item.href) ? "text-foreground" : "text-foreground/60"
+                        (pathname.startsWith(item.href) && item.href !== '/') || (pathname === '/' && item.href === '/') ? "text-foreground" : "text-foreground/60"
                     )}
                 >
                     {item.label}

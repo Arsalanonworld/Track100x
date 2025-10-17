@@ -88,7 +88,7 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
                                     <div className="hidden md:flex items-center gap-2 text-sm">
                                         <div className="flex items-center gap-2 min-w-0">
                                             <span className="text-muted-foreground">From</span>
-                                            <Link href={getExplorerUrl(tx.network, tx.from, 'address')} target="_blank" rel="noopener noreferrer" className="font-mono hover:underline truncate">
+                                            <Link href={`/wallet/${tx.from}`} className="font-mono hover:underline truncate">
                                                 {tx.fromShort}
                                             </Link>
                                             <WatchlistButton type="wallet" identifier={tx.from} />
@@ -97,7 +97,7 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
                                         <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0 mx-2" />
                                         <div className="flex items-center gap-2 min-w-0">
                                             <span className="text-muted-foreground">To</span>
-                                             <Link href={getExplorerUrl(tx.network, tx.to, 'address')} target="_blank" rel="noopener noreferrer" className="font-mono hover:underline truncate">
+                                             <Link href={`/wallet/${tx.to}`} className="font-mono hover:underline truncate">
                                                 {tx.toShort}
                                              </Link>
                                             <WatchlistButton type="wallet" identifier={tx.to} />
@@ -109,7 +109,7 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
                                         {/* From */}
                                         <div className="flex items-center gap-2">
                                             <span className="text-muted-foreground w-8">From</span>
-                                            <Link href={getExplorerUrl(tx.network, tx.from, 'address')} target="_blank" rel="noopener noreferrer" className="font-mono hover:underline truncate">
+                                            <Link href={`/wallet/${tx.from}`} className="font-mono hover:underline truncate">
                                                 {tx.fromShort}
                                             </Link>
                                             <WatchlistButton type="wallet" identifier={tx.from} />
@@ -121,7 +121,7 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
                                         {/* To */}
                                         <div className="flex items-center gap-2">
                                             <span className="text-muted-foreground w-8">To</span>
-                                             <Link href={getExplorerUrl(tx.network, tx.to, 'address')} target="_blank" rel="noopener noreferrer" className="font-mono hover:underline truncate">
+                                             <Link href={`/wallet/${tx.to}`} className="font-mono hover:underline truncate">
                                                 {tx.toShort}
                                              </Link>
                                             <WatchlistButton type="wallet" identifier={tx.to} />

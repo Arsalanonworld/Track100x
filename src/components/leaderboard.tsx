@@ -25,6 +25,7 @@ import { CryptoIcon } from './crypto-icon';
 import { Skeleton } from './ui/skeleton';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuLabel, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu';
 import { Label } from './ui/label';
+import { useRouter } from 'next/navigation';
 
 
 const PnlCell = ({ value }: { value: number }) => (
@@ -39,9 +40,9 @@ const PnlCell = ({ value }: { value: number }) => (
 const WalletCell = ({ address }: { address: string}) => {
     return (
         <TableCell>
-            <a href={getExplorerUrl('ethereum', address, 'address')} target="_blank" rel="noopener noreferrer" className='font-mono text-sm hover:text-primary transition-colors' onClick={(e) => e.stopPropagation()}>
+            <span className='font-mono text-sm hover:text-primary transition-colors'>
                 {address.slice(0, 6)}...{address.slice(-4)}
-            </a>
+            </span>
         </TableCell>
     )
 }
@@ -76,6 +77,7 @@ function TableSkeleton() {
 const LeaderboardTable = ({ data, isLoading }: { data: LeaderboardWallet[], isLoading: boolean }) => {
     const [alertEntity, setAlertEntity] = useState<{type: 'wallet', identifier: string} | null>(null);
     const [isAlertEditorOpen, setIsAlertEditorOpen] = useState(false);
+    const router = useRouter();
 
     const handleAlertClick = (e: React.MouseEvent, address: string) => {
         e.stopPropagation();
@@ -85,6 +87,10 @@ const LeaderboardTable = ({ data, isLoading }: { data: LeaderboardWallet[], isLo
     
     if (isLoading) {
         return <TableSkeleton />;
+    }
+
+    const handleRowClick = (address: string) => {
+        router.push(`/wallet/${address}`);
     }
 
     return (
@@ -108,7 +114,7 @@ const LeaderboardTable = ({ data, isLoading }: { data: LeaderboardWallet[], isLo
                     </TableHeader>
                     <TableBody>
                         {data.length > 0 ? data.map((wallet, index) => (
-                        <TableRow key={wallet.address} className="cursor-pointer hover:bg-muted/50">
+                        <TableRow key={wallet.address} onClick={() => handleRowClick(wallet.address)} className="cursor-pointer hover:bg-muted/50">
                             <TableCell className='text-center text-muted-foreground font-medium'>{index + 1}</TableCell>
                             <WalletCell address={wallet.address} />
                             <TableCell className="font-medium">{wallet.netWorth}</TableCell>

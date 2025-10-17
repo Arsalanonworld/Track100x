@@ -52,39 +52,41 @@ const WalletPodiumCard = ({ wallet, rank }: { wallet: typeof leaderboardData[0],
     const isFirst = rank === 1;
 
     return (
-        <Card className={cn(
-            "flex flex-col transform transition-all duration-300 w-full hover:shadow-primary/20",
-            isFirst 
-                ? "md:scale-105 bg-card border-primary shadow-2xl z-10" 
-                : "md:scale-100 shadow-lg hover:scale-[1.02] hover:shadow-xl",
-        )}>
-            <CardHeader className="items-center text-center">
-                <div className='flex items-center gap-2'>
-                   {isFirst && <Crown className="h-6 w-6 text-yellow-500" />}
-                    <p className={cn("text-4xl font-bold", isFirst ? "text-primary" : "text-muted-foreground")}>#{rank}</p>
-                </div>
-                 <div className="font-semibold text-lg">{wallet.address.slice(0, 6)}...{wallet.address.slice(-4)}</div>
-                 <WalletCell alias="View on Etherscan" address={wallet.address} />
-            </CardHeader>
-            <CardContent className="flex-1 flex flex-col justify-between">
-                <div className='grid grid-cols-2 gap-4'>
-                    <PnlCell value={wallet.pnl7d} label="7d P&L" className="col-span-2 border-b pb-4"/>
-                     <div className='text-center pt-4'>
-                        <p className='text-xs text-muted-foreground'>Win Rate (7d)</p>
-                        <p className='font-semibold text-lg'>{wallet.winRate.toFixed(0)}%</p>
+        <Link href={`/wallet/${wallet.address}`} className="w-full">
+            <Card className={cn(
+                "flex flex-col transform transition-all duration-300 w-full h-full hover:shadow-primary/20",
+                isFirst 
+                    ? "md:scale-105 bg-card border-primary shadow-2xl z-10" 
+                    : "md:scale-100 shadow-lg hover:scale-[1.02] hover:shadow-xl",
+            )}>
+                <CardHeader className="items-center text-center">
+                    <div className='flex items-center gap-2'>
+                    {isFirst && <Crown className="h-6 w-6 text-yellow-500" />}
+                        <p className={cn("text-4xl font-bold", isFirst ? "text-primary" : "text-muted-foreground")}>#{rank}</p>
                     </div>
-                     <div className='text-center pt-4'>
-                        <p className='text-xs text-muted-foreground'>Trades (7d)</p>
-                        <p className='font-semibold text-lg'>{wallet.activity}</p>
+                    <div className="font-semibold text-lg">{wallet.address.slice(0, 6)}...{wallet.address.slice(-4)}</div>
+                    <WalletCell alias="View on Etherscan" address={wallet.address} />
+                </CardHeader>
+                <CardContent className="flex-1 flex flex-col justify-between">
+                    <div className='grid grid-cols-2 gap-4'>
+                        <PnlCell value={wallet.pnl7d} label="7d P&L" className="col-span-2 border-b pb-4"/>
+                        <div className='text-center pt-4'>
+                            <p className='text-xs text-muted-foreground'>Win Rate (7d)</p>
+                            <p className='font-semibold text-lg'>{wallet.winRate.toFixed(0)}%</p>
+                        </div>
+                        <div className='text-center pt-4'>
+                            <p className='text-xs text-muted-foreground'>Trades (7d)</p>
+                            <p className='font-semibold text-lg'>{wallet.activity}</p>
+                        </div>
+                    </div>
+                </CardContent>
+                <div className='p-6 pt-4 text-center'>
+                    <div className="flex items-center justify-center gap-2 flex-wrap min-h-[24px]">
+                        {wallet.tags?.map(tag => <Badge key={tag} variant={isFirst ? "default" : "secondary"}>{tag}</Badge>)}
                     </div>
                 </div>
-            </CardContent>
-             <div className='p-6 pt-4 text-center'>
-                <div className="flex items-center justify-center gap-2 flex-wrap min-h-[24px]">
-                    {wallet.tags?.map(tag => <Badge key={tag} variant={isFirst ? "default" : "secondary"}>{tag}</Badge>)}
-                </div>
-            </div>
-        </Card>
+            </Card>
+        </Link>
     );
 };
 
