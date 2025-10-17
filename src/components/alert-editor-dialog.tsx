@@ -27,7 +27,7 @@ export const AlertEditorDialog = ({
 }) => {
   // Default to 'advanced' if the alert being edited is of that type, otherwise 'quick'
   const [mode, setMode] = useState<'quick' | 'advanced'>(
-    alert?.type || 'quick'
+    alert?.type === 'advanced' ? 'advanced' : 'quick'
   );
   const { claims } = useUser();
   const isPro = claims?.plan === 'pro';
@@ -83,7 +83,7 @@ export const AlertEditorDialog = ({
         
         <div className="flex justify-center pt-2">
            {canSwitchToAdvanced ? (
-             <Button variant="link" onClick={toggleMode} className="text-muted-foreground">
+             <Button variant="link" onClick={toggleMode}>
                 <ArrowLeftRight className="mr-2 h-4 w-4" />
                 Switch to {mode === 'quick' ? 'Advanced Builder' : 'Quick Alert'}
             </Button>
