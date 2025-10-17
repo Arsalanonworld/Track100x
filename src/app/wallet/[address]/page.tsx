@@ -1,4 +1,6 @@
 
+'use client';
+
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { leaderboardData, whaleTransactions } from '@/lib/mock-data';
@@ -28,14 +30,18 @@ const getWalletData = (address: string) => {
     
     // Create some mock portfolio data based on the wallet
     if (wallet) {
+        const currentNetWorth = parseFloat(wallet.netWorth.replace('$', '').replace('M', '')) * 1000000;
+        // Correctly calculate past value from PnL: PastValue = CurrentValue / (1 + PnL)
+        const pastNetWorth = currentNetWorth / (1 + wallet.pnl7d / 100);
+
         return {
             ...wallet,
             transactions,
             portfolio: {
-                netWorth: parseFloat(wallet.netWorth.replace('$', '').replace('M', '')) * 1000000,
+                netWorth: currentNetWorth,
                 history: [
-                    { name: '30d ago', value: (parseFloat(wallet.netWorth.replace('$', '').replace('M', '')) * 1000000) * (1 - wallet.pnl7d/100) },
-                    { name: 'Today', value: parseFloat(wallet.netWorth.replace('$', '').replace('M', '')) * 1000000 },
+                    { name: '30d ago', value: pastNetWorth },
+                    { name: 'Today', value: currentNetWorth },
                 ],
                 allocations: [
                     { name: wallet.topHolding.token, value: wallet.topHolding.percentage, color: 'hsl(var(--chart-1))' },
