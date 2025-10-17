@@ -43,6 +43,7 @@ import { ChartTooltipContent, ChartContainer } from '@/components/ui/chart';
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
+import { HoldingsTable } from '@/components/dashboard/holdings-table';
 
 
 const WATCHLIST_LIMIT_FREE = 5;
@@ -430,6 +431,9 @@ export default function DashboardPage() {
                         </CardContent>
                       </Card>
                   </section>
+                   <section id="token-holdings">
+                        <HoldingsTable />
+                    </section>
                   </>
                 )}
 
@@ -488,3 +492,4 @@ export default function DashboardPage() {
     </Dialog>
   );
 }
+
