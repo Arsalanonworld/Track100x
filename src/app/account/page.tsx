@@ -171,22 +171,10 @@ export default function AccountPage() {
                               <p className='text-xs text-muted-foreground'>Receive instant whale alerts in Telegram.</p>
                           </div>
                       </div>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="outline">
-                                <LinkIcon className="h-4 w-4 mr-2" />
-                                Connect
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent>
-                            <DropdownMenuItem onClick={handleConnectTelegram}>
-                                Connect Account
-                            </DropdownMenuItem>
-                            <DropdownMenuItem asChild>
-                                <a href="#" target="_blank" rel="noopener noreferrer">Learn More</a>
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                      <Button variant="outline" disabled>
+                          <LinkIcon className="h-4 w-4 mr-2" />
+                          Coming Soon
+                      </Button>
                   </div>
               </CardContent>
           </Card>

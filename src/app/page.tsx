@@ -4,7 +4,7 @@
 import { WhaleFeed } from '@/components/whale-feed';
 import HeroSection from '@/components/hero-section';
 import { StickyScrollFeatures } from '@/components/sticky-scroll-features';
-import { ArrowRight, Bell, Newspaper, ShieldCheck, Zap } from 'lucide-react';
+import { ArrowRight, Bell, Eye, Trophy, Wallet, Zap } from 'lucide-react';
 import Link from 'next/link';
 import { AnimatedButton } from '@/components/ui/animated-button';
 import { LeaderboardPreview } from '@/components/leaderboard-preview';
@@ -16,19 +16,19 @@ const featureHighlights = [
         description: 'Create complex, multi-conditional alerts to precisely monitor specific on-chain events and strategies.',
     },
     {
-        icon: <Bell />,
-        title: 'Unlimited Telegram Alerts',
-        description: 'Create unlimited alerts and get notified instantly via Telegram to never miss a move.',
+        icon: <Eye />,
+        title: 'Unlimited Watchlist',
+        description: 'Track as many wallets and tokens as you want, without any limitations.',
     },
     {
-        icon: <Newspaper />,
-        title: 'AI Insights & Daily Digest',
-        description: 'Get AI-generated summaries and a daily digest of the most important whale movements and market signals.',
+        icon: <Trophy />,
+        title: 'Leaderboard Analytics',
+        description: 'Discover and learn from the top-performing traders in real-time with our comprehensive leaderboard.',
     },
      {
-        icon: <ShieldCheck />,
-        title: 'Ad-Free Experience',
-        description: 'Enjoy a clean, uninterrupted interface focused solely on the data and insights that matter.',
+        icon: <Wallet />,
+        title: 'Full Portfolio Tracking',
+        description: 'Link all your wallets and unlock complete historical data and performance insights.',
     },
 ];
 

@@ -55,8 +55,6 @@ const features = [
     items: [
         { name: 'Link Wallets', free: '1 wallet', pro: 'Unlimited' },
         { name: 'Historical Performance', free: '7-day history', pro: 'Full history' },
-        { name: 'CSV Export', free: false, pro: true },
-        { name: 'Benchmark Comparison', free: false, pro: true },
     ]
    },
   {
@@ -84,9 +82,9 @@ const featureHighlights = [
         description: 'Link all your wallets and unlock complete historical data and performance insights.',
     },
      {
-        icon: <ShieldCheck />,
-        title: 'Pro Support',
-        description: 'Get priority access to our support team for any questions or issues you may have.',
+        icon: <Bell />,
+        title: 'Unlimited Alerts',
+        description: 'Create unlimited quick and advanced alerts so you never miss an important on-chain move.',
     },
 ];
 
