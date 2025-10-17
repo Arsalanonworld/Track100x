@@ -48,28 +48,30 @@ import { HoldingsTable } from '@/components/dashboard/holdings-table';
 
 const WATCHLIST_LIMIT_FREE = 5;
 
+const generateChartData = (baseValue: number, days: number, volatility: number) => {
+    const data = [];
+    let currentValue = baseValue;
+    for (let i = days; i >= 0; i--) {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        if (i < days) {
+         currentValue *= 1 + (Math.random() - 0.45) * volatility;
+        }
+        data.push({ name: i === 0 ? 'Today' : `${i}d ago`, value: currentValue });
+    }
+    return data;
+}
+
 const portfolioData = {
   netWorth: 125834.54,
   change24h: 2.5,
   history: {
-    '7d': [
-      { name: '7d ago', value: 124000 },
-      { name: 'Today', value: 125834.54 },
-    ],
-    '30d': [
-        { name: '30d ago', value: 115000 },
-        { name: '20d ago', value: 118000 },
-        { name: '10d ago', value: 112000 },
-        { name: 'Today', value: 125834.54 },
-    ],
-    'all': [
-        { name: '90d ago', value: 95000 },
-        { name: '60d ago', value: 110000 },
-        { name: '30d ago', value: 115000 },
-        { name: 'Today', value: 125834.54 },
-    ]
+    '7d': generateChartData(124000, 7, 0.02),
+    '30d': generateChartData(115000, 30, 0.03),
+    'all': generateChartData(95000, 90, 0.04),
   },
 };
+
 
 const PnlBadge = ({ value }: { value: number }) => (
   <Badge variant={value >= 0 ? "secondary" : "destructive"} className={cn(
@@ -405,7 +407,10 @@ export default function DashboardPage() {
                               <ChartContainer config={{value: {label: 'Net Worth', color: 'hsl(var(--primary))'}}} className='h-full w-full'>
                                   <AreaChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                                       <CartesianGrid vertical={false} strokeDasharray="3 3" />
-                                      <XAxis dataKey="name" tick={{ fill: 'hsl(var(--muted-foreground))' }} fontSize={12} axisLine={false} tickLine={false} />
+                                      <XAxis dataKey="name" tick={{ fill: 'hsl(var(--muted-foreground))' }} fontSize={12} axisLine={false} tickLine={false} tickFormatter={(value, index) => {
+                                        if (chartData.length > 12 && index % Math.floor(chartData.length / 6) !== 0 && index !== chartData.length - 1) return '';
+                                        return value;
+                                      }}/>
                                       <YAxis tickFormatter={(value) => `$${(Number(value) / 1000)}k`} tick={{ fill: 'hsl(var(--muted-foreground))' }} fontSize={12} axisLine={false} tickLine={false} />
                                       <Tooltip
                                           cursor={{ stroke: 'hsl(var(--border))' }}
@@ -493,3 +498,6 @@ export default function DashboardPage() {
   );
 }
 
+
+
+    
