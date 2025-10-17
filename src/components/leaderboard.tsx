@@ -26,6 +26,7 @@ import { Skeleton } from './ui/skeleton';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuLabel, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu';
 import { Label } from './ui/label';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 
 const PnlCell = ({ value }: { value: number }) => (
@@ -40,9 +41,9 @@ const PnlCell = ({ value }: { value: number }) => (
 const WalletCell = ({ address }: { address: string}) => {
     return (
         <TableCell>
-            <span className='font-mono text-sm hover:text-primary transition-colors'>
+            <Link href={`/wallet/${address}`} className='font-mono text-sm hover:text-primary transition-colors' onClick={(e) => e.stopPropagation()}>
                 {address.slice(0, 6)}...{address.slice(-4)}
-            </span>
+            </Link>
         </TableCell>
     )
 }

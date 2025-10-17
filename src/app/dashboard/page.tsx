@@ -178,9 +178,9 @@ function WatchlistItemCard({ item, onUpdate, onRemove }: { item: WatchlistItem, 
                                     </div>
                                 )}
                                 {item.name && (
-                                    <a href={getExplorerUrl('ethereum', item.identifier, 'address')} target="_blank" rel="noopener noreferrer" className='font-mono text-sm text-muted-foreground hover:text-primary transition-colors inline-block truncate max-w-full'>
+                                    <Link href={getExplorerUrl('ethereum', item.identifier, 'address')} target="_blank" rel="noopener noreferrer" className='font-mono text-sm text-muted-foreground hover:text-primary transition-colors inline-block truncate max-w-full'>
                                         {item.identifier}
-                                    </a>
+                                    </Link>
                                 )}
                                  <div className='text-xs text-muted-foreground pt-1'>
                                     <p>Net Worth & P/L: <span className='italic'>Fetching data...</span></p>

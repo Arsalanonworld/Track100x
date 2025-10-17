@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Plus, Search, BellPlus } from 'lucide-react';
+import { Plus, Search, BellPlus, Eye, ChevronDown } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useFirestore } from '@/firebase';
 import { collection, addDoc, serverTimestamp, query, where, getDocs } from 'firebase/firestore';
@@ -15,7 +15,7 @@ import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { tokenLibrary } from '@/lib/tokens';
 import type { User } from 'firebase/auth';
-import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '../ui/tooltip';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu';
 
 
 type WatchlistActionFormProps = {
@@ -146,26 +146,24 @@ export function WatchlistActionForm({ user, onItemAdded, onAlertCreate, atLimit,
                 />
             </div>
             <div className="flex items-center gap-1">
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                        <Button onClick={() => handleAction('add')} disabled={atLimit || isFormDisabled || !identifier} className="shrink-0 rounded-full h-10 px-3 sm:px-4" variant="outline">
-                            <Plus className="h-4 w-4 sm:mr-2"/>
-                            <span className="hidden sm:inline">Watch</span>
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button disabled={isFormDisabled || !identifier} className="shrink-0 rounded-full h-10 px-3 sm:px-4">
+                            Action
+                            <ChevronDown className="h-4 w-4 ml-2"/>
                         </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>Add to Watchlist</TooltipContent>
-                  </Tooltip>
-                   <Tooltip>
-                    <TooltipTrigger asChild>
-                       <Button onClick={() => handleAction('alert')} disabled={isFormDisabled || !identifier} className="shrink-0 rounded-full h-10 px-3 sm:px-4">
-                            <BellPlus className="h-4 w-4 sm:mr-2"/>
-                            <span className="hidden sm:inline">Alert</span>
-                        </Button>
-                    </TooltipTrigger>
-                     <TooltipContent>Create Alert</TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                        <DropdownMenuItem onClick={() => handleAction('add')} disabled={atLimit}>
+                            <Eye className="h-4 w-4 mr-2" />
+                            Add to Watchlist
+                        </DropdownMenuItem>
+                         <DropdownMenuItem onClick={() => handleAction('alert')}>
+                            <BellPlus className="h-4 w-4 mr-2" />
+                            Create Alert
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
             </div>
         </div>
       <Dialog open={isAliasModalOpen} onOpenChange={setIsAliasModalOpen}>

@@ -38,15 +38,9 @@ const WalletCell = ({ alias, address }: { alias: string, address: string}) => {
         toast({ title: 'Address Copied!' });
     };
 
-    const openExplorer = (e: React.MouseEvent) => {
-        e.stopPropagation();
-        e.preventDefault();
-        window.open(getExplorerUrl('ethereum', address, 'address'), '_blank');
-    }
-
     return (
         <div className="flex items-center gap-2">
-             <span onClick={openExplorer} className='font-mono text-sm text-muted-foreground hover:text-primary transition-colors cursor-pointer'>
+             <span className='font-mono text-sm text-muted-foreground hover:text-primary transition-colors cursor-pointer'>
                 {alias}
             </span>
             <Button variant="ghost" size="icon" className="h-6 w-6 text-muted-foreground hover:text-primary" onClick={copyAddress}><Copy className="h-3 w-3"/></Button>
@@ -71,7 +65,6 @@ const WalletPodiumCard = ({ wallet, rank }: { wallet: typeof leaderboardData[0],
                         <p className={cn("text-4xl font-bold", isFirst ? "text-primary" : "text-muted-foreground")}>#{rank}</p>
                     </div>
                     <div className="font-semibold text-lg">{wallet.address.slice(0, 6)}...{wallet.address.slice(-4)}</div>
-                    <WalletCell alias="View on Etherscan" address={wallet.address} />
                 </CardHeader>
                 <CardContent className="flex-1 flex flex-col justify-between">
                     <div className='grid grid-cols-2 gap-4'>
