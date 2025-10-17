@@ -4,10 +4,10 @@
 import { useMemo, useState } from 'react';
 import PageHeader from '@/components/page-header';
 import { Button } from '@/components/ui/button';
-import { Trash2, BellPlus, Pencil, Check, X, Lock, Wallet, Eye } from 'lucide-react';
+import { Trash2, BellPlus, Pencil, Check, X, Wallet, Eye, Download, Lock } from 'lucide-react';
 import { useUser, useCollection, useFirestore } from '@/firebase';
 import { collection, query, doc, deleteDoc, updateDoc } from 'firebase/firestore';
-import type { Alert, WatchlistItem } from '@/lib/types';
+import type { WatchlistItem } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -31,15 +31,91 @@ import { FirestorePermissionError } from '@/firebase/errors';
 import { AlertEditorDialog } from '@/components/alert-editor-dialog';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { CryptoIcon } from '@/components/crypto-icon';
 import { getExplorerUrl } from '@/lib/explorers';
 import { WatchlistActionForm } from '@/components/watchlist/watchlist-action-form';
 import { tokenLibrary } from '@/lib/tokens';
 import { AlertsPanel } from '@/components/watchlist/alerts-panel';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend, Sector } from 'recharts';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { ChartTooltipContent, ChartContainer } from '@/components/ui/chart';
+import React from 'react';
+import { cn } from '@/lib/utils';
+import { Badge } from '@/components/ui/badge';
 
 
 const WATCHLIST_LIMIT_FREE = 5;
+
+const portfolioData = {
+  netWorth: 125834.54,
+  change24h: 2.5,
+  history: {
+    '7d': [
+      { name: '7d ago', value: 124000 },
+      { name: 'Today', value: 125834.54 },
+    ],
+    '30d': [
+        { name: '30d ago', value: 115000 },
+        { name: '20d ago', value: 118000 },
+        { name: '10d ago', value: 112000 },
+        { name: 'Today', value: 125834.54 },
+    ],
+    'all': [
+        { name: '90d ago', value: 95000 },
+        { name: '60d ago', value: 110000 },
+        { name: '30d ago', value: 115000 },
+        { name: 'Today', value: 125834.54 },
+    ]
+  },
+  allocations: [
+    { name: 'Ethereum (ETH)', value: 40, color: 'hsl(var(--chart-1))' },
+    { name: 'Bitcoin (WBTC)', value: 30, color: 'hsl(var(--chart-2))' },
+    { name: 'Solana (SOL)', value: 15, color: 'hsl(var(--chart-3))' },
+    { name: 'Memecoins', value: 10, color: 'hsl(var(--chart-4))' },
+    { name: 'Stablecoins', value: 5, color: 'hsl(var(--chart-5))' },
+  ],
+};
+
+const PnlBadge = ({ value }: { value: number }) => (
+  <Badge variant={value >= 0 ? "secondary" : "destructive"} className={cn(
+    value >= 0 ? 'text-green-500' : 'text-red-500',
+    'bg-opacity-20 border-opacity-30'
+  )}>
+    {value >= 0 ? '+' : ''}{value.toFixed(2)}%
+  </Badge>
+);
+
+const renderActiveShape = (props: any) => {
+  const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill, percent } = props;
+
+  return (
+    <g>
+      <Sector
+        cx={cx}
+        cy={cy}
+        innerRadius={innerRadius}
+        outerRadius={outerRadius}
+        startAngle={startAngle}
+        endAngle={endAngle}
+        fill={fill}
+      />
+      <Sector
+        cx={cx}
+        cy={cy}
+        startAngle={startAngle}
+        endAngle={endAngle}
+        innerRadius={outerRadius + 6}
+        outerRadius={outerRadius + 10}
+        fill={fill}
+      />
+       <text x={cx} y={cy} dy={8} textAnchor="middle" fill="hsl(var(--foreground))" className="text-2xl font-bold">
+        {(percent * 100).toFixed(0)}%
+      </text>
+    </g>
+  );
+};
+
 
 function WatchlistItemCard({ item, onUpdate, onRemove }: { item: WatchlistItem, onUpdate: (id: string, name: string) => void, onRemove: (item: WatchlistItem) => void}) {
     const [isAlertEditorOpen, setIsAlertEditorOpen] = useState(false);
@@ -185,13 +261,50 @@ function WatchlistSkeleton() {
     )
 }
 
-export default function WatchlistPage() {
+
+function PageSkeleton() {
+    return (
+        <div className='space-y-8'>
+            <div className='flex justify-between items-center'>
+                 <Skeleton className="h-12 w-1/3" />
+                 <Skeleton className="h-10 w-32" />
+            </div>
+            <Card>
+                <CardContent className="p-8 text-center text-muted-foreground border-2 border-dashed rounded-lg">
+                    <Skeleton className="h-10 w-10 mx-auto mb-4 rounded-full" />
+                    <Skeleton className="h-6 w-1/2 mx-auto mb-2" />
+                    <Skeleton className="h-4 w-3/4 mx-auto mb-4" />
+                    <Skeleton className="h-10 w-32 mx-auto" />
+                </CardContent>
+            </Card>
+        </div>
+    )
+}
+
+function EmptyDashboardState() {
+    return (
+        <Card>
+            <CardContent className="p-8 text-center text-muted-foreground border-2 border-dashed rounded-lg">
+                <Wallet className="h-10 w-10 mx-auto mb-4" />
+                <h3 className='text-xl font-semibold text-foreground'>Your Dashboard is Empty</h3>
+                <p>Add wallets or tokens to your watchlist to see your portfolio overview, analytics, and alerts.</p>
+                <div className="mt-4">
+                    <p className="text-sm">Use the form below to get started.</p>
+                </div>
+            </CardContent>
+        </Card>
+    );
+}
+
+export default function DashboardPage() {
   const { user, loading: userLoading, claims } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
   const [refreshKey, setRefreshKey] = useState(0);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [editorEntity, setEditorEntity] = useState<{type: 'wallet' | 'token', identifier: string} | undefined>(undefined);
+  const [timeRange, setTimeRange] = useState<'7d' | '30d' | 'all'>('30d');
+  const [activeIndex, setActiveIndex] = useState(0);
 
   const isPro = claims?.plan === 'pro';
 
@@ -204,10 +317,24 @@ export default function WatchlistPage() {
   }, [user, firestore, refreshKey]);
 
   const { data: watchlist, loading: watchlistLoading } = useCollection<WatchlistItem>(watchlistQuery);
+  const wallets = useMemo(() => watchlist?.filter(item => item.type === 'wallet') || [], [watchlist]);
   
   const isLoading = userLoading || (user && watchlistLoading);
 
   const watchlistAtLimit = !isPro && watchlist && watchlist.length >= WATCHLIST_LIMIT_FREE;
+  const hasWallets = wallets.length > 0;
+
+  React.useEffect(() => {
+    if (!isLoading && !isPro) {
+      setTimeRange('7d');
+    }
+  }, [isLoading, isPro]);
+  
+  const onPieEnter = (_: any, index: number) => {
+    setActiveIndex(index);
+  };
+  
+  const chartData = portfolioData.history[timeRange] || portfolioData.history['7d'];
 
   const handleRemove = (item: WatchlistItem) => {
     if (!firestore || !user) return;
@@ -255,8 +382,12 @@ export default function WatchlistPage() {
   }
 
   const pageDescription = isPro
-    ? 'Add wallets or tokens to start tracking their activity.'
-    : `Add a new wallet or token to start tracking. Free plan includes ${WATCHLIST_LIMIT_FREE} watchlist items.`;
+    ? 'Track your wallets, tokens, and alerts all in one place.'
+    : `You are on the Free plan. Upgrade to unlock all features.`;
+  
+  if (isLoading) {
+    return <PageSkeleton />;
+  }
 
   return (
     <Dialog open={isEditorOpen} onOpenChange={setIsEditorOpen}>
@@ -264,12 +395,140 @@ export default function WatchlistPage() {
             {!user && !userLoading && <FeatureLock />}
             <div className="space-y-8">
                 <PageHeader
-                    title="Your Watchlist"
+                    title="My Dashboard"
                     description={pageDescription}
+                    action={
+                        <Button variant="outline" disabled={!isPro || !hasWallets}>
+                            <Download className="mr-2 h-4 w-4" />
+                            Export Data
+                            {!isPro && <Lock className="ml-2 h-3 w-3" />}
+                        </Button>
+                    }
                 />
 
-                <div className='grid grid-cols-1 lg:grid-cols-3 gap-8 items-start'>
+                {!hasWallets && !isLoading ? (
+                  <EmptyDashboardState />
+                ) : (
+                  <>
+                  {/* Section 1: Portfolio Overview */}
+                  <section id="overview">
+                    <Card>
+                        <CardHeader>
+                          <CardTitle>Portfolio Overview</CardTitle>
+                          <CardDescription>Aggregated view of your on-chain wealth from your watched wallets.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-8">
+                          {/* Net Worth and Time Selector */}
+                          <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
+                            <div>
+                              <p className="text-sm text-muted-foreground">Total Net Worth</p>
+                              <p className="text-4xl font-bold">${portfolioData.netWorth.toLocaleString()}</p>
+                              <PnlBadge value={portfolioData.change24h} />
+                            </div>
+                            <Select value={timeRange} onValueChange={(val) => setTimeRange(val as '7d' | '30d' | 'all')}>
+                              <SelectTrigger className="w-full sm:w-[180px]">
+                                <SelectValue placeholder="Select time range" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="7d">Last 7 Days</SelectItem>
+                                <SelectItem value="30d" disabled={!isPro}>
+                                  <div className="flex items-center gap-2">Last 30 Days {!isPro && <Lock className='h-3 w-3' />}</div>
+                                </SelectItem>
+                                <SelectItem value="all" disabled={!isPro}>
+                                  <div className="flex items-center gap-2">All Time {!isPro && <Lock className='h-3 w-3' />}</div>
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          
+                          {/* Main Charts */}
+                          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                              {/* Portfolio Over Time */}
+                              <div className="lg:col-span-2">
+                                  <h3 className="font-semibold mb-4">Net Worth Over Time</h3>
+                                  <div className="h-[300px]">
+                                      <ChartContainer config={{value: {label: 'Net Worth', color: 'hsl(var(--primary))'}}} className='h-full w-full'>
+                                          <AreaChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                                              <CartesianGrid vertical={false} strokeDasharray="3 3" />
+                                              <XAxis dataKey="name" tick={{ fill: 'hsl(var(--muted-foreground))' }} fontSize={12} axisLine={false} tickLine={false} />
+                                              <YAxis tickFormatter={(value) => `$${(Number(value) / 1000)}k`} tick={{ fill: 'hsl(var(--muted-foreground))' }} fontSize={12} axisLine={false} tickLine={false} />
+                                              <Tooltip
+                                                  cursor={{ stroke: 'hsl(var(--border))' }}
+                                                  content={({ active, payload, label }) => active && payload && payload.length && (
+                                                      <ChartTooltipContent
+                                                        label={label}
+                                                        payload={payload.map((p) => ({
+                                                            ...p,
+                                                            value: (p.value as number).toLocaleString('en-US', {
+                                                              style: 'currency',
+                                                              currency: 'USD',
+                                                              minimumFractionDigits: 0,
+                                                              maximumFractionDigits: 0,
+                                                            })
+                                                        }))}
+                                                      />
+                                                  )}
+                                              />
+                                              <Area type="monotone" dataKey="value" stroke="hsl(var(--primary))" fill="hsl(var(--primary))" fillOpacity={0.1} />
+                                          </AreaChart>
+                                      </ChartContainer>
+                                  </div>
+                              </div>
+
+                              {/* Asset Allocation */}
+                              <div>
+                                  <h3 className="font-semibold mb-4">Asset Allocation</h3>
+                                  <div className="h-[300px]">
+                                      <ChartContainer config={{}} className="h-full w-full">
+                                        <PieChart>
+                                              <Tooltip
+                                              content={({ active, payload }) => {
+                                                if (active && payload && payload.length) {
+                                                  return (
+                                                    <ChartTooltipContent
+                                                      payload={payload.map((p) => ({
+                                                          ...p,
+                                                          name: p.name,
+                                                          value: `${p.value}%`
+                                                      }))}
+                                                    />
+                                                  )
+                                                }
+                                                return null
+                                              }}
+                                              />
+                                              <Pie 
+                                                  activeIndex={activeIndex}
+                                                  activeShape={renderActiveShape}
+                                                  data={portfolioData.allocations} 
+                                                  dataKey="value" 
+                                                  nameKey="name" 
+                                                  cx="50%" 
+                                                  cy="50%" 
+                                                  outerRadius={90}
+                                                  innerRadius={70}
+                                                  labelLine={false}
+                                                  onMouseEnter={onPieEnter}
+                                              >
+                                                  {portfolioData.allocations.map((entry, index) => (
+                                                      <Cell key={`cell-${index}`} fill={entry.color} />
+                                                  ))}
+                                              </Pie>
+                                              <Legend iconType='circle' />
+                                          </PieChart>
+                                      </ChartContainer>
+                                  </div>
+                              </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                  </section>
+                  </>
+                )}
+
+                <div className='grid grid-cols-1 lg:grid-cols-3 gap-8 items-start pt-8'>
                     <div className='lg:col-span-2 space-y-6'>
+                         <h2 className='text-2xl font-bold tracking-tight'>Watchlist</h2>
                         <div className="flex flex-col sm:flex-row gap-2">
                              <WatchlistActionForm 
                                 user={user}
@@ -294,7 +553,7 @@ export default function WatchlistPage() {
                         )}
                         
                         <div className="space-y-4">
-                            <h2 className='text-2xl font-bold tracking-tight'>Tracked Items</h2>
+                           
                             {isLoading ? <WatchlistSkeleton /> : user && watchlist && watchlist.length > 0 ? (
                                 watchlist.map((item) => (
                                    <WatchlistItemCard key={item.id} item={item} onUpdate={handleUpdate} onRemove={handleRemove} />
@@ -312,7 +571,7 @@ export default function WatchlistPage() {
                             )}
                         </div>
                     </div>
-                    <div className='lg:col-span-1 lg:mt-[76px]'>
+                    <div className='lg:col-span-1 lg:mt-[44px]'>
                        <AlertsPanel onNewAlert={() => handleOpenEditor()} />
                     </div>
                 </div>
