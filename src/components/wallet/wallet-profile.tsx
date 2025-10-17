@@ -228,4 +228,3 @@ export function WalletProfile({ walletData }: { walletData: WalletData | { addre
     </div>
   );
 }
-
