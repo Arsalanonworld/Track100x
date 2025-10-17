@@ -8,28 +8,25 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { QuickAlertConfigurator } from './quick-alert-configurator';
 import AlertBuilder from './alerts/alert-builder';
 import type { Alert } from '@/lib/types';
 import { useUser } from '@/firebase';
-import { Lock, Zap } from 'lucide-react';
+import { Lock, Zap, ArrowLeftRight } from 'lucide-react';
 import { Button } from './ui/button';
 import Link from 'next/link';
-import { Card, CardContent } from './ui/card';
 
 export const AlertEditorDialog = ({
   onOpenChange,
   entity,
   alert,
-  forceQuick = false,
 }: {
   onOpenChange: (open: boolean) => void;
   entity?: { type: 'wallet' | 'token'; identifier: string };
   alert?: Alert;
-  forceQuick?: boolean;
 }) => {
-  const [activeTab, setActiveTab] = useState<'quick' | 'advanced'>(
+  // Default to 'advanced' if the alert being edited is of that type, otherwise 'quick'
+  const [mode, setMode] = useState<'quick' | 'advanced'>(
     alert?.type || 'quick'
   );
   const { claims } = useUser();
@@ -43,12 +40,16 @@ export const AlertEditorDialog = ({
     ? { type: alert.alertType, identifier: alert.walletId || alert.token || '' }
     : entity;
 
-  const showTabs = isPro && !forceQuick;
+  const canSwitchToAdvanced = isPro;
+
+  const toggleMode = () => {
+    setMode(prev => prev === 'quick' ? 'advanced' : 'quick');
+  }
 
   return (
     <DialogContent className="max-w-2xl">
       <DialogHeader>
-        <DialogTitle>{alert ? 'Edit Alert' : 'Create Alert'}</DialogTitle>
+        <DialogTitle>{alert ? 'Edit Alert' : 'Create New Alert'}</DialogTitle>
         <DialogDescription>
           {finalEntity ? (
             <>
@@ -58,51 +59,46 @@ export const AlertEditorDialog = ({
               </span>
             </>
           ) : (
-            'Create a new alert to track on-chain activity.'
+            'Create an alert to track on-chain activity.'
           )}
         </DialogDescription>
       </DialogHeader>
 
-      {showTabs ? (
-        <Tabs
-          value={activeTab}
-          onValueChange={value => setActiveTab(value as 'quick' | 'advanced')}
-          className="pt-4"
-        >
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="quick">Quick Alert</TabsTrigger>
-            <TabsTrigger value="advanced">
-              <div className="flex items-center gap-2">
-                {!isPro && <Lock className="h-3 w-3" />}
-                <span>Advanced Builder</span>
-              </div>
-            </TabsTrigger>
-          </TabsList>
-          <TabsContent value="quick" className="pt-6">
-            <QuickAlertConfigurator
-              onSubmitted={handleSubmitted}
-              entity={finalEntity}
-              alert={alert}
-            />
-          </TabsContent>
-          <TabsContent value="advanced" className="pt-6">
-             <AlertBuilder 
-                onSave={handleSubmitted}
-                onCancel={() => onOpenChange(false)}
-                entity={finalEntity}
-                alert={alert}
-            />
-          </TabsContent>
-        </Tabs>
-      ) : (
-        <div className='pt-6'>
+      <div className="pt-4 space-y-6">
+        {mode === 'quick' ? (
           <QuickAlertConfigurator
-              onSubmitted={handleSubmitted}
+            onSubmitted={handleSubmitted}
+            entity={finalEntity}
+            alert={alert}
+          />
+        ) : (
+          <AlertBuilder 
+              onSave={handleSubmitted}
+              onCancel={() => onOpenChange(false)}
               entity={finalEntity}
               alert={alert}
-            />
+              onSwitchToQuick={toggleMode}
+          />
+        )}
+        
+        <div className="flex justify-center pt-2">
+           {canSwitchToAdvanced ? (
+             <Button variant="link" onClick={toggleMode} className="text-muted-foreground">
+                <ArrowLeftRight className="mr-2 h-4 w-4" />
+                Switch to {mode === 'quick' ? 'Advanced Builder' : 'Quick Alert'}
+            </Button>
+           ) : (
+            mode === 'quick' && (
+              <Button variant="link" asChild className="text-muted-foreground">
+                  <Link href="/upgrade">
+                    <Lock className="mr-2 h-3 w-3" />
+                    Unlock Advanced Builder with Pro
+                  </Link>
+              </Button>
+            )
+           )}
         </div>
-      )}
+      </div>
     </DialogContent>
   );
 };

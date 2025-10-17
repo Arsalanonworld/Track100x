@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from '../ui/label';
-import { Plus, Bot, X, Lock } from 'lucide-react';
+import { Plus, Bot, X, Lock, ArrowLeftRight } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import type { Alert, AlertCondition, WatchlistItem } from '@/lib/types';
 import { useUser, useFirestore, useCollection } from '@/firebase';
@@ -90,7 +90,7 @@ const Condition = ({ index, onRemove, condition, updateCondition, entityType, is
 };
 
 
-export default function AlertBuilder({ onSave, onCancel, alert, entity }: { onSave: () => void, onCancel?: () => void, alert?: Alert, entity?: { type: 'wallet' | 'token', identifier: string } }) {
+export default function AlertBuilder({ onSave, onCancel, alert, entity, onSwitchToQuick }: { onSave: () => void, onCancel?: () => void, alert?: Alert, entity?: { type: 'wallet' | 'token', identifier: string }, onSwitchToQuick?: () => void }) {
     const [conditions, setConditions] = useState<AlertCondition[]>(alert?.conditions || [{ type: '', threshold: 1000000 }]);
     const [logicalOperator, setLogicalOperator] = useState<'AND' | 'OR'>(alert?.logicalOperator || 'AND');
     const { user, claims } = useUser();
