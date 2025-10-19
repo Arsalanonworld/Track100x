@@ -15,6 +15,11 @@ import { useUser } from "@/firebase"
 export function MobileNav() {
   const [open, setOpen] = React.useState(false);
   const { user } = useUser();
+  const [isClient, setIsClient] = React.useState(false);
+
+    React.useEffect(() => {
+        setIsClient(true);
+    }, []);
 
   const navItems = [
       { href: '/feed', label: 'Whale Feed', icon: Rss, visible: true },
@@ -52,7 +57,7 @@ export function MobileNav() {
             </SheetDescription>
         </SheetHeader>
         <div className="flex flex-col gap-4 pl-6 mt-4 text-lg font-medium flex-1">
-          {visibleItems.map((item) => (
+          {isClient && visibleItems.map((item) => (
             <MobileLink
               key={item.href}
               href={item.href}

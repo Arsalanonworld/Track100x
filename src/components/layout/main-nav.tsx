@@ -10,6 +10,12 @@ import { useUser } from "@/firebase";
 export function MainNav() {
     const pathname = usePathname();
     const { user } = useUser();
+    const [isClient, setIsClient] = React.useState(false);
+
+    React.useEffect(() => {
+        setIsClient(true);
+    }, []);
+
 
     const navItems = [
         { href: '/feed', label: 'Whale Feed', visible: true },
@@ -22,7 +28,7 @@ export function MainNav() {
   return (
     <nav className="hidden md:flex items-center space-x-6 text-sm font-medium">
         <div className="flex items-center space-x-4">
-            {visibleItems.map((item) => (
+            {isClient && visibleItems.map((item) => (
                 <Link
                     key={item.href}
                     href={item.href}
