@@ -14,12 +14,12 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { LogOut, User, DollarSign, Star, LayoutDashboard, ArrowRight, Eye } from 'lucide-react';
-import { AnimatedButton } from './ui/animated-button';
 import { useUser } from '@/firebase';
 import { useState, useEffect } from 'react';
 import { AuthDialog } from './auth/auth-dialog';
 import { Skeleton } from './ui/skeleton';
 import { useLogout } from './auth/auth-actions';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 
 export function UserNav() {
   const { user, claims, loading } = useUser();
@@ -73,12 +73,21 @@ export function UserNav() {
   // Logged-in State
   return (
     <div className="flex items-center gap-2">
-        <Link href="/portfolio" passHref>
-          <AnimatedButton size="sm">
-            <LayoutDashboard className="mr-2 h-4 w-4" />
-            Portfolio
-          </AnimatedButton>
-        </Link>
+        <TooltipProvider>
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <Button asChild variant="ghost" size="icon">
+                        <Link href="/portfolio">
+                            <LayoutDashboard className="h-5 w-5" />
+                            <span className="sr-only">Portfolio</span>
+                        </Link>
+                    </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                    <p>Portfolio</p>
+                </TooltipContent>
+            </Tooltip>
+        </TooltipProvider>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="relative h-10 w-10 rounded-full">
