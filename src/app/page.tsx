@@ -53,21 +53,15 @@ export default function HomePage() {
                 Go beyond simple balance checks. We provide institutional-grade tools to give you an edge.
             </p>
           </div>
-           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-12 max-w-6xl mx-auto">
               {featureHighlights.map((feature, index) => (
-                <div key={index} className="relative group">
-                    <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/50 to-accent/50 rounded-lg blur opacity-50 group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
-                     <Card className="relative flex flex-col items-center text-center p-6 bg-card/95 h-full">
-                        <CardHeader className="p-0 items-center">
-                            <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                                {React.cloneElement(feature.icon as React.ReactElement, { className: 'h-6 w-6 text-primary' })}
-                            </div>
-                            <h3 className="text-lg font-bold mb-2">{feature.title}</h3>
-                        </CardHeader>
-                        <CardContent className="p-0 flex-1">
-                                <p className="text-muted-foreground text-sm">{feature.description}</p>
-                        </CardContent>
-                    </Card>
+                <div key={index} className="group flex flex-col items-center text-center p-4 rounded-lg transition-all duration-300">
+                    <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-5 transition-transform duration-300 group-hover:scale-110">
+                        {React.cloneElement(feature.icon as React.ReactElement, { className: 'h-8 w-8 text-primary' })}
+                    </div>
+                    <h3 className="text-lg font-bold mb-2">{feature.title}</h3>
+                    <p className="text-muted-foreground text-sm flex-1">{feature.description}</p>
+                    <div className="w-1/4 h-px bg-border mt-6 group-hover:w-full group-hover:bg-primary transition-all duration-300"></div>
                 </div>
               ))}
           </div>
