@@ -37,7 +37,7 @@ import { getExplorerUrl } from '@/lib/explorers';
 import { WatchlistActionForm } from '@/components/watchlist/watchlist-action-form';
 import { tokenLibrary } from '@/lib/tokens';
 import { AlertsPanel } from '@/components/watchlist/alerts-panel';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend, Sector } from 'recharts';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ChartTooltipContent, ChartContainer } from '@/components/ui/chart';
 import React from 'react';
@@ -54,7 +54,12 @@ const generateChartData = (baseValue: number, days: number, volatility: number) 
     for (let i = days; i >= 0; i--) {
         const date = new Date();
         date.setDate(date.getDate() - i);
-        const dayLabel = i === 0 ? 'Today' : `${i}d ago`;
+        
+        let dayLabel;
+        if (i === 0) dayLabel = 'Today';
+        else if (i % 5 === 0 || days <= 14) dayLabel = `${i}d ago`;
+        else dayLabel = '';
+
         if (i < days) {
          currentValue *= 1 + (Math.random() - 0.48) * volatility;
         }
@@ -78,6 +83,40 @@ const portfolioData = {
     { name: 'SOL', value: 6.8, color: 'hsl(var(--chart-4))' },
     { name: 'Others', value: 2.5, color: 'hsl(var(--chart-5))' },
   ]
+};
+
+const renderActiveShape = (props: any) => {
+    const RADIAN = Math.PI / 180;
+    const { cx, cy, midAngle, innerRadius, outerRadius, startAngle, endAngle, fill, payload, percent, value } = props;
+    
+    return (
+      <g>
+        <text x={cx} y={cy} dy={-10} textAnchor="middle" fill={fill} className='text-sm font-semibold'>
+          {payload.name}
+        </text>
+         <text x={cx} y={cy} dy={12} textAnchor="middle" fill="hsl(var(--foreground))" className="text-2xl font-bold">
+          {`${(percent * 100).toFixed(1)}%`}
+        </text>
+        <Sector
+          cx={cx}
+          cy={cy}
+          innerRadius={innerRadius}
+          outerRadius={outerRadius}
+          startAngle={startAngle}
+          endAngle={endAngle}
+          fill={fill}
+        />
+        <Sector
+          cx={cx}
+          cy={cy}
+          startAngle={startAngle}
+          endAngle={endAngle}
+          innerRadius={outerRadius + 6}
+          outerRadius={outerRadius + 10}
+          fill={fill}
+        />
+      </g>
+    );
 };
 
 
@@ -278,6 +317,7 @@ export default function DashboardPage() {
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [editorEntity, setEditorEntity] = useState<{type: 'wallet' | 'token', identifier: string} | undefined>(undefined);
   const [timeRange, setTimeRange] = useState<'7d' | '30d' | 'all'>('30d');
+  const [activeIndex, setActiveIndex] = useState(0);
 
   const isPro = claims?.plan === 'pro';
 
@@ -305,6 +345,10 @@ export default function DashboardPage() {
   
   const chartData = portfolioData.history[timeRange] || portfolioData.history['7d'];
   const allocationData = portfolioData.allocations;
+
+  const onPieEnter = (_: any, index: number) => {
+    setActiveIndex(index);
+  };
 
   const handleRemove = (item: WatchlistItem) => {
     if (!firestore || !user) return;
@@ -417,8 +461,8 @@ export default function DashboardPage() {
                                 <ChartContainer config={{value: {label: 'Net Worth', color: 'hsl(var(--primary))'}}} className='h-full w-full'>
                                     <AreaChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                                         <CartesianGrid vertical={false} strokeDasharray="3 3" />
-                                        <XAxis dataKey="name" tick={{ fill: 'hsl(var(--muted-foreground))' }} fontSize={12} axisLine={false} tickLine={false} tickFormatter={(value, index) => {
-                                          if (chartData.length > 12 && index % Math.floor(chartData.length / 6) !== 0 && index !== chartData.length - 1) return '';
+                                        <XAxis dataKey="name" tick={{ fill: 'hsl(var(--muted-foreground))' }} fontSize={12} axisLine={false} tickLine={false} tickFormatter={(value) => {
+                                          if (chartData.length > 12 && value) return value.split(' ')[0];
                                           return value;
                                         }}/>
                                         <YAxis tickFormatter={(value) => `$${(Number(value) / 1000)}k`} tick={{ fill: 'hsl(var(--muted-foreground))' }} fontSize={12} axisLine={false} tickLine={false} />
@@ -446,36 +490,17 @@ export default function DashboardPage() {
                             <div className="h-[300px] lg:h-[350px]">
                                  <ChartContainer config={{}} className="h-full w-full">
                                     <PieChart>
-                                        <Tooltip
-                                            content={({ active, payload, label }) => active && payload && payload.length && (
-                                                <ChartTooltipContent
-                                                  nameKey="name"
-                                                  label="Asset Allocation"
-                                                  payload={payload.map(p => ({
-                                                      ...p,
-                                                      value: `${(p.payload.value as number).toFixed(1)}%`
-                                                  }))}
-                                                />
-                                            )}
-                                        />
-                                        <Legend verticalAlign="bottom" height={36} content={({ payload }) => (
-                                          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
-                                            {payload?.map((entry) => (
-                                              <div key={entry.value} className="flex items-center gap-1.5">
-                                                <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: entry.color }} />
-                                                <span>{entry.value}</span>
-                                              </div>
-                                            ))}
-                                          </div>
-                                        )}/>
                                         <Pie 
+                                            activeIndex={activeIndex}
+                                            activeShape={renderActiveShape}
                                             data={allocationData} 
-                                            dataKey="value" 
-                                            nameKey="name" 
-                                            cx="50%" 
-                                            cy="50%" 
-                                            innerRadius={60}
-                                            outerRadius={80}
+                                            cx="50%"
+                                            cy="50%"
+                                            innerRadius={80}
+                                            outerRadius={100}
+                                            fill="var(--color-value)"
+                                            dataKey="value"
+                                            onMouseEnter={onPieEnter}
                                             labelLine={false}
                                             label={false}
                                         >
@@ -483,6 +508,21 @@ export default function DashboardPage() {
                                                 <Cell key={`cell-${index}`} fill={entry.color} />
                                             ))}
                                         </Pie>
+                                         <Legend
+                                            onMouseEnter={(_, index) => onPieEnter(_, index)}
+                                            verticalAlign="bottom" 
+                                            height={40} 
+                                            content={({ payload }) => (
+                                            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 mt-4 text-xs text-muted-foreground">
+                                                {payload?.map((entry, index) => (
+                                                <div key={`item-${index}`} className={cn("flex items-center gap-1.5 cursor-pointer transition-opacity", activeIndex !== index && 'opacity-50 hover:opacity-100')}>
+                                                    <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: entry.color }} />
+                                                    <span>{entry.value}</span>
+                                                </div>
+                                                ))}
+                                            </div>
+                                            )}
+                                        />
                                     </PieChart>
                                 </ChartContainer>
                             </div>
@@ -553,5 +593,7 @@ export default function DashboardPage() {
 }
 
 
+
+    
 
     
