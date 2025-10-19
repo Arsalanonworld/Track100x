@@ -25,8 +25,10 @@ export const LogoIcon = () => (
 export default function Header() {
     const { user, claims } = useUser();
     const [scrolled, setScrolled] = useState(false);
+    const [isClient, setIsClient] = useState(false);
 
     useEffect(() => {
+        setIsClient(true);
         const handleScroll = () => {
             const isScrolled = window.scrollY > 10;
             if (isScrolled !== scrolled) {
@@ -48,7 +50,7 @@ export default function Header() {
         )}>
             <div className="container flex h-16 items-center">
                 <div className="flex flex-1 items-center justify-start">
-                    <MobileNav />
+                    {isClient && <MobileNav />}
                      <Link href="/" className="mr-6 flex items-center space-x-2">
                         <LogoIcon />
                         <span className="font-regular text-lg">
@@ -61,8 +63,8 @@ export default function Header() {
                     <MainNav />
                 </div>
 
-                <div className="flex flex-1 items-center justify-end space-x-2">
-                    {user && <NotificationBell />}
+                <div className="flex flex-1 items-center justify-end space-x-4">
+                    {isClient && user && <NotificationBell />}
                     <UserNav />
                     <ThemeToggle />
                 </div>
