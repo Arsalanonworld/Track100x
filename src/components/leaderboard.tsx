@@ -198,6 +198,12 @@ export function Leaderboard() {
     return data;
   }, [searchFilter, tagFilter, sortBy]);
 
+  const sortOptions = [
+    { value: 'pnl7d', label: '7d P&L' },
+    { value: 'winRate', label: 'Win Rate' },
+    { value: 'netWorth', label: 'Net Worth' },
+    { value: 'activity', label: 'Activity' },
+  ];
 
   return (
         <div className="space-y-6">
@@ -211,34 +217,44 @@ export function Leaderboard() {
                         onChange={(e) => setSearchFilter(e.target.value)}
                     />
                 </div>
-                 <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="outline" className='w-full sm:w-auto'>
-                             <SlidersHorizontal className="h-4 w-4 mr-2"/>
-                            Filters
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-56" align="end">
-                        <DropdownMenuLabel>Sort By</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuRadioGroup value={sortBy} onValueChange={setSortBy}>
-                            <DropdownMenuRadioItem value="pnl7d">7d P&L</DropdownMenuRadioItem>
-                            <DropdownMenuRadioItem value="winRate">Win Rate</DropdownMenuRadioItem>
-                            <DropdownMenuRadioItem value="netWorth">Net Worth</DropdownMenuRadioItem>
-                            <DropdownMenuRadioItem value="activity">Activity</DropdownMenuRadioItem>
-                        </DropdownMenuRadioGroup>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuLabel>Filter by Tag</DropdownMenuLabel>
-                         <DropdownMenuSeparator />
-                        <DropdownMenuRadioGroup value={tagFilter} onValueChange={setTagFilter}>
-                            {allTags.map(tag => (
-                                <DropdownMenuRadioItem key={tag} value={tag}>
-                                    {tag === 'all' ? 'All Tags' : tag}
-                                </DropdownMenuRadioItem>
-                            ))}
-                        </DropdownMenuRadioGroup>
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                 <div className='flex gap-2'>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="outline" className='w-full sm:w-auto'>
+                                Sort By: <span className='font-semibold ml-1'>{sortOptions.find(o => o.value === sortBy)?.label}</span>
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="w-56" align="end">
+                            <DropdownMenuLabel>Sort By</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuRadioGroup value={sortBy} onValueChange={setSortBy}>
+                                {sortOptions.map(option => (
+                                    <DropdownMenuRadioItem key={option.value} value={option.value}>{option.label}</DropdownMenuRadioItem>
+                                ))}
+                            </DropdownMenuRadioGroup>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="outline" className='w-full sm:w-auto'>
+                                <SlidersHorizontal className="h-4 w-4 mr-2"/>
+                                Filters
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="w-56" align="end">
+                            <DropdownMenuLabel>Filter by Tag</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuRadioGroup value={tagFilter} onValueChange={setTagFilter}>
+                                {allTags.map(tag => (
+                                    <DropdownMenuRadioItem key={tag} value={tag}>
+                                        {tag === 'all' ? 'All Tags' : tag}
+                                    </DropdownMenuRadioItem>
+                                ))}
+                            </DropdownMenuRadioGroup>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                 </div>
             </div>
             <LeaderboardTable data={filteredAndSortedData} isLoading={isLoading} />
         </div>
