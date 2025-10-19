@@ -51,7 +51,7 @@ const WATCHLIST_LIMIT_FREE = 5;
 const generateChartData = (baseValue: number, days: number, volatility: number) => {
     const data = [];
     let currentValue = baseValue;
-    const points = days > 14 ? 30 : days; // Use 30 points for longer ranges
+    const points = days > 14 ? 30 : days * 2; // Use more points for smoother charts
     for (let i = points; i >= 0; i--) {
         const date = new Date();
         date.setDate(date.getDate() - (i * days / points));
@@ -62,7 +62,7 @@ const generateChartData = (baseValue: number, days: number, volatility: number) 
         if (i === 0) {
             dayLabel = 'Today';
         } else if (days <= 14) {
-            dayLabel = `${dayNumber}d ago`;
+             dayLabel = `${dayNumber}d ago`;
         } else {
             // For longer ranges, only label every 5-ish points to avoid clutter
             const labelFrequency = Math.floor(points / 6);
@@ -469,38 +469,42 @@ export default function DashboardPage() {
                           </div>
                           
                           {/* Main Charts */}
-                          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
-                            <div className="lg:col-span-2 h-[350px]">
-                                <ChartContainer config={{value: {label: 'Net Worth', color: 'hsl(var(--primary))'}}} className='h-full w-full'>
-                                    <AreaChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-                                        <CartesianGrid vertical={false} strokeDasharray="3 3" />
-                                        <XAxis dataKey="name" tick={{ fill: 'hsl(var(--muted-foreground))' }} fontSize={12} axisLine={false} tickLine={false} tickFormatter={(value) => {
-                                          if (chartData.length > 12 && value) return value.replace(' ago', '');
-                                          return value;
-                                        }}/>
-                                        <YAxis tickFormatter={(value) => `$${(Number(value) / 1000)}k`} tick={{ fill: 'hsl(var(--muted-foreground))' }} fontSize={12} axisLine={false} tickLine={false} />
-                                        <Tooltip
-                                            cursor={{ stroke: 'hsl(var(--border))' }}
-                                            content={({ active, payload, label }) => active && payload && payload.length && (
-                                                <ChartTooltipContent
-                                                  label={label}
-                                                  payload={payload.map((p) => ({
-                                                      ...p,
-                                                      value: (p.value as number).toLocaleString('en-US', {
-                                                        style: 'currency',
-                                                        currency: 'USD',
-                                                        minimumFractionDigits: 0,
-                                                        maximumFractionDigits: 0,
-                                                      })
-                                                  }))}
-                                                />
-                                            )}
-                                        />
-                                        <Area type="monotone" dataKey="value" stroke="hsl(var(--primary))" fill="hsl(var(--primary))" fillOpacity={0.1} />
-                                    </AreaChart>
-                                </ChartContainer>
+                          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+                            <div className="lg:col-span-2">
+                                <h3 className="font-semibold mb-4 text-center lg:text-left">Net Worth Over Time</h3>
+                                <div className="h-[350px]">
+                                    <ChartContainer config={{value: {label: 'Net Worth', color: 'hsl(var(--primary))'}}} className='h-full w-full'>
+                                        <AreaChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                                            <CartesianGrid vertical={false} strokeDasharray="3 3" />
+                                            <XAxis dataKey="name" tick={{ fill: 'hsl(var(--muted-foreground))' }} fontSize={12} axisLine={false} tickLine={false} tickFormatter={(value) => {
+                                              if (chartData.length > 20 && value) return value.replace(' ago', '');
+                                              return value;
+                                            }}/>
+                                            <YAxis tickFormatter={(value) => `$${(Number(value) / 1000)}k`} tick={{ fill: 'hsl(var(--muted-foreground))' }} fontSize={12} axisLine={false} tickLine={false} />
+                                            <Tooltip
+                                                cursor={{ stroke: 'hsl(var(--border))' }}
+                                                content={({ active, payload, label }) => active && payload && payload.length && (
+                                                    <ChartTooltipContent
+                                                      label={label}
+                                                      payload={payload.map((p) => ({
+                                                          ...p,
+                                                          value: (p.value as number).toLocaleString('en-US', {
+                                                            style: 'currency',
+                                                            currency: 'USD',
+                                                            minimumFractionDigits: 0,
+                                                            maximumFractionDigits: 0,
+                                                          })
+                                                      }))}
+                                                    />
+                                                )}
+                                            />
+                                            <Area type="monotone" dataKey="value" stroke="hsl(var(--primary))" fill="hsl(var(--primary))" fillOpacity={0.1} />
+                                        </AreaChart>
+                                    </ChartContainer>
+                                </div>
                             </div>
-                            <div className="h-[300px] lg:h-[350px]">
+                            <div className="h-[350px]">
+                                <h3 className="font-semibold mb-4 text-center lg:text-left">Asset Allocation</h3>
                                  <ChartContainer config={{}} className="h-full w-full">
                                     <PieChart>
                                         <Pie 
@@ -610,3 +614,4 @@ export default function DashboardPage() {
     
 
     
+
