@@ -37,7 +37,7 @@ import { getExplorerUrl } from '@/lib/explorers';
 import { WatchlistActionForm } from '@/components/watchlist/watchlist-action-form';
 import { tokenLibrary } from '@/lib/tokens';
 import { AlertsPanel } from '@/components/watchlist/alerts-panel';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ChartTooltipContent, ChartContainer } from '@/components/ui/chart';
 import React from 'react';
@@ -54,10 +54,11 @@ const generateChartData = (baseValue: number, days: number, volatility: number) 
     for (let i = days; i >= 0; i--) {
         const date = new Date();
         date.setDate(date.getDate() - i);
+        const dayLabel = i === 0 ? 'Today' : `${i}d ago`;
         if (i < days) {
-         currentValue *= 1 + (Math.random() - 0.45) * volatility;
+         currentValue *= 1 + (Math.random() - 0.48) * volatility;
         }
-        data.push({ name: i === 0 ? 'Today' : `${i}d ago`, value: currentValue });
+        data.push({ name: dayLabel, value: currentValue });
     }
     return data;
 }
@@ -70,6 +71,13 @@ const portfolioData = {
     '30d': generateChartData(115000, 30, 0.03),
     'all': generateChartData(95000, 90, 0.04),
   },
+  allocations: [
+    { name: 'WIF', value: 45.3, color: 'hsl(var(--chart-1))' },
+    { name: 'ETH', value: 31.8, color: 'hsl(var(--chart-2))' },
+    { name: 'USDC', value: 13.6, color: 'hsl(var(--chart-3))' },
+    { name: 'SOL', value: 6.8, color: 'hsl(var(--chart-4))' },
+    { name: 'Others', value: 2.5, color: 'hsl(var(--chart-5))' },
+  ]
 };
 
 
@@ -296,6 +304,7 @@ export default function DashboardPage() {
   }, [isLoading, isPro]);
   
   const chartData = portfolioData.history[timeRange] || portfolioData.history['7d'];
+  const allocationData = portfolioData.allocations;
 
   const handleRemove = (item: WatchlistItem) => {
     if (!firestore || !user) return;
@@ -402,36 +411,81 @@ export default function DashboardPage() {
                             </Select>
                           </div>
                           
-                          {/* Main Chart */}
-                          <div className="h-[350px]">
-                              <ChartContainer config={{value: {label: 'Net Worth', color: 'hsl(var(--primary))'}}} className='h-full w-full'>
-                                  <AreaChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-                                      <CartesianGrid vertical={false} strokeDasharray="3 3" />
-                                      <XAxis dataKey="name" tick={{ fill: 'hsl(var(--muted-foreground))' }} fontSize={12} axisLine={false} tickLine={false} tickFormatter={(value, index) => {
-                                        if (chartData.length > 12 && index % Math.floor(chartData.length / 6) !== 0 && index !== chartData.length - 1) return '';
-                                        return value;
-                                      }}/>
-                                      <YAxis tickFormatter={(value) => `$${(Number(value) / 1000)}k`} tick={{ fill: 'hsl(var(--muted-foreground))' }} fontSize={12} axisLine={false} tickLine={false} />
-                                      <Tooltip
-                                          cursor={{ stroke: 'hsl(var(--border))' }}
-                                          content={({ active, payload, label }) => active && payload && payload.length && (
-                                              <ChartTooltipContent
-                                                label={label}
-                                                payload={payload.map((p) => ({
-                                                    ...p,
-                                                    value: (p.value as number).toLocaleString('en-US', {
-                                                      style: 'currency',
-                                                      currency: 'USD',
-                                                      minimumFractionDigits: 0,
-                                                      maximumFractionDigits: 0,
-                                                    })
-                                                }))}
-                                              />
-                                          )}
-                                      />
-                                      <Area type="monotone" dataKey="value" stroke="hsl(var(--primary))" fill="hsl(var(--primary))" fillOpacity={0.1} />
-                                  </AreaChart>
-                              </ChartContainer>
+                          {/* Main Charts */}
+                          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
+                            <div className="lg:col-span-2 h-[350px]">
+                                <ChartContainer config={{value: {label: 'Net Worth', color: 'hsl(var(--primary))'}}} className='h-full w-full'>
+                                    <AreaChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                                        <CartesianGrid vertical={false} strokeDasharray="3 3" />
+                                        <XAxis dataKey="name" tick={{ fill: 'hsl(var(--muted-foreground))' }} fontSize={12} axisLine={false} tickLine={false} tickFormatter={(value, index) => {
+                                          if (chartData.length > 12 && index % Math.floor(chartData.length / 6) !== 0 && index !== chartData.length - 1) return '';
+                                          return value;
+                                        }}/>
+                                        <YAxis tickFormatter={(value) => `$${(Number(value) / 1000)}k`} tick={{ fill: 'hsl(var(--muted-foreground))' }} fontSize={12} axisLine={false} tickLine={false} />
+                                        <Tooltip
+                                            cursor={{ stroke: 'hsl(var(--border))' }}
+                                            content={({ active, payload, label }) => active && payload && payload.length && (
+                                                <ChartTooltipContent
+                                                  label={label}
+                                                  payload={payload.map((p) => ({
+                                                      ...p,
+                                                      value: (p.value as number).toLocaleString('en-US', {
+                                                        style: 'currency',
+                                                        currency: 'USD',
+                                                        minimumFractionDigits: 0,
+                                                        maximumFractionDigits: 0,
+                                                      })
+                                                  }))}
+                                                />
+                                            )}
+                                        />
+                                        <Area type="monotone" dataKey="value" stroke="hsl(var(--primary))" fill="hsl(var(--primary))" fillOpacity={0.1} />
+                                    </AreaChart>
+                                </ChartContainer>
+                            </div>
+                            <div className="h-[300px] lg:h-[350px]">
+                                 <ChartContainer config={{}} className="h-full w-full">
+                                    <PieChart>
+                                        <Tooltip
+                                            content={({ active, payload, label }) => active && payload && payload.length && (
+                                                <ChartTooltipContent
+                                                  nameKey="name"
+                                                  label="Asset Allocation"
+                                                  payload={payload.map(p => ({
+                                                      ...p,
+                                                      value: `${(p.payload.value as number).toFixed(1)}%`
+                                                  }))}
+                                                />
+                                            )}
+                                        />
+                                        <Legend verticalAlign="bottom" height={36} content={({ payload }) => (
+                                          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                                            {payload?.map((entry) => (
+                                              <div key={entry.value} className="flex items-center gap-1.5">
+                                                <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: entry.color }} />
+                                                <span>{entry.value}</span>
+                                              </div>
+                                            ))}
+                                          </div>
+                                        )}/>
+                                        <Pie 
+                                            data={allocationData} 
+                                            dataKey="value" 
+                                            nameKey="name" 
+                                            cx="50%" 
+                                            cy="50%" 
+                                            innerRadius={60}
+                                            outerRadius={80}
+                                            labelLine={false}
+                                            label={false}
+                                        >
+                                            {allocationData.map((entry, index) => (
+                                                <Cell key={`cell-${index}`} fill={entry.color} />
+                                            ))}
+                                        </Pie>
+                                    </PieChart>
+                                </ChartContainer>
+                            </div>
                           </div>
                         </CardContent>
                       </Card>
