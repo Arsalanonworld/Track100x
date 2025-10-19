@@ -21,6 +21,7 @@ export function MainNav() {
         { href: '/feed', label: 'Whale Feed', visible: true },
         { href: '/leaderboard', label: 'Explore', visible: true },
         { href: '/dashboard', label: 'Dashboard', visible: !!user },
+        { href: '/watchlist', label: 'Watchlist', visible: !!user },
     ];
     
     const visibleItems = navItems.filter(item => item.visible);

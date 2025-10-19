@@ -13,7 +13,7 @@ import {
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import { LogOut, User, DollarSign, Star, LayoutDashboard, ArrowRight } from 'lucide-react';
+import { LogOut, User, DollarSign, Star, LayoutDashboard, ArrowRight, Eye } from 'lucide-react';
 import { AnimatedButton } from './ui/animated-button';
 import { useUser } from '@/firebase';
 import { useState, useEffect } from 'react';
@@ -114,7 +114,13 @@ export function UserNav() {
                   <LayoutDashboard className="mr-2 h-4 w-4" />
                   <span>Dashboard</span>
               </Link>
-              </DropdownMenuItem>
+            </DropdownMenuItem>
+             <DropdownMenuItem asChild>
+              <Link href="/watchlist">
+                  <Eye className="mr-2 h-4 w-4" />
+                  <span>Watchlist</span>
+              </Link>
+            </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={async () => await logout()}>
