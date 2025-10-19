@@ -5,7 +5,7 @@ import { useMemo, useState } from 'react';
 import PageHeader from '@/components/page-header';
 import { Button } from '@/components/ui/button';
 import { Wallet, Download, Lock } from 'lucide-react';
-import { useUser } from '@/firebase';
+import { useUser, useCollection, useFirestore } from '@/firebase';
 import type { WatchlistItem } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
@@ -20,6 +20,7 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { HoldingsTable } from '@/components/dashboard/holdings-table';
+import { collection, query } from 'firebase/firestore';
 
 
 const generateChartData = (baseValue: number, days: number, volatility: number) => {
@@ -143,7 +144,7 @@ function EmptyDashboardState() {
                 <h3 className='text-xl font-semibold text-foreground'>Your Dashboard is Empty</h3>
                 <p>Add wallets or tokens to your watchlist to see your portfolio overview, analytics, and alerts.</p>
                 <div className="mt-4">
-                    <p className="text-sm">Use the form below to get started.</p>
+                    <p className="text-sm">Use the form on the Watchlist page to get started.</p>
                 </div>
             </CardContent>
         </Card>
@@ -152,15 +153,22 @@ function EmptyDashboardState() {
 
 export default function DashboardPage() {
   const { user, loading: userLoading, claims } = useUser();
+  const firestore = useFirestore();
   const [timeRange, setTimeRange] = useState<'7d' | '30d' | 'all'>('30d');
   const [activeIndex, setActiveIndex] = useState(0);
 
   const isPro = claims?.plan === 'pro';
 
-  const isLoading = userLoading;
-  // This is a placeholder for checking if the user has added any wallets.
-  // In a real app, you would fetch this from your database.
-  const hasWallets = true; 
+  const watchlistQuery = useMemo(() => {
+    if (user && firestore) {
+      return query(collection(firestore, `users/${user.uid}/watchlist`));
+    }
+    return null;
+  }, [user, firestore]);
+
+  const { data: watchlist, loading: watchlistLoading } = useCollection<WatchlistItem>(watchlistQuery);
+  const isLoading = userLoading || watchlistLoading;
+  const hasWallets = (watchlist?.length || 0) > 0;
 
   React.useEffect(() => {
     if (!isLoading && !isPro) {
