@@ -12,12 +12,19 @@ import { cn } from "@/lib/utils";
 
 export const LogoIcon = () => (
     <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        fill="currentColor"
-        className="h-7 w-7 text-primary"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      className="h-7 w-7"
     >
-        <path d="M10.662 1.253a1.25 1.25 0 0 1 2.051.88l-1.34 8.04h5.056a1.25 1.25 0 0 1 .9 2.133l-10.13 10.13a1.25 1.25 0 0 1-2.05-.878l1.34-8.04H1.423a1.25 1.25 0 0 1-.9-2.133L10.662 1.253Z" />
+      <path
+        fill="hsl(var(--primary))"
+        d="M3.414 4.828a1 1 0 0 1 1.414 0L12 11.586l7.172-6.758a1 1 0 0 1 1.414 1.414L13.414 12l6.172 7.172a1 1 0 1 1-1.414 1.414L12 13.414l-7.172 6.172a1 1-0 0 1-1.414-1.414L10.586 12 4.414 5.828a1 1 0 0 1-1-1.414Z"
+      />
+      <path
+        fill="hsl(var(--border))"
+        d="M9.5 12.5 5 8l-2-2 3 3 4.5 4.5zm5 0L19 8l2-2-3 3-4.5 4.5z"
+      />
     </svg>
 );
 
