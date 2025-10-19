@@ -21,6 +21,7 @@ import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { HoldingsTable } from '@/components/dashboard/holdings-table';
 import { collection, query } from 'firebase/firestore';
+import Link from 'next/link';
 
 
 const generateChartData = (baseValue: number, days: number, volatility: number) => {
@@ -142,10 +143,10 @@ function EmptyPortfolioState() {
             <CardContent className="p-8 text-center text-muted-foreground border-2 border-dashed rounded-lg">
                 <Wallet className="h-10 w-10 mx-auto mb-4" />
                 <h3 className='text-xl font-semibold text-foreground'>Your Portfolio is Empty</h3>
-                <p>Add wallets to your watchlist to see your portfolio overview, analytics, and alerts.</p>
-                <div className="mt-4">
-                    <p className="text-sm">Use the form on the Watchlist page to get started.</p>
-                </div>
+                <p className="mb-4">Add wallets to your watchlist to see your portfolio overview, analytics, and alerts.</p>
+                <Button asChild>
+                    <Link href="/watchlist">Go to Watchlist</Link>
+                </Button>
             </CardContent>
         </Card>
     );
@@ -200,11 +201,18 @@ export default function PortfolioPage() {
                     title="My Portfolio"
                     description={pageDescription}
                     action={
-                        <Button variant="outline" disabled={!isPro || !hasWallets}>
-                            <Download className="mr-2 h-4 w-4" />
-                            Export Data
-                            {!isPro && <Lock className="ml-2 h-3 w-3" />}
-                        </Button>
+                       hasWallets && (
+                         <div className="flex items-center gap-2">
+                             <Button variant="outline" disabled={!isPro || !hasWallets}>
+                                <Download className="mr-2 h-4 w-4" />
+                                Export Data
+                                {!isPro && <Lock className="ml-2 h-3 w-3" />}
+                            </Button>
+                             <Button asChild>
+                                <Link href="/watchlist">Manage Watchlist</Link>
+                            </Button>
+                         </div>
+                       )
                     }
                 />
 
@@ -332,3 +340,5 @@ export default function PortfolioPage() {
     </Dialog>
   );
 }
+
+    
