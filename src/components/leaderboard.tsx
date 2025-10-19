@@ -30,46 +30,49 @@ import Link from 'next/link';
 
 
 const PnlCell = ({ value }: { value: number }) => (
-    <TableCell className={cn("font-medium text-sm", value >= 0 ? "text-green-500" : "text-red-500")}>
+    <div className={cn("font-medium text-sm", value >= 0 ? "text-green-500" : "text-red-500")}>
         <div className='flex items-center gap-1.5'>
             {value >= 0 ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />}
             <span>{Math.abs(value).toFixed(2)}%</span>
         </div>
-    </TableCell>
+    </div>
 );
 
 const WalletCell = ({ address }: { address: string}) => {
     return (
-        <TableCell>
-            <Link href={`/wallet/${address}`} className='font-mono text-sm hover:text-primary transition-colors' onClick={(e) => e.stopPropagation()}>
-                {address.slice(0, 6)}...{address.slice(-4)}
-            </Link>
-        </TableCell>
+        <Link href={`/wallet/${address}`} className='font-mono text-sm hover:text-primary transition-colors' onClick={(e) => e.stopPropagation()}>
+            {address.slice(0, 6)}...{address.slice(-4)}
+        </Link>
     )
 }
 
 const TopHoldingCell = ({ holding }: { holding: { token: string, percentage: number }}) => {
     return (
-        <TableCell>
-           <div className='flex items-center gap-2 font-medium'>
-                <CryptoIcon token={holding.token} className='h-5 w-5'/>
-                {holding.token} <span className='text-muted-foreground'>({holding.percentage}%)</span>
-           </div>
-        </TableCell>
+       <div className='flex items-center gap-2 font-medium'>
+            <CryptoIcon token={holding.token} className='h-5 w-5'/>
+            {holding.token} <span className='text-muted-foreground'>({holding.percentage}%)</span>
+       </div>
     )
 }
 
 function TableSkeleton() {
     return (
-        <div className="space-y-2">
+        <div className="space-y-3">
             {[...Array(10)].map((_, i) => (
-                <div key={i} className="flex items-center p-4 h-[73px] rounded-lg bg-card border">
-                     <Skeleton className="h-6 w-8" />
-                     <Skeleton className="h-6 w-32 ml-4" />
-                     <Skeleton className="h-6 w-24 ml-12" />
-                     <Skeleton className="h-6 w-32 ml-12" />
-                     <Skeleton className="h-6 w-24 ml-auto" />
-                </div>
+                <Card key={i} className="p-4">
+                    <div className="flex items-center gap-4">
+                        <Skeleton className="h-6 w-8" />
+                        <div className="flex-1 grid grid-cols-2 md:grid-cols-6 gap-4 items-center">
+                            <Skeleton className="h-6 w-32" />
+                            <Skeleton className="h-6 w-24" />
+                            <Skeleton className="h-6 w-24" />
+                            <Skeleton className="h-6 w-20" />
+                            <Skeleton className="h-6 w-20" />
+                            <Skeleton className="h-6 w-24" />
+                        </div>
+                        <Skeleton className="h-8 w-8 rounded-md" />
+                    </div>
+                </Card>
             ))}
         </div>
     )
@@ -94,58 +97,38 @@ const LeaderboardTable = ({ data, isLoading }: { data: LeaderboardWallet[], isLo
         router.push(`/wallet/${address}`);
     }
 
+    if (data.length === 0) {
+        return (
+            <Card className="h-48 flex items-center justify-center text-center">
+                <p className="text-muted-foreground">No wallets found for this criteria.</p>
+            </Card>
+        )
+    }
+
     return (
         <Dialog open={isAlertEditorOpen} onOpenChange={setIsAlertEditorOpen}>
-            <Card>
-                <CardContent className="p-0">
-                <div className="overflow-x-auto">
-                    <Table>
-                    <TableHeader>
-                        <TableRow>
-                        <TableHead className="w-[60px] text-center">#</TableHead>
-                        <TableHead>Wallet</TableHead>
-                        <TableHead>Net Worth</TableHead>
-                        <TableHead>Top Holding</TableHead>
-                        <TableHead>7d PnL</TableHead>
-                        <TableHead>Win Rate (7d)</TableHead>
-                        <TableHead>7d Activity</TableHead>
-                        <TableHead>Tags</TableHead>
-                        <TableHead className="text-right w-[100px]">Actions</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {data.length > 0 ? data.map((wallet, index) => (
-                        <TableRow key={wallet.address} onClick={() => handleRowClick(wallet.address)} className="cursor-pointer hover:bg-muted/50">
-                            <TableCell className='text-center text-muted-foreground font-medium'>{index + 1}</TableCell>
-                            <WalletCell address={wallet.address} />
-                            <TableCell className="font-medium">{wallet.netWorth}</TableCell>
-                            <TopHoldingCell holding={wallet.topHolding} />
-                            <PnlCell value={wallet.pnl7d} />
-                            <TableCell className="font-medium">{wallet.winRate.toFixed(1)}%</TableCell>
-                            <TableCell>{wallet.activity} txns</TableCell>
-                            <TableCell>
-                              <div className="flex items-center gap-1 flex-wrap">
-                                {wallet.tags?.map(tag => <Badge key={tag} variant="secondary">{tag}</Badge>)}
-                              </div>
-                            </TableCell>
-                            <TableCell className="text-right">
+            <div className="space-y-3">
+                {data.map((wallet, index) => (
+                    <Card key={wallet.address} onClick={() => handleRowClick(wallet.address)} className="cursor-pointer transition-all hover:shadow-md hover:border-primary/20">
+                        <CardContent className="p-3 md:p-4">
+                            <div className="flex items-center gap-3 md:gap-4">
+                                <div className='w-8 text-center text-muted-foreground font-bold text-lg'>{index + 1}</div>
+                                <div className="flex-1 grid grid-cols-2 md:grid-cols-7 gap-x-4 gap-y-2 items-center">
+                                    <div className="md:col-span-2 font-semibold"><WalletCell address={wallet.address} /></div>
+                                    <div className="text-sm text-muted-foreground"><span className="md:hidden">Net Worth: </span><span className="font-medium text-foreground">{wallet.netWorth}</span></div>
+                                    <div className="md:col-span-1"><TopHoldingCell holding={wallet.topHolding}/></div>
+                                    <div className="md:col-span-1"><PnlCell value={wallet.pnl7d} /></div>
+                                    <div className="text-sm text-muted-foreground"><span className="md:hidden">Win Rate: </span><span className="font-medium text-foreground">{wallet.winRate.toFixed(1)}%</span></div>
+                                    <div className="md:col-span-1 text-sm text-muted-foreground"><span className="md:hidden">Trades: </span><span className="font-medium text-foreground">{wallet.activity}</span></div>
+                                </div>
                                 <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => handleAlertClick(e, wallet.address)}>
                                     <Zap className="h-4 w-4" />
                                 </Button>
-                            </TableCell>
-                        </TableRow>
-                        )) : (
-                            <TableRow>
-                                <TableCell colSpan={9} className="h-24 text-center">
-                                    No wallets found for this criteria.
-                                </TableCell>
-                            </TableRow>
-                        )}
-                    </TableBody>
-                    </Table>
-                </div>
-                </CardContent>
-            </Card>
+                            </div>
+                        </CardContent>
+                    </Card>
+                ))}
+            </div>
              {alertEntity && (
                 <AlertEditorDialog
                     onOpenChange={setIsAlertEditorOpen}
@@ -239,7 +222,7 @@ export function Leaderboard() {
                         <DropdownMenuLabel>Sort By</DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         <DropdownMenuRadioGroup value={sortBy} onValueChange={setSortBy}>
-                            <DropdownMenuRadioItem value="pnl7d">7d PnL</DropdownMenuRadioItem>
+                            <DropdownMenuRadioItem value="pnl7d">7d P&L</DropdownMenuRadioItem>
                             <DropdownMenuRadioItem value="winRate">Win Rate</DropdownMenuRadioItem>
                             <DropdownMenuRadioItem value="netWorth">Net Worth</DropdownMenuRadioItem>
                             <DropdownMenuRadioItem value="activity">Activity</DropdownMenuRadioItem>
@@ -259,5 +242,5 @@ export function Leaderboard() {
             </div>
             <LeaderboardTable data={filteredAndSortedData} isLoading={isLoading} />
         </div>
-  );
+    );
 }
