@@ -73,21 +73,6 @@ export function UserNav() {
   // Logged-in State
   return (
     <div className="flex items-center gap-2">
-        <TooltipProvider>
-            <Tooltip>
-                <TooltipTrigger asChild>
-                    <Button asChild variant="ghost" size="icon">
-                        <Link href="/portfolio">
-                            <LayoutDashboard className="h-5 w-5" />
-                            <span className="sr-only">Portfolio</span>
-                        </Link>
-                    </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                    <p>Portfolio</p>
-                </TooltipContent>
-            </Tooltip>
-        </TooltipProvider>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="relative h-10 w-10 rounded-full">

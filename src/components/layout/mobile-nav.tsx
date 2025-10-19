@@ -24,7 +24,7 @@ export function MobileNav() {
   const navItems = [
       { href: '/feed', label: 'Whale Feed', icon: Rss, visible: true },
       { href: '/leaderboard', label: 'Explore', icon: Compass, visible: true },
-      { href: '/watchlist', label: 'Watchlist', icon: Eye, visible: !!user },
+      { href: '/watchlist', label: 'My Watchlist', icon: Eye, visible: !!user },
   ];
 
   const visibleItems = navItems.filter(item => item.visible);
