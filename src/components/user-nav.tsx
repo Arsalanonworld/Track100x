@@ -73,14 +73,12 @@ export function UserNav() {
   // Logged-in State
   return (
     <div className="flex items-center gap-2">
-      {!isPro && (
-        <Link href="/upgrade" passHref>
+        <Link href="/dashboard" passHref>
           <AnimatedButton>
-            <Star className="mr-2 h-4 w-4" />
-            Upgrade
+            <LayoutDashboard className="mr-2 h-4 w-4" />
+            Dashboard
           </AnimatedButton>
         </Link>
-      )}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="relative h-10 w-10 rounded-full">
@@ -109,18 +107,20 @@ export function UserNav() {
                   <span>Account</span>
                 </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link href="/dashboard">
-                  <LayoutDashboard className="mr-2 h-4 w-4" />
-                  <span>Dashboard</span>
-              </Link>
-            </DropdownMenuItem>
              <DropdownMenuItem asChild>
               <Link href="/watchlist">
                   <Eye className="mr-2 h-4 w-4" />
                   <span>Watchlist</span>
               </Link>
             </DropdownMenuItem>
+            {!isPro && (
+                <DropdownMenuItem asChild>
+                    <Link href="/upgrade">
+                        <Star className="mr-2 h-4 w-4 text-yellow-500" />
+                        <span>Upgrade to Pro</span>
+                    </Link>
+                </DropdownMenuItem>
+            )}
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={async () => await logout()}>
