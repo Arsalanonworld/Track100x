@@ -51,17 +51,30 @@ const WATCHLIST_LIMIT_FREE = 5;
 const generateChartData = (baseValue: number, days: number, volatility: number) => {
     const data = [];
     let currentValue = baseValue;
-    for (let i = days; i >= 0; i--) {
+    const points = days > 14 ? 30 : days; // Use 30 points for longer ranges
+    for (let i = points; i >= 0; i--) {
         const date = new Date();
-        date.setDate(date.getDate() - i);
+        date.setDate(date.getDate() - (i * days / points));
         
         let dayLabel;
-        if (i === 0) dayLabel = 'Today';
-        else if (i % 5 === 0 || days <= 14) dayLabel = `${i}d ago`;
-        else dayLabel = '';
+        const dayNumber = Math.floor(i * days / points);
 
-        if (i < days) {
-         currentValue *= 1 + (Math.random() - 0.48) * volatility;
+        if (i === 0) {
+            dayLabel = 'Today';
+        } else if (days <= 14) {
+            dayLabel = `${dayNumber}d ago`;
+        } else {
+            // For longer ranges, only label every 5-ish points to avoid clutter
+            const labelFrequency = Math.floor(points / 6);
+            if (i % labelFrequency === 0) {
+                dayLabel = `${dayNumber}d`;
+            } else {
+                dayLabel = '';
+            }
+        }
+        
+        if (i < points) {
+         currentValue *= 1 + (Math.random() - 0.48) * volatility * (Math.sqrt(days / points));
         }
         data.push({ name: dayLabel, value: currentValue });
     }
@@ -462,7 +475,7 @@ export default function DashboardPage() {
                                     <AreaChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                                         <CartesianGrid vertical={false} strokeDasharray="3 3" />
                                         <XAxis dataKey="name" tick={{ fill: 'hsl(var(--muted-foreground))' }} fontSize={12} axisLine={false} tickLine={false} tickFormatter={(value) => {
-                                          if (chartData.length > 12 && value) return value.split(' ')[0];
+                                          if (chartData.length > 12 && value) return value.replace(' ago', '');
                                           return value;
                                         }}/>
                                         <YAxis tickFormatter={(value) => `$${(Number(value) / 1000)}k`} tick={{ fill: 'hsl(var(--muted-foreground))' }} fontSize={12} axisLine={false} tickLine={false} />
