@@ -136,13 +136,13 @@ function PageSkeleton() {
     )
 }
 
-function EmptyDashboardState() {
+function EmptyPortfolioState() {
     return (
         <Card>
             <CardContent className="p-8 text-center text-muted-foreground border-2 border-dashed rounded-lg">
                 <Wallet className="h-10 w-10 mx-auto mb-4" />
-                <h3 className='text-xl font-semibold text-foreground'>Your Dashboard is Empty</h3>
-                <p>Add wallets or tokens to your watchlist to see your portfolio overview, analytics, and alerts.</p>
+                <h3 className='text-xl font-semibold text-foreground'>Your Portfolio is Empty</h3>
+                <p>Add wallets to your watchlist to see your portfolio overview, analytics, and alerts.</p>
                 <div className="mt-4">
                     <p className="text-sm">Use the form on the Watchlist page to get started.</p>
                 </div>
@@ -151,7 +151,7 @@ function EmptyDashboardState() {
     );
 }
 
-export default function DashboardPage() {
+export default function PortfolioPage() {
   const { user, loading: userLoading, claims } = useUser();
   const firestore = useFirestore();
   const [timeRange, setTimeRange] = useState<'7d' | '30d' | 'all'>('30d');
@@ -168,7 +168,7 @@ export default function DashboardPage() {
 
   const { data: watchlist, loading: watchlistLoading } = useCollection<WatchlistItem>(watchlistQuery);
   const isLoading = userLoading || watchlistLoading;
-  const hasWallets = (watchlist?.length || 0) > 0;
+  const hasWallets = (watchlist?.filter(item => item.type === 'wallet').length || 0) > 0;
 
   React.useEffect(() => {
     if (!isLoading && !isPro) {
@@ -197,7 +197,7 @@ export default function DashboardPage() {
             {!user && !userLoading && <FeatureLock />}
             <div className="space-y-8">
                 <PageHeader
-                    title="My Dashboard"
+                    title="My Portfolio"
                     description={pageDescription}
                     action={
                         <Button variant="outline" disabled={!isPro || !hasWallets}>
@@ -209,7 +209,7 @@ export default function DashboardPage() {
                 />
 
                 {!hasWallets && !isLoading ? (
-                  <EmptyDashboardState />
+                  <EmptyPortfolioState />
                 ) : (
                   <>
                   {/* Section 1: Portfolio Overview */}

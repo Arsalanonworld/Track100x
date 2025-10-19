@@ -73,10 +73,10 @@ export function UserNav() {
   // Logged-in State
   return (
     <div className="flex items-center gap-2">
-        <Link href="/dashboard" passHref>
+        <Link href="/portfolio" passHref>
           <AnimatedButton>
             <LayoutDashboard className="mr-2 h-4 w-4" />
-            Dashboard
+            Portfolio
           </AnimatedButton>
         </Link>
       <DropdownMenu>
