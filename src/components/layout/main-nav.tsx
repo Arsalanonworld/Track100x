@@ -27,20 +27,18 @@ export function MainNav() {
 
   return (
     <nav className="hidden md:flex items-center space-x-6 text-sm font-medium">
-        <div className="flex items-center space-x-4">
-            {isClient && visibleItems.map((item) => (
-                <Link
-                    key={item.href}
-                    href={item.href}
-                    className={cn(
-                        "transition-colors hover:text-foreground",
-                        (pathname.startsWith(item.href) && item.href !== '/') || (pathname === '/' && item.href === '/') ? "text-foreground" : "text-foreground/60"
-                    )}
-                >
-                    {item.label}
-                </Link>
-            ))}
-        </div>
+        {isClient && visibleItems.map((item) => (
+            <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                    "transition-colors hover:text-foreground",
+                    (pathname.startsWith(item.href) && item.href !== '/') || (pathname === '/' && item.href === '/') ? "text-foreground" : "text-foreground/60"
+                )}
+            >
+                {item.label}
+            </Link>
+        ))}
     </nav>
   )
 }

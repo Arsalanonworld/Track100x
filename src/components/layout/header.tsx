@@ -55,10 +55,13 @@ export default function Header() {
                             Track<span className="font-extrabold text-primary">100x</span>
                         </span>
                     </Link>
+                </div>
+                
+                <div className="hidden md:flex flex-1 items-center justify-center">
                     <MainNav />
                 </div>
 
-                <div className="flex items-center space-x-2">
+                <div className="flex flex-1 items-center justify-end space-x-2">
                     {user && <NotificationBell />}
                     <UserNav />
                     <ThemeToggle />
