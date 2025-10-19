@@ -46,8 +46,8 @@ export default function Header() {
             "sticky top-0 z-50 w-full transition-all duration-300",
             scrolled ? "border-b bg-background/95 backdrop-blur-sm" : "bg-transparent"
         )}>
-            <div className="container flex h-16 items-center justify-between">
-                <div className="flex items-center">
+            <div className="container flex h-16 items-center">
+                <div className="flex flex-1 items-center justify-start">
                     <MobileNav />
                      <Link href="/" className="mr-6 flex items-center space-x-2">
                         <LogoIcon />
