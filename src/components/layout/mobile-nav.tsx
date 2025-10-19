@@ -19,15 +19,10 @@ export function MobileNav() {
   const navItems = [
       { href: '/feed', label: 'Whale Feed', icon: Rss, visible: true },
       { href: '/leaderboard', label: 'Explore', icon: Compass, visible: true },
-      { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, visible: true },
+      { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, visible: !!user },
   ];
 
-  const visibleItems = navItems.filter(item => {
-      if (!user && item.href === '/dashboard') {
-          return false;
-      }
-      return item.visible;
-  });
+  const visibleItems = navItems.filter(item => item.visible);
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
