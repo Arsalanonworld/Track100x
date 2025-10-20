@@ -11,9 +11,10 @@ import { useState, useEffect } from 'react';
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import { Button } from "../ui/button";
-import { Menu } from "lucide-react";
+import { Menu, Search } from "lucide-react";
 import { Sheet, SheetTrigger, SheetContent } from "../ui/sheet";
 import { Sidebar } from "./sidebar";
+import { Input } from "../ui/input";
 
 export const LogoIcon = () => (
     <svg
@@ -77,7 +78,16 @@ export default function Header() {
                     </SheetContent>
                 </Sheet>
                 <div className="w-full flex-1">
-                    {/* Can add search bar here */}
+                    <form>
+                        <div className="relative">
+                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                            <Input
+                            type="search"
+                            placeholder="Search wallets, tokens, transactions..."
+                            className="w-full appearance-none bg-background pl-8 shadow-none md:w-2/3 lg:w-1/3"
+                            />
+                        </div>
+                    </form>
                 </div>
                 <div className="flex items-center gap-2">
                     <UserNav />
