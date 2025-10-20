@@ -79,6 +79,10 @@ export default function Header() {
                 <div className="w-full flex-1">
                     {/* Can add search bar here */}
                 </div>
+                <div className="flex items-center gap-2">
+                    <UserNav />
+                    <ThemeToggle />
+                </div>
             </header>
         )
     }

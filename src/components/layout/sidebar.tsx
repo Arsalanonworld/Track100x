@@ -160,10 +160,6 @@ export function Sidebar({ isCollapsed, onCollapseToggle }: { isCollapsed: boolea
                         </CardContent>
                     </Card>
                 )}
-                <div className={cn('flex items-center', isCollapsed ? 'flex-col gap-2' : 'gap-4')}>
-                    <UserNav />
-                    <ThemeToggle />
-                </div>
             </div>
         </div>
         </TooltipProvider>
