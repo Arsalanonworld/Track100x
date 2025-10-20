@@ -163,12 +163,12 @@ export default function Sidebar({ onStateChange }: { onStateChange: (isExpanded:
             <ChevronLeft size={16} className={cn("transition-transform", isExpanded && "rotate-180")} />
         </Button>
 
-        <div className="flex flex-col flex-1">
+        <div className="flex flex-col flex-1 overflow-hidden">
           {/* Header / Logo */}
-          <div className={cn("flex items-center justify-between border-b border-border h-14 lg:h-[60px]", isExpanded ? 'pl-4 pr-2' : 'px-2 justify-center')}>
+          <div className={cn("flex items-center border-b border-border h-14 lg:h-[60px]", isExpanded ? 'pl-4 pr-2 justify-between' : 'px-2 justify-center')}>
             <Link href="/" className={cn("flex items-center gap-2 font-semibold")}>
                 <LogoIcon />
-                {isExpanded && <span className="text-lg">Track100x</span>}
+                <span className={cn("text-lg transition-opacity duration-300", !isExpanded && "opacity-0 w-0")}>Track100x</span>
             </Link>
           </div>
 
@@ -178,7 +178,7 @@ export default function Sidebar({ onStateChange }: { onStateChange: (isExpanded:
               title="CORE"
               items={navItems}
               pathname={pathname}
-              isCollapsed={!isExpanded}
+              isExpanded={isExpanded}
               user={user}
             />
 
@@ -186,7 +186,7 @@ export default function Sidebar({ onStateChange }: { onStateChange: (isExpanded:
               title="ANALYTICS"
               items={analyticsItems}
               pathname={pathname}
-              isCollapsed={!isExpanded}
+              isExpanded={isExpanded}
               user={user}
             />
             
@@ -195,14 +195,14 @@ export default function Sidebar({ onStateChange }: { onStateChange: (isExpanded:
                     title="ACCOUNT"
                     items={accountItems}
                     pathname={pathname}
-                    isCollapsed={!isExpanded}
+                    isExpanded={isExpanded}
                     user={user}
                 />
             )}
           </div>
         </div>
 
-        <div className="border-t">
+        <div className={cn("border-t transition-opacity duration-300", !isExpanded && "opacity-0")}>
           {user && userPlan === "free" && isExpanded && (
             <div className="p-4">
               <div className="p-3 rounded-xl bg-gradient-to-br from-primary to-blue-500/80 text-primary-foreground">
@@ -226,12 +226,10 @@ export default function Sidebar({ onStateChange }: { onStateChange: (isExpanded:
   );
 }
 
-function SidebarSection({ title, items, pathname, isCollapsed, user }: { title: string, items: any[], pathname: string, isCollapsed: boolean, user: any }) {
+function SidebarSection({ title, items, pathname, isExpanded, user }: { title: string, items: any[], pathname: string, isExpanded: boolean, user: any }) {
   return (
     <div className="space-y-1">
-      {!isCollapsed && (
-        <h4 className="text-[11px] font-medium text-muted-foreground px-2">{title}</h4>
-      )}
+      <h4 className={cn("text-[11px] font-medium text-muted-foreground px-2 transition-opacity duration-300", !isExpanded && "opacity-0")}>{title}</h4>
       {items.map(
         (item) => {
             const isLocked = item.locked || (item.authRequired && !user);
@@ -244,25 +242,25 @@ function SidebarSection({ title, items, pathname, isCollapsed, user }: { title: 
                         pathname === item.href
                         ? "bg-muted text-foreground"
                         : "text-muted-foreground hover:bg-muted/40",
-                        isCollapsed ? "justify-center" : "",
+                        !isExpanded ? "justify-center" : "",
                         isLocked && "cursor-not-allowed"
                     )}
                 >
                     <div className="relative">
                         {item.icon}
-                        {isLocked && !isCollapsed && (
+                        {isLocked && isExpanded && (
                         <Lock
                             size={12}
                             className="absolute -top-1 -right-1 text-yellow-500"
                         />
                         )}
                     </div>
-                    {!isCollapsed && item.label}
+                    <span className={cn("whitespace-nowrap transition-opacity duration-300", !isExpanded && "opacity-0")}>{item.label}</span>
                 </div>
             );
 
             return (
-            <Tooltip key={item.href} delayDuration={0}>
+            <Tooltip key={item.label} delayDuration={0}>
               <TooltipTrigger asChild>
                 <span>
                     {isButton ? (
@@ -279,7 +277,7 @@ function SidebarSection({ title, items, pathname, isCollapsed, user }: { title: 
                     )}
                 </span>
               </TooltipTrigger>
-              {isCollapsed && <TooltipContent side="right">{item.label}</TooltipContent>}
+              {!isExpanded && <TooltipContent side="right">{item.label}</TooltipContent>}
             </Tooltip>
           )
         }
