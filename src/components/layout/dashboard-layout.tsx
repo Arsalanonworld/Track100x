@@ -16,7 +16,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     // On mobile, the sidebar is not shown, so we don't need to check for collapsed state
     if (window.innerWidth >= 768) {
         const savedState = localStorage.getItem("sidebar-collapsed");
-        setIsSidebarExpanded(savedState === 'false');
+        setIsSidebarExpanded(savedState === 'true');
     }
   }, []);
 
@@ -68,8 +68,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               onToggleLock={handleToggleLock}
             />
             <main className={cn(
-                "flex-1 flex flex-col transition-all duration-300",
-                isSidebarExpanded ? "pl-0 md:pl-60" : "pl-0 md:pl-[72px]"
+                "flex-1 flex flex-col transition-all duration-300 pl-0 md:pl-[72px]",
+                isSidebarExpanded && "md:pl-60"
             )}>
               <div className="flex-1 p-4 lg:p-6">
                 {children}
