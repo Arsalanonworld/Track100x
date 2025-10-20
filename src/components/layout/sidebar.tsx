@@ -8,7 +8,6 @@ import {
   Bell,
   BarChart3,
   LogOut,
-  ArrowLeftRight,
   Star,
   Lock,
   Compass,
@@ -43,31 +42,11 @@ function LogoIcon() {
 }
 
 
-export default function Sidebar({ isCollapsed: isParentCollapsed, onCollapseToggle }: { isCollapsed: boolean, onCollapseToggle: () => void }) {
+export default function Sidebar({ isCollapsed, onCollapseToggle }: { isCollapsed: boolean, onCollapseToggle: () => void }) {
   const pathname = usePathname();
-  const { claims } = useUser();
+  const { user, claims } = useUser();
   const logout = useLogout();
   const userPlan = claims?.plan || 'free';
-  const [isCollapsed, setIsCollapsed] = useState(isParentCollapsed);
-
-   useEffect(() => {
-    const savedState = localStorage.getItem('sidebar-collapsed');
-    const initialState = savedState === 'true';
-    if (initialState !== isCollapsed) {
-        setIsCollapsed(initialState);
-        if (isParentCollapsed !== initialState) {
-             onCollapseToggle();
-        }
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const handleToggle = () => {
-    const newState = !isCollapsed;
-    setIsCollapsed(newState);
-    localStorage.setItem('sidebar-collapsed', String(newState));
-    onCollapseToggle();
-  }
 
   const navItems = [
     {
@@ -75,30 +54,35 @@ export default function Sidebar({ isCollapsed: isParentCollapsed, onCollapseTogg
       icon: <Rss size={18} />,
       href: "/feed",
       visibleFor: ["free", "pro"],
+      authRequired: false,
     },
     {
       label: "Explore",
       icon: <Compass size={18} />,
       href: "/leaderboard",
       visibleFor: ["free", "pro"],
+      authRequired: false,
     },
     {
       label: "Watchlist",
       icon: <Eye size={18} />,
       href: "/watchlist",
       visibleFor: ["free", "pro"],
+      authRequired: true,
     },
     {
       label: "Alerts",
       icon: <Bell size={18} />,
       href: "/alerts",
       visibleFor: ["free", "pro"],
+      authRequired: true,
     },
     {
       label: "Portfolio",
       icon: <Wallet size={18} />,
       href: "/portfolio",
       visibleFor: ["free", "pro"],
+      authRequired: true,
     },
   ];
 
@@ -108,7 +92,8 @@ export default function Sidebar({ isCollapsed: isParentCollapsed, onCollapseTogg
       icon: <BarChart3 size={18} />,
       href: "/analytics",
       visibleFor: ["pro"],
-      locked: userPlan === "free",
+      locked: user ? userPlan === "free" : true,
+      authRequired: true,
     },
   ];
 
@@ -118,15 +103,21 @@ export default function Sidebar({ isCollapsed: isParentCollapsed, onCollapseTogg
       icon: <Settings size={18} />,
       href: "/account",
       visibleFor: ["free", "pro"],
-    },
-    {
-      label: "Log Out",
-      icon: <LogOut size={18} />,
-      href: "#",
-      onClick: logout,
-      visibleFor: ["free", "pro"],
+      authRequired: true,
     },
   ];
+  
+  if (user) {
+    accountItems.push({
+        label: "Log Out",
+        icon: <LogOut size={18} />,
+        href: "#",
+        onClick: logout,
+        visibleFor: ["free", "pro"],
+        authRequired: true,
+      });
+  }
+
 
   return (
     <TooltipProvider>
@@ -138,44 +129,45 @@ export default function Sidebar({ isCollapsed: isParentCollapsed, onCollapseTogg
       >
         <div className="flex flex-col flex-1">
           {/* Header / Logo */}
-          <div className={cn("flex items-center border-b border-border h-14 lg:h-[60px] px-4", isCollapsed ? 'justify-center' : 'justify-between')}>
-            <Link href="/" className={cn("flex items-center gap-2")}>
+          <div className={cn("flex items-center border-b border-border h-14 lg:h-[60px]", isCollapsed ? 'justify-center px-2' : 'px-4')}>
+            <Link href="/" className={cn("flex items-center gap-2 font-semibold")}>
                 <LogoIcon />
-                {!isCollapsed && <span className="text-lg font-semibold">Track100x</span>}
+                {!isCollapsed && <span className="text-lg">Track100x</span>}
             </Link>
           </div>
 
           {/* NAVIGATION */}
           <div className="px-3 py-4 space-y-6 flex-1">
-            {/* Section: Core */}
             <SidebarSection
               title="CORE"
               items={navItems}
               pathname={pathname}
               isCollapsed={isCollapsed}
+              user={user}
             />
 
-            {/* Section: Analytics */}
             <SidebarSection
               title="ANALYTICS"
               items={analyticsItems}
               pathname={pathname}
               isCollapsed={isCollapsed}
+              user={user}
             />
-
-            {/* Section: Account */}
-            <SidebarSection
-              title="ACCOUNT"
-              items={accountItems}
-              pathname={pathname}
-              isCollapsed={isCollapsed}
-            />
+            
+            {user && (
+                 <SidebarSection
+                    title="ACCOUNT"
+                    items={accountItems}
+                    pathname={pathname}
+                    isCollapsed={isCollapsed}
+                    user={user}
+                />
+            )}
           </div>
         </div>
 
         <div className="border-t">
-          {/* Upgrade CTA */}
-          {userPlan === "free" && !isCollapsed && (
+          {user && userPlan === "free" && !isCollapsed && (
             <div className="p-4">
               <div className="p-3 rounded-xl bg-gradient-to-br from-primary to-blue-500/80 text-primary-foreground">
                 <p className="font-medium text-sm mb-1">Unlock Full Power</p>
@@ -193,12 +185,11 @@ export default function Sidebar({ isCollapsed: isParentCollapsed, onCollapseTogg
             </div>
           )}
 
-          {/* Collapse Toggle */}
           <div className={cn("flex items-center p-3", isCollapsed ? "justify-center" : "justify-end")}>
             <Button
                 variant="ghost"
                 className="p-2 h-auto"
-                onClick={handleToggle}
+                onClick={onCollapseToggle}
                 >
                 {isCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
             </Button>
@@ -209,31 +200,33 @@ export default function Sidebar({ isCollapsed: isParentCollapsed, onCollapseTogg
   );
 }
 
-/* ---- Helper Component: Sidebar Section ---- */
-function SidebarSection({ title, items, pathname, isCollapsed }: { title: string, items: any[], pathname: string, isCollapsed: boolean }) {
+function SidebarSection({ title, items, pathname, isCollapsed, user }: { title: string, items: any[], pathname: string, isCollapsed: boolean, user: any }) {
   return (
     <div className="space-y-1">
       {!isCollapsed && (
         <h4 className="text-[11px] font-medium text-muted-foreground px-2">{title}</h4>
       )}
       {items.map(
-        (item) => (
+        (item) => {
+            const isLocked = item.locked || (item.authRequired && !user);
+            return (
             <Tooltip key={item.href} delayDuration={0}>
               <TooltipTrigger asChild>
                 <Link
-                  href={item.href}
+                  href={item.onClick ? '#' : item.href}
                   onClick={item.onClick}
                   className={cn(
                     "flex items-center gap-3 rounded-md px-2 py-2.5 text-sm font-medium transition-all",
                     pathname === item.href
                       ? "bg-muted text-foreground"
                       : "text-muted-foreground hover:bg-muted/40",
-                    isCollapsed ? "justify-center" : ""
+                    isCollapsed ? "justify-center" : "",
+                    isLocked && "cursor-not-allowed"
                   )}
                 >
                   <div className="relative">
                     {item.icon}
-                    {item.locked && (
+                    {isLocked && (
                       <Lock
                         size={12}
                         className="absolute -top-1 -right-1 text-yellow-500"
@@ -246,6 +239,7 @@ function SidebarSection({ title, items, pathname, isCollapsed }: { title: string
               {isCollapsed && <TooltipContent side="right">{item.label}</TooltipContent>}
             </Tooltip>
           )
+        }
       )}
     </div>
   );
