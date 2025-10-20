@@ -2,7 +2,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Menu } from 'lucide-react';
 import { Sidebar } from './sidebar';
@@ -11,6 +10,7 @@ import { useUser } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { Skeleton } from '../ui/skeleton';
 import { cn } from '@/lib/utils';
+import { TickerBar } from './ticker-bar';
 
 function DashboardSkeleton() {
     return (
@@ -24,11 +24,12 @@ function DashboardSkeleton() {
                 </div>
             </div>
             <div className="flex flex-col flex-1">
-                <header className="sticky top-0 flex h-14 lg:h-[60px] items-center gap-4 border-b bg-background px-6">
+                 <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6 sticky top-0">
                     <Skeleton className="h-8 w-8 md:hidden" />
-                    <div className="ml-auto flex items-center gap-4">
-                        <Skeleton className="h-10 w-10" />
-                        <Skeleton className="h-10 w-10 rounded-full" />
+                    <Skeleton className="h-9 w-full max-w-sm" />
+                    <div className="ml-auto flex items-center gap-2">
+                        <Skeleton className="h-9 w-9 rounded-full" />
+                        <Skeleton className="h-9 w-9" />
                     </div>
                 </header>
                 <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
@@ -63,6 +64,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         />
       </div>
       <div className={cn("flex flex-col transition-all duration-300", isCollapsed ? "md:pl-[72px]" : "md:pl-[220px] lg:pl-[280px]")}>
+        <TickerBar />
         <Header />
         <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6 animate-fade-in-up">
           {children}
