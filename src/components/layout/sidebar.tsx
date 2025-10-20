@@ -71,8 +71,10 @@ const navItems = [
 
 export default function Sidebar({
   isExpanded,
+  onToggle,
 }: {
   isExpanded: boolean;
+  onToggle: () => void;
 }) {
   const pathname = usePathname();
   const { user, claims } = useUser();
@@ -167,6 +169,30 @@ export default function Sidebar({
               </div>
             )}
           </div>
+           <Tooltip>
+                <TooltipTrigger asChild>
+                    <Button
+                        variant="ghost"
+                        className="w-full flex items-center justify-center"
+                        onClick={onToggle}
+                    >
+                         <div className={cn("flex items-center w-full", !isExpanded && "justify-center")}>
+                            <ChevronLeft
+                                size={16}
+                                className={cn("transition-transform", isExpanded ? "rotate-0" : "rotate-180")}
+                            />
+                            <span className={cn("ml-2 font-semibold text-sm transition-all duration-200", !isExpanded && 'w-0 opacity-0')}>
+                                Collapse
+                            </span>
+                        </div>
+                    </Button>
+                </TooltipTrigger>
+                {!isExpanded && (
+                    <TooltipContent side="right">
+                        Expand Sidebar
+                    </TooltipContent>
+                )}
+            </Tooltip>
         </div>
       </aside>
     </TooltipProvider>
