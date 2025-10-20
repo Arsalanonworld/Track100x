@@ -33,9 +33,11 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <div className="relative flex min-h-screen flex-col">
-            <DashboardLayout>
-              {children}
-            </DashboardLayout>
+            <div className="flex-1">
+              <DashboardLayout>
+                {children}
+              </DashboardLayout>
+            </div>
             <Footer />
           </div>
           <Toaster />
