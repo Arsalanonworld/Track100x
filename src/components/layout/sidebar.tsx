@@ -41,12 +41,35 @@ function LogoIcon() {
   );
 }
 
-
-export default function Sidebar({ onCollapseToggle, isCollapsed }: { onCollapseToggle: (collapsed: boolean) => void; isCollapsed: boolean }) {
+export default function Sidebar({ onStateChange }: { onStateChange: (isExpanded: boolean) => void }) {
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   const pathname = usePathname();
   const { user, claims } = useUser();
   const logout = useLogout();
   const userPlan = claims?.plan || 'free';
+  
+  useEffect(() => {
+    const savedState = localStorage.getItem('sidebar-collapsed');
+    if (savedState) {
+      const collapsed = savedState === 'true';
+      setIsCollapsed(collapsed);
+      onStateChange(!collapsed);
+    } else {
+      onStateChange(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    onStateChange(isHovered || !isCollapsed);
+  }, [isHovered, isCollapsed, onStateChange]);
+
+  const handleToggle = () => {
+    const newCollapsedState = !isCollapsed;
+    setIsCollapsed(newCollapsedState);
+    localStorage.setItem('sidebar-collapsed', String(newCollapsedState));
+    onStateChange(isHovered || !newCollapsedState);
+  };
 
   const navItems = [
     {
@@ -118,20 +141,24 @@ export default function Sidebar({ onCollapseToggle, isCollapsed }: { onCollapseT
       });
   }
 
+  const isExpanded = isHovered || !isCollapsed;
+
   return (
     <TooltipProvider>
       <aside
         className={cn(
           "h-screen border-r border-border bg-card flex flex-col justify-between transition-all duration-300",
-          isCollapsed ? "w-[72px]" : "w-60"
+          isExpanded ? "w-60" : "w-[72px]"
         )}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
       >
         <div className="flex flex-col flex-1">
           {/* Header / Logo */}
-          <div className={cn("flex items-center border-b border-border h-14 lg:h-[60px]", isCollapsed ? 'justify-center px-2' : 'px-4')}>
+          <div className={cn("flex items-center border-b border-border h-14 lg:h-[60px]", isExpanded ? 'px-4' : 'justify-center px-2')}>
             <Link href="/" className={cn("flex items-center gap-2 font-semibold")}>
                 <LogoIcon />
-                {!isCollapsed && <span className="text-lg">Track100x</span>}
+                {isExpanded && <span className="text-lg">Track100x</span>}
             </Link>
           </div>
 
@@ -141,7 +168,7 @@ export default function Sidebar({ onCollapseToggle, isCollapsed }: { onCollapseT
               title="CORE"
               items={navItems}
               pathname={pathname}
-              isCollapsed={isCollapsed}
+              isCollapsed={!isExpanded}
               user={user}
             />
 
@@ -149,7 +176,7 @@ export default function Sidebar({ onCollapseToggle, isCollapsed }: { onCollapseT
               title="ANALYTICS"
               items={analyticsItems}
               pathname={pathname}
-              isCollapsed={isCollapsed}
+              isCollapsed={!isExpanded}
               user={user}
             />
             
@@ -158,7 +185,7 @@ export default function Sidebar({ onCollapseToggle, isCollapsed }: { onCollapseT
                     title="ACCOUNT"
                     items={accountItems}
                     pathname={pathname}
-                    isCollapsed={isCollapsed}
+                    isCollapsed={!isExpanded}
                     user={user}
                 />
             )}
@@ -166,7 +193,7 @@ export default function Sidebar({ onCollapseToggle, isCollapsed }: { onCollapseT
         </div>
 
         <div className="border-t">
-          {user && userPlan === "free" && !isCollapsed && (
+          {user && userPlan === "free" && isExpanded && (
             <div className="p-4">
               <div className="p-3 rounded-xl bg-gradient-to-br from-primary to-blue-500/80 text-primary-foreground">
                 <p className="font-medium text-sm mb-1">Unlock Full Power</p>
@@ -184,11 +211,11 @@ export default function Sidebar({ onCollapseToggle, isCollapsed }: { onCollapseT
             </div>
           )}
 
-          <div className={cn("flex items-center p-3", isCollapsed ? "justify-center" : "justify-end")}>
+          <div className={cn("flex items-center p-3", !isExpanded ? "justify-center" : "justify-end")}>
             <Button
                 variant="ghost"
                 className="p-2 h-auto"
-                onClick={() => onCollapseToggle(!isCollapsed)}
+                onClick={handleToggle}
                 >
                 {isCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
             </Button>
@@ -261,4 +288,3 @@ function SidebarSection({ title, items, pathname, isCollapsed, user }: { title: 
   );
 }
 
-    
