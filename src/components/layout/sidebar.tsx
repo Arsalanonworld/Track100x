@@ -8,13 +8,30 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { LogoIcon } from './header';
 import { UserNav } from '../user-nav';
 import { ThemeToggle } from '../theme-toggle';
 import { Separator } from '../ui/separator';
 import { useLogout } from '../auth/auth-actions';
 import { useUser } from '@/firebase';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
+
+
+export function LogoIcon() {
+  return (
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="h-6 w-6"
+    >
+        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+    </svg>
+  );
+}
 
 const navItems = [
     { href: '/feed', label: 'Whale Feed', icon: Rss },
@@ -143,7 +160,7 @@ export function Sidebar({ isCollapsed, onCollapseToggle }: { isCollapsed: boolea
             </div>
              <div className={cn("mt-auto border-t p-4 space-y-4", isCollapsed && 'p-2 space-y-2')}>
                 {!isPro && !isCollapsed && (
-                     <Card className="bg-muted">
+                     <Card className="bg-muted border-none">
                         <CardHeader className="p-4">
                             <CardTitle>Upgrade to Pro</CardTitle>
                             <CardDescription>

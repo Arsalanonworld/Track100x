@@ -9,8 +9,25 @@ import { Menu, Rss, Trophy, LayoutDashboard, Compass, Eye, Star, Sparkles } from
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetTrigger } from "@/components/ui/sheet"
-import { LogoIcon } from "./header"
 import { useUser } from "@/firebase"
+
+function LogoIcon() {
+  return (
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="h-6 w-6"
+    >
+        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+    </svg>
+  );
+}
+
 
 export function MobileNav() {
   const [open, setOpen] = React.useState(false);
