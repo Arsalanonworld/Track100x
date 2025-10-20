@@ -17,14 +17,13 @@ const navItems = [
     { href: '/watchlist', label: 'My Watchlist', icon: Eye },
     { href: '/feed', label: 'Whale Feed', icon: Rss },
     { href: '/leaderboard', label: 'Explore', icon: Compass },
-    { href: '/account', label: 'Account Settings', icon: Settings },
 ];
 
 export function Sidebar() {
     const pathname = usePathname();
 
     return (
-        <div className="flex h-full max-h-screen flex-col gap-2">
+        <div className="flex h-full max-h-screen flex-col">
             <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
                  <Link href="/" className="flex items-center gap-2 font-semibold">
                   <LogoIcon />
@@ -33,8 +32,8 @@ export function Sidebar() {
                   </span>
                 </Link>
             </div>
-            <div className="flex-1">
-                <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
+            <div className="flex-1 overflow-y-auto">
+                <nav className="grid items-start px-2 text-sm font-medium lg:px-4 py-4">
                     {navItems.map(item => (
                         <Link
                             key={item.href}
@@ -50,23 +49,25 @@ export function Sidebar() {
                     ))}
                 </nav>
             </div>
-             <div className="mt-auto p-4">
-              <Card>
-                <CardHeader className="p-2 pt-0 md:p-4">
-                  <CardTitle>Upgrade to Pro</CardTitle>
-                  <CardDescription>
-                    Unlock all features and get unlimited access to our support
-                    team.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="p-2 pt-0 md:p-4 md:pt-0">
-                  <Button size="sm" className="w-full" asChild>
-                    <Link href="/upgrade">Upgrade</Link>
-                  </Button>
-                </CardContent>
-              </Card>
-              <Separator className='my-4'/>
-              <div className='flex items-center justify-between'>
+             <div className="mt-auto border-t">
+              <div className="p-4">
+                <Card>
+                  <CardHeader className="p-2 pt-0 md:p-4">
+                    <CardTitle>Upgrade to Pro</CardTitle>
+                    <CardDescription>
+                      Unlock all features and get unlimited access to our support
+                      team.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="p-2 pt-0 md:p-4 md:pt-0">
+                    <Button size="sm" className="w-full" asChild>
+                      <Link href="/upgrade">Upgrade</Link>
+                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
+              <Separator />
+              <div className='flex items-center justify-between p-4'>
                 <UserNav />
                 <ThemeToggle />
               </div>

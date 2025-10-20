@@ -54,8 +54,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     }
 
   return (
-    <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
-      <div className="hidden border-r bg-muted/40 md:block">
+    <div className="min-h-screen w-full pl-0 md:pl-[220px] lg:pl-[280px]">
+      <div className="hidden md:fixed md:inset-y-0 md:left-0 md:z-50 md:block md:w-[220px] lg:w-[280px] border-r bg-muted/40">
         <Sidebar />
       </div>
       <div className="flex flex-col">
