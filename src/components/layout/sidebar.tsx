@@ -159,7 +159,7 @@ export default function Sidebar({
         >
           <ChevronLeft
             size={16}
-            className={cn("transition-transform", isExpanded && "rotate-180")}
+            className={cn("transition-transform", !isExpanded && "rotate-180")}
           />
         </Button>
 
