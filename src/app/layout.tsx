@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 import { ThemeProvider } from '@/components/theme-provider';
 import { FirebaseProvider } from '@/firebase';
 import { LayoutSwitcher } from '@/components/layout/layout-switcher';
+import { TickerBar } from '@/components/layout/ticker-bar';
 
 export const metadata: Metadata = {
   title: 'Track100x | Blockchain Intelligence Platform',
@@ -33,6 +34,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <FirebaseProvider>
+            <TickerBar />
             <LayoutSwitcher>
               {children}
             </LayoutSwitcher>
