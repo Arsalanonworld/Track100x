@@ -54,7 +54,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     <div className="flex-1 p-4 lg:p-6 pb-16"></div>
                 </main>
             </div>
-            <footer className="border-t bg-background h-48"></footer>
         </div>
     );
   }
@@ -80,7 +79,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </div>
           </main>
         </div>
-        <Footer />
       </div>
     </FirebaseClientProvider>
   );
