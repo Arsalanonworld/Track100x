@@ -288,3 +288,4 @@ function SidebarSection({ title, items, pathname, isCollapsed, user }: { title: 
   );
 }
 
+    
