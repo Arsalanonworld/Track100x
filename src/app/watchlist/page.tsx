@@ -22,7 +22,6 @@ import { HoldingsTable } from '@/components/dashboard/holdings-table';
 import { WatchlistActionForm } from '@/components/watchlist/watchlist-action-form';
 import { AlertsPanel } from '@/components/watchlist/alerts-panel';
 import { AlertEditorDialog } from '@/components/alert-editor-dialog';
-import { WatchlistItemCard } from '@/components/watchlist/watchlist-item-card';
 import { useToast } from '@/hooks/use-toast';
 import { doc, deleteDoc, updateDoc } from 'firebase/firestore';
 import { errorEmitter } from '@/firebase/error-emitter';
@@ -35,7 +34,7 @@ const WATCHLIST_LIMIT_FREE = 5;
 const generateChartData = (baseValue: number, days: number, volatility: number) => {
     const data = [];
     let currentValue = baseValue;
-    const points = days > 14 ? 30 : days * 2; // Use more points for smoother charts
+    const points = days > 14 ? 30 : days * 2;
     for (let i = points; i >= 0; i--) {
         const date = new Date();
         date.setDate(date.getDate() - (i * days / points));
@@ -46,9 +45,8 @@ const generateChartData = (baseValue: number, days: number, volatility: number) 
         } else if (i === 0) {
             dayLabel = 'Today';
         } else {
-             // Create intermediate labels for better readability
             const step = Math.floor(points / 5);
-            if (points > 5 && i % step === 0) {
+            if (points > 5 && i % step === 0 && (i * days / points) > 1) {
                 dayLabel = `${Math.round(i * days / points)}d`;
             } else {
                 dayLabel = '';
@@ -87,10 +85,10 @@ const renderActiveShape = (props: any) => {
     
     return (
       <g>
-        <text x={cx} y={cy} dy={-10} textAnchor="middle" fill={fill} className='text-sm font-semibold'>
+        <text x={cx} y={cy} dy={-8} textAnchor="middle" fill={fill} className='text-xs sm:text-sm font-semibold truncate'>
           {payload.name}
         </text>
-         <text x={cx} y={cy} dy={12} textAnchor="middle" fill="hsl(var(--foreground))" className="text-2xl font-bold">
+         <text x={cx} y={cy} dy={14} textAnchor="middle" fill="hsl(var(--foreground))" className="text-xl sm:text-2xl font-bold">
           {`${(percent * 100).toFixed(1)}%`}
         </text>
         <Sector
@@ -272,11 +270,6 @@ export default function WatchlistPage() {
                 description={pageDescription}
                 action={
                   <div className='flex items-center gap-2'>
-                    <Button variant="outline" asChild>
-                      <Link href="/watchlist">
-                        <Edit className="mr-2 h-4 w-4" /> Manage Watchlist
-                      </Link>
-                    </Button>
                     <Button variant="outline" disabled={!isPro && hasWallets}>
                         <Download className="mr-2 h-4 w-4" /> Export Data
                         {!isPro && hasWallets && <Lock className='ml-2 h-3 w-3' />}
@@ -382,12 +375,12 @@ export default function WatchlistPage() {
                                      <Legend
                                         onMouseEnter={(_, index) => onPieEnter(_, index)}
                                         verticalAlign="bottom" 
-                                        layout="vertical"
+                                        layout="horizontal"
                                         align="center"
                                         wrapperStyle={{paddingTop: '20px'}}
                                         iconSize={10}
                                         content={({ payload }) => (
-                                        <div className="flex flex-col items-center gap-y-1 mt-4 text-xs text-muted-foreground">
+                                        <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 mt-4 text-xs text-muted-foreground">
                                             {payload?.map((entry, index) => (
                                             <div key={`item-${index}`} onMouseEnter={() => onPieEnter(entry, index)} className={cn("flex items-center gap-1.5 cursor-pointer transition-opacity", activeIndex !== index && 'opacity-50 hover:opacity-100')}>
                                                 <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: entry.color }} />
@@ -485,6 +478,8 @@ export default function WatchlistPage() {
     </div>
   );
 }
+
+    
 
     
 
