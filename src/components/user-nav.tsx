@@ -7,7 +7,6 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuTrigger,
   DropdownMenuGroup,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
@@ -95,7 +94,20 @@ export function UserNav() {
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
-             {!isPro && (
+           <DropdownMenuGroup>
+                <DropdownMenuItem asChild>
+                    <Link href="/watchlist">
+                        <Eye className="mr-2 h-4 w-4" />
+                        <span>My Watchlist</span>
+                    </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                    <Link href="/account">
+                        <Settings className="mr-2 h-4 w-4" />
+                        <span>Account Settings</span>
+                    </Link>
+                </DropdownMenuItem>
+                 {!isPro && (
                 <DropdownMenuItem asChild>
                     <Link href="/upgrade">
                         <Star className="mr-2 h-4 w-4 text-yellow-500" />
@@ -103,6 +115,12 @@ export function UserNav() {
                     </Link>
                 </DropdownMenuItem>
             )}
+           </DropdownMenuGroup>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={logout}>
+            <LogOut className="mr-2 h-4 w-4" />
+            <span>Log out</span>
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
