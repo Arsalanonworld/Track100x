@@ -167,22 +167,22 @@ export default function Sidebar({
               </div>
             )}
           </div>
-        </div>
-        <div className={cn(
-          "flex p-3 border-t",
-          isExpanded ? "justify-end" : "justify-center"
-        )}>
-          <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8"
-              onClick={onToggle}
-          >
-              <ChevronLeft
-              size={16}
-              className={cn("transition-transform", !isExpanded && "rotate-180")}
-              />
-          </Button>
+          <div className={cn(
+            "flex p-3 border-t mt-3",
+            isExpanded ? "justify-end" : "justify-center"
+          )}>
+            <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                onClick={onToggle}
+            >
+                <ChevronLeft
+                size={16}
+                className={cn("transition-transform", !isExpanded && "rotate-180")}
+                />
+            </Button>
+          </div>
         </div>
       </aside>
     </TooltipProvider>
