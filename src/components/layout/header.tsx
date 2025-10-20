@@ -61,7 +61,7 @@ export default function Header() {
 
     if (isDashboard) {
         return (
-             <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
+             <header className="sticky top-0 z-40 flex h-14 items-center gap-4 border-b bg-background px-4 sm:px-6">
                 <Sheet>
                     <SheetTrigger asChild>
                     <Button
@@ -77,11 +77,8 @@ export default function Header() {
                         <Sidebar isCollapsed={false} onCollapseToggle={() => {}} />
                     </SheetContent>
                 </Sheet>
-                <div className='flex items-center gap-4 w-full'>
-                    <h1 className="text-xl font-semibold hidden md:block">Dashboard</h1>
-                    <div className="w-full flex-1 max-w-sm">
-                        <CommandMenu />
-                    </div>
+                <div className="w-full flex-1">
+                  <CommandMenu />
                 </div>
                 <div className="flex items-center gap-2">
                     <UserNav />
