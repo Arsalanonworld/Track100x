@@ -71,16 +71,31 @@ const navItems = [
 
 export default function Sidebar({
   isExpanded,
-  onToggle
+  onMouseEnter,
+  onMouseLeave,
+  onToggleLock,
 }: {
   isExpanded: boolean;
-  onToggle: () => void;
+  onMouseEnter: () => void;
+  onMouseLeave: () => void;
+  onToggleLock: () => void;
 }) {
   const pathname = usePathname();
   const { user, claims } = useUser();
   const logout = useLogout();
   const userPlan = claims?.plan || "free";
   
+  const [isLocked, setIsLocked] = useState(false);
+
+  useEffect(() => {
+    setIsLocked(localStorage.getItem('sidebar-collapsed') === 'true');
+  }, []);
+
+  const handleToggleLock = () => {
+    onToggleLock();
+    setIsLocked(prev => !prev);
+  }
+
   const accountItems = user 
     ? [
         {
@@ -119,11 +134,13 @@ export default function Sidebar({
     <TooltipProvider>
       <aside
         className={cn(
-          "hidden md:flex fixed top-0 left-0 h-full flex-col transition-all duration-300 z-20 border-r pt-14 lg:pt-[60px]",
+          "hidden md:flex fixed top-0 left-0 h-full flex-col transition-all duration-300 z-20 border-r",
           isExpanded ? "w-60" : "w-[72px]"
         )}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
       >
-        <div className="flex-1 overflow-y-auto overflow-x-hidden">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden pt-14 lg:pt-[60px]">
           <div className="px-3 py-4 space-y-6">
             <SidebarSection
               title="CORE"
@@ -148,7 +165,7 @@ export default function Sidebar({
           <div
             className={cn(
                 "transition-opacity duration-200",
-                !isExpanded && "opacity-0 h-0"
+                !isExpanded && "opacity-0 h-0 invisible"
             )}
           >
             {(!user || userPlan === "free") && isExpanded && (
@@ -171,17 +188,24 @@ export default function Sidebar({
             "flex p-3 border-t mt-3",
             isExpanded ? "justify-end" : "justify-center"
           )}>
-            <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
-                onClick={onToggle}
-            >
-                <ChevronLeft
-                size={16}
-                className={cn("transition-transform", !isExpanded && "rotate-180")}
-                />
-            </Button>
+            <Tooltip delayDuration={0}>
+              <TooltipTrigger asChild>
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={handleToggleLock}
+                >
+                    <ChevronLeft
+                    size={16}
+                    className={cn("transition-transform", !isExpanded && !isLocked && "rotate-180", isLocked && "rotate-0")}
+                    />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="right">
+                <p>{isLocked ? "Unlock Sidebar" : "Lock Sidebar Open"}</p>
+              </TooltipContent>
+            </Tooltip>
           </div>
         </div>
       </aside>
@@ -207,10 +231,10 @@ function SidebarSection({
       <h4
         className={cn(
           "text-[11px] font-bold tracking-wider uppercase text-muted-foreground transition-opacity duration-300 whitespace-nowrap",
-          isExpanded ? "opacity-100 px-4" : "opacity-0 text-center"
+          isExpanded ? "opacity-100 px-4" : "opacity-0 text-center h-0"
         )}
       >
-        {!isExpanded ? title[0] : title}
+        {isExpanded ? title : ''}
       </h4>
       {items.map((item) => {
         // A feature is locked if it's explicitly marked as locked, or if it requires auth and the user is not logged in.
