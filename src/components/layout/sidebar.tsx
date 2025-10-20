@@ -71,15 +71,9 @@ const navItems = [
 
 export default function Sidebar({
   isExpanded,
-  isLocked,
-  onMouseEnter,
-  onMouseLeave,
   onToggleLock,
 }: {
   isExpanded: boolean;
-  isLocked: boolean;
-  onMouseEnter: () => void;
-  onMouseLeave: () => void;
   onToggleLock: () => void;
 }) {
   const pathname = usePathname();
@@ -130,8 +124,6 @@ export default function Sidebar({
           "h-[calc(100vh-56px)] lg:h-[calc(100vh-60px)]",
           isExpanded ? "w-60" : "w-[72px]"
         )}
-        onMouseEnter={onMouseEnter}
-        onMouseLeave={onMouseLeave}
       >
         <div className="flex-1 overflow-y-auto overflow-x-hidden">
             <div className="px-3 py-4 space-y-6">
@@ -191,12 +183,12 @@ export default function Sidebar({
                 >
                     <ChevronLeft
                     size={16}
-                    className={cn("transition-transform", isLocked ? "rotate-180" : "rotate-0")}
+                    className={cn("transition-transform", isExpanded ? "rotate-0" : "rotate-180")}
                     />
                 </Button>
               </TooltipTrigger>
               <TooltipContent side="right">
-                <p>{isLocked ? "Unlock Sidebar" : "Lock Sidebar Open"}</p>
+                <p>{isExpanded ? "Collapse Sidebar" : "Expand Sidebar"}</p>
               </TooltipContent>
             </Tooltip>
           </div>
