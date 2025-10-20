@@ -1,17 +1,28 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Sidebar from './sidebar';
 import Header from './header';
 import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation';
-import { FirebaseClientProvider } from '@/firebase/client-provider';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+          <p>Loading...</p>
+      </div>
+    );
+  }
 
   return (
-    <FirebaseClientProvider>
       <div className="min-h-screen w-full bg-background">
         <Sidebar onStateChange={setIsSidebarExpanded} />
         <div className={cn(
@@ -24,6 +35,5 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </main>
         </div>
       </div>
-    </FirebaseClientProvider>
   );
 }

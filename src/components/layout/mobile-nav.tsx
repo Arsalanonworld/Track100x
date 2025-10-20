@@ -4,18 +4,17 @@
 import * as React from "react"
 import Link, { type LinkProps } from "next/link"
 import { useRouter } from "next/navigation"
-import { Menu, Rss, Trophy, LayoutDashboard, Compass, Eye, Star, Sparkles, Bell } from "lucide-react"
-import type { NavItem } from "@/lib/types";
+import { Menu, Rss, Trophy, LayoutDashboard, Compass, Eye, Star, Sparkles, Bell, Wallet, BarChart3, Settings } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 
 function LogoIcon() {
   return (
     <svg
         xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
+        viewBox="0 0 24"
         fill="none"
         stroke="currentColor"
         strokeWidth="2"
@@ -28,16 +27,22 @@ function LogoIcon() {
   );
 }
 
-const iconMap: { [key: string]: React.ElementType } = {
-  '/feed': Rss,
-  '/leaderboard': Compass,
-  '/watchlist': Eye,
-  '/alerts': Bell,
-  '/#features': Sparkles,
-  '/#pricing': Star,
-};
+const mainNavItems = [
+    { href: '/feed', label: 'Whale Feed', icon: Rss },
+    { href: '/leaderboard', label: 'Explore', icon: Compass },
+    { href: '/watchlist', label: 'Watchlist', icon: Eye },
+    { href: '/alerts', label: 'Alerts', icon: Bell },
+    { href: '/portfolio', label: 'Portfolio', icon: Wallet },
+    { href: '/analytics', label: 'Analytics', icon: BarChart3, pro: true },
+];
 
-export function MobileNav({ items }: { items: NavItem[]}) {
+const accountNavItems = [
+    { href: '/account', label: 'My Account', icon: Settings },
+    { href: '/upgrade', label: 'Upgrade to Pro', icon: Star, pro: true },
+]
+
+
+export function MobileNav() {
   const [open, setOpen] = React.useState(false);
 
   return (
@@ -45,7 +50,7 @@ export function MobileNav({ items }: { items: NavItem[]}) {
       <SheetTrigger asChild>
         <Button
           variant="ghost"
-          className="mr-2 px-0 text-base hover:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 md:hidden"
+          className="px-0 text-base hover:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
         >
           <Menu className="h-6 w-6" />
           <span className="sr-only">Toggle Menu</span>
@@ -65,8 +70,24 @@ export function MobileNav({ items }: { items: NavItem[]}) {
             </SheetTitle>
         </SheetHeader>
         <div className="flex flex-col gap-4 pl-6 mt-4 text-lg font-medium flex-1">
-          {items.map((item) => {
-            const Icon = iconMap[item.href] || Star;
+          {mainNavItems.map((item) => {
+            const Icon = item.icon || Star;
+            return (
+              <MobileLink
+                key={item.href}
+                href={item.href}
+                onOpenChange={setOpen}
+                className="flex items-center gap-3"
+              >
+                <Icon className="h-5 w-5 text-muted-foreground" />
+                {item.label}
+              </MobileLink>
+            );
+          })}
+        </div>
+         <div className="flex flex-col gap-4 pl-6 py-4 text-lg font-medium border-t">
+          {accountNavItems.map((item) => {
+            const Icon = item.icon || Star;
             return (
               <MobileLink
                 key={item.href}
