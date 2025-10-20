@@ -12,7 +12,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { FeatureLock } from '@/components/feature-lock';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell, Sector, Legend } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell, Sector, Legend, ResponsiveContainer } from 'recharts';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ChartTooltipContent, ChartContainer } from '@/components/ui/chart';
 import React from 'react';
@@ -44,7 +44,7 @@ const generateChartData = (baseValue: number, days: number, volatility: number) 
         let dayLabel = `${dayNumber}d`;
 
         if (i === points) {
-            dayLabel = `${dayNumber}d ago`;
+            dayLabel = `${days}d ago`;
         } else if (i === 0) {
             dayLabel = 'Today';
         }
@@ -53,7 +53,7 @@ const generateChartData = (baseValue: number, days: number, volatility: number) 
          currentValue *= 1 + (Math.random() - 0.48) * volatility * (Math.sqrt(days / points));
         }
 
-        const shouldLabel = i === 0 || i === points || i % Math.floor(points / 5) === 0;
+        const shouldLabel = i === 0 || i === points || (points > 10 && i % Math.floor(points / 5) === 0);
 
         data.push({ name: shouldLabel ? dayLabel : '', value: currentValue });
     }
@@ -296,7 +296,7 @@ export default function WatchlistPage() {
                       <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
                         <div>
                           <p className="text-sm text-muted-foreground">Total Net Worth</p>
-                          <p className="text-4xl font-bold">${portfolioData.netWorth.toLocaleString()}</p>
+                          <p className="text-3xl sm:text-4xl font-bold">${portfolioData.netWorth.toLocaleString()}</p>
                           <PnlBadge value={portfolioData.change24h} />
                         </div>
                         <Select value={timeRange} onValueChange={(val) => setTimeRange(val as '7d' | '30d' | 'all')}>
@@ -318,8 +318,8 @@ export default function WatchlistPage() {
                       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
                         <div className="lg:col-span-2">
                             <h3 className="font-semibold mb-4 text-center lg:text-left">Net Worth Over Time</h3>
-                            <div className="h-[350px]">
-                                <ChartContainer config={{value: {label: 'Net Worth', color: 'hsl(var(--primary))'}}} className='h-full w-full'>
+                            <div className="h-[250px] sm:h-[350px]">
+                                <ResponsiveContainer width="100%" height="100%">
                                     <AreaChart data={chartData} margin={{ top: 5, right: 10, left: -25, bottom: 0 }}>
                                         <CartesianGrid vertical={false} strokeDasharray="3 3" />
                                         <XAxis dataKey="name" tick={{ fill: 'hsl(var(--muted-foreground))' }} fontSize={12} axisLine={false} tickLine={false} interval="preserveStartEnd" />
@@ -343,12 +343,12 @@ export default function WatchlistPage() {
                                         />
                                         <Area type="monotone" dataKey="value" stroke="hsl(var(--primary))" fill="hsl(var(--primary))" fillOpacity={0.1} />
                                     </AreaChart>
-                                </ChartContainer>
+                                </ResponsiveContainer>
                             </div>
                         </div>
-                        <div className="h-[350px]">
+                        <div className="h-[250px] sm:h-[350px]">
                             <h3 className="font-semibold mb-4 text-center lg:text-left">Asset Allocation</h3>
-                             <ChartContainer config={{}} className="h-full w-full">
+                             <ResponsiveContainer width="100%" height="100%">
                                 <PieChart>
                                     <Pie 
                                         activeIndex={activeIndex}
@@ -356,8 +356,8 @@ export default function WatchlistPage() {
                                         data={allocationData} 
                                         cx="50%"
                                         cy="50%"
-                                        innerRadius={80}
-                                        outerRadius={100}
+                                        innerRadius={60}
+                                        outerRadius={80}
                                         fill="var(--color-value)"
                                         dataKey="value"
                                         onMouseEnter={onPieEnter}
@@ -365,17 +365,20 @@ export default function WatchlistPage() {
                                         label={false}
                                     >
                                         {allocationData.map((entry, index) => (
-                                            <Cell key={`cell-${index}`} fill={entry.color} />
+                                            <Cell key={`cell-${index}`} fill={entry.color} style={{ outline: 'none' }} />
                                         ))}
                                     </Pie>
                                      <Legend
                                         onMouseEnter={(_, index) => onPieEnter(_, index)}
                                         verticalAlign="bottom" 
-                                        height={40} 
+                                        layout="vertical"
+                                        align="center"
+                                        wrapperStyle={{paddingTop: '20px'}}
+                                        iconSize={10}
                                         content={({ payload }) => (
-                                        <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 mt-4 text-xs text-muted-foreground">
+                                        <div className="flex flex-col items-center gap-y-1 mt-4 text-xs text-muted-foreground">
                                             {payload?.map((entry, index) => (
-                                            <div key={`item-${index}`} className={cn("flex items-center gap-1.5 cursor-pointer transition-opacity", activeIndex !== index && 'opacity-50 hover:opacity-100')}>
+                                            <div key={`item-${index}`} onMouseEnter={() => onPieEnter(entry, index)} className={cn("flex items-center gap-1.5 cursor-pointer transition-opacity", activeIndex !== index && 'opacity-50 hover:opacity-100')}>
                                                 <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: entry.color }} />
                                                 <span>{entry.value}</span>
                                             </div>
@@ -384,7 +387,7 @@ export default function WatchlistPage() {
                                         )}
                                     />
                                 </PieChart>
-                            </ChartContainer>
+                            </ResponsiveContainer>
                         </div>
                       </div>
                     </CardContent>

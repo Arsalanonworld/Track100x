@@ -40,9 +40,9 @@ export function HoldingsTable() {
           <TableHeader>
             <TableRow>
               <TableHead>Token</TableHead>
-              <TableHead>Amount</TableHead>
+              <TableHead className="hidden sm:table-cell">Amount</TableHead>
               <TableHead>Value (USD)</TableHead>
-              <TableHead className="text-right">Allocation</TableHead>
+              <TableHead className="text-right hidden sm:table-cell">Allocation</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -54,9 +54,9 @@ export function HoldingsTable() {
                     <span className="font-semibold">{holding.token}</span>
                   </div>
                 </TableCell>
-                <TableCell>{holding.amount}</TableCell>
+                <TableCell className="hidden sm:table-cell">{holding.amount}</TableCell>
                 <TableCell>{holding.value}</TableCell>
-                <TableCell className="text-right font-medium">
+                <TableCell className="text-right font-medium hidden sm:table-cell">
                   {holding.allocation.toFixed(1)}%
                 </TableCell>
               </TableRow>
