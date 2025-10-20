@@ -9,19 +9,13 @@ import { HomePageCta } from '@/components/home-page-cta';
 import { FeatureHighlights } from '@/components/feature-highlights';
 import { PricingPreview } from '@/components/pricing-preview';
 import { useUser } from '@/firebase';
-import { useRouter } from 'next/navigation';
 
 export default function HomePage() {
   const { user, loading } = useUser();
-  const router = useRouter();
-
-  React.useEffect(() => {
-    if (!loading && user) {
-      router.replace('/watchlist');
-    }
-  }, [user, loading, router]);
   
   if (loading || user) {
+    // The UserProvider is responsible for redirection,
+    // so we show a loading state to prevent flicker.
     return (
       <div className="flex items-center justify-center h-screen">
         <p className="text-muted-foreground">Loading...</p>

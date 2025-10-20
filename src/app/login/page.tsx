@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -17,16 +18,10 @@ export default function LoginPage() {
     const { user, loading } = useUser();
     const router = useRouter();
 
-    // The AuthDialog is now the primary way to log in.
-    // This page will redirect logged-in users or show the dialog for guests.
+    // This page will show the dialog for guests.
+    // The useUser hook will handle redirecting logged-in users.
     const [isAuthDialogOpen, setAuthDialogOpen] = useState(true);
 
-    useEffect(() => {
-        if (!loading && user) {
-            router.push('/account');
-        }
-    }, [user, loading, router]);
-    
     // This effect handles closing the dialog. If the user closes it, redirect them home.
     useEffect(() => {
         if (!isAuthDialogOpen && !user) {
@@ -36,7 +31,7 @@ export default function LoginPage() {
 
 
     if (loading || user) {
-        // Show a loading state or nothing while redirecting
+        // Show a loading state while useUser hook handles redirection.
         return (
             <div className="flex items-center justify-center min-h-[calc(100vh-200px)]">
                 <p className="text-muted-foreground">Loading...</p>
