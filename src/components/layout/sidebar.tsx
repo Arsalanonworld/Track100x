@@ -255,7 +255,7 @@ function SidebarSection({ title, items, pathname, isExpanded, user }: { title: s
                         />
                         )}
                     </div>
-                    <span className={cn("whitespace-nowrap transition-opacity duration-300", !isExpanded && "opacity-0")}>{item.label}</span>
+                    <span className={cn("whitespace-nowrap transition-opacity duration-300", !isExpanded && "opacity-0 w-0")}>{item.label}</span>
                 </div>
             );
 
