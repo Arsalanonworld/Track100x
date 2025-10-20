@@ -7,10 +7,21 @@ import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const [isSidebarExpanded, setIsSidebarExpanded] = React.useState(true);
+  const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
+  const [isClient, setIsClient] = useState(false);
   const pathname = usePathname();
-  
   const isAppPage = !['/', '/upgrade', '/login', '/terms-of-service', '/privacy-policy'].includes(pathname);
+
+  useEffect(() => {
+    // This effect runs only on the client, after the initial render.
+    setIsClient(true);
+  }, []);
+
+  // On the server and during the initial client render, we don't render the layout
+  // to prevent hydration mismatch caused by the sidebar state from localStorage.
+  if (!isClient) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen w-full bg-background">
