@@ -4,19 +4,18 @@
 import { useMemo, useState } from 'react';
 import PageHeader from '@/components/page-header';
 import { Button } from '@/components/ui/button';
-import { Wallet, Eye, Lock, Download, Edit } from 'lucide-react';
+import { Wallet, Eye, Lock, Download, Edit, BellPlus } from 'lucide-react';
 import { useUser, useCollection, useFirestore } from '@/firebase';
-import { collection, query } from 'firebase/firestore';
-import type { WatchlistItem } from '@/lib/types';
+import { collection, query, doc, deleteDoc, updateDoc } from 'firebase/firestore';
+import type { WatchlistItem, Alert } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { withAuth } from '@/components/auth/withAuth';
 import Link from 'next/link';
-import { Card } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { WatchlistActionForm } from '@/components/watchlist/watchlist-action-form';
 import { AlertsPanel } from '@/components/watchlist/alerts-panel';
 import { AlertEditorDialog } from '@/components/alert-editor-dialog';
 import { useToast } from '@/hooks/use-toast';
-import { doc, deleteDoc, updateDoc } from 'firebase/firestore';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { Dialog } from '@/components/ui/dialog';
@@ -76,6 +75,7 @@ function WatchlistPage() {
   const [refreshKey, setRefreshKey] = useState(0);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [editorEntity, setEditorEntity] = useState<{type: 'wallet' | 'token', identifier: string} | undefined>(undefined);
+  const [editingItem, setEditingItem] = useState<WatchlistItem | null>(null);
 
   const isPro = claims?.plan === 'pro';
 
@@ -138,6 +138,11 @@ function WatchlistPage() {
     setIsEditorOpen(true);
   }
   
+  const handleOpenAlertEditorForWatchlistItem = (item: WatchlistItem) => {
+    setEditorEntity({ type: item.type, identifier: item.identifier });
+    setIsEditorOpen(true);
+  };
+  
   const handleItemAdded = () => {
     setRefreshKey(prev => prev + 1);
   }
@@ -147,14 +152,6 @@ function WatchlistPage() {
          <PageHeader
             title="My Watchlist"
             description={pageDescription}
-            action={
-              <div className='flex items-center gap-2'>
-                <Button variant="outline" disabled={!isPro}>
-                    <Download className="mr-2 h-4 w-4" /> Export Data
-                    {!isPro && <Lock className='ml-2 h-3 w-3' />}
-                 </Button>
-              </div>
-            }
         />
 
         <div className='grid grid-cols-1 lg:grid-cols-3 gap-8 items-start'>
@@ -164,7 +161,6 @@ function WatchlistPage() {
                      <WatchlistActionForm 
                         user={user}
                         onItemAdded={handleItemAdded}
-                        onAlertCreate={handleOpenEditor}
                         atLimit={!!watchlistAtLimit}
                         isLoading={isLoading}
                      />
@@ -192,7 +188,7 @@ function WatchlistPage() {
                                item={item} 
                                onUpdate={handleUpdate} 
                                onRemove={handleRemove}
-                               onAlertCreate={handleOpenEditor}
+                               onAlertCreate={() => handleOpenAlertEditorForWatchlistItem(item)}
                             />
                         ))
                     ) : (
