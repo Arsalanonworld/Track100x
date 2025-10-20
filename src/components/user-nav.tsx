@@ -20,6 +20,8 @@ import { AuthDialog } from './auth/auth-dialog';
 import { Skeleton } from './ui/skeleton';
 import { useLogout } from './auth/auth-actions';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
+import { Card, CardContent } from './ui/card';
+import { cn } from '@/lib/utils';
 
 export function UserNav() {
   const { user, claims, loading } = useUser();

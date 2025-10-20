@@ -105,7 +105,7 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
                                         </div>
                                     </div>
                                     {/* Mobile View */}
-                                    <div className="md:hidden space-y-1 text-sm">
+                                    <div className="md:hidden space-y-2 text-sm">
                                         {/* From */}
                                         <div className="flex items-center gap-2">
                                             <span className="text-muted-foreground w-8">From</span>
