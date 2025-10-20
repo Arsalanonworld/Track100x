@@ -2,7 +2,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Bell, Home, LineChart, Package, Package2, ShoppingCart, Users, Eye, Rss, Compass, Settings } from 'lucide-react';
+import { Bell, Home, LineChart, Package, Package2, ShoppingCart, Users, Eye, Rss, Compass, Settings, LogOut } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,6 +12,7 @@ import { LogoIcon } from './header';
 import { UserNav } from '../user-nav';
 import { ThemeToggle } from '../theme-toggle';
 import { Separator } from '../ui/separator';
+import { useLogout } from '../auth/auth-actions';
 
 const navItems = [
     { href: '/watchlist', label: 'My Watchlist', icon: Eye },
@@ -22,6 +23,7 @@ const navItems = [
 
 export function Sidebar() {
     const pathname = usePathname();
+    const logout = useLogout();
 
     return (
         <div className="flex h-full max-h-screen flex-col">
@@ -48,6 +50,13 @@ export function Sidebar() {
                             {item.label}
                         </Link>
                     ))}
+                    <button
+                        onClick={() => logout()}
+                        className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
+                    >
+                        <LogOut className="h-4 w-4" />
+                        Log out
+                    </button>
                 </nav>
             </div>
              <div className="mt-auto border-t">
