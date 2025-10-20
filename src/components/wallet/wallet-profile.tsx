@@ -158,12 +158,21 @@ export function WalletProfile({ walletData }: { walletData: WalletData | { addre
                         <h3 className="font-semibold mb-4">Net Worth Over Time</h3>
                         <div className="h-[300px]">
                         <ChartContainer config={{value: {label: 'Net Worth', color: 'hsl(var(--primary))'}}} className='h-full w-full'>
-                            <AreaChart data={portfolio.history} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                            <AreaChart data={portfolio.history} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
                             <CartesianGrid vertical={false} strokeDasharray="3 3" />
                             <XAxis dataKey="name" tick={{ fill: 'hsl(var(--muted-foreground))' }} fontSize={12} axisLine={false} tickLine={false} />
                             <YAxis tickFormatter={(value) => `$${(Number(value) / 1000)}k`} tick={{ fill: 'hsl(var(--muted-foreground))' }} fontSize={12} axisLine={false} tickLine={false} />
                             <Tooltip
-                                content={({ active, payload, label }) => active && payload?.length && <ChartTooltipContent label={label} payload={payload.map(p => ({...p, value: `$${(p.value as number).toLocaleString()}`}))} />}
+                                cursor={{ stroke: 'hsl(var(--border))' }}
+                                content={<ChartTooltipContent 
+                                    indicator="line"
+                                    formatter={(value) => (value as number).toLocaleString('en-US', {
+                                        style: 'currency',
+                                        currency: 'USD',
+                                        minimumFractionDigits: 0,
+                                        maximumFractionDigits: 0,
+                                      })}
+                                />}
                             />
                             <Area type="monotone" dataKey="value" stroke="hsl(var(--primary))" fill="hsl(var(--primary))" fillOpacity={0.1} />
                             </AreaChart>
@@ -189,6 +198,16 @@ export function WalletProfile({ walletData }: { walletData: WalletData | { addre
                                         <Cell key={`cell-${index}`} fill={entry.color} />
                                     ))}
                                 </Pie>
+                                <Tooltip
+                                    content={<ChartTooltipContent hideLabel />}
+                                />
+                                <Legend
+                                    verticalAlign="bottom"
+                                    layout="horizontal"
+                                    align="center"
+                                    wrapperStyle={{paddingTop: '20px'}}
+                                    iconSize={10}
+                                />
                             </PieChart>
                         </ChartContainer>
                         </div>
