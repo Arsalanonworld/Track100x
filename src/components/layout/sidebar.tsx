@@ -119,7 +119,7 @@ export default function Sidebar({
     <TooltipProvider>
       <aside
         className={cn(
-          "fixed top-0 left-0 h-full bg-card flex flex-col transition-all duration-300 z-20 border-r pt-14 lg:pt-[60px]",
+          "fixed top-0 left-0 h-full flex flex-col transition-all duration-300 z-20 border-r pt-14 lg:pt-[60px]",
           isExpanded ? "w-60" : "w-[72px]"
         )}
       >
@@ -148,7 +148,7 @@ export default function Sidebar({
           <div
             className={cn(
                 "transition-opacity duration-200",
-                !isExpanded && "opacity-0"
+                !isExpanded && "opacity-0 h-0"
             )}
           >
             {(!user || userPlan === "free") && isExpanded && (
