@@ -71,10 +71,8 @@ const navItems = [
 
 export default function Sidebar({
   isExpanded,
-  onToggleLock,
 }: {
   isExpanded: boolean;
-  onToggleLock: () => void;
 }) {
   const pathname = usePathname();
   const { user, claims } = useUser();
@@ -169,29 +167,6 @@ export default function Sidebar({
               </div>
             )}
           </div>
-          <div className={cn(
-            "flex p-1",
-            isExpanded ? "justify-end" : "justify-center"
-          )}>
-            <Tooltip delayDuration={0}>
-              <TooltipTrigger asChild>
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8"
-                    onClick={onToggleLock}
-                >
-                    <ChevronLeft
-                    size={16}
-                    className={cn("transition-transform", isExpanded ? "rotate-0" : "rotate-180")}
-                    />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="right">
-                <p>{isExpanded ? "Collapse Sidebar" : "Expand Sidebar"}</p>
-              </TooltipContent>
-            </Tooltip>
-          </div>
         </div>
       </aside>
     </TooltipProvider>
@@ -232,8 +207,8 @@ function SidebarSection({
             <div className="relative shrink-0">{item.icon}</div>
             <span
               className={cn(
-                "whitespace-nowrap transition-opacity",
-                isExpanded ? "opacity-100" : "opacity-0 invisible"
+                "whitespace-nowrap transition-all duration-200",
+                isExpanded ? "opacity-100 w-auto" : "opacity-0 w-0"
               )}
             >
               {item.label}
