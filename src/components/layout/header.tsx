@@ -25,7 +25,7 @@ export const LogoIcon = () => (
     >
       <path
         fill="hsl(var(--primary))"
-        d="M3.414 4.828a1 1 0 0 1 1.414 0L12 11.586l7.172-6.758a1 1 0 0 1 1.414 1.414L13.414 12l6.172 7.172a1 1 0 1 1-1.414 1.414L12 13.414l-7.172 6.172a1 1-0 0 1-1.414-1.414L10.586 12 4.414 5.828a1 1 0 0 1-1-1.414Z"
+        d="M3.414 4.828a1 1 0 0 1 1.414 0L12 11.586l7.172-6.758a1 1 0 0 1 1.414 1.414L13.414 12l6.172 7.172a1 1 0 1 1-1.414 1.414L12 13.414l-7.172 6.172a1 1 0 0 1-1.414-1.414L10.586 12 4.414 5.828a1 1 0 0 1-1-1.414Z"
       />
       <path
         fill="hsl(var(--border))"
@@ -77,9 +77,7 @@ export default function Header() {
                         <Sidebar isCollapsed={false} onCollapseToggle={() => {}} />
                     </SheetContent>
                 </Sheet>
-                <div className="w-full flex-1">
-                    <CommandMenu />
-                </div>
+                <CommandMenu />
                 <div className="flex items-center gap-2">
                     <UserNav />
                     <ThemeToggle />
