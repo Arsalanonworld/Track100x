@@ -1,7 +1,7 @@
 
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Menu } from 'lucide-react';
@@ -10,6 +10,7 @@ import Header from './header';
 import { useUser } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { Skeleton } from '../ui/skeleton';
+import { cn } from '@/lib/utils';
 
 function DashboardSkeleton() {
     return (
@@ -42,8 +43,9 @@ function DashboardSkeleton() {
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     const { user, loading } = useUser();
     const router = useRouter();
-    
-    React.useEffect(() => {
+    const [isCollapsed, setIsCollapsed] = useState(false);
+
+    useEffect(() => {
         if (!loading && !user) {
             router.replace('/login');
         }
@@ -55,10 +57,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="min-h-screen w-full">
-      <div className="hidden md:fixed md:inset-y-0 md:left-0 md:z-50 md:block md:w-[220px] lg:w-[280px] border-r bg-muted/40">
-        <Sidebar />
+      <div className={cn("hidden md:fixed md:inset-y-0 md:left-0 md:z-50 md:block border-r bg-muted/40 transition-all duration-300", isCollapsed ? "md:w-[72px]" : "md:w-[220px] lg:w-[280px]")}>
+        <Sidebar 
+            isCollapsed={isCollapsed}
+            onCollapseToggle={() => setIsCollapsed(!isCollapsed)}
+        />
       </div>
-      <div className="flex flex-col md:pl-[220px] lg:pl-[280px]">
+      <div className={cn("flex flex-col transition-all duration-300", isCollapsed ? "md:pl-[72px]" : "md:pl-[220px] lg:pl-[280px]")}>
         <Header />
         <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
           {children}
