@@ -98,7 +98,7 @@ export function UserNav() {
             <DropdownMenuItem asChild>
                 <Link href="/account">
                   <User className="mr-2 h-4 w-4" />
-                  <span>Account Settings</span>
+                  <span>Account</span>
                 </Link>
             </DropdownMenuItem>
             {!isPro && (
