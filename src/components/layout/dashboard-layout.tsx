@@ -15,7 +15,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     setIsClient(true);
     const savedState = localStorage.getItem("sidebar-collapsed");
     const collapsed = savedState === 'true';
-    setIsSidebarExpanded(!collapsed);
+    // Ensure sidebar is collapsed on smaller screens by default
+    const isMobile = window.innerWidth < 768;
+    setIsSidebarExpanded(!collapsed && !isMobile);
   }, []);
 
   const handleSidebarToggle = () => {
