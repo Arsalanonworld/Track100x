@@ -2,7 +2,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Bell, Home, LineChart, Package, Package2, ShoppingCart, Users, Eye, Rss, Compass, Settings, LogOut, Wallet } from 'lucide-react';
+import { Bell, Home, LineChart, Package, Package2, ShoppingCart, Users, Eye, Rss, Compass, Settings, LogOut, Wallet, Star } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,6 +13,7 @@ import { UserNav } from '../user-nav';
 import { ThemeToggle } from '../theme-toggle';
 import { Separator } from '../ui/separator';
 import { useLogout } from '../auth/auth-actions';
+import { useUser } from '@/firebase';
 
 const navItems = [
     { href: '/watchlist', label: 'My Watchlist', icon: Eye },
@@ -28,6 +29,8 @@ const secondaryNavItems = [
 export function Sidebar() {
     const pathname = usePathname();
     const logout = useLogout();
+    const { claims } = useUser();
+    const isPro = claims?.plan === 'pro';
 
     return (
         <div className="flex h-full max-h-screen flex-col">
@@ -56,7 +59,25 @@ export function Sidebar() {
                     ))}
                 </nav>
             </div>
-             <div className="mt-auto border-t p-4">
+             <div className="mt-auto border-t p-4 space-y-4">
+                {!isPro && (
+                     <Card>
+                        <CardHeader className="p-4">
+                            <CardTitle>Upgrade to Pro</CardTitle>
+                            <CardDescription>
+                            Unlock all features and get unlimited access.
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="p-4 pt-0">
+                            <Button size="sm" className="w-full" asChild>
+                                <Link href="/upgrade">
+                                 <Star className="h-4 w-4 mr-2"/>
+                                 Upgrade
+                                </Link>
+                            </Button>
+                        </CardContent>
+                    </Card>
+                )}
                 <nav className="grid items-start text-sm font-medium gap-1">
                     {secondaryNavItems.map(item => (
                          <Link
@@ -79,11 +100,6 @@ export function Sidebar() {
                         Log out
                     </button>
                 </nav>
-                <Separator className="my-4"/>
-                <div className='flex items-center justify-between'>
-                    <UserNav />
-                    <ThemeToggle />
-                </div>
             </div>
         </div>
     )

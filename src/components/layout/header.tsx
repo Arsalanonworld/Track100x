@@ -40,7 +40,7 @@ export default function Header() {
     const [isClient, setIsClient] = useState(false);
     const pathname = usePathname();
 
-    const isDashboard = pathname.startsWith('/watchlist') || pathname.startsWith('/feed') || pathname.startsWith('/leaderboard') || pathname.startsWith('/account') || pathname.startsWith('/wallet');
+    const isDashboard = pathname.startsWith('/watchlist') || pathname.startsWith('/feed') || pathname.startsWith('/leaderboard') || pathname.startsWith('/account') || pathname.startsWith('/wallet') || pathname.startsWith('/portfolio');
 
     useEffect(() => {
         setIsClient(true);
@@ -79,6 +79,8 @@ export default function Header() {
                 <div className="w-full flex-1">
                     {/* Can add search bar here */}
                 </div>
+                <UserNav />
+                <ThemeToggle />
             </header>
         )
     }
@@ -112,3 +114,4 @@ export default function Header() {
         </header>
     );
 }
+
