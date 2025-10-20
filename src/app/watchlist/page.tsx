@@ -456,6 +456,11 @@ export default function WatchlistPage() {
                            )
                         )}
                     </div>
+                    {hasWallets && (
+                        <div className="pt-4">
+                            <HoldingsTable />
+                        </div>
+                    )}
                 </div>
                 <div className='lg:col-span-1 lg:mt-[44px]'>
                    <AlertsPanel onNewAlert={() => handleOpenEditor()} />
@@ -469,4 +474,4 @@ export default function WatchlistPage() {
   );
 }
 
-      
+    
