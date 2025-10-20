@@ -14,8 +14,8 @@ import { cn } from '@/lib/utils';
 
 function DashboardSkeleton() {
     return (
-        <div className="flex min-h-screen w-full animate-pulse-slow">
-            <div className="hidden md:block md:w-64 border-r">
+        <div className="flex min-h-screen w-full">
+            <div className="hidden md:block md:w-[220px] lg:w-[280px] border-r">
                 <div className="flex h-full max-h-screen flex-col gap-2 p-4">
                      <Skeleton className="h-8 w-32 mb-4" />
                      <Skeleton className="h-10 w-full" />
@@ -24,12 +24,11 @@ function DashboardSkeleton() {
                 </div>
             </div>
             <div className="flex flex-col flex-1">
-                <header className="sticky top-0 flex h-16 items-center gap-4 border-b bg-background px-6">
+                <header className="sticky top-0 flex h-14 lg:h-[60px] items-center gap-4 border-b bg-background px-6">
                     <Skeleton className="h-8 w-8 md:hidden" />
-                    <Skeleton className="h-8 w-48" />
                     <div className="ml-auto flex items-center gap-4">
-                        <Skeleton className="h-10 w-10 rounded-full" />
                         <Skeleton className="h-10 w-10" />
+                        <Skeleton className="h-10 w-10 rounded-full" />
                     </div>
                 </header>
                 <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
