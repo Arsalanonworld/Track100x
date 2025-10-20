@@ -8,10 +8,8 @@ import Header from './header';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [isSidebarLocked, setIsSidebarLocked] = useState(true);
-  const [isClient, setIsClient] = useState(false);
   
   useEffect(() => {
-      setIsClient(true);
       const savedState = localStorage.getItem('sidebar-collapsed') === 'true';
       setIsSidebarLocked(savedState);
   }, []);
@@ -24,17 +22,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     }
   };
   
-  const mainContentMargin = isClient && !isSidebarLocked ? 'md:ml-60' : 'md:ml-[72px]';
-
   return (
     <div className="relative min-h-screen">
       <Header />
-      <div className="flex h-full">
+      <div className="flex h-full pt-14 lg:pt-[60px]">
         <Sidebar 
           isExpanded={!isSidebarLocked}
           onToggle={handleToggleLock}
         />
-        <main className={cn("flex-1 flex flex-col transition-all duration-300 pt-14 lg:pt-[60px]", mainContentMargin)}>
+        <main className={cn(
+            "flex-1 flex flex-col transition-all duration-300", 
+            !isSidebarLocked ? 'md:ml-60' : 'md:ml-[72px]'
+            )}>
           <div className="flex-1 p-4 lg:p-6 pb-16">
             {children}
           </div>
