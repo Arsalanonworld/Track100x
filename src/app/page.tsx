@@ -10,8 +10,6 @@ import { FeatureHighlights } from '@/components/feature-highlights';
 import { PricingPreview } from '@/components/pricing-preview';
 
 export default function HomePage() {
-  // The useUser hook and LayoutSwitcher now handle redirection and loading states.
-  // This page is for guests. Logged-in users are redirected from '/' by the useUser hook.
   return (
     <div className="space-y-8 md:space-y-12">
       {/* Hero Section */}

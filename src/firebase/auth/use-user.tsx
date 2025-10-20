@@ -40,7 +40,7 @@ async function createUserProfile(user: User) {
   }
 }
 
-const publicRoutes = ['/', '/upgrade', '/terms-of-service', '/privacy-policy'];
+const guestOnlyRoutes = ['/login', '/upgrade'];
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const auth = useAuth();
@@ -86,14 +86,11 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     if (loading) return;
 
+    // If user is logged in, redirect from guest-only pages.
     if (user) {
-      // If user is logged in, redirect from public-only routes to the dashboard
-      if (pathname === '/login' || publicRoutes.includes(pathname)) {
+      if (guestOnlyRoutes.includes(pathname)) {
         router.replace('/watchlist');
       }
-    } else {
-      // If user is not logged in, you could add logic here to protect private routes
-      // For now, page-level checks will handle it.
     }
   }, [user, loading, pathname, router]);
 
