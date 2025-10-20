@@ -23,6 +23,10 @@ const navItems = [
     { href: '/portfolio', label: 'Portfolio', icon: Wallet },
 ];
 
+const actionItems = [
+    { href: '/account', label: 'Account Settings', icon: Settings },
+];
+
 export function Sidebar({ isCollapsed, onCollapseToggle }: { isCollapsed: boolean, onCollapseToggle: () => void }) {
     const pathname = usePathname();
     const logout = useLogout();
@@ -39,12 +43,9 @@ export function Sidebar({ isCollapsed, onCollapseToggle }: { isCollapsed: boolea
                       Track<span className="font-bold text-primary">100x</span>
                   </span>}
                 </Link>
-                 {!isCollapsed && <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onCollapseToggle}>
-                    <ChevronsLeft className="h-4 w-4" />
-                </Button>}
-                 {isCollapsed && <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onCollapseToggle}>
-                    <ChevronsRight className="h-4 w-4" />
-                </Button>}
+                 <Button variant="ghost" size="icon" className="h-8 w-8 hidden md:flex" onClick={onCollapseToggle}>
+                    {isCollapsed ? <ChevronsRight className="h-4 w-4" /> : <ChevronsLeft className="h-4 w-4" />}
+                </Button>
             </div>
             <div className={cn("flex-1 overflow-y-auto", isCollapsed && "overflow-y-hidden hover:overflow-y-auto")}>
                 <nav className="grid items-start px-2 text-sm font-medium lg:px-4 py-4 gap-1">
@@ -82,21 +83,23 @@ export function Sidebar({ isCollapsed, onCollapseToggle }: { isCollapsed: boolea
                     <Separator className='my-2' />
                      {isCollapsed ? (
                         <>
-                         <Tooltip>
-                            <TooltipTrigger asChild>
-                                <Link
-                                    href="/account"
-                                    className={cn(
-                                        "flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8",
-                                        pathname.startsWith('/account') && "bg-muted text-primary"
-                                    )}
-                                >
-                                    <Settings className="h-5 w-5" />
-                                    <span className="sr-only">Account Settings</span>
-                                </Link>
-                            </TooltipTrigger>
-                            <TooltipContent side="right">Account Settings</TooltipContent>
-                        </Tooltip>
+                        {actionItems.map(item => (
+                             <Tooltip key={item.href}>
+                                <TooltipTrigger asChild>
+                                    <Link
+                                        href={item.href}
+                                        className={cn(
+                                            "flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8",
+                                            pathname.startsWith(item.href) && "bg-muted text-primary"
+                                        )}
+                                    >
+                                        <item.icon className="h-5 w-5" />
+                                        <span className="sr-only">{item.label}</span>
+                                    </Link>
+                                </TooltipTrigger>
+                                <TooltipContent side="right">{item.label}</TooltipContent>
+                            </Tooltip>
+                        ))}
                         <Tooltip>
                             <TooltipTrigger asChild>
                                 <Button
@@ -113,16 +116,19 @@ export function Sidebar({ isCollapsed, onCollapseToggle }: { isCollapsed: boolea
                         </>
                     ) : (
                         <>
-                        <Link
-                            href="/account"
-                            className={cn(
-                                "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary",
-                                pathname.startsWith('/account') && "bg-muted text-primary"
-                            )}
-                        >
-                            <Settings className="h-4 w-4" />
-                            Account Settings
-                        </Link>
+                        {actionItems.map(item => (
+                            <Link
+                                key={item.href}
+                                href={item.href}
+                                className={cn(
+                                    "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary",
+                                    pathname.startsWith(item.href) && "bg-muted text-primary"
+                                )}
+                            >
+                                <item.icon className="h-4 w-4" />
+                                {item.label}
+                            </Link>
+                        ))}
                         <Button
                             variant="ghost"
                             onClick={logout}

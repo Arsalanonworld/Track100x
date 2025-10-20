@@ -73,14 +73,12 @@ export default function Header() {
                     </Button>
                     </SheetTrigger>
                     <SheetContent side="left" className="flex flex-col p-0">
-                        <Sidebar />
+                        <Sidebar isCollapsed={false} onCollapseToggle={() => {}} />
                     </SheetContent>
                 </Sheet>
                 <div className="w-full flex-1">
                     {/* Can add search bar here */}
                 </div>
-                <UserNav />
-                <ThemeToggle />
             </header>
         )
     }
@@ -114,4 +112,3 @@ export default function Header() {
         </header>
     );
 }
-
