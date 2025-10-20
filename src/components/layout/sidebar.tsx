@@ -16,7 +16,6 @@ import {
   Rss,
   Settings,
   ChevronLeft,
-  ChevronRight,
 } from "lucide-react";
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
@@ -155,11 +154,20 @@ export default function Sidebar({ onStateChange }: { onStateChange: (isExpanded:
       >
         <div className="flex flex-col flex-1">
           {/* Header / Logo */}
-          <div className={cn("flex items-center border-b border-border h-14 lg:h-[60px]", isExpanded ? 'px-4' : 'justify-center px-2')}>
+          <div className={cn("flex items-center justify-between border-b border-border h-14 lg:h-[60px]", isExpanded ? 'pl-4 pr-2' : 'px-2 justify-center')}>
             <Link href="/" className={cn("flex items-center gap-2 font-semibold")}>
                 <LogoIcon />
                 {isExpanded && <span className="text-lg">Track100x</span>}
             </Link>
+            {isExpanded && (
+                <Button
+                    variant="ghost"
+                    className="p-2 h-auto"
+                    onClick={handleToggle}
+                    >
+                    <ChevronLeft size={18} />
+                </Button>
+            )}
           </div>
 
           {/* NAVIGATION */}
@@ -210,16 +218,6 @@ export default function Sidebar({ onStateChange }: { onStateChange: (isExpanded:
               </div>
             </div>
           )}
-
-          <div className={cn("flex items-center p-3", !isExpanded ? "justify-center" : "justify-end")}>
-            <Button
-                variant="ghost"
-                className="p-2 h-auto"
-                onClick={handleToggle}
-                >
-                {isCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
-            </Button>
-          </div>
         </div>
       </aside>
     </TooltipProvider>
@@ -287,5 +285,3 @@ function SidebarSection({ title, items, pathname, isCollapsed, user }: { title: 
     </div>
   );
 }
-
-    
