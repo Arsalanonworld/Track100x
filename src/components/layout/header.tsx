@@ -28,18 +28,12 @@ function LogoIcon() {
   );
 }
 
-interface HeaderProps {
-  isSidebarExpanded: boolean;
-  onToggleSidebar: () => void;
-}
-
-
-export default function Header({ isSidebarExpanded, onToggleSidebar }: HeaderProps) {
+export default function Header() {
     const { user } = useUser();
     
     return (
         <header className={cn(
-            "fixed top-0 z-30 w-full bg-background/95 backdrop-blur-sm border-b"
+            "fixed top-0 left-0 right-0 z-30 w-full bg-background/95 backdrop-blur-sm border-b"
         )}>
             <div className={cn("flex h-14 items-center lg:h-[60px] px-4")}>
                 <div className="flex items-center gap-2">
@@ -47,18 +41,7 @@ export default function Header({ isSidebarExpanded, onToggleSidebar }: HeaderPro
                     <MobileNav />
                    </div>
                     <div className="hidden md:flex items-center gap-2">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 rounded-full"
-                        onClick={onToggleSidebar}
-                      >
-                        <ChevronLeft
-                          size={16}
-                          className={cn("transition-transform", !isSidebarExpanded && "rotate-180")}
-                        />
-                      </Button>
-                      <Link href="/" className="flex items-center space-x-2">
+                      <Link href="/" className="flex items-center space-x-2 pl-2">
                           <LogoIcon />
                           <span className="font-bold">Track100x</span>
                       </Link>

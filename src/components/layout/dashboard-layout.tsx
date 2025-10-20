@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -36,8 +37,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <FirebaseClientProvider>
       <div className="min-h-screen w-full bg-background">
-        <Header isSidebarExpanded={isSidebarExpanded} onToggleSidebar={handleSidebarToggle} />
-        <Sidebar isExpanded={isSidebarExpanded} />
+        <Header />
+        <Sidebar isExpanded={isSidebarExpanded} onToggle={handleSidebarToggle} />
         <div className={cn(
             "pt-14 lg:pt-[60px] transition-all duration-300",
             isSidebarExpanded ? "md:pl-60" : "md:pl-[72px]"

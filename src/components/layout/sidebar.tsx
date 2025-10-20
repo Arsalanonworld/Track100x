@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -71,9 +70,11 @@ const navItems = [
   ];
 
 export default function Sidebar({
-  isExpanded
+  isExpanded,
+  onToggle
 }: {
   isExpanded: boolean;
+  onToggle: () => void;
 }) {
   const pathname = usePathname();
   const { user, claims } = useUser();
@@ -143,29 +144,47 @@ export default function Sidebar({
             </div>
         </div>
 
-        <div
-          className={cn(
-            "border-t transition-opacity duration-300 whitespace-nowrap",
-            !isExpanded && "opacity-0"
-          )}
-        >
-          {(!user || userPlan === "free") && isExpanded && (
-            <div className="p-4">
-              <div className="p-4 rounded-xl bg-gradient-to-br from-primary via-blue-600 to-blue-700 text-primary-foreground">
-                <p className="font-bold text-sm mb-1">Unlock Full Power</p>
-                <p className="text-xs opacity-90 mb-3">
-                  Get advanced analytics, unlimited alerts & more.
-                </p>
-                <Link
-                  href="/upgrade"
-                  className="inline-flex items-center gap-1 text-xs font-semibold bg-primary-foreground/20 hover:bg-primary-foreground/30 px-3 py-1.5 rounded-lg transition-all"
-                >
-                  <Star size={14} />
-                  Upgrade to Pro
-                </Link>
+        <div className="border-t">
+          <div
+            className={cn(
+                "transition-all duration-300 whitespace-nowrap",
+                !isExpanded && "opacity-0"
+            )}
+          >
+            {(!user || userPlan === "free") && isExpanded && (
+              <div className="p-4">
+                <div className="p-4 rounded-xl bg-gradient-to-br from-primary via-blue-600 to-blue-700 text-primary-foreground">
+                  <p className="font-bold text-sm mb-1">Unlock Full Power</p>
+                  <p className="text-xs opacity-90 mb-3">
+                    Get advanced analytics, unlimited alerts & more.
+                  </p>
+                  <Link
+                    href="/upgrade"
+                    className="inline-flex items-center gap-1 text-xs font-semibold bg-primary-foreground/20 hover:bg-primary-foreground/30 px-3 py-1.5 rounded-lg transition-all"
+                  >
+                    <Star size={14} />
+                    Upgrade to Pro
+                  </Link>
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
+          <div className={cn(
+            "flex p-3 border-t",
+            isExpanded ? "justify-end" : "justify-center"
+          )}>
+            <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                onClick={onToggle}
+            >
+                <ChevronLeft
+                size={16}
+                className={cn("transition-transform", !isExpanded && "rotate-180")}
+                />
+            </Button>
+          </div>
         </div>
       </aside>
     </TooltipProvider>
