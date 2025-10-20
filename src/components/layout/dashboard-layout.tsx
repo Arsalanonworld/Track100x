@@ -1,17 +1,15 @@
 
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Sidebar from './sidebar';
 import { cn } from '@/lib/utils';
 import Header from './header';
-import { Button } from '../ui/button';
-import { ChevronLeft } from 'lucide-react';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const [isSidebarLocked, setIsSidebarLocked] = React.useState(false);
+  const [isSidebarLocked, setIsSidebarLocked] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const savedState = localStorage.getItem('sidebar-collapsed') === 'true';
     if (window.innerWidth >= 768) {
       setIsSidebarLocked(savedState);
@@ -20,20 +18,21 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     }
   }, []);
 
+
   const handleToggleLock = () => {
     const newLockedState = !isSidebarLocked;
     setIsSidebarLocked(newLockedState);
     localStorage.setItem('sidebar-collapsed', String(newLockedState));
   };
   
-  const mainContentMargin = isSidebarLocked ? 'md:ml-60' : 'md:ml-[72px]';
+  const mainContentMargin = isSidebarLocked ? 'md:ml-[72px]' : 'md:ml-60';
 
   return (
     <div className="relative min-h-screen">
       <Header />
       <div className="flex h-full">
         <Sidebar 
-          isExpanded={isSidebarLocked}
+          isExpanded={!isSidebarLocked}
           onToggle={handleToggleLock}
         />
         <main className={cn("flex-1 flex flex-col transition-all duration-300 pt-14 lg:pt-[60px]", mainContentMargin)}>
