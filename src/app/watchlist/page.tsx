@@ -27,6 +27,7 @@ import { doc, deleteDoc, updateDoc } from 'firebase/firestore';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { Dialog } from '@/components/ui/dialog';
+import { WatchlistItemCard } from '@/components/watchlist/watchlist-item-card';
 
 
 const WATCHLIST_LIMIT_FREE = 5;
@@ -82,13 +83,16 @@ const portfolioData = {
 const renderActiveShape = (props: any) => {
     const RADIAN = Math.PI / 180;
     const { cx, cy, midAngle, innerRadius, outerRadius, startAngle, endAngle, fill, payload, percent, value } = props;
+    const isMobile = window.innerWidth < 768;
     
     return (
       <g>
-        <text x={cx} y={cy} dy={-8} textAnchor="middle" fill={fill} className='text-xs sm:text-sm font-semibold truncate'>
-          {payload.name}
-        </text>
-         <text x={cx} y={cy} dy={14} textAnchor="middle" fill="hsl(var(--foreground))" className="text-xl sm:text-2xl font-bold">
+        {!isMobile && (
+            <text x={cx} y={cy} dy={-8} textAnchor="middle" fill={fill} className='text-xs sm:text-sm font-semibold truncate'>
+                {payload.name}
+            </text>
+        )}
+         <text x={cx} y={cy} dy={isMobile ? 0 : 14} textAnchor="middle" fill="hsl(var(--foreground))" className="text-xl sm:text-2xl font-bold">
           {`${(percent * 100).toFixed(1)}%`}
         </text>
         <Sector
@@ -478,9 +482,5 @@ export default function WatchlistPage() {
     </div>
   );
 }
-
-    
-
-    
 
     
