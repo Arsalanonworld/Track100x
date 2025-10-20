@@ -100,8 +100,12 @@ export default {
             '100%': { opacity: '1', transform: 'translateY(0)' },
         },
         'shimmer': {
-          '0%, 90%, 100%': { transform: 'translateX(-100%)' },
-          '40%': { transform: 'translateX(100%)' },
+          '0%, 90%, 100%': {
+            'background-position': 'calc(-100% - var(--shimmer-width)) 0',
+          },
+          '30%, 60%': {
+            'background-position': 'calc(100% + var(--shimmer-width)) 0',
+          },
         },
         'pulse-slow': {
             '50%': { transform: 'scale(1.02)' },
