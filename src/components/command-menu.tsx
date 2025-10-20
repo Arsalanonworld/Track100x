@@ -61,12 +61,13 @@ export function CommandMenu() {
       <Button
         variant="outline"
         className={cn(
-          'relative h-9 w-9 justify-start rounded-[0.5rem] bg-background text-sm font-normal text-muted-foreground shadow-none md:w-40 lg:w-64 md:px-3 md:py-2'
+          'relative h-9 w-full justify-start rounded-[0.5rem] bg-background text-sm font-normal text-muted-foreground shadow-none md:px-3 md:py-2'
         )}
         onClick={() => setOpen(true)}
       >
-        <Search className="h-4 w-4 md:mr-2" />
+        <Search className="h-4 w-4 mr-2" />
         <span className="hidden md:inline-flex">Search...</span>
+        <span className="inline-flex md:hidden">Search...</span>
         <kbd className="pointer-events-none absolute right-[0.3rem] top-[0.3rem] hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
           <span className="text-xs">⌘</span>K
         </kbd>
