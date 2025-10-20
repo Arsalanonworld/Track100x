@@ -50,7 +50,7 @@ export function PricingPreview() {
         </div>
         <div className="mt-12 grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-4xl mx-auto items-start">
             {/* Free Plan Card */}
-            <Card className={'flex flex-col text-left'}>
+            <Card className={'flex flex-col text-left transition-all duration-300 hover:scale-[1.02] hover:shadow-xl'}>
                 <CardHeader>
                     <CardTitle className="text-2xl flex items-center gap-2"><User className="h-6 w-6 text-muted-foreground"/>Free</CardTitle>
                     <div className="flex items-baseline pt-4">
@@ -82,7 +82,7 @@ export function PricingPreview() {
             </Card>
             
             {/* Pro Plan Card */}
-            <Card className={'flex flex-col text-left border-primary ring-2 ring-primary shadow-lg'}>
+            <Card className={'flex flex-col text-left border-primary ring-2 ring-primary shadow-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary/20'}>
                 <CardHeader>
                     <div className="flex justify-between items-center">
                     <CardTitle className="text-2xl flex items-center gap-2"><Star className="h-6 w-6 text-primary"/>Pro</CardTitle>
