@@ -10,6 +10,10 @@ import { useUser } from "@/firebase";
 import { useState, useEffect } from 'react';
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
+import { Button } from "../ui/button";
+import { Menu } from "lucide-react";
+import { Sheet, SheetTrigger, SheetContent } from "../ui/sheet";
+import { Sidebar } from "./sidebar";
 
 export const LogoIcon = () => (
     <svg
@@ -36,7 +40,7 @@ export default function Header() {
     const [isClient, setIsClient] = useState(false);
     const pathname = usePathname();
 
-    const isDashboard = pathname.startsWith('/watchlist') || pathname.startsWith('/feed') || pathname.startsWith('/leaderboard') || pathname.startsWith('/account');
+    const isDashboard = pathname.startsWith('/watchlist') || pathname.startsWith('/feed') || pathname.startsWith('/leaderboard') || pathname.startsWith('/account') || pathname.startsWith('/wallet');
 
     useEffect(() => {
         setIsClient(true);
@@ -56,11 +60,26 @@ export default function Header() {
 
     if (isDashboard) {
         return (
-             <div className="ml-auto flex items-center space-x-4">
-                {isClient && user && <NotificationBell />}
-                <UserNav />
-                <ThemeToggle />
-            </div>
+             <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
+                <Sheet>
+                    <SheetTrigger asChild>
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        className="shrink-0 md:hidden"
+                    >
+                        <Menu className="h-5 w-5" />
+                        <span className="sr-only">Toggle navigation menu</span>
+                    </Button>
+                    </SheetTrigger>
+                    <SheetContent side="left" className="flex flex-col p-0">
+                        <Sidebar />
+                    </SheetContent>
+                </Sheet>
+                <div className="w-full flex-1">
+                    {/* Can add search bar here */}
+                </div>
+            </header>
         )
     }
 

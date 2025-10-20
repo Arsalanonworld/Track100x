@@ -9,6 +9,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { LogoIcon } from './header';
+import { UserNav } from '../user-nav';
+import { ThemeToggle } from '../theme-toggle';
+import { Separator } from '../ui/separator';
 
 const navItems = [
     { href: '/watchlist', label: 'My Watchlist', icon: Eye },
@@ -62,6 +65,11 @@ export function Sidebar() {
                   </Button>
                 </CardContent>
               </Card>
+              <Separator className='my-4'/>
+              <div className='flex items-center justify-between'>
+                <UserNav />
+                <ThemeToggle />
+              </div>
             </div>
         </div>
     )
