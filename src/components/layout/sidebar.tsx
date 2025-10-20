@@ -120,8 +120,6 @@ export default function Sidebar({
       <aside
         className={cn(
           "hidden md:flex flex-col transition-all duration-300 z-40 border-r bg-background",
-          "sticky top-14 lg:top-[60px]",
-          "h-[calc(100vh-56px)] lg:h-[calc(100vh-60px)]",
           isExpanded ? "w-60" : "w-[72px]"
         )}
       >
