@@ -6,6 +6,8 @@ import { cn } from '@/lib/utils';
 import { ThemeProvider } from '@/components/theme-provider';
 import DashboardLayout from '@/components/layout/dashboard-layout';
 import { Footer } from '@/components/layout/footer';
+import Header from '@/components/layout/header';
+import { FirebaseClientProvider } from '@/firebase/client-provider';
 
 export const metadata: Metadata = {
   title: 'Track100x | Blockchain Intelligence Platform',
@@ -25,19 +27,20 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet" />
       </head>
-      <body className={cn('min-h-screen bg-background font-sans antialiased')}>
+      <body className={cn('min-h-screen bg-background font-sans antialiased grid grid-rows-[auto,1fr,auto]')}>
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
           enableSystem
           disableTransitionOnChange
         >
-          <div className="relative flex min-h-screen flex-col">
+          <FirebaseClientProvider>
+            <Header />
             <DashboardLayout>
               {children}
             </DashboardLayout>
             <Footer />
-          </div>
+          </FirebaseClientProvider>
           <Toaster />
         </ThemeProvider>
       </body>

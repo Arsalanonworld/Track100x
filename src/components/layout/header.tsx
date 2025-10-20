@@ -33,7 +33,7 @@ export default function Header() {
     
     return (
         <header className={cn(
-            "fixed top-0 left-0 right-0 z-30 w-full bg-background/95 backdrop-blur-sm border-b"
+            "sticky top-0 z-30 w-full bg-background/95 backdrop-blur-sm border-b"
         )}>
             <div className={cn("flex h-14 items-center lg:h-[60px] px-4")}>
                 <div className="flex items-center gap-2">
