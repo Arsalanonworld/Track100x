@@ -79,6 +79,60 @@ export function Sidebar({ isCollapsed, onCollapseToggle }: { isCollapsed: boolea
                             </Link>
                         )
                     ))}
+                    <Separator className='my-2' />
+                     {isCollapsed ? (
+                        <>
+                         <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Link
+                                    href="/account"
+                                    className={cn(
+                                        "flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8",
+                                        pathname.startsWith('/account') && "bg-muted text-primary"
+                                    )}
+                                >
+                                    <Settings className="h-5 w-5" />
+                                    <span className="sr-only">Account Settings</span>
+                                </Link>
+                            </TooltipTrigger>
+                            <TooltipContent side="right">Account Settings</TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button
+                                    variant="ghost"
+                                    onClick={logout}
+                                    className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                                >
+                                    <LogOut className="h-5 w-5" />
+                                    <span className="sr-only">Log out</span>
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent side="right">Log out</TooltipContent>
+                        </Tooltip>
+                        </>
+                    ) : (
+                        <>
+                        <Link
+                            href="/account"
+                            className={cn(
+                                "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary",
+                                pathname.startsWith('/account') && "bg-muted text-primary"
+                            )}
+                        >
+                            <Settings className="h-4 w-4" />
+                            Account Settings
+                        </Link>
+                        <Button
+                            variant="ghost"
+                            onClick={logout}
+                            className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary justify-start"
+                        >
+                            <LogOut className="h-4 w-4" />
+                            Log out
+                        </Button>
+                        </>
+                    )}
                 </nav>
             </div>
              <div className={cn("mt-auto border-t p-4 space-y-4", isCollapsed && 'p-2 space-y-2')}>

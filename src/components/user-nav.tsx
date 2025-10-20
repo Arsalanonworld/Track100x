@@ -95,13 +95,6 @@ export function UserNav() {
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuGroup>
-             <DropdownMenuItem asChild>
-                <Link href="/account">
-                    <Settings className="mr-2 h-4 w-4" />
-                    <span>Account</span>
-                </Link>
-             </DropdownMenuItem>
              {!isPro && (
                 <DropdownMenuItem asChild>
                     <Link href="/upgrade">
@@ -110,12 +103,6 @@ export function UserNav() {
                     </Link>
                 </DropdownMenuItem>
             )}
-          </DropdownMenuGroup>
-          <DropdownMenuSeparator />
-           <DropdownMenuItem onClick={() => logout()}>
-                <LogOut className="mr-2 h-4 w-4" />
-                <span>Log out</span>
-            </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
