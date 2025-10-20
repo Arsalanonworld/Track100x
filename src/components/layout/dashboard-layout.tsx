@@ -13,12 +13,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const isAppPage = !['/', '/upgrade', '/login', '/terms-of-service', '/privacy-policy'].includes(pathname);
 
   useEffect(() => {
-    // This effect runs only on the client, after the initial render.
     setIsClient(true);
   }, []);
 
-  // On the server and during the initial client render, we don't render the layout
-  // to prevent hydration mismatch caused by the sidebar state from localStorage.
   if (!isClient) {
     return null;
   }
@@ -35,7 +32,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <Header />
         <main className={cn(
             "flex-1",
-            isAppPage ? "gap-4 p-4 lg:gap-6 lg:p-6" : ""
+            isAppPage ? "p-4 lg:p-6" : ""
         )}>
           {children}
         </main>

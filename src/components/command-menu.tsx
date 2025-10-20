@@ -73,7 +73,7 @@ export function CommandMenu() {
             <PopoverTrigger asChild>
                 <CommandInput
                     placeholder="Search..."
-                    className="h-9 w-full justify-start rounded-full bg-background text-sm font-normal text-muted-foreground shadow-none pl-9"
+                    className="h-9 w-full justify-start rounded-full bg-muted text-sm font-normal text-muted-foreground shadow-none pl-9"
                     onFocus={() => setOpen(true)}
                 />
             </PopoverTrigger>

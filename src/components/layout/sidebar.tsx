@@ -55,8 +55,10 @@ export default function Sidebar({
   const { user, claims } = useUser();
   const logout = useLogout();
   const userPlan = claims?.plan || "free";
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
+    setIsClient(true);
     const savedState = localStorage.getItem("sidebar-collapsed");
     const collapsed = savedState === 'true';
     setIsCollapsed(collapsed);
@@ -142,6 +144,10 @@ export default function Sidebar({
   }
 
   const isExpanded = !isCollapsed;
+
+  if (!isClient) {
+      return null;
+  }
 
   return (
     <TooltipProvider>
@@ -262,7 +268,7 @@ function SidebarSection({
         const isButton = !!item.onClick;
 
         const content = (
-          <>
+          <div className="flex items-center gap-3 overflow-hidden">
             <div className="relative shrink-0">{item.icon}</div>
             <span
               className={cn(
@@ -278,11 +284,11 @@ function SidebarSection({
                 className="ml-auto text-yellow-500 shrink-0"
               />
             )}
-          </>
+          </div>
         );
         
         const sharedClasses = cn(
-            "flex items-center gap-3 rounded-lg px-4 py-2.5 text-sm font-semibold transition-all w-full overflow-hidden",
+            "flex items-center rounded-lg px-4 py-2.5 text-sm font-semibold transition-all w-full",
             isActive
               ? "bg-primary/10 text-primary"
               : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",

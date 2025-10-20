@@ -13,9 +13,9 @@ import { useUser } from '@/firebase';
 export default function HomePage() {
   const { user, loading } = useUser();
   
+  // This page is now public, but we might redirect logged-in users away from it.
+  // The useUser hook already contains logic to redirect logged-in users from '/'
   if (loading || user) {
-    // The UserProvider is responsible for redirection,
-    // so we show a loading state to prevent flicker.
     return (
       <div className="flex items-center justify-center h-screen">
         <p className="text-muted-foreground">Loading...</p>
@@ -24,7 +24,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="space-y-8 md:space-y-12 lg:-mt-16">
+    <div className="space-y-8 md:space-y-12">
       {/* Hero Section */}
       <HeroSection />
 

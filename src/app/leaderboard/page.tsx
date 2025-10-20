@@ -3,7 +3,6 @@
 
 import { Leaderboard } from '@/components/leaderboard';
 import PageHeader from '@/components/page-header';
-import { withAuth } from '@/components/auth/withAuth';
 import { Skeleton } from '@/components/ui/skeleton';
 
 function PageSkeleton() {
@@ -40,4 +39,4 @@ function LeaderboardPage() {
   );
 }
 
-export default withAuth(LeaderboardPage, { skeleton: PageSkeleton });
+export default LeaderboardPage;
