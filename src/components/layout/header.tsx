@@ -14,7 +14,6 @@ import { Button } from "../ui/button";
 import { Menu, Search } from "lucide-react";
 import { Sheet, SheetTrigger, SheetContent } from "../ui/sheet";
 import { Sidebar } from "./sidebar";
-import { Input } from "../ui/input";
 import { CommandMenu } from "../command-menu";
 
 export const LogoIcon = () => (
