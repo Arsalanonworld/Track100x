@@ -20,7 +20,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import PageHeader from '@/components/page-header';
 import { Button } from '@/components/ui/button';
-import { Copy, ArrowUpRight, Zap, Eye, Download, Lock } from 'lucide-react';
+import { Copy, ArrowUpRight, Zap, Eye, Download, Lock, TrendingUp, Percent, ArrowRightLeft, Tag } from 'lucide-react';
 import { whaleTransactions, type LeaderboardWallet } from '@/lib/mock-data';
 import { getExplorerUrl } from '@/lib/explorers';
 import { WatchlistButton } from '@/components/track-button';
@@ -53,35 +53,22 @@ const PnlBadge = ({ value }: { value: number }) => (
     </Badge>
   );
 
-const renderActiveShape = (props: any) => {
-    const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill, percent } = props;
-  
+const StatCard = ({ title, value, icon, valueClassName }: { title: string, value: string | React.ReactNode, icon: React.ReactNode, valueClassName?: string }) => {
     return (
-      <g>
-        <Sector
-          cx={cx}
-          cy={cy}
-          innerRadius={innerRadius}
-          outerRadius={outerRadius}
-          startAngle={startAngle}
-          endAngle={endAngle}
-          fill={fill}
-        />
-        <Sector
-          cx={cx}
-          cy={cy}
-          startAngle={startAngle}
-          endAngle={endAngle}
-          innerRadius={outerRadius + 6}
-          outerRadius={outerRadius + 10}
-          fill={fill}
-        />
-         <text x={cx} y={cy} dy={8} textAnchor="middle" fill="hsl(var(--foreground))" className="text-2xl font-bold">
-          {(percent * 100).toFixed(0)}%
-        </text>
-      </g>
-    );
+        <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">{title}</CardTitle>
+                {icon}
+            </CardHeader>
+            <CardContent>
+                <div className={cn("text-2xl font-bold", valueClassName)}>
+                    {value}
+                </div>
+            </CardContent>
+        </Card>
+    )
 };
+
 
 export function WalletProfile({ walletData }: { walletData: WalletData | { address: string, transactions: any[], portfolio: null } }) {
   if (!walletData) {
@@ -89,6 +76,8 @@ export function WalletProfile({ walletData }: { walletData: WalletData | { addre
   }
 
   const { address, portfolio, transactions } = walletData;
+
+  const isLeaderboardWallet = 'pnl7d' in walletData;
 
   return (
     <div className="space-y-8">
@@ -112,6 +101,44 @@ export function WalletProfile({ walletData }: { walletData: WalletData | { addre
         }
       />
       
+      {isLeaderboardWallet && (
+        <section id="wallet-stats">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <StatCard 
+                    title="7-Day P&L"
+                    value={`${(walletData as WalletData).pnl7d.toFixed(2)}%`}
+                    icon={<TrendingUp className="h-4 w-4 text-muted-foreground" />}
+                    valueClassName={(walletData as WalletData).pnl7d >= 0 ? 'text-green-500' : 'text-red-500'}
+                />
+                 <StatCard 
+                    title="7-Day Win Rate"
+                    value={`${(walletData as WalletData).winRate.toFixed(1)}%`}
+                    icon={<Percent className="h-4 w-4 text-muted-foreground" />}
+                />
+                 <StatCard 
+                    title="7-Day Trades"
+                    value={(walletData as WalletData).activity}
+                    icon={<ArrowRightLeft className="h-4 w-4 text-muted-foreground" />}
+                />
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Tags</CardTitle>
+                        <Tag className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="flex flex-wrap gap-2 pt-1">
+                             {(walletData as WalletData).tags && (walletData as WalletData).tags.length > 0 ? (
+                                (walletData as WalletData).tags.map(tag => <Badge key={tag} variant="secondary">{tag}</Badge>)
+                             ) : (
+                                <p className='text-sm text-muted-foreground'>No tags</p>
+                             )}
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
+        </section>
+      )}
+
       {portfolio ? (
         <Card>
             <CardHeader>
