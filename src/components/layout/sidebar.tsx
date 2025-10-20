@@ -17,6 +17,7 @@ const navItems = [
     { href: '/watchlist', label: 'My Watchlist', icon: Eye },
     { href: '/feed', label: 'Whale Feed', icon: Rss },
     { href: '/leaderboard', label: 'Explore', icon: Compass },
+    { href: '/account', label: 'Account Settings', icon: Settings },
 ];
 
 export function Sidebar() {
