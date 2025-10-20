@@ -1,7 +1,7 @@
+
 'use client';
 
 import { WhaleFeed } from '@/components/whale-feed';
-import { withAuth } from '@/components/auth/withAuth';
 import { Skeleton } from '@/components/ui/skeleton';
 import PageHeader from '@/components/page-header';
 
@@ -29,4 +29,4 @@ function FeedPage() {
   );
 }
 
-export default withAuth(FeedPage, { skeleton: PageSkeleton });
+export default FeedPage;
