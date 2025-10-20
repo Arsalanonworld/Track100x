@@ -1,185 +1,205 @@
 
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { Bell, Home, LineChart, Package, Package2, ShoppingCart, Users, Eye, Rss, Compass, Settings, LogOut, Wallet, Star, ChevronsLeft, ChevronsRight } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { usePathname } from 'next/navigation';
-import { cn } from '@/lib/utils';
-import { UserNav } from '../user-nav';
-import { ThemeToggle } from '../theme-toggle';
-import { Separator } from '../ui/separator';
-import { useLogout } from '../auth/auth-actions';
-import { useUser } from '@/firebase';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
+import { useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import {
+  LayoutDashboard,
+  Bell,
+  Trophy,
+  BarChart3,
+  User,
+  LogOut,
+  ArrowLeftRight,
+  Star,
+  Lock,
+  Compass,
+  Eye,
+  Wallet,
+  Rss,
+  Settings,
+} from "lucide-react";
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
+import { useUser } from "@/firebase";
+import { useLogout } from "../auth/auth-actions";
 
 
-export function LogoIcon() {
+export default function Sidebar({ isCollapsed, onCollapseToggle }: { isCollapsed: boolean, onCollapseToggle: () => void }) {
+  const pathname = usePathname();
+  const { claims } = useUser();
+  const logout = useLogout();
+  const userPlan = claims?.plan || 'free';
+
+  const navItems = [
+    {
+      label: "Whale Feed",
+      icon: <Rss size={18} />,
+      href: "/feed",
+      visibleFor: ["free", "pro"],
+    },
+    {
+      label: "Explore",
+      icon: <Compass size={18} />,
+      href: "/leaderboard",
+      visibleFor: ["free", "pro"],
+    },
+    {
+      label: "Watchlist",
+      icon: <Eye size={18} />,
+      href: "/watchlist",
+      visibleFor: ["free", "pro"],
+    },
+    {
+      label: "Alerts",
+      icon: <Bell size={18} />,
+      href: "/alerts",
+      visibleFor: ["free", "pro"],
+    },
+    {
+      label: "Portfolio",
+      icon: <Wallet size={18} />,
+      href: "/portfolio",
+      visibleFor: ["free", "pro"],
+    },
+  ];
+
+  const analyticsItems = [
+    {
+      label: "Analytics",
+      icon: <BarChart3 size={18} />,
+      href: "/analytics",
+      visibleFor: ["pro"],
+      locked: userPlan === "free",
+    },
+  ];
+
+  const accountItems = [
+    {
+      label: "My Account",
+      icon: <Settings size={18} />,
+      href: "/account",
+      visibleFor: ["free", "pro"],
+    },
+    {
+      label: "Log Out",
+      icon: <LogOut size={18} />,
+      href: "#",
+      onClick: logout,
+      visibleFor: ["free", "pro"],
+    },
+  ];
+
   return (
-    <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className="h-6 w-6"
-    >
-        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-    </svg>
+    <TooltipProvider>
+      <aside
+        className={cn(
+          "h-screen border-r border-border bg-card flex flex-col justify-between transition-all duration-300",
+          isCollapsed ? "w-[72px]" : "w-60"
+        )}
+      >
+        <div>
+          {/* Header / Logo */}
+          <div className="flex items-center justify-between px-4 py-3 border-b border-border h-14 lg:h-[60px]">
+            {!isCollapsed && <span className="text-lg font-semibold">Track100x</span>}
+            <button
+              className="p-2 rounded-md hover:bg-muted"
+              onClick={onCollapseToggle}
+            >
+              <ArrowLeftRight size={18} />
+            </button>
+          </div>
+
+          {/* NAVIGATION */}
+          <div className="px-3 py-4 space-y-6">
+            {/* Section: Core */}
+            <SidebarSection
+              title="CORE"
+              items={navItems}
+              pathname={pathname}
+              isCollapsed={isCollapsed}
+            />
+
+            {/* Section: Analytics */}
+            <SidebarSection
+              title="ANALYTICS"
+              items={analyticsItems}
+              pathname={pathname}
+              isCollapsed={isCollapsed}
+            />
+
+            {/* Section: Account */}
+            <SidebarSection
+              title="ACCOUNT"
+              items={accountItems}
+              pathname={pathname}
+              isCollapsed={isCollapsed}
+            />
+          </div>
+        </div>
+
+        {/* Upgrade CTA */}
+        {userPlan === "free" && !isCollapsed && (
+          <div className="p-4 border-t border-border">
+            <div className="p-3 rounded-xl bg-gradient-to-br from-primary to-blue-500/80 text-primary-foreground">
+              <p className="font-medium text-sm mb-1">Unlock Full Power</p>
+              <p className="text-xs opacity-90 mb-3">
+                Get advanced analytics, unlimited alerts & more.
+              </p>
+              <Link
+                href="/upgrade"
+                className="inline-flex items-center gap-1 text-xs font-semibold bg-primary-foreground/10 hover:bg-primary-foreground/20 px-3 py-1.5 rounded-lg transition-all"
+              >
+                <Star size={14} />
+                Upgrade to Pro
+              </Link>
+            </div>
+          </div>
+        )}
+      </aside>
+    </TooltipProvider>
   );
 }
 
-const navItems = [
-    { href: '/feed', label: 'Whale Feed', icon: Rss },
-    { href: '/leaderboard', label: 'Explore', icon: Compass },
-    { href: '/watchlist', label: 'Watchlist', icon: Eye },
-    { href: '/alerts', label: 'Alerts', icon: Bell },
-    { href: '/portfolio', label: 'Portfolio', icon: Wallet },
-];
-
-const actionItems = [
-    { href: '/account', label: 'Account Settings', icon: Settings },
-];
-
-export function Sidebar({ isCollapsed, onCollapseToggle }: { isCollapsed: boolean, onCollapseToggle: () => void }) {
-    const pathname = usePathname();
-    const logout = useLogout();
-    const { claims } = useUser();
-    const isPro = claims?.plan === 'pro';
-
-    return (
-        <TooltipProvider delayDuration={0}>
-        <div className="flex h-full max-h-screen flex-col">
-            <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6 justify-between">
-                 <Link href="/" className={cn("flex items-center gap-2 font-semibold", isCollapsed && "justify-center")}>
-                  <LogoIcon />
-                  {!isCollapsed && <span className="font-regular text-lg">
-                      Track<span className="font-bold text-primary">100x</span>
-                  </span>}
-                </Link>
-                 <Button variant="ghost" size="icon" className="h-8 w-8 hidden md:flex" onClick={onCollapseToggle}>
-                    {isCollapsed ? <ChevronsRight className="h-4 w-4" /> : <ChevronsLeft className="h-4 w-4" />}
-                </Button>
-            </div>
-            <div className={cn("flex-1 overflow-y-auto", isCollapsed && "overflow-y-hidden hover:overflow-y-auto")}>
-                <nav className="grid items-start px-2 text-sm font-medium lg:px-4 py-4 gap-1">
-                    {navItems.map(item => (
-                        isCollapsed ? (
-                             <Tooltip key={item.href}>
-                                <TooltipTrigger asChild>
-                                    <Link
-                                        href={item.href}
-                                        className={cn(
-                                            "flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8",
-                                            pathname.startsWith(item.href) && "bg-muted text-primary"
-                                        )}
-                                    >
-                                        <item.icon className="h-5 w-5" />
-                                        <span className="sr-only">{item.label}</span>
-                                    </Link>
-                                </TooltipTrigger>
-                                <TooltipContent side="right">{item.label}</TooltipContent>
-                            </Tooltip>
-                        ) : (
-                            <Link
-                                key={item.href}
-                                href={item.href}
-                                className={cn(
-                                    "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary",
-                                    pathname.startsWith(item.href) && "bg-muted text-primary"
-                                )}
-                            >
-                                <item.icon className="h-4 w-4" />
-                                {item.label}
-                            </Link>
-                        )
-                    ))}
-                    <Separator className='my-2' />
-                     {isCollapsed ? (
-                        <>
-                        {actionItems.map(item => (
-                             <Tooltip key={item.href}>
-                                <TooltipTrigger asChild>
-                                    <Link
-                                        href={item.href}
-                                        className={cn(
-                                            "flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8",
-                                            pathname.startsWith(item.href) && "bg-muted text-primary"
-                                        )}
-                                    >
-                                        <item.icon className="h-5 w-5" />
-                                        <span className="sr-only">{item.label}</span>
-                                    </Link>
-                                </TooltipTrigger>
-                                <TooltipContent side="right">{item.label}</TooltipContent>
-                            </Tooltip>
-                        ))}
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <Button
-                                    variant="ghost"
-                                    onClick={logout}
-                                    className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-                                >
-                                    <LogOut className="h-5 w-5" />
-                                    <span className="sr-only">Log out</span>
-                                </Button>
-                            </TooltipTrigger>
-                            <TooltipContent side="right">Log out</TooltipContent>
-                        </Tooltip>
-                        </>
-                    ) : (
-                        <>
-                        {actionItems.map(item => (
-                            <Link
-                                key={item.href}
-                                href={item.href}
-                                className={cn(
-                                    "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary",
-                                    pathname.startsWith(item.href) && "bg-muted text-primary"
-                                )}
-                            >
-                                <item.icon className="h-4 w-4" />
-                                {item.label}
-                            </Link>
-                        ))}
-                        <Button
-                            variant="ghost"
-                            onClick={logout}
-                            className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary justify-start"
-                        >
-                            <LogOut className="h-4 w-4" />
-                            Log out
-                        </Button>
-                        </>
+/* ---- Helper Component: Sidebar Section ---- */
+function SidebarSection({ title, items, pathname, isCollapsed }) {
+  return (
+    <div className="space-y-1">
+      {!isCollapsed && (
+        <h4 className="text-[11px] font-medium text-muted-foreground px-2">{title}</h4>
+      )}
+      {items.map(
+        (item) => (
+            <Tooltip key={item.href} delayDuration={0}>
+              <TooltipTrigger asChild>
+                <Link
+                  href={item.href}
+                  onClick={item.onClick}
+                  className={cn(
+                    "flex items-center gap-3 rounded-md px-2 py-2.5 text-sm font-medium transition-all",
+                    pathname === item.href
+                      ? "bg-muted text-foreground"
+                      : "text-muted-foreground hover:bg-muted/40",
+                    isCollapsed ? "justify-center" : ""
+                  )}
+                >
+                  <div className="relative">
+                    {item.icon}
+                    {item.locked && (
+                      <Lock
+                        size={12}
+                        className="absolute -top-1 -right-1 text-yellow-500"
+                      />
                     )}
-                </nav>
-            </div>
-             <div className={cn("mt-auto border-t p-4 space-y-4", isCollapsed && 'p-2 space-y-2')}>
-                {!isPro && !isCollapsed && (
-                     <Card className="bg-muted border-none">
-                        <CardHeader className="p-4">
-                            <CardTitle>Upgrade to Pro</CardTitle>
-                            <CardDescription>
-                            Unlock all features and get unlimited access.
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent className="p-4 pt-0">
-                            <Button size="sm" className="w-full" asChild>
-                                <Link href="/upgrade">
-                                 <Star className="h-4 w-4 mr-2"/>
-                                 Upgrade
-                                </Link>
-                            </Button>
-                        </CardContent>
-                    </Card>
-                )}
-            </div>
-        </div>
-        </TooltipProvider>
-    )
+                  </div>
+                  {!isCollapsed && item.label}
+                </Link>
+              </TooltipTrigger>
+              {isCollapsed && <TooltipContent side="right">{item.label}</TooltipContent>}
+            </Tooltip>
+          )
+      )}
+    </div>
+  );
 }
