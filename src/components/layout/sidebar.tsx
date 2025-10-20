@@ -127,18 +127,18 @@ export default function Sidebar({
       >
         <div
           className={cn(
-            "absolute top-1/2 -right-[12px] -translate-y-1/2 z-50",
+            "absolute top-1/2 -right-[14px] -translate-y-1/2 z-50",
           )}
         >
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
                 variant="outline"
-                className="h-6 w-6 rounded-full p-0 flex items-center justify-center"
+                className="h-7 w-7 rounded-full p-0 flex items-center justify-center bg-background hover:bg-muted border-primary/50 text-primary hover:text-primary shadow-lg"
                 onClick={onToggle}
               >
                 <ChevronLeft
-                  size={14}
+                  size={16}
                   className={cn(
                     "transition-transform",
                     isExpanded ? "rotate-0" : "rotate-180"
