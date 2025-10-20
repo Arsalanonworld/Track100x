@@ -31,7 +31,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <div className="flex-1">
+          <div className="flex-1 flex flex-col">
             <DashboardLayout>
               {children}
             </DashboardLayout>
