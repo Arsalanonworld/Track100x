@@ -16,6 +16,7 @@ import {
   Rss,
   Settings,
   ChevronLeft,
+  LogIn,
 } from "lucide-react";
 import {
   Tooltip,
@@ -78,35 +79,30 @@ export default function Sidebar({
       label: "Whale Feed",
       icon: <Rss size={18} />,
       href: "/feed",
-      visibleFor: ["free", "pro"],
       authRequired: false,
     },
     {
       label: "Explore",
       icon: <Compass size={18} />,
       href: "/leaderboard",
-      visibleFor: ["free", "pro"],
       authRequired: false,
     },
     {
       label: "Watchlist",
       icon: <Eye size={18} />,
       href: "/watchlist",
-      visibleFor: ["free", "pro"],
       authRequired: true,
     },
     {
       label: "Alerts",
       icon: <Bell size={18} />,
       href: "/alerts",
-      visibleFor: ["free", "pro"],
       authRequired: true,
     },
     {
       label: "Portfolio",
       icon: <Wallet size={18} />,
       href: "/portfolio",
-      visibleFor: ["free", "pro"],
       authRequired: true,
     },
   ];
@@ -116,32 +112,36 @@ export default function Sidebar({
       label: "Analytics",
       icon: <BarChart3 size={18} />,
       href: "/analytics",
-      visibleFor: ["pro"],
-      locked: user ? userPlan === "free" : true,
       authRequired: true,
+      locked: user ? userPlan === "free" : true, // Locked for guests and free users
     },
   ];
 
-  const accountItems = [
-    {
-      label: "My Account",
-      icon: <Settings size={18} />,
-      href: "/account",
-      visibleFor: ["free", "pro"],
-      authRequired: true,
-    },
-  ];
+  const accountItems = user 
+    ? [
+        {
+          label: "My Account",
+          icon: <Settings size={18} />,
+          href: "/account",
+          authRequired: true,
+        },
+        {
+          label: "Log Out",
+          icon: <LogOut size={18} />,
+          href: "#",
+          onClick: logout,
+          authRequired: true,
+        },
+      ]
+    : [
+        {
+          label: "Log In",
+          icon: <LogIn size={18} />,
+          href: "/login",
+          authRequired: false,
+        },
+      ];
 
-  if (user) {
-    accountItems.push({
-      label: "Log Out",
-      icon: <LogOut size={18} />,
-      href: "#",
-      onClick: logout,
-      visibleFor: ["free", "pro"],
-      authRequired: true,
-    });
-  }
 
   const isExpanded = !isCollapsed;
 
@@ -197,15 +197,13 @@ export default function Sidebar({
                 user={user}
               />
 
-              {user && (
-                <SidebarSection
-                  title="ACCOUNT"
-                  items={accountItems}
-                  pathname={pathname}
-                  isExpanded={isExpanded}
-                  user={user}
-                />
-              )}
+              <SidebarSection
+                title="ACCOUNT"
+                items={accountItems}
+                pathname={pathname}
+                isExpanded={isExpanded}
+                user={user}
+              />
             </div>
           </div>
         </div>
@@ -216,7 +214,7 @@ export default function Sidebar({
             !isExpanded && "opacity-0"
           )}
         >
-          {user && userPlan === "free" && isExpanded && (
+          {(!user || userPlan === "free") && isExpanded && (
             <div className="p-4">
               <div className="p-4 rounded-xl bg-gradient-to-br from-primary via-blue-600 to-blue-700 text-primary-foreground">
                 <p className="font-bold text-sm mb-1">Unlock Full Power</p>
@@ -263,9 +261,13 @@ function SidebarSection({
         {!isExpanded ? title[0] : title}
       </h4>
       {items.map((item) => {
+        // A feature is locked if it's explicitly marked as locked, or if it requires auth and the user is not logged in.
         const isLocked = item.locked || (item.authRequired && !user);
         const isActive = pathname === item.href;
         const isButton = !!item.onClick;
+
+        // The effective href depends on whether the item is locked.
+        const href = isLocked && item.authRequired ? "/login" : item.href;
 
         const content = (
           <div className="flex items-center gap-3 overflow-hidden">
@@ -278,7 +280,7 @@ function SidebarSection({
             >
               {item.label}
             </span>
-             {isLocked && isExpanded && (
+             {item.locked && isExpanded && (
               <Lock
                 size={12}
                 className="ml-auto text-yellow-500 shrink-0"
@@ -292,8 +294,7 @@ function SidebarSection({
             isActive
               ? "bg-primary/10 text-primary"
               : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
-            !isExpanded && "justify-center",
-            isLocked && "cursor-not-allowed opacity-70"
+            !isExpanded && "justify-center"
           );
 
         return (
@@ -301,13 +302,13 @@ function SidebarSection({
             <TooltipTrigger asChild>
               <span>
                 {isButton ? (
-                  <button onClick={item.onClick} disabled={isLocked} className={sharedClasses}>
+                  <button onClick={item.onClick} className={sharedClasses}>
                     {content}
                   </button>
                 ) : (
                   <Link
-                    href={isLocked ? "#" : item.href}
-                    className={cn(sharedClasses, isLocked && "pointer-events-none")}
+                    href={href}
+                    className={sharedClasses}
                   >
                     {content}
                   </Link>
@@ -316,8 +317,8 @@ function SidebarSection({
             </TooltipTrigger>
             {!isExpanded && (
               <TooltipContent side="right">
-                {item.label} {isLocked && "(Locked)"}
-                </TooltipContent>
+                {item.label} {item.locked && "(Pro)"}
+              </TooltipContent>
             )}
           </Tooltip>
         );
