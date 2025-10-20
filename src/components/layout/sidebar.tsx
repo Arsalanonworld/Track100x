@@ -119,7 +119,7 @@ export default function Sidebar({
     <TooltipProvider>
       <aside
         className={cn(
-          "fixed top-0 left-0 h-full flex flex-col transition-all duration-300 z-20 border-r pt-14 lg:pt-[60px]",
+          "hidden md:flex fixed top-0 left-0 h-full flex-col transition-all duration-300 z-20 border-r pt-14 lg:pt-[60px]",
           isExpanded ? "w-60" : "w-[72px]"
         )}
       >
@@ -144,7 +144,7 @@ export default function Sidebar({
         </div>
         
         {/* Footer section for Upgrade card and Toggle button */}
-        <div className="mt-auto p-3">
+        <div className="p-3">
           <div
             className={cn(
                 "transition-opacity duration-200",
