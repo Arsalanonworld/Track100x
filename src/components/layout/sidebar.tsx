@@ -125,14 +125,15 @@ export default function Sidebar({
     <TooltipProvider>
       <aside
         className={cn(
-          "hidden md:flex h-full flex-col transition-all duration-300 z-20 border-r bg-background",
+          "hidden md:flex flex-col transition-all duration-300 z-20 border-r bg-background",
+          "fixed top-0 left-0 h-screen",
+          "pt-14 lg:pt-[60px]", // Add padding to account for header height
           isExpanded ? "w-60" : "w-[72px]"
         )}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
       >
-        <div className="flex h-full flex-col">
-          <div className="flex-1 overflow-y-auto overflow-x-hidden">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden">
             <div className="px-3 py-4 space-y-6">
               <SidebarSection
                 title="CORE"
@@ -150,55 +151,54 @@ export default function Sidebar({
                 user={user}
               />
             </div>
-          </div>
+        </div>
           
-          {/* Footer section for Upgrade card and Toggle button */}
-          <div className="p-3 mt-auto">
-            <div
-              className={cn(
-                  "transition-opacity duration-200",
-                  !isExpanded && "opacity-0 h-0 invisible"
-              )}
-            >
-              {(!user || userPlan === "free") && isExpanded && (
-                <div className="p-4 rounded-xl bg-gradient-to-br from-primary via-blue-600 to-blue-700 text-primary-foreground animate-pulse-slow">
-                  <p className="font-bold text-sm mb-1">Unlock Full Power</p>
-                  <p className="text-xs opacity-90 mb-3">
-                    Get advanced analytics, unlimited alerts & more.
-                  </p>
-                  <Link
-                    href="/upgrade"
-                    className="inline-flex items-center gap-1 text-xs font-semibold bg-primary-foreground/20 hover:bg-primary-foreground/30 px-3 py-1.5 rounded-lg transition-all"
-                  >
-                    <Star size={14} />
-                    Upgrade to Pro
-                  </Link>
-                </div>
-              )}
-            </div>
-            <div className={cn(
-              "flex p-3 border-t mt-3",
-              isExpanded ? "justify-end" : "justify-center"
-            )}>
-              <Tooltip delayDuration={0}>
-                <TooltipTrigger asChild>
-                  <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8"
-                      onClick={onToggleLock}
-                  >
-                      <ChevronLeft
-                      size={16}
-                      className={cn("transition-transform", isLocked ? "rotate-180" : "rotate-0")}
-                      />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="right">
-                  <p>{isLocked ? "Unlock Sidebar" : "Lock Sidebar Open"}</p>
-                </TooltipContent>
-              </Tooltip>
-            </div>
+        {/* Footer section for Upgrade card and Toggle button */}
+        <div className="p-3 mt-auto border-t">
+          <div
+            className={cn(
+                "transition-opacity duration-200",
+                !isExpanded && "opacity-0 h-0 invisible"
+            )}
+          >
+            {(!user || userPlan === "free") && isExpanded && (
+              <div className="p-4 rounded-xl bg-gradient-to-br from-primary via-blue-600 to-blue-700 text-primary-foreground animate-pulse-slow mb-3">
+                <p className="font-bold text-sm mb-1">Unlock Full Power</p>
+                <p className="text-xs opacity-90 mb-3">
+                  Get advanced analytics, unlimited alerts & more.
+                </p>
+                <Link
+                  href="/upgrade"
+                  className="inline-flex items-center gap-1 text-xs font-semibold bg-primary-foreground/20 hover:bg-primary-foreground/30 px-3 py-1.5 rounded-lg transition-all"
+                >
+                  <Star size={14} />
+                  Upgrade to Pro
+                </Link>
+              </div>
+            )}
+          </div>
+          <div className={cn(
+            "flex p-1",
+            isExpanded ? "justify-end" : "justify-center"
+          )}>
+            <Tooltip delayDuration={0}>
+              <TooltipTrigger asChild>
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={onToggleLock}
+                >
+                    <ChevronLeft
+                    size={16}
+                    className={cn("transition-transform", isLocked ? "rotate-180" : "rotate-0")}
+                    />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="right">
+                <p>{isLocked ? "Unlock Sidebar" : "Lock Sidebar Open"}</p>
+              </TooltipContent>
+            </Tooltip>
           </div>
         </div>
       </aside>

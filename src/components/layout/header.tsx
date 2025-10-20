@@ -15,7 +15,7 @@ function LogoIcon() {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24"
+      viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
       strokeWidth="2"
@@ -33,7 +33,7 @@ export default function Header() {
     
     return (
         <header className={cn(
-            "sticky top-0 z-30 w-full bg-background/95 backdrop-blur-sm border-b"
+            "fixed top-0 z-30 w-full bg-background/95 backdrop-blur-sm border-b"
         )}>
             <div className={cn("flex h-14 items-center lg:h-[60px] px-4")}>
                 <div className="flex items-center gap-2">
