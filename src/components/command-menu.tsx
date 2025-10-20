@@ -37,6 +37,12 @@ import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 export function CommandMenu() {
   const [open, setOpen] = React.useState(false);
   const router = useRouter();
+  const [isClient, setIsClient] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsClient(true);
+  }, []);
+
 
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -75,60 +81,62 @@ export function CommandMenu() {
                 <span className="text-xs">⌘</span>K
             </kbd>
           </div>
-          <PopoverContent className="w-[--radix-popover-trigger-width] p-0 mt-1" align="start">
-              <CommandList>
-                <CommandEmpty>No results found.</CommandEmpty>
-                <CommandGroup heading="Navigation">
-                    <CommandItem onSelect={() => runCommand(() => router.push('/feed'))}>
-                    <Rss className="mr-2 h-4 w-4" />
-                    <span>Whale Feed</span>
-                    </CommandItem>
-                    <CommandItem onSelect={() => runCommand(() => router.push('/leaderboard'))}>
-                    <Compass className="mr-2 h-4 w-4" />
-                    <span>Explore</span>
-                    </CommandItem>
-                    <CommandItem onSelect={() => runCommand(() => router.push('/watchlist'))}>
-                    <Eye className="mr-2 h-4 w-4" />
-                    <span>My Watchlist</span>
-                    </CommandItem>
-                    <CommandItem onSelect={() => runCommand(() => router.push('/portfolio'))}>
-                    <Wallet className="mr-2 h-4 w-4" />
-                    <span>Portfolio</span>
-                    </CommandItem>
-                    <CommandItem onSelect={() => runCommand(() => router.push('/account'))}>
-                    <Settings className="mr-2 h-4 w-4" />
-                    <span>Settings</span>
-                    </CommandItem>
-                </CommandGroup>
-                <CommandSeparator />
-                <CommandGroup heading="Top Wallets">
-                    {wallets.map(wallet => (
-                    <CommandItem
-                        key={wallet.address}
-                        value={`Wallet ${wallet.address}`}
-                        onSelect={() => runCommand(() => router.push(`/wallet/${wallet.address}`))}
-                    >
-                        <Wallet className="mr-2 h-4 w-4" />
-                        <span>{wallet.address}</span>
-                    </CommandItem>
-                    ))}
-                </CommandGroup>
-                <CommandSeparator />
-                <CommandGroup heading="Popular Tokens">
-                    {tokens.map(token => (
-                    <CommandItem
-                        key={token.symbol}
-                        value={`Token ${token.name} ${token.symbol}`}
-                        onSelect={() => runCommand(() => router.push(`/token/${token.symbol}`))}
-                    >
-                        <CryptoIcon token={token.symbol} className="mr-2 h-4 w-4" />
-                        <span>{token.name}</span>
-                        <span className="text-muted-foreground ml-2">{token.symbol}</span>
-                    </CommandItem>
-                    ))}
-                </CommandGroup>
-              </CommandList>
-          </PopoverContent>
+          {isClient && (
+            <PopoverContent className="w-[--radix-popover-trigger-width] p-0 mt-1" align="start">
+                <CommandList>
+                  <CommandEmpty>No results found.</CommandEmpty>
+                  <CommandGroup heading="Navigation">
+                      <CommandItem onSelect={() => runCommand(() => router.push('/feed'))}>
+                      <Rss className="mr-2 h-4 w-4" />
+                      <span>Whale Feed</span>
+                      </CommandItem>
+                      <CommandItem onSelect={() => runCommand(() => router.push('/leaderboard'))}>
+                      <Compass className="mr-2 h-4 w-4" />
+                      <span>Explore</span>
+                      </CommandItem>
+                      <CommandItem onSelect={() => runCommand(() => router.push('/watchlist'))}>
+                      <Eye className="mr-2 h-4 w-4" />
+                      <span>My Watchlist</span>
+                      </CommandItem>
+                      <CommandItem onSelect={() => runCommand(() => router.push('/portfolio'))}>
+                      <Wallet className="mr-2 h-4 w-4" />
+                      <span>Portfolio</span>
+                      </CommandItem>
+                      <CommandItem onSelect={() => runCommand(() => router.push('/account'))}>
+                      <Settings className="mr-2 h-4 w-4" />
+                      <span>Settings</span>
+                      </CommandItem>
+                  </CommandGroup>
+                  <CommandSeparator />
+                  <CommandGroup heading="Top Wallets">
+                      {wallets.map(wallet => (
+                      <CommandItem
+                          key={wallet.address}
+                          value={`Wallet ${wallet.address}`}
+                          onSelect={() => runCommand(() => router.push(`/wallet/${wallet.address}`))}
+                      >
+                          <Wallet className="mr-2 h-4 w-4" />
+                          <span>{wallet.address}</span>
+                      </CommandItem>
+                      ))}
+                  </CommandGroup>
+                  <CommandSeparator />
+                  <CommandGroup heading="Popular Tokens">
+                      {tokens.map(token => (
+                      <CommandItem
+                          key={token.symbol}
+                          value={`Token ${token.name} ${token.symbol}`}
+                          onSelect={() => runCommand(() => router.push(`/token/${token.symbol}`))}
+                      >
+                          <CryptoIcon token={token.symbol} className="mr-2 h-4 w-4" />
+                          <span>{token.name}</span>
+                          <span className="text-muted-foreground ml-2">{token.symbol}</span>
+                      </CommandItem>
+                      ))}
+                  </CommandGroup>
+                </CommandList>
+            </PopoverContent>
+          )}
         </Command>
       </Popover>
     </div>
