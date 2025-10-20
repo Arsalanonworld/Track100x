@@ -7,8 +7,6 @@ import {
   XCircle,
   Star,
   ArrowRight,
-  ShieldCheck,
-  Zap,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -30,81 +28,11 @@ import { cn } from '@/lib/utils';
 import { useUser } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { AuthDialog } from '@/components/auth/auth-dialog';
-import { Bell, Eye, Wallet } from 'lucide-react';
+import { features, faqs } from '@/lib/app-data';
+import { FeatureHighlights } from '@/components/feature-highlights';
 
 
 // ----------------- Data -----------------
-const features = [
-  {
-    category: 'Core Features',
-    items: [
-      { name: 'Real-Time Whale Feed', free: true, pro: true },
-      { name: 'Leaderboard Access', free: true, pro: true },
-      { name: 'Watchlist', free: '5 items', pro: 'Unlimited' },
-    ],
-  },
-  {
-    category: 'Alerts',
-    items: [
-      { name: 'Quick Alerts', free: '5 active', pro: 'Unlimited' },
-      { name: 'Advanced Alert Builder', free: false, pro: true },
-    ],
-  },
-   {
-    category: 'Portfolio & Analytics',
-    items: [
-        { name: 'Link Wallets', free: '1 wallet', pro: 'Unlimited' },
-        { name: 'Historical Performance', free: '7-day history', pro: 'Full history' },
-    ]
-   },
-  {
-    category: 'Experience',
-    items: [
-      { name: 'Priority Support', free: false, pro: true },
-    ],
-  },
-];
-
-const featureHighlights = [
-    {
-        icon: <Zap />,
-        title: 'Advanced Alert Builder',
-        description: 'Create complex, multi-conditional alerts to precisely monitor specific on-chain events and strategies.',
-    },
-    {
-        icon: <Eye />,
-        title: 'Unlimited Watchlist',
-        description: 'Track as many wallets and tokens as you want, without any limitations.',
-    },
-    {
-        icon: <Wallet />,
-        title: 'Full Portfolio Analytics',
-        description: 'Link all your wallets and unlock complete historical data and performance insights.',
-    },
-     {
-        icon: <Bell />,
-        title: 'Unlimited Alerts',
-        description: 'Create unlimited quick and advanced alerts so you never miss an important on-chain move.',
-    },
-];
-
-const faqs = [
-  {
-    question: 'Can I cancel my Pro subscription at any time?',
-    answer:
-      'Yes, you can cancel your subscription at any time from your account page. You will retain Pro access until the end of your current billing period.',
-  },
-  {
-    question: 'What happens to my data and alerts if I downgrade to Free?',
-    answer:
-      'Your alerts and watchlist items will not be deleted, but they will be deactivated if you exceed the Free plan limits (5 alerts, 5 watched items). You can re-activate them if you upgrade again or reduce your usage to fit within the limits.',
-  },
-  {
-    question: 'What payment methods do you accept?',
-    answer:
-      'We accept all major credit cards. All payments are processed securely through our payment provider, Stripe.',
-  },
-];
 
 export default function UpgradePage() {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('yearly');
@@ -165,32 +93,7 @@ export default function UpgradePage() {
         </section>
 
         {/* Feature Highlights Section */}
-        <section className="py-16 sm:py-24">
-           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">A New Standard in Wallet Analysis</h2>
-            <p className="mt-4 text-muted-foreground max-w-2xl mx-auto">
-                Go beyond simple balance checks. We provide institutional-grade tools to give you an edge.
-            </p>
-          </div>
-           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-              {featureHighlights.map((feature, index) => (
-                <div key={index} className="relative group">
-                    <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/50 to-accent/50 rounded-lg blur opacity-50 group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
-                     <Card className="relative flex flex-col items-center text-center p-6 bg-card/95 h-full">
-                        <CardHeader className="p-0 items-center">
-                            <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                                {React.cloneElement(feature.icon as React.ReactElement, { className: 'h-6 w-6 text-primary' })}
-                            </div>
-                            <h3 className="text-lg font-bold mb-2">{feature.title}</h3>
-                        </CardHeader>
-                        <CardContent className="p-0 flex-1">
-                                <p className="text-muted-foreground text-sm">{feature.description}</p>
-                        </CardContent>
-                    </Card>
-                </div>
-              ))}
-          </div>
-        </section>
+        <FeatureHighlights />
 
         {/* Pricing Section */}
         <section id="pricing" className="mt-12">

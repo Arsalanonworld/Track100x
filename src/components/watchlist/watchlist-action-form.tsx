@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Plus, Search, BellPlus, Eye, ChevronDown } from 'lucide-react';
+import { Search, Eye } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useFirestore } from '@/firebase';
 import { collection, addDoc, serverTimestamp, query, where, getDocs } from 'firebase/firestore';
@@ -15,7 +15,6 @@ import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { tokenLibrary } from '@/lib/tokens';
 import type { User } from 'firebase/auth';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu';
 
 
 type WatchlistActionFormProps = {
@@ -31,7 +30,7 @@ export function WatchlistActionForm({ user, onItemAdded, onAlertCreate, atLimit,
   const [alias, setAlias] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isAliasModalOpen, setIsAliasModalOpen] = useState(false);
-  const [itemToAdd, setItemToAdd] = useState<{ identifier: string; type: 'wallet' | 'token'; action: 'add' | 'alert' } | null>(null);
+  const [itemToAdd, setItemToAdd] = useState<{ identifier: string; type: 'wallet' | 'token'; } | null>(null);
 
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -39,18 +38,18 @@ export function WatchlistActionForm({ user, onItemAdded, onAlertCreate, atLimit,
   const isWalletAddress = (str: string) => /^0x[a-fA-F0-9]{40}$/.test(str);
   const isKnownToken = (str: string) => !!tokenLibrary[str.toUpperCase()];
 
-  const handleAction = async (action: 'add' | 'alert') => {
+  const handleAddItem = async () => {
     if (!user || !firestore) {
       toast({
         variant: 'destructive',
         title: 'Not Logged In',
-        description: 'You must be logged in to perform this action.',
+        description: 'You must be logged in to add items to your watchlist.',
       });
       return;
     }
     if (!identifier) return;
 
-    if (atLimit && action === 'add') {
+    if (atLimit) {
       toast({ variant: 'destructive', title: 'Watchlist Limit Reached', description: 'Please upgrade to add more items.' });
       return;
     }
@@ -58,16 +57,16 @@ export function WatchlistActionForm({ user, onItemAdded, onAlertCreate, atLimit,
     const trimmedIdentifier = identifier.trim();
 
     if (isWalletAddress(trimmedIdentifier)) {
-      setItemToAdd({ identifier: trimmedIdentifier, type: 'wallet', action });
+      setItemToAdd({ identifier: trimmedIdentifier, type: 'wallet' });
       setIsAliasModalOpen(true);
     } else if (isKnownToken(trimmedIdentifier.toUpperCase())) {
-      await confirmAndAddItem(trimmedIdentifier.toUpperCase(), 'token', '', action);
+      await confirmAndAddItem(trimmedIdentifier.toUpperCase(), 'token', '');
     } else {
       toast({ variant: 'destructive', title: 'Invalid Input', description: 'Please enter a valid wallet address or a known token symbol.' });
     }
   };
   
-  const confirmAndAddItem = async (id: string, type: 'wallet' | 'token', name: string, action: 'add' | 'alert') => {
+  const confirmAndAddItem = async (id: string, type: 'wallet' | 'token', name: string) => {
     if (!user || !firestore) {
         toast({ variant: 'destructive', title: 'Not Logged In', description: 'You must be logged in to add items.' });
         return;
@@ -80,7 +79,7 @@ export function WatchlistActionForm({ user, onItemAdded, onAlertCreate, atLimit,
 
       if (querySnapshot.empty) {
         if (atLimit) {
-            toast({ variant: 'destructive', title: 'Watchlist Limit Reached', description: 'Upgrade to add more items. Cannot create alert without adding to watchlist first.' });
+            toast({ variant: 'destructive', title: 'Watchlist Limit Reached', description: 'Please upgrade to add more items.' });
             setIsSubmitting(false);
             setIsAliasModalOpen(false);
             return;
@@ -95,14 +94,10 @@ export function WatchlistActionForm({ user, onItemAdded, onAlertCreate, atLimit,
         await addDoc(collection(firestore, `users/${user.uid}/watchlist`), newDoc);
         toast({ title: 'Item Added!', description: `${id} has been added to your watchlist.` });
         onItemAdded();
-      } else if (action === 'add') {
+      } else {
           toast({ title: 'Already Watched', description: `${id} is already in your watchlist.` });
       }
       
-      if (action === 'alert') {
-        onAlertCreate({ type, identifier: id });
-      }
-
     } catch (error) {
       console.error("Error in watchlist action:", error);
       const permissionError = new FirestorePermissionError({
@@ -122,7 +117,7 @@ export function WatchlistActionForm({ user, onItemAdded, onAlertCreate, atLimit,
 
   const handleWalletAliasSubmit = () => {
     if (itemToAdd) {
-      confirmAndAddItem(itemToAdd.identifier, itemToAdd.type, alias, itemToAdd.action);
+      confirmAndAddItem(itemToAdd.identifier, itemToAdd.type, alias);
     }
   };
 
@@ -141,29 +136,19 @@ export function WatchlistActionForm({ user, onItemAdded, onAlertCreate, atLimit,
                     disabled={isFormDisabled}
                     className="pl-9 bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0 h-10"
                     onKeyDown={(e) => {
-                        if (e.key === 'Enter') handleAction('add');
+                        if (e.key === 'Enter') handleAddItem();
                     }}
                 />
             </div>
             <div className="flex items-center gap-1">
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button disabled={isFormDisabled || !identifier} className="shrink-0 rounded-full h-10 px-3 sm:px-4">
-                            Action
-                            <ChevronDown className="h-4 w-4 ml-2"/>
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                        <DropdownMenuItem onClick={() => handleAction('add')} disabled={atLimit}>
-                            <Eye className="h-4 w-4 mr-2" />
-                            Add to Watchlist
-                        </DropdownMenuItem>
-                         <DropdownMenuItem onClick={() => handleAction('alert')}>
-                            <BellPlus className="h-4 w-4 mr-2" />
-                            Create Alert
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                <Button 
+                    onClick={handleAddItem}
+                    disabled={isFormDisabled || !identifier || atLimit} 
+                    className="shrink-0 rounded-full h-10 px-3 sm:px-4"
+                >
+                    <Eye className="h-4 w-4 mr-2" />
+                    Watch
+                </Button>
             </div>
         </div>
       <Dialog open={isAliasModalOpen} onOpenChange={setIsAliasModalOpen}>
