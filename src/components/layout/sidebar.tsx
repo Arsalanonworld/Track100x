@@ -23,10 +23,6 @@ const navItems = [
     { href: '/portfolio', label: 'Portfolio', icon: Wallet },
 ];
 
-const secondaryNavItems = [
-    { href: '/account', label: 'Account Settings', icon: Settings },
-]
-
 export function Sidebar({ isCollapsed, onCollapseToggle }: { isCollapsed: boolean, onCollapseToggle: () => void }) {
     const pathname = usePathname();
     const logout = useLogout();
