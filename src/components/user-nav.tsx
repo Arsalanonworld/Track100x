@@ -101,12 +101,6 @@ export function UserNav() {
                   <span>Account</span>
                 </Link>
             </DropdownMenuItem>
-             <DropdownMenuItem asChild>
-              <Link href="/watchlist">
-                  <Eye className="mr-2 h-4 w-4" />
-                  <span>Watchlist</span>
-              </Link>
-            </DropdownMenuItem>
             {!isPro && (
                 <DropdownMenuItem asChild>
                     <Link href="/upgrade">
