@@ -168,7 +168,7 @@ export default function Sidebar({ onStateChange }: { onStateChange: (isExpanded:
           <div className={cn("flex items-center border-b border-border h-14 lg:h-[60px]", isExpanded ? 'pl-4 pr-2 justify-between' : 'px-2 justify-center')}>
             <Link href="/" className={cn("flex items-center gap-2 font-semibold")}>
                 <LogoIcon />
-                <span className={cn("text-lg transition-opacity duration-300", !isExpanded && "opacity-0 w-0")}>Track100x</span>
+                <span className={cn("text-lg transition-opacity duration-300 whitespace-nowrap", !isExpanded && "opacity-0 w-0")}>Track100x</span>
             </Link>
           </div>
 
@@ -202,7 +202,7 @@ export default function Sidebar({ onStateChange }: { onStateChange: (isExpanded:
           </div>
         </div>
 
-        <div className={cn("border-t transition-opacity duration-300", !isExpanded && "opacity-0")}>
+        <div className={cn("border-t transition-opacity duration-300 whitespace-nowrap", !isExpanded && "opacity-0")}>
           {user && userPlan === "free" && isExpanded && (
             <div className="p-4">
               <div className="p-3 rounded-xl bg-gradient-to-br from-primary to-blue-500/80 text-primary-foreground">
@@ -229,7 +229,7 @@ export default function Sidebar({ onStateChange }: { onStateChange: (isExpanded:
 function SidebarSection({ title, items, pathname, isExpanded, user }: { title: string, items: any[], pathname: string, isExpanded: boolean, user: any }) {
   return (
     <div className="space-y-1">
-      <h4 className={cn("text-[11px] font-medium text-muted-foreground px-2 transition-opacity duration-300", !isExpanded && "opacity-0")}>{title}</h4>
+      <h4 className={cn("text-[11px] font-medium text-muted-foreground px-2 transition-opacity duration-300 whitespace-nowrap", !isExpanded && "opacity-0")}>{title}</h4>
       {items.map(
         (item) => {
             const isLocked = item.locked || (item.authRequired && !user);
