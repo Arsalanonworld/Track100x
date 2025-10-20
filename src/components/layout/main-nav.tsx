@@ -18,7 +18,7 @@ export function MainNav() {
 
     const publicItems = [
         { href: '/#features', label: 'Features', visible: true },
-        { href: '/upgrade', label: 'Pricing', visible: true },
+        { href: '/#pricing', label: 'Pricing', visible: true },
     ];
 
     const privateItems = [
@@ -38,7 +38,7 @@ export function MainNav() {
                 href={item.href}
                 className={cn(
                     "transition-colors hover:text-foreground",
-                    (pathname.startsWith(item.href) && item.href !== '/#features') || (pathname === '/' && item.href === '/') ? "text-foreground" : "text-foreground/60"
+                    (pathname.startsWith(item.href) && !item.href.includes('#')) || (pathname === '/' && item.href.includes('#')) ? "text-foreground" : "text-foreground/60"
                 )}
             >
                 {item.label}

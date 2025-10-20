@@ -7,6 +7,7 @@ import { LeaderboardPreview } from '@/components/leaderboard-preview';
 import React from 'react';
 import { HomePageCta } from '@/components/home-page-cta';
 import { FeatureHighlights } from '@/components/feature-highlights';
+import { PricingPreview } from '@/components/pricing-preview';
 
 export default function HomePage() {
   return (
@@ -25,6 +26,17 @@ export default function HomePage() {
 
         {/* Leaderboard Preview */}
         <LeaderboardPreview />
+
+        {/* Pricing Section */}
+        <section id="pricing" className="py-16 sm:py-24">
+           <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">Simple, Clear Pricing</h2>
+            <p className="mt-4 text-muted-foreground max-w-2xl mx-auto">
+              Choose the plan that fits your strategy. Start for free, upgrade when you're ready.
+            </p>
+          </div>
+          <PricingPreview />
+        </section>
 
         {/* Final CTA */}
         <HomePageCta />

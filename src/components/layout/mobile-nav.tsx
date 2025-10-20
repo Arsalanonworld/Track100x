@@ -23,7 +23,7 @@ export function MobileNav() {
 
   const publicItems = [
       { href: '/#features', label: 'Features', icon: Sparkles, visible: true },
-      { href: '/upgrade', label: 'Pricing', icon: Star, visible: true },
+      { href: '/#pricing', label: 'Pricing', icon: Star, visible: true },
   ];
 
   const privateItems = [
