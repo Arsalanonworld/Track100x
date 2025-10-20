@@ -17,10 +17,10 @@ import { useUser } from '@/firebase';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
 
 const navItems = [
-    { href: '/watchlist', label: 'My Watchlist', icon: Eye },
-    { href: '/portfolio', label: 'Portfolio', icon: Wallet },
     { href: '/feed', label: 'Whale Feed', icon: Rss },
     { href: '/leaderboard', label: 'Explore', icon: Compass },
+    { href: '/watchlist', label: 'My Watchlist', icon: Eye },
+    { href: '/portfolio', label: 'Portfolio', icon: Wallet },
 ];
 
 const secondaryNavItems = [
