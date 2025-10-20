@@ -3,8 +3,7 @@
 
 import { Leaderboard } from '@/components/leaderboard';
 import PageHeader from '@/components/page-header';
-import { useUser } from '@/firebase';
-import { FeatureLock } from '@/components/feature-lock';
+import { withAuth } from '@/components/auth/withAuth';
 import { Skeleton } from '@/components/ui/skeleton';
 
 function PageSkeleton() {
@@ -29,23 +28,16 @@ function PageSkeleton() {
     )
 }
 
-export default function LeaderboardPage() {
-    const { user, loading } = useUser();
-
-    if (loading) {
-        return <PageSkeleton />;
-    }
-
+function LeaderboardPage() {
   return (
-    <div className="relative">
-      {!user && <FeatureLock />}
-      <div className="space-y-8">
-        <PageHeader
-            title="Smart Money Dashboard"
-            description="Discover and track the most influential and profitable wallets in real-time."
-        />
-        <Leaderboard />
-      </div>
+    <div className="space-y-8">
+      <PageHeader
+          title="Smart Money Dashboard"
+          description="Discover and track the most influential and profitable wallets in real-time."
+      />
+      <Leaderboard />
     </div>
   );
 }
+
+export default withAuth(LeaderboardPage, { skeleton: PageSkeleton });

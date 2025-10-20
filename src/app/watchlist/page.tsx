@@ -9,7 +9,7 @@ import { useUser, useCollection, useFirestore } from '@/firebase';
 import { collection, query } from 'firebase/firestore';
 import type { WatchlistItem } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
-import { FeatureLock } from '@/components/feature-lock';
+import { withAuth } from '@/components/auth/withAuth';
 import Link from 'next/link';
 import { Card } from '@/components/ui/card';
 import { WatchlistActionForm } from '@/components/watchlist/watchlist-action-form';
@@ -69,8 +69,8 @@ function WatchlistSkeleton() {
     )
 }
 
-export default function WatchlistPage() {
-  const { user, loading: userLoading, claims } = useUser();
+function WatchlistPage() {
+  const { user, claims, loading: userLoading } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
   const [refreshKey, setRefreshKey] = useState(0);
@@ -142,81 +142,74 @@ export default function WatchlistPage() {
     setRefreshKey(prev => prev + 1);
   }
   
-  if (isLoading) {
-    return <PageSkeleton />;
-  }
-
   return (
-    <div className="relative">
-        {!user && !userLoading && <FeatureLock />}
-        <div className="space-y-8">
-             <PageHeader
-                title="My Watchlist"
-                description={pageDescription}
-                action={
-                  <div className='flex items-center gap-2'>
-                    <Button variant="outline" disabled={!isPro}>
-                        <Download className="mr-2 h-4 w-4" /> Export Data
-                        {!isPro && <Lock className='ml-2 h-3 w-3' />}
-                     </Button>
-                  </div>
-                }
-            />
+    <div className="space-y-8">
+         <PageHeader
+            title="My Watchlist"
+            description={pageDescription}
+            action={
+              <div className='flex items-center gap-2'>
+                <Button variant="outline" disabled={!isPro}>
+                    <Download className="mr-2 h-4 w-4" /> Export Data
+                    {!isPro && <Lock className='ml-2 h-3 w-3' />}
+                 </Button>
+              </div>
+            }
+        />
 
-            <div className='grid grid-cols-1 lg:grid-cols-3 gap-8 items-start'>
-                <div className='lg:col-span-2 space-y-6'>
-                     <h2 className='text-2xl font-bold tracking-tight'>Tracked Items</h2>
-                    <div className="flex flex-col sm:flex-row gap-2">
-                         <WatchlistActionForm 
-                            user={user}
-                            onItemAdded={handleItemAdded}
-                            onAlertCreate={handleOpenEditor}
-                            atLimit={!!watchlistAtLimit}
-                            isLoading={isLoading}
-                         />
-                    </div>
-                    
-                    {watchlistAtLimit && (
-                        <Card className="text-center p-8 space-y-4 rounded-lg bg-card border shadow-lg border-primary">
-                            <Lock className="w-8 h-8 text-primary mx-auto" />
-                            <h3 className="text-2xl font-bold">Watchlist Limit Reached</h3>
-                            <p className="text-muted-foreground max-w-sm mx-auto">
-                                You've reached the limit of ${WATCHLIST_LIMIT_FREE} items for the Free plan. Upgrade to track unlimited wallets and tokens.
+        <div className='grid grid-cols-1 lg:grid-cols-3 gap-8 items-start'>
+            <div className='lg:col-span-2 space-y-6'>
+                 <h2 className='text-2xl font-bold tracking-tight'>Tracked Items</h2>
+                <div className="flex flex-col sm:flex-row gap-2">
+                     <WatchlistActionForm 
+                        user={user}
+                        onItemAdded={handleItemAdded}
+                        onAlertCreate={handleOpenEditor}
+                        atLimit={!!watchlistAtLimit}
+                        isLoading={isLoading}
+                     />
+                </div>
+                
+                {watchlistAtLimit && (
+                    <Card className="text-center p-8 space-y-4 rounded-lg bg-card border shadow-lg border-primary">
+                        <Lock className="w-8 h-8 text-primary mx-auto" />
+                        <h3 className="text-2xl font-bold">Watchlist Limit Reached</h3>
+                        <p className="text-muted-foreground max-w-sm mx-auto">
+                            You've reached the limit of ${WATCHLIST_LIMIT_FREE} items for the Free plan. Upgrade to track unlimited wallets and tokens.
+                        </p>
+                        <Button asChild>
+                            <Link href="/upgrade">Upgrade to Pro</Link>
+                        </Button>
+                    </Card>
+                )}
+                
+                <div className="space-y-4">
+                   
+                    {isLoading ? <WatchlistSkeleton /> : user && watchlist && watchlist.length > 0 ? (
+                        watchlist.map((item) => (
+                           <WatchlistItemCard 
+                               key={item.id} 
+                               item={item} 
+                               onUpdate={handleUpdate} 
+                               onRemove={handleRemove}
+                               onAlertCreate={handleOpenEditor}
+                            />
+                        ))
+                    ) : (
+                       !isLoading && (
+                        <div className="flex flex-col items-center justify-center text-center text-muted-foreground p-8 rounded-lg border-2 border-dashed">
+                            <Eye className="h-10 w-10 mb-4" />
+                            <p className="font-semibold text-lg">Your watchlist is empty.</p>
+                            <p className="text-sm max-w-xs mx-auto">
+                               Use the form above to add wallets or tokens.
                             </p>
-                            <Button asChild>
-                                <Link href="/upgrade">Upgrade to Pro</Link>
-                            </Button>
-                        </Card>
+                        </div>
+                       )
                     )}
-                    
-                    <div className="space-y-4">
-                       
-                        {isLoading ? <WatchlistSkeleton /> : user && watchlist && watchlist.length > 0 ? (
-                            watchlist.map((item) => (
-                               <WatchlistItemCard 
-                                   key={item.id} 
-                                   item={item} 
-                                   onUpdate={handleUpdate} 
-                                   onRemove={handleRemove}
-                                   onAlertCreate={handleOpenEditor}
-                                />
-                            ))
-                        ) : (
-                           !isLoading && (
-                            <div className="flex flex-col items-center justify-center text-center text-muted-foreground p-8 rounded-lg border-2 border-dashed">
-                                <Eye className="h-10 w-10 mb-4" />
-                                <p className="font-semibold text-lg">Your watchlist is empty.</p>
-                                <p className="text-sm max-w-xs mx-auto">
-                                   Use the form above to add wallets or tokens.
-                                </p>
-                            </div>
-                           )
-                        )}
-                    </div>
                 </div>
-                <div className='lg:col-span-1 lg:mt-[44px]'>
-                   <AlertsPanel onNewAlert={() => handleOpenEditor()} />
-                </div>
+            </div>
+            <div className='lg:col-span-1 lg:mt-[44px]'>
+               <AlertsPanel onNewAlert={() => handleOpenEditor()} />
             </div>
         </div>
         <Dialog open={isEditorOpen} onOpenChange={setIsEditorOpen}>
@@ -226,4 +219,4 @@ export default function WatchlistPage() {
   );
 }
 
-    
+export default withAuth(WatchlistPage, { skeleton: PageSkeleton });
