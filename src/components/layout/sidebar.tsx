@@ -86,8 +86,8 @@ export function Sidebar({ isCollapsed, onCollapseToggle }: { isCollapsed: boolea
                 </nav>
             </div>
              <div className={cn("mt-auto border-t p-4 space-y-4", isCollapsed && 'p-2 space-y-2')}>
-                {!isPro && (
-                     <Card className={cn(isCollapsed && 'hidden')}>
+                {!isPro && !isCollapsed && (
+                     <Card>
                         <CardHeader className="p-4">
                             <CardTitle>Upgrade to Pro</CardTitle>
                             <CardDescription>
@@ -104,61 +104,10 @@ export function Sidebar({ isCollapsed, onCollapseToggle }: { isCollapsed: boolea
                         </CardContent>
                     </Card>
                 )}
-                <nav className="grid items-start text-sm font-medium gap-1">
-                    {secondaryNavItems.map(item => (
-                         isCollapsed ? (
-                             <Tooltip key={item.href}>
-                                <TooltipTrigger asChild>
-                                    <Link
-                                        href={item.href}
-                                        className={cn(
-                                            "flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8",
-                                            pathname.startsWith(item.href) && "bg-muted text-primary"
-                                        )}
-                                    >
-                                        <item.icon className="h-5 w-5" />
-                                        <span className="sr-only">{item.label}</span>
-                                    </Link>
-                                </TooltipTrigger>
-                                <TooltipContent side="right">{item.label}</TooltipContent>
-                            </Tooltip>
-                        ) : (
-                            <Link
-                                key={item.href}
-                                href={item.href}
-                                className={cn(
-                                    "flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary",
-                                    pathname.startsWith(item.href) && "bg-muted text-primary"
-                                )}
-                            >
-                                <item.icon className="h-4 w-4" />
-                                {item.label}
-                            </Link>
-                        )
-                    ))}
-                    {isCollapsed ? (
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                 <button
-                                    onClick={() => logout()}
-                                    className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-                                >
-                                    <LogOut className="h-5 w-5" />
-                                    <span className="sr-only">Log out</span>
-                                </button>
-                            </TooltipTrigger>
-                            <TooltipContent side="right">Log out</TooltipContent>
-                        </Tooltip>
-                    ) : (
-                         <button
-                            onClick={() => logout()}
-                            className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
-                        >
-                            <LogOut className="h-4 w-4" />
-                            Log out
-                        </button>
-                    )}
-                </nav>
+                <div className={cn('flex items-center', isCollapsed ? 'flex-col gap-2' : 'gap-4')}>
+                    <UserNav />
+                    <ThemeToggle />
+                </div>
             </div>
         </div>
         </TooltipProvider>

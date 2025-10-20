@@ -13,7 +13,7 @@ import {
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import { LogOut, User, DollarSign, Star, LayoutDashboard, ArrowRight, Eye } from 'lucide-react';
+import { LogOut, User, DollarSign, Star, LayoutDashboard, ArrowRight, Eye, Settings } from 'lucide-react';
 import { useUser } from '@/firebase';
 import { useState, useEffect } from 'react';
 import { AuthDialog } from './auth/auth-dialog';
@@ -43,7 +43,6 @@ export function UserNav() {
   if (!isClient || loading) {
     return (
         <div className="flex items-center gap-2">
-            <Skeleton className="h-10 w-24 rounded-md" />
             <Skeleton className="h-10 w-10 rounded-full" />
         </div>
     );
@@ -77,23 +76,33 @@ export function UserNav() {
     <div className="flex items-center gap-2">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <div className='flex items-center gap-3 cursor-pointer'>
+          <Button variant="ghost" className="relative h-8 w-8 rounded-full">
             <Avatar className="h-9 w-9">
               <AvatarImage src={user.photoURL ?? ''} alt="User avatar" />
               <AvatarFallback>
                 {user.displayName ? user.displayName.charAt(0).toUpperCase() : user.email?.charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>
-            <div className='flex flex-col text-left'>
-                <p className="text-sm font-medium leading-none">{user.displayName ?? 'User'}</p>
-                <p className="text-xs leading-none text-muted-foreground">
-                    {user.email}
-                </p>
-            </div>
-          </div>
+          </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56" align="end" forceMount>
-            {!isPro && (
+          <DropdownMenuLabel className="font-normal">
+            <div className="flex flex-col space-y-1">
+              <p className="text-sm font-medium leading-none">{user.displayName || 'User'}</p>
+              <p className="text-xs leading-none text-muted-foreground">
+                {user.email}
+              </p>
+            </div>
+          </DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuGroup>
+             <DropdownMenuItem asChild>
+                <Link href="/account">
+                    <Settings className="mr-2 h-4 w-4" />
+                    <span>Account</span>
+                </Link>
+             </DropdownMenuItem>
+             {!isPro && (
                 <DropdownMenuItem asChild>
                     <Link href="/upgrade">
                         <Star className="mr-2 h-4 w-4 text-yellow-500" />
@@ -101,6 +110,12 @@ export function UserNav() {
                     </Link>
                 </DropdownMenuItem>
             )}
+          </DropdownMenuGroup>
+          <DropdownMenuSeparator />
+           <DropdownMenuItem onClick={() => logout()}>
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Log out</span>
+            </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
