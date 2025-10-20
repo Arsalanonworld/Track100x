@@ -71,11 +71,13 @@ const navItems = [
 
 export default function Sidebar({
   isExpanded,
+  isLocked,
   onMouseEnter,
   onMouseLeave,
   onToggleLock,
 }: {
   isExpanded: boolean;
+  isLocked: boolean;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
   onToggleLock: () => void;
@@ -84,17 +86,6 @@ export default function Sidebar({
   const { user, claims } = useUser();
   const logout = useLogout();
   const userPlan = claims?.plan || "free";
-  
-  const [isLocked, setIsLocked] = useState(false);
-
-  useEffect(() => {
-    setIsLocked(localStorage.getItem('sidebar-collapsed') === 'true');
-  }, []);
-
-  const handleToggleLock = () => {
-    onToggleLock();
-    setIsLocked(prev => !prev);
-  }
 
   const accountItems = user 
     ? [
@@ -134,78 +125,80 @@ export default function Sidebar({
     <TooltipProvider>
       <aside
         className={cn(
-          "hidden md:flex fixed top-0 left-0 h-full flex-col transition-all duration-300 z-20 border-r",
+          "hidden md:flex fixed top-0 left-0 h-full flex-col transition-all duration-300 z-20 border-r pt-14 lg:pt-[60px]",
           isExpanded ? "w-60" : "w-[72px]"
         )}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
       >
-        <div className="flex-1 overflow-y-auto overflow-x-hidden pt-14 lg:pt-[60px]">
-          <div className="px-3 py-4 space-y-6">
-            <SidebarSection
-              title="CORE"
-              items={finalNavItems}
-              pathname={pathname}
-              isExpanded={isExpanded}
-              user={user}
-            />
+        <div className="flex h-full flex-col">
+          <div className="flex-1 overflow-y-auto overflow-x-hidden">
+            <div className="px-3 py-4 space-y-6">
+              <SidebarSection
+                title="CORE"
+                items={finalNavItems}
+                pathname={pathname}
+                isExpanded={isExpanded}
+                user={user}
+              />
 
-            <SidebarSection
-              title="ACCOUNT"
-              items={accountItems}
-              pathname={pathname}
-              isExpanded={isExpanded}
-              user={user}
-            />
+              <SidebarSection
+                title="ACCOUNT"
+                items={accountItems}
+                pathname={pathname}
+                isExpanded={isExpanded}
+                user={user}
+              />
+            </div>
           </div>
-        </div>
-        
-        {/* Footer section for Upgrade card and Toggle button */}
-        <div className="p-3">
-          <div
-            className={cn(
-                "transition-opacity duration-200",
-                !isExpanded && "opacity-0 h-0 invisible"
-            )}
-          >
-            {(!user || userPlan === "free") && isExpanded && (
-              <div className="p-4 rounded-xl bg-gradient-to-br from-primary via-blue-600 to-blue-700 text-primary-foreground">
-                <p className="font-bold text-sm mb-1">Unlock Full Power</p>
-                <p className="text-xs opacity-90 mb-3">
-                  Get advanced analytics, unlimited alerts & more.
-                </p>
-                <Link
-                  href="/upgrade"
-                  className="inline-flex items-center gap-1 text-xs font-semibold bg-primary-foreground/20 hover:bg-primary-foreground/30 px-3 py-1.5 rounded-lg transition-all"
-                >
-                  <Star size={14} />
-                  Upgrade to Pro
-                </Link>
-              </div>
-            )}
-          </div>
-          <div className={cn(
-            "flex p-3 border-t mt-3",
-            isExpanded ? "justify-end" : "justify-center"
-          )}>
-            <Tooltip delayDuration={0}>
-              <TooltipTrigger asChild>
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8"
-                    onClick={handleToggleLock}
-                >
-                    <ChevronLeft
-                    size={16}
-                    className={cn("transition-transform", !isExpanded && !isLocked && "rotate-180", isLocked && "rotate-0")}
-                    />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="right">
-                <p>{isLocked ? "Unlock Sidebar" : "Lock Sidebar Open"}</p>
-              </TooltipContent>
-            </Tooltip>
+          
+          {/* Footer section for Upgrade card and Toggle button */}
+          <div className="p-3">
+            <div
+              className={cn(
+                  "transition-opacity duration-200",
+                  !isExpanded && "opacity-0 h-0 invisible"
+              )}
+            >
+              {(!user || userPlan === "free") && isExpanded && (
+                <div className="p-4 rounded-xl bg-gradient-to-br from-primary via-blue-600 to-blue-700 text-primary-foreground">
+                  <p className="font-bold text-sm mb-1">Unlock Full Power</p>
+                  <p className="text-xs opacity-90 mb-3">
+                    Get advanced analytics, unlimited alerts & more.
+                  </p>
+                  <Link
+                    href="/upgrade"
+                    className="inline-flex items-center gap-1 text-xs font-semibold bg-primary-foreground/20 hover:bg-primary-foreground/30 px-3 py-1.5 rounded-lg transition-all"
+                  >
+                    <Star size={14} />
+                    Upgrade to Pro
+                  </Link>
+                </div>
+              )}
+            </div>
+            <div className={cn(
+              "flex p-3 border-t mt-3",
+              isExpanded ? "justify-end" : "justify-center"
+            )}>
+              <Tooltip delayDuration={0}>
+                <TooltipTrigger asChild>
+                  <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={onToggleLock}
+                  >
+                      <ChevronLeft
+                      size={16}
+                      className={cn("transition-transform", !isExpanded && !isLocked && "rotate-180", isLocked && "rotate-0")}
+                      />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="right">
+                  <p>{isLocked ? "Unlock Sidebar" : "Lock Sidebar Open"}</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
           </div>
         </div>
       </aside>
@@ -237,12 +230,9 @@ function SidebarSection({
         {isExpanded ? title : ''}
       </h4>
       {items.map((item) => {
-        // A feature is locked if it's explicitly marked as locked, or if it requires auth and the user is not logged in.
         const isLocked = item.locked || (item.authRequired && !user);
         const isActive = pathname === item.href;
         const isButton = !!item.onClick;
-
-        // The effective href depends on whether the item is locked.
         const href = isLocked && item.authRequired ? "/login" : item.href;
 
         const content = (

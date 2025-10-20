@@ -9,45 +9,38 @@ import { FirebaseClientProvider } from '@/firebase/client-provider';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
+  const [isSidebarLocked, setIsSidebarLocked] = useState(false);
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
-    // On mobile, the sidebar is not shown, so we don't need to check for collapsed state
     if (window.innerWidth >= 768) {
-        const savedState = localStorage.getItem("sidebar-collapsed");
-        setIsSidebarExpanded(savedState === 'true');
+        const savedState = localStorage.getItem("sidebar-collapsed") === 'true';
+        setIsSidebarLocked(savedState);
+        setIsSidebarExpanded(savedState);
     }
   }, []);
 
   const handleMouseEnter = () => {
-    if (localStorage.getItem("sidebar-collapsed") !== 'true') {
+    if (!isSidebarLocked) {
         setIsSidebarExpanded(true);
     }
   };
 
   const handleMouseLeave = () => {
-     if (localStorage.getItem("sidebar-collapsed") !== 'true') {
+     if (!isSidebarLocked) {
         setIsSidebarExpanded(false);
     }
   };
   
   const handleToggleLock = () => {
-    const isCurrentlyLockedOpen = localStorage.getItem("sidebar-collapsed") === 'true';
-    if (isCurrentlyLockedOpen) {
-        // Unlock and allow hover behavior
-        localStorage.setItem("sidebar-collapsed", 'false');
-        setIsSidebarExpanded(true); // Stay expanded when unlocking
-    } else {
-        // Lock open
-        localStorage.setItem("sidebar-collapsed", 'true');
-        setIsSidebarExpanded(true);
-    }
+    const newLockedState = !isSidebarLocked;
+    setIsSidebarLocked(newLockedState);
+    localStorage.setItem("sidebar-collapsed", String(newLockedState));
+    // Keep it expanded when locking, allow hover behavior when unlocking
+    setIsSidebarExpanded(newLockedState ? true : false);
   }
 
-
-  // Render a skeleton or null on the server and during the initial client render
-  // to prevent hydration mismatches.
   if (!isClient) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -58,26 +51,27 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <FirebaseClientProvider>
-      <div className="min-h-screen w-full bg-background">
         <Header />
-        <div className="flex h-full">
-            <Sidebar 
-              isExpanded={isSidebarExpanded} 
-              onMouseEnter={handleMouseEnter}
-              onMouseLeave={handleMouseLeave}
-              onToggleLock={handleToggleLock}
-            />
-            <main className={cn(
-                "flex-1 flex flex-col transition-all duration-300 pt-14 lg:pt-[60px]",
-                "pl-0 md:pl-[72px]",
-                isSidebarExpanded && "md:pl-60"
-            )}>
-              <div className="flex-1 p-4 lg:p-6">
-                {children}
-              </div>
-            </main>
+        <div className="flex-1">
+            <div className="flex h-full pt-14 lg:pt-[60px]">
+                <Sidebar 
+                  isExpanded={isSidebarExpanded} 
+                  isLocked={isSidebarLocked}
+                  onMouseEnter={handleMouseEnter}
+                  onMouseLeave={handleMouseLeave}
+                  onToggleLock={handleToggleLock}
+                />
+                <main className={cn(
+                    "flex-1 flex flex-col transition-all duration-300",
+                    "pl-0 md:pl-[72px]",
+                    isSidebarExpanded && "md:pl-60"
+                )}>
+                  <div className="flex-1 p-4 lg:p-6 pb-16">
+                    {children}
+                  </div>
+                </main>
+            </div>
         </div>
-      </div>
     </FirebaseClientProvider>
   );
 }

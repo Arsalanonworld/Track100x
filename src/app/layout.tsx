@@ -25,19 +25,19 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet" />
       </head>
-      <body className={cn('min-h-screen bg-background font-sans antialiased flex flex-col')}>
+      <body className={cn('min-h-screen bg-background font-sans antialiased')}>
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
           enableSystem
           disableTransitionOnChange
         >
-          <div className="flex flex-col flex-1">
+          <div className="relative flex min-h-screen flex-col">
             <DashboardLayout>
               {children}
             </DashboardLayout>
+            <Footer />
           </div>
-          <Footer />
           <Toaster />
         </ThemeProvider>
       </body>
