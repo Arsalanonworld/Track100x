@@ -61,7 +61,7 @@ export default function Header() {
                      <Link href="/" className="mr-6 flex items-center space-x-2">
                         <LogoIcon />
                         <span className="font-regular text-lg">
-                            Track<span className="font-extrabold text-primary">100x</span>
+                            Track<span className="font-bold text-primary">100x</span>
                         </span>
                     </Link>
                 </div>
