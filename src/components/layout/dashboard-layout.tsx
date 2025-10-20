@@ -21,10 +21,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     }
   }, []);
 
-  const handleToggle = () => {
-    const newState = !isSidebarCollapsed;
-    setIsSidebarCollapsed(newState);
-    localStorage.setItem('sidebar-collapsed', String(newState));
+  const handleToggle = (collapsed: boolean) => {
+    setIsSidebarCollapsed(collapsed);
+    localStorage.setItem('sidebar-collapsed', String(collapsed));
   }
 
   const showExpandedSidebar = isHovered || !isSidebarCollapsed;
@@ -42,7 +41,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         />
       </div>
       <div className={cn("flex flex-col transition-all duration-300", showExpandedSidebar ? "md:pl-60" : "md:pl-[72px]")}>
-        <Header onSidebarToggle={handleToggle} />
+        <Header onSidebarToggle={() => handleToggle(!isSidebarCollapsed)} />
         <main className={cn(
             "flex flex-1 flex-col",
             isAppPage && "gap-4 p-4 lg:gap-6 lg:p-6"
@@ -53,3 +52,5 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     </div>
   );
 }
+
+    

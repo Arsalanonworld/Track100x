@@ -42,7 +42,7 @@ function LogoIcon() {
 }
 
 
-export default function Sidebar({ isCollapsed, onCollapseToggle }: { isCollapsed: boolean, onCollapseToggle: () => void }) {
+export default function Sidebar({ onCollapseToggle, isCollapsed }: { onCollapseToggle: (collapsed: boolean) => void; isCollapsed: boolean }) {
   const pathname = usePathname();
   const { user, claims } = useUser();
   const logout = useLogout();
@@ -118,7 +118,6 @@ export default function Sidebar({ isCollapsed, onCollapseToggle }: { isCollapsed
       });
   }
 
-
   return (
     <TooltipProvider>
       <aside
@@ -189,7 +188,7 @@ export default function Sidebar({ isCollapsed, onCollapseToggle }: { isCollapsed
             <Button
                 variant="ghost"
                 className="p-2 h-auto"
-                onClick={onCollapseToggle}
+                onClick={() => onCollapseToggle(!isCollapsed)}
                 >
                 {isCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
             </Button>
@@ -209,32 +208,49 @@ function SidebarSection({ title, items, pathname, isCollapsed, user }: { title: 
       {items.map(
         (item) => {
             const isLocked = item.locked || (item.authRequired && !user);
+            const isButton = !!item.onClick;
+
+            const content = (
+                <div
+                    className={cn(
+                        "flex items-center gap-3 rounded-md px-2 py-2.5 text-sm font-medium transition-all w-full",
+                        pathname === item.href
+                        ? "bg-muted text-foreground"
+                        : "text-muted-foreground hover:bg-muted/40",
+                        isCollapsed ? "justify-center" : "",
+                        isLocked && "cursor-not-allowed"
+                    )}
+                >
+                    <div className="relative">
+                        {item.icon}
+                        {isLocked && !isCollapsed && (
+                        <Lock
+                            size={12}
+                            className="absolute -top-1 -right-1 text-yellow-500"
+                        />
+                        )}
+                    </div>
+                    {!isCollapsed && item.label}
+                </div>
+            );
+
             return (
             <Tooltip key={item.href} delayDuration={0}>
               <TooltipTrigger asChild>
-                <Link
-                  href={item.onClick ? '#' : item.href}
-                  onClick={item.onClick}
-                  className={cn(
-                    "flex items-center gap-3 rounded-md px-2 py-2.5 text-sm font-medium transition-all",
-                    pathname === item.href
-                      ? "bg-muted text-foreground"
-                      : "text-muted-foreground hover:bg-muted/40",
-                    isCollapsed ? "justify-center" : "",
-                    isLocked && "cursor-not-allowed"
-                  )}
-                >
-                  <div className="relative">
-                    {item.icon}
-                    {isLocked && (
-                      <Lock
-                        size={12}
-                        className="absolute -top-1 -right-1 text-yellow-500"
-                      />
+                <span>
+                    {isButton ? (
+                        <button onClick={item.onClick} disabled={isLocked} className="w-full">
+                            {content}
+                        </button>
+                    ) : (
+                        <Link
+                            href={isLocked ? '#' : item.href}
+                            className={cn(isLocked && 'pointer-events-none')}
+                        >
+                            {content}
+                        </Link>
                     )}
-                  </div>
-                  {!isCollapsed && item.label}
-                </Link>
+                </span>
               </TooltipTrigger>
               {isCollapsed && <TooltipContent side="right">{item.label}</TooltipContent>}
             </Tooltip>
@@ -244,3 +260,5 @@ function SidebarSection({ title, items, pathname, isCollapsed, user }: { title: 
     </div>
   );
 }
+
+    
