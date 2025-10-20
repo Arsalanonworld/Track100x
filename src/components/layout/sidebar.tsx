@@ -206,8 +206,8 @@ function SidebarSection({
     <div className="space-y-1">
       <h4
         className={cn(
-          "text-[11px] font-bold tracking-wider uppercase text-muted-foreground px-4 transition-opacity duration-300 whitespace-nowrap",
-          !isExpanded ? "opacity-0 text-center" : "opacity-100"
+          "text-[11px] font-bold tracking-wider uppercase text-muted-foreground transition-opacity duration-300 whitespace-nowrap",
+          isExpanded ? "opacity-100 px-4" : "opacity-0 text-center"
         )}
       >
         {!isExpanded ? title[0] : title}
@@ -242,11 +242,11 @@ function SidebarSection({
         );
         
         const sharedClasses = cn(
-            "flex items-center rounded-lg px-4 py-2.5 text-sm font-semibold transition-all w-full",
+            "flex items-center rounded-lg py-2.5 text-sm font-semibold transition-all w-full",
             isActive
               ? "bg-primary/10 text-primary"
               : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
-            !isExpanded && "justify-center"
+            isExpanded ? "px-4" : "justify-center"
           );
 
         return (
