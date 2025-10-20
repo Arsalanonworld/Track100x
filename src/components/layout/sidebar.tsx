@@ -125,7 +125,7 @@ export default function Sidebar({
     <TooltipProvider>
       <aside
         className={cn(
-          "hidden md:flex fixed top-0 left-0 h-full flex-col transition-all duration-300 z-20 border-r",
+          "hidden md:flex fixed top-0 left-0 h-screen flex-col transition-all duration-300 z-20 border-r",
           "pt-14 lg:pt-[60px]",
           isExpanded ? "w-60" : "w-[72px]"
         )}
