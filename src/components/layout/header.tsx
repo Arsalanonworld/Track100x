@@ -31,31 +31,12 @@ function LogoIcon() {
 
 export default function Header() {
     const { user } = useUser();
-    const [scrolled, setScrolled] = useState(false);
-    
     const pathname = usePathname();
-    
     const isAppPage = !['/', '/upgrade', '/login', '/terms-of-service', '/privacy-policy'].includes(pathname);
     
-    useEffect(() => {
-        const handleScroll = () => {
-            const isScrolled = window.scrollY > 10;
-            if (isScrolled !== scrolled) {
-                setScrolled(isScrolled);
-            }
-        };
-
-        document.addEventListener('scroll', handleScroll);
-        return () => {
-            document.removeEventListener('scroll', handleScroll);
-        };
-    }, [scrolled]);
-
-
     return (
         <header className={cn(
-            "sticky top-0 z-40 w-full transition-all duration-300 border-b",
-            scrolled ? "bg-background/95 backdrop-blur-sm" : "bg-background"
+            "sticky top-0 z-50 w-full bg-background border-b"
         )}>
             <div className={cn("flex h-14 items-center lg:h-[60px] px-4")}>
                 
@@ -64,7 +45,7 @@ export default function Header() {
                        <MobileNav items={[]} />
                     </div>
 
-                    <Link href="/" className="hidden md:flex items-center gap-2 font-semibold mr-4">
+                    <Link href="/" className="flex items-center gap-2 font-semibold mr-4">
                         <LogoIcon />
                         <span className={cn("text-lg whitespace-nowrap")}>Track100x</span>
                     </Link>
