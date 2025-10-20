@@ -14,10 +14,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   useEffect(() => {
     setIsClient(true);
+    const savedState = localStorage.getItem("sidebar-collapsed") === 'true';
     if (window.innerWidth >= 768) {
-        const savedState = localStorage.getItem("sidebar-collapsed") === 'true';
         setIsSidebarLocked(savedState);
         setIsSidebarExpanded(savedState);
+    } else {
+        setIsSidebarLocked(false);
+        setIsSidebarExpanded(false);
     }
   }, []);
 
@@ -37,39 +40,48 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     const newLockedState = !isSidebarLocked;
     setIsSidebarLocked(newLockedState);
     localStorage.setItem("sidebar-collapsed", String(newLockedState));
-    // Keep it expanded when locking, allow hover behavior when unlocking
-    setIsSidebarExpanded(newLockedState ? true : false);
+    setIsSidebarExpanded(newLockedState);
   }
 
   if (!isClient) {
+    // Return a skeleton or loading state that matches the layout
     return (
-      <div className="flex items-center justify-center h-screen">
-        <p>Loading...</p>
-      </div>
+        <div className="relative min-h-screen flex flex-col">
+            <header className="fixed top-0 left-0 right-0 z-30 w-full bg-background/95 backdrop-blur-sm border-b h-14 lg:h-[60px]"></header>
+            <div className="flex h-full pt-14 lg:pt-[60px]">
+                <aside className="hidden md:flex fixed top-0 left-0 h-full flex-col z-20 border-r pt-14 lg:pt-[60px] w-[72px]"></aside>
+                <main className="flex-1 flex flex-col transition-all duration-300 md:ml-[72px]">
+                    <div className="flex-1 p-4 lg:p-6 pb-16"></div>
+                </main>
+            </div>
+            <footer className="border-t bg-background h-48"></footer>
+        </div>
     );
   }
 
   return (
     <FirebaseClientProvider>
+      <div className="relative min-h-screen flex flex-col">
         <Header />
-        <div className="flex h-full pt-14 lg:pt-[60px]">
-            <Sidebar 
-              isExpanded={isSidebarExpanded} 
-              isLocked={isSidebarLocked}
-              onMouseEnter={handleMouseEnter}
-              onMouseLeave={handleMouseLeave}
-              onToggleLock={handleToggleLock}
-            />
-            <main className={cn(
-                "flex-1 flex flex-col transition-all duration-300",
-                "pl-0 md:pl-[72px]",
-                isSidebarExpanded && "md:pl-60"
-            )}>
-              <div className="flex-1 p-4 lg:p-6 pb-16">
-                {children}
-              </div>
-            </main>
+        <div className="flex flex-1 pt-14 lg:pt-[60px]">
+          <Sidebar 
+            isExpanded={isSidebarExpanded} 
+            isLocked={isSidebarLocked}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            onToggleLock={handleToggleLock}
+          />
+          <main className={cn(
+              "flex-1 flex flex-col transition-all duration-300",
+              isSidebarExpanded ? "md:ml-60" : "md:ml-[72px]"
+          )}>
+            <div className="flex-1 p-4 lg:p-6 pb-16">
+              {children}
+            </div>
+          </main>
         </div>
+        <Footer />
+      </div>
     </FirebaseClientProvider>
   );
 }

@@ -125,7 +125,8 @@ export default function Sidebar({
     <TooltipProvider>
       <aside
         className={cn(
-          "hidden md:flex fixed top-0 left-0 h-full flex-col transition-all duration-300 z-20 border-r pt-14 lg:pt-[60px]",
+          "hidden md:flex fixed top-0 left-0 h-full flex-col transition-all duration-300 z-20 border-r",
+          "pt-14 lg:pt-[60px]",
           isExpanded ? "w-60" : "w-[72px]"
         )}
         onMouseEnter={onMouseEnter}
@@ -153,7 +154,7 @@ export default function Sidebar({
           </div>
           
           {/* Footer section for Upgrade card and Toggle button */}
-          <div className="p-3">
+          <div className="p-3 mt-auto">
             <div
               className={cn(
                   "transition-opacity duration-200",
@@ -161,7 +162,7 @@ export default function Sidebar({
               )}
             >
               {(!user || userPlan === "free") && isExpanded && (
-                <div className="p-4 rounded-xl bg-gradient-to-br from-primary via-blue-600 to-blue-700 text-primary-foreground">
+                <div className="p-4 rounded-xl bg-gradient-to-br from-primary via-blue-600 to-blue-700 text-primary-foreground animate-pulse-slow">
                   <p className="font-bold text-sm mb-1">Unlock Full Power</p>
                   <p className="text-xs opacity-90 mb-3">
                     Get advanced analytics, unlimited alerts & more.
@@ -190,7 +191,7 @@ export default function Sidebar({
                   >
                       <ChevronLeft
                       size={16}
-                      className={cn("transition-transform", !isExpanded && !isLocked && "rotate-180", isLocked && "rotate-0")}
+                      className={cn("transition-transform", isLocked ? "rotate-180" : "rotate-0")}
                       />
                   </Button>
                 </TooltipTrigger>
@@ -240,7 +241,7 @@ function SidebarSection({
             <div className="relative shrink-0">{item.icon}</div>
             <span
               className={cn(
-                "whitespace-nowrap transition-all duration-300",
+                "whitespace-nowrap transition-opacity duration-300",
                 !isExpanded && "opacity-0 w-0"
               )}
             >
