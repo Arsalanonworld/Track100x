@@ -126,8 +126,8 @@ export default function Sidebar({
       <aside
         className={cn(
           "hidden md:flex flex-col transition-all duration-300 z-20 border-r bg-background",
-          "fixed top-0 left-0 h-screen",
-          "pt-14 lg:pt-[60px]", // Add padding to account for header height
+          "sticky top-14 lg:top-[60px]",
+          "h-[calc(100vh-56px)] lg:h-[calc(100vh-60px)]",
           isExpanded ? "w-60" : "w-[72px]"
         )}
         onMouseEnter={onMouseEnter}
@@ -240,7 +240,7 @@ function SidebarSection({
             <div className="relative shrink-0">{item.icon}</div>
             <span
               className={cn(
-                "whitespace-nowrap transition-opacity duration-300",
+                "whitespace-nowrap",
                 !isExpanded && "opacity-0 w-0"
               )}
             >
