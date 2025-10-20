@@ -160,12 +160,8 @@ export default function Sidebar({
         <div>
           <div className={cn(
             "flex items-center border-b h-14 lg:h-[60px] px-4",
-            isExpanded ? "justify-between" : "justify-center"
+            isExpanded ? "justify-end" : "justify-center"
           )}>
-            <Link href="/" className={cn("flex items-center gap-2 font-bold", !isExpanded && "hidden")}>
-                <LogoIcon />
-                <span className="text-lg">Track100x</span>
-            </Link>
              <Button
               variant="outline"
               size="icon"
