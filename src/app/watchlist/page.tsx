@@ -3,16 +3,15 @@
 
 import { useMemo, useState } from 'react';
 import PageHeader from '@/components/page-header';
-import { Wallet, Eye, Lock, Download, Edit, BellPlus } from 'lucide-react';
+import { Wallet, Eye, Lock, BellPlus } from 'lucide-react';
 import { useUser, useCollection, useFirestore } from '@/firebase';
 import { collection, query, doc, deleteDoc, updateDoc } from 'firebase/firestore';
-import type { WatchlistItem, Alert } from '@/lib/types';
+import type { WatchlistItem } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { withAuth } from '@/components/auth/withAuth';
 import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
 import { WatchlistActionForm } from '@/components/watchlist/watchlist-action-form';
-import { AlertsPanel } from '@/components/watchlist/alerts-panel';
 import { AlertEditorDialog } from '@/components/alert-editor-dialog';
 import { useToast } from '@/hooks/use-toast';
 import { errorEmitter } from '@/firebase/error-emitter';
@@ -30,14 +29,9 @@ function PageSkeleton() {
             <div className='flex justify-between items-center'>
                  <Skeleton className="h-12 w-1/3" />
             </div>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-              <div className="lg:col-span-2 space-y-4">
-                  <Skeleton className="h-12 w-full" />
-                  <Skeleton className="h-48 w-full" />
-              </div>
-              <div className="lg:col-span-1">
-                  <Skeleton className="h-96 w-full" />
-              </div>
+            <div className="space-y-4">
+                <Skeleton className="h-12 w-full" />
+                <Skeleton className="h-48 w-full" />
             </div>
         </div>
     )
@@ -72,7 +66,6 @@ function WatchlistPage() {
   const { user, claims, loading: userLoading } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
-  const [refreshKey, setRefreshKey] = useState(0);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [editorEntity, setEditorEntity] = useState<{type: 'wallet' | 'token', identifier: string} | undefined>(undefined);
   
@@ -84,7 +77,7 @@ function WatchlistPage() {
     }
     return null;
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, firestore, refreshKey]);
+  }, [user, firestore]);
 
   const { data: watchlist, loading: watchlistLoading } = useCollection<WatchlistItem>(watchlistQuery);
   
@@ -92,7 +85,7 @@ function WatchlistPage() {
   const watchlistAtLimit = !isPro && watchlist && watchlist.length >= WATCHLIST_LIMIT_FREE;
 
   const pageDescription = isPro
-    ? 'Track your wallets, tokens, and alerts all in one place.'
+    ? 'Track your wallets and tokens all in one place.'
     : `You are on the Free plan. Upgrade to unlock all features.`;
 
 
@@ -132,15 +125,14 @@ function WatchlistPage() {
       });
   }
 
-  const handleOpenEditor = (entity?: {type: 'wallet' | 'token', identifier: string}) => {
+  const handleOpenEditor = (entity: {type: 'wallet' | 'token', identifier: string}) => {
     setEditorEntity(entity);
     setIsEditorOpen(true);
   }
   
   const handleItemAdded = (entity: {type: 'wallet' | 'token', identifier: string}) => {
-    setRefreshKey(prev => prev + 1);
-    // Optionally open the alert editor right after adding an item
-    // handleOpenEditor(entity);
+    // Open the alert editor right after adding an item
+    handleOpenEditor(entity);
   }
   
   return (
@@ -150,56 +142,58 @@ function WatchlistPage() {
             description={pageDescription}
         />
 
-        <div className='grid grid-cols-1 lg:grid-cols-3 gap-8 items-start'>
-            <div className='lg:col-span-2 space-y-6'>
-                <WatchlistActionForm 
-                    user={user}
-                    onItemAdded={handleItemAdded}
-                    atLimit={!!watchlistAtLimit}
-                    isLoading={isLoading}
-                />
-                
-                {watchlistAtLimit && (
-                    <Card className="text-center p-8 space-y-4 rounded-lg bg-card border shadow-lg border-primary">
-                        <Lock className="w-8 h-8 text-primary mx-auto" />
-                        <h3 className="text-2xl font-bold">Watchlist Limit Reached</h3>
-                        <p className="text-muted-foreground max-w-sm mx-auto">
-                            You've reached the limit of ${WATCHLIST_LIMIT_FREE} items for the Free plan. Upgrade to track unlimited wallets and tokens.
-                        </p>
-                        <Button asChild>
-                            <Link href="/upgrade">Upgrade to Pro</Link>
-                        </Button>
-                    </Card>
-                )}
-                
-                <div className="space-y-4">
-                   
-                    {isLoading ? <WatchlistSkeleton /> : user && watchlist && watchlist.length > 0 ? (
-                        watchlist.map((item) => (
-                           <WatchlistItemCard 
-                               key={item.id} 
-                               item={item} 
-                               onUpdate={handleUpdate} 
-                               onRemove={handleRemove}
-                               onAlertCreate={() => handleOpenEditor({type: item.type, identifier: item.identifier})}
-                            />
-                        ))
-                    ) : (
-                       !isLoading && (
-                        <Card className="flex flex-col items-center justify-center text-center text-muted-foreground p-8 rounded-lg border-2 border-dashed h-48">
-                            <Eye className="h-10 w-10 mb-4" />
-                            <p className="font-semibold text-lg text-foreground">Your watchlist is empty</p>
-                            <p className="text-sm max-w-xs mx-auto">
-                               Use the form above to add wallets or tokens to begin.
-                            </p>
-                        </Card>
-                       )
-                    )}
-                </div>
-            </div>
-            <div className='lg:col-span-1 lg:sticky lg:top-20'>
-               <AlertsPanel onNewAlert={() => handleOpenEditor()} />
-            </div>
+        <div className='space-y-6'>
+            <WatchlistActionForm 
+                user={user}
+                onItemAdded={handleItemAdded}
+                atLimit={!!watchlistAtLimit}
+                isLoading={isLoading}
+            />
+            
+            {watchlistAtLimit && (
+                <Card className="text-center p-8 space-y-4 rounded-lg bg-card border shadow-lg border-primary">
+                    <Lock className="w-8 h-8 text-primary mx-auto" />
+                    <h3 className="text-2xl font-bold">Watchlist Limit Reached</h3>
+                    <p className="text-muted-foreground max-w-sm mx-auto">
+                        You've reached the limit of ${WATCHLIST_LIMIT_FREE} items for the Free plan. Upgrade to track unlimited wallets and tokens.
+                    </p>
+                    <Button asChild>
+                        <Link href="/upgrade">Upgrade to Pro</Link>
+                    </Button>
+                </Card>
+            )}
+            
+            <Card>
+                <CardHeader>
+                    <CardTitle>Tracked Items</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="space-y-4">
+                        {isLoading ? <WatchlistSkeleton /> : user && watchlist && watchlist.length > 0 ? (
+                            watchlist.map((item) => (
+                            <WatchlistItemCard 
+                                key={item.id} 
+                                item={item} 
+                                onUpdate={handleUpdate} 
+                                onRemove={handleRemove}
+                                onAlertCreate={handleOpenEditor}
+                                />
+                            ))
+                        ) : (
+                        !isLoading && (
+                            <div className="flex flex-col items-center justify-center text-center text-muted-foreground p-8 rounded-lg border-2 border-dashed h-48">
+                                <Eye className="h-10 w-10 mb-4" />
+                                <p className="font-semibold text-lg text-foreground">Your watchlist is empty</p>
+                                <p className="text-sm max-w-xs mx-auto">
+                                Use the form above to add wallets or tokens to begin.
+                                </p>
+                            </div>
+                        )
+                        )}
+                    </div>
+                </CardContent>
+            </Card>
+
         </div>
         <Dialog open={isEditorOpen} onOpenChange={setIsEditorOpen}>
             <AlertEditorDialog onOpenChange={setIsEditorOpen} entity={editorEntity} />

@@ -36,7 +36,8 @@ export function LogoIcon() {
 const navItems = [
     { href: '/feed', label: 'Whale Feed', icon: Rss },
     { href: '/leaderboard', label: 'Explore', icon: Compass },
-    { href: '/watchlist', label: 'My Watchlist', icon: Eye },
+    { href: '/watchlist', label: 'Watchlist', icon: Eye },
+    { href: '/alerts', label: 'Alerts', icon: Bell },
     { href: '/portfolio', label: 'Portfolio', icon: Wallet },
 ];
 
