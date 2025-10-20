@@ -77,7 +77,12 @@ export default function Header() {
                         <Sidebar isCollapsed={false} onCollapseToggle={() => {}} />
                     </SheetContent>
                 </Sheet>
-                <CommandMenu />
+                <div className='flex items-center gap-4 w-full'>
+                    <h1 className="text-xl font-semibold hidden md:block">Dashboard</h1>
+                    <div className="w-full flex-1 max-w-sm">
+                        <CommandMenu />
+                    </div>
+                </div>
                 <div className="flex items-center gap-2">
                     <UserNav />
                     <ThemeToggle />
