@@ -15,6 +15,7 @@ import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { tokenLibrary } from '@/lib/tokens';
 import type { User } from 'firebase/auth';
+import { Card, CardContent } from '../ui/card';
 
 
 type WatchlistActionFormProps = {
@@ -124,32 +125,35 @@ export function WatchlistActionForm({ user, onItemAdded, atLimit, isLoading }: W
 
   return (
     <>
-      <div className="flex items-center p-1.5 rounded-full border bg-card shadow-sm w-full">
-            <div className="relative flex-1">
-                <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2"/>
-                <Input 
-                    id="add-item-input"
-                    placeholder="Paste address or token symbol to add to watchlist..."
-                    value={identifier}
-                    onChange={(e) => setIdentifier(e.target.value)}
-                    disabled={isFormDisabled}
-                    className="pl-9 bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0 h-10"
-                    onKeyDown={(e) => {
-                        if (e.key === 'Enter') handleAddItem();
-                    }}
-                />
-            </div>
-            <div className="flex items-center gap-1">
+      <Card>
+        <CardContent className="p-4">
+            <h3 className='font-semibold mb-2'>Add to Watchlist</h3>
+            <div className="flex items-center p-1.5 rounded-lg border bg-background shadow-sm w-full">
+                <div className="relative flex-1">
+                    <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2"/>
+                    <Input 
+                        id="add-item-input"
+                        placeholder="Paste wallet address or token symbol..."
+                        value={identifier}
+                        onChange={(e) => setIdentifier(e.target.value)}
+                        disabled={isFormDisabled}
+                        className="pl-9 bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0 h-10"
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') handleAddItem();
+                        }}
+                    />
+                </div>
                 <Button 
                     onClick={handleAddItem}
                     disabled={isFormDisabled || !identifier || atLimit} 
-                    className="shrink-0 rounded-full h-10 px-4 sm:px-6"
+                    className="shrink-0 rounded-md h-9 px-4 sm:px-6"
                 >
                     <Eye className="h-4 w-4 mr-2" />
                     Add
                 </Button>
             </div>
-        </div>
+        </CardContent>
+      </Card>
       <Dialog open={isAliasModalOpen} onOpenChange={setIsAliasModalOpen}>
         <DialogContent>
           <DialogHeader>

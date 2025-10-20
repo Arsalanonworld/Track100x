@@ -57,14 +57,14 @@ export function WatchlistItemCard({
     return (
         <Card className='group'>
             <CardContent className='p-4'>
-                <div className='flex items-start gap-4'>
+                <div className='flex items-center gap-4'>
                     {/* Icon */}
                     <div className='mt-1'>
                         {item.type === 'wallet' ? <Wallet className="h-6 w-6 text-muted-foreground"/> : <CryptoIcon token={item.identifier} className="h-6 w-6"/>}
                     </div>
 
                     {/* Main Content */}
-                    <div className='flex-1 space-y-2 min-w-0'>
+                    <div className='flex-1 space-y-1 min-w-0'>
                        {item.type === 'wallet' ? (
                             <>
                             {isEditing ? (

@@ -152,15 +152,12 @@ function WatchlistPage() {
 
         <div className='grid grid-cols-1 lg:grid-cols-3 gap-8 items-start'>
             <div className='lg:col-span-2 space-y-6'>
-                 <h2 className='text-2xl font-bold tracking-tight'>Tracked Items</h2>
-                <div className="flex flex-col sm:flex-row gap-2">
-                     <WatchlistActionForm 
-                        user={user}
-                        onItemAdded={handleItemAdded}
-                        atLimit={!!watchlistAtLimit}
-                        isLoading={isLoading}
-                     />
-                </div>
+                <WatchlistActionForm 
+                    user={user}
+                    onItemAdded={handleItemAdded}
+                    atLimit={!!watchlistAtLimit}
+                    isLoading={isLoading}
+                />
                 
                 {watchlistAtLimit && (
                     <Card className="text-center p-8 space-y-4 rounded-lg bg-card border shadow-lg border-primary">
@@ -189,18 +186,18 @@ function WatchlistPage() {
                         ))
                     ) : (
                        !isLoading && (
-                        <div className="flex flex-col items-center justify-center text-center text-muted-foreground p-8 rounded-lg border-2 border-dashed">
+                        <Card className="flex flex-col items-center justify-center text-center text-muted-foreground p-8 rounded-lg border-2 border-dashed h-48">
                             <Eye className="h-10 w-10 mb-4" />
-                            <p className="font-semibold text-lg">Your watchlist is empty.</p>
+                            <p className="font-semibold text-lg text-foreground">Your watchlist is empty</p>
                             <p className="text-sm max-w-xs mx-auto">
                                Use the form above to add wallets or tokens to begin.
                             </p>
-                        </div>
+                        </Card>
                        )
                     )}
                 </div>
             </div>
-            <div className='lg:col-span-1 lg:mt-[44px]'>
+            <div className='lg:col-span-1 lg:sticky lg:top-20'>
                <AlertsPanel onNewAlert={() => handleOpenEditor()} />
             </div>
         </div>
