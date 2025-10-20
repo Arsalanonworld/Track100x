@@ -16,11 +16,14 @@ import {
   Wallet,
   Rss,
   Settings,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { useUser } from "@/firebase";
 import { useLogout } from "../auth/auth-actions";
+import { Button } from "../ui/button";
 
 function LogoIcon() {
   return (
@@ -133,25 +136,17 @@ export default function Sidebar({ isCollapsed: isParentCollapsed, onCollapseTogg
           isCollapsed ? "w-[72px]" : "w-60"
         )}
       >
-        <div>
+        <div className="flex flex-col flex-1">
           {/* Header / Logo */}
-          <div className="flex items-center justify-between px-4 py-3 border-b border-border h-14 lg:h-[60px]">
-            {!isCollapsed && (
-                <Link href="/" className="flex items-center gap-2">
-                    <LogoIcon />
-                    <span className="text-lg font-semibold">Track100x</span>
-                </Link>
-            )}
-            <button
-              className="p-2 rounded-md hover:bg-muted"
-              onClick={handleToggle}
-            >
-              <ArrowLeftRight size={18} />
-            </button>
+          <div className={cn("flex items-center border-b border-border h-14 lg:h-[60px] px-4", isCollapsed ? 'justify-center' : 'justify-between')}>
+            <Link href="/" className={cn("flex items-center gap-2")}>
+                <LogoIcon />
+                {!isCollapsed && <span className="text-lg font-semibold">Track100x</span>}
+            </Link>
           </div>
 
           {/* NAVIGATION */}
-          <div className="px-3 py-4 space-y-6">
+          <div className="px-3 py-4 space-y-6 flex-1">
             {/* Section: Core */}
             <SidebarSection
               title="CORE"
@@ -178,24 +173,37 @@ export default function Sidebar({ isCollapsed: isParentCollapsed, onCollapseTogg
           </div>
         </div>
 
-        {/* Upgrade CTA */}
-        {userPlan === "free" && !isCollapsed && (
-          <div className="p-4 border-t border-border">
-            <div className="p-3 rounded-xl bg-gradient-to-br from-primary to-blue-500/80 text-primary-foreground">
-              <p className="font-medium text-sm mb-1">Unlock Full Power</p>
-              <p className="text-xs opacity-90 mb-3">
-                Get advanced analytics, unlimited alerts & more.
-              </p>
-              <Link
-                href="/upgrade"
-                className="inline-flex items-center gap-1 text-xs font-semibold bg-primary-foreground/10 hover:bg-primary-foreground/20 px-3 py-1.5 rounded-lg transition-all"
-              >
-                <Star size={14} />
-                Upgrade to Pro
-              </Link>
+        <div className="border-t">
+          {/* Upgrade CTA */}
+          {userPlan === "free" && !isCollapsed && (
+            <div className="p-4">
+              <div className="p-3 rounded-xl bg-gradient-to-br from-primary to-blue-500/80 text-primary-foreground">
+                <p className="font-medium text-sm mb-1">Unlock Full Power</p>
+                <p className="text-xs opacity-90 mb-3">
+                  Get advanced analytics, unlimited alerts & more.
+                </p>
+                <Link
+                  href="/upgrade"
+                  className="inline-flex items-center gap-1 text-xs font-semibold bg-primary-foreground/10 hover:bg-primary-foreground/20 px-3 py-1.5 rounded-lg transition-all"
+                >
+                  <Star size={14} />
+                  Upgrade to Pro
+                </Link>
+              </div>
             </div>
+          )}
+
+          {/* Collapse Toggle */}
+          <div className={cn("flex items-center p-3", isCollapsed ? "justify-center" : "justify-end")}>
+            <Button
+                variant="ghost"
+                className="p-2 h-auto"
+                onClick={handleToggle}
+                >
+                {isCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
+            </Button>
           </div>
-        )}
+        </div>
       </aside>
     </TooltipProvider>
   );
