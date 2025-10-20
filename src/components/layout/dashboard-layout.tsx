@@ -1,7 +1,6 @@
-
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Sidebar from './sidebar';
 import Header from './header';
 import { cn } from '@/lib/utils';
@@ -15,14 +14,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="min-h-screen w-full bg-background">
-      <Header />
-      <div className="flex h-full">
-        <div className="hidden md:fixed md:top-14 lg:top-[60px] md:bottom-0 md:left-0 md:z-40 md:block transition-all duration-300">
-          <Sidebar onStateChange={setIsSidebarExpanded} />
-        </div>
+      <div className="hidden md:block">
+        <Sidebar onStateChange={setIsSidebarExpanded} />
+      </div>
+      <div className={cn(
+          "flex flex-col transition-all duration-300",
+          isSidebarExpanded ? "md:ml-60" : "md:ml-[72px]"
+      )}>
+        <Header />
         <main className={cn(
-            "flex flex-1 flex-col transition-all duration-300",
-            isSidebarExpanded ? "md:pl-60" : "md:pl-[72px]",
+            "flex-1",
             isAppPage ? "gap-4 p-4 lg:gap-6 lg:p-6" : ""
         )}>
           {children}

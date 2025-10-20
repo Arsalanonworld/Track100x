@@ -36,7 +36,7 @@ export default function Header() {
     
     return (
         <header className={cn(
-            "sticky top-0 z-50 w-full bg-background/95 backdrop-blur-sm border-b"
+            "sticky top-0 z-30 w-full bg-background/95 backdrop-blur-sm border-b"
         )}>
             <div className={cn("flex h-14 items-center lg:h-[60px] px-4")}>
                 
@@ -45,15 +45,15 @@ export default function Header() {
                        <MobileNav items={[]} />
                     </div>
 
-                    <Link href="/" className="flex items-center gap-2 font-semibold mr-4">
-                        <LogoIcon />
-                        <span className={cn("text-lg whitespace-nowrap")}>Track100x</span>
-                    </Link>
-                     
-                     {isAppPage && (
+                     {isAppPage ? (
                         <div className="w-full max-w-sm lg:max-w-md hidden md:block">
                             <CommandMenu />
                         </div>
+                     ) : (
+                        <Link href="/" className="flex items-center gap-2 font-semibold mr-4">
+                            <LogoIcon />
+                            <span className={cn("text-lg whitespace-nowrap")}>Track100x</span>
+                        </Link>
                      )}
                 </div>
                 

@@ -32,7 +32,7 @@ function LogoIcon() {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
+      viewBox="0 0 24"
       fill="none"
       stroke="currentColor"
       strokeWidth="2"
@@ -147,49 +147,60 @@ export default function Sidebar({
     <TooltipProvider>
       <aside
         className={cn(
-          "h-full bg-card flex flex-col justify-between transition-all duration-300 relative border-r",
+          "fixed top-0 left-0 h-full bg-card flex flex-col justify-between transition-all duration-300 z-40 border-r",
           isExpanded ? "w-60" : "w-[72px]"
         )}
       >
-        <Button
-          variant="outline"
-          size="icon"
-          className="absolute -right-4 top-4 z-50 h-8 w-8 rounded-full bg-card hidden md:flex"
-          onClick={handleToggle}
-        >
-          <ChevronLeft
-            size={16}
-            className={cn("transition-transform", !isExpanded && "rotate-180")}
-          />
-        </Button>
-
-        <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden pt-4">
-          <div className="px-3 py-4 space-y-6 flex-1">
-            <SidebarSection
-              title="CORE"
-              items={navItems}
-              pathname={pathname}
-              isExpanded={isExpanded}
-              user={user}
-            />
-
-            <SidebarSection
-              title="ANALYTICS"
-              items={analyticsItems}
-              pathname={pathname}
-              isExpanded={isExpanded}
-              user={user}
-            />
-
-            {user && (
+        <div>
+          <div className={cn(
+            "flex items-center border-b h-14 lg:h-[60px] px-4",
+            isExpanded ? "justify-between" : "justify-center"
+          )}>
+            <Link href="/" className={cn("flex items-center gap-2 font-bold", !isExpanded && "hidden")}>
+                <LogoIcon />
+                <span className="text-lg">Track100x</span>
+            </Link>
+             <Button
+              variant="outline"
+              size="icon"
+              className="h-8 w-8 rounded-full bg-card"
+              onClick={handleToggle}
+            >
+              <ChevronLeft
+                size={16}
+                className={cn("transition-transform", !isExpanded && "rotate-180")}
+              />
+            </Button>
+          </div>
+        
+          <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden pt-4">
+            <div className="px-3 py-4 space-y-6 flex-1">
               <SidebarSection
-                title="ACCOUNT"
-                items={accountItems}
+                title="CORE"
+                items={navItems}
                 pathname={pathname}
                 isExpanded={isExpanded}
                 user={user}
               />
-            )}
+
+              <SidebarSection
+                title="ANALYTICS"
+                items={analyticsItems}
+                pathname={pathname}
+                isExpanded={isExpanded}
+                user={user}
+              />
+
+              {user && (
+                <SidebarSection
+                  title="ACCOUNT"
+                  items={accountItems}
+                  pathname={pathname}
+                  isExpanded={isExpanded}
+                  user={user}
+                />
+              )}
+            </div>
           </div>
         </div>
 
