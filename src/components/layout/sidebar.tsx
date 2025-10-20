@@ -151,29 +151,10 @@ export default function Sidebar({
           isExpanded ? "w-60" : "w-[72px]"
         )}
       >
-        <div
-          className={cn(
-            "flex items-center border-b border-border h-14 lg:h-[60px] px-4",
-            isExpanded ? "justify-between" : "justify-center"
-          )}
-        >
-          <div className={cn("flex items-center gap-2 overflow-hidden", !isExpanded && "w-0")}>
-            <LogoIcon />
-            <span
-              className={cn(
-                "font-bold text-lg whitespace-nowrap transition-opacity duration-300",
-                !isExpanded && "opacity-0"
-              )}
-            >
-              Track100x
-            </span>
-          </div>
-          {!isExpanded && <LogoIcon />}
-        </div>
         <Button
           variant="outline"
           size="icon"
-          className="absolute -right-4 top-14 z-50 h-8 w-8 rounded-full bg-card hidden md:flex"
+          className="absolute -right-4 top-4 z-50 h-8 w-8 rounded-full bg-card hidden md:flex"
           onClick={handleToggle}
         >
           <ChevronLeft
