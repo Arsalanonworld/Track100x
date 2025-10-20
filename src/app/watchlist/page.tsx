@@ -4,7 +4,7 @@
 import { useMemo, useState } from 'react';
 import PageHeader from '@/components/page-header';
 import { Button } from '@/components/ui/button';
-import { Wallet, Eye, Lock, Download } from 'lucide-react';
+import { Wallet, Eye, Lock, Download, Edit } from 'lucide-react';
 import { useUser, useCollection, useFirestore } from '@/firebase';
 import { collection, query } from 'firebase/firestore';
 import type { WatchlistItem } from '@/lib/types';
@@ -27,6 +27,7 @@ import { useToast } from '@/hooks/use-toast';
 import { doc, deleteDoc, updateDoc } from 'firebase/firestore';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
+import { Dialog } from '@/components/ui/dialog';
 
 
 const WATCHLIST_LIMIT_FREE = 5;
@@ -39,27 +40,22 @@ const generateChartData = (baseValue: number, days: number, volatility: number) 
         const date = new Date();
         date.setDate(date.getDate() - (i * days / points));
         
-        let dayLabel;
         const dayNumber = Math.floor(i * days / points);
+        let dayLabel = `${dayNumber}d`;
 
         if (i === points) {
             dayLabel = `${dayNumber}d ago`;
         } else if (i === 0) {
             dayLabel = 'Today';
-        } else {
-            // For longer ranges, only label every 5-ish points to avoid clutter
-            const labelFrequency = Math.floor(points / 6);
-            if (i % labelFrequency === 0) {
-                dayLabel = `${dayNumber}d`;
-            } else {
-                dayLabel = '';
-            }
         }
         
         if (i < points) {
          currentValue *= 1 + (Math.random() - 0.48) * volatility * (Math.sqrt(days / points));
         }
-        data.push({ name: dayLabel, value: currentValue });
+
+        const shouldLabel = i === 0 || i === points || i % Math.floor(points / 5) === 0;
+
+        data.push({ name: shouldLabel ? dayLabel : '', value: currentValue });
     }
     return data;
 }
@@ -270,6 +266,19 @@ export default function WatchlistPage() {
              <PageHeader
                 title="My Watchlist"
                 description={pageDescription}
+                action={
+                  <div className='flex items-center gap-2'>
+                    <Button variant="outline" asChild>
+                      <Link href="/watchlist">
+                        <Edit className="mr-2 h-4 w-4" /> Manage Watchlist
+                      </Link>
+                    </Button>
+                    <Button variant="outline" disabled={!isPro && hasWallets}>
+                        <Download className="mr-2 h-4 w-4" /> Export Data
+                        {!isPro && hasWallets && <Lock className='ml-2 h-3 w-3' />}
+                     </Button>
+                  </div>
+                }
             />
 
             {hasWallets ? (
@@ -281,10 +290,6 @@ export default function WatchlistPage() {
                           <CardTitle>Portfolio Overview</CardTitle>
                           <CardDescription>Aggregated view of your on-chain wealth from your watched wallets.</CardDescription>
                         </div>
-                         <Button variant="outline" disabled>
-                           <Download className="mr-2 h-4 w-4" />
-                           Export Data
-                         </Button>
                       </div>
                     </CardHeader>
                     <CardContent className="space-y-8">
@@ -392,6 +397,12 @@ export default function WatchlistPage() {
                     <p className="text-muted-foreground max-w-sm mx-auto mt-2 mb-6">
                         Add a wallet to your watchlist to start tracking your portfolio's performance.
                     </p>
+                    <Button asChild>
+                        <Link href="/watchlist">
+                            <Eye className="mr-2 h-4 w-4" />
+                            Go to Watchlist
+                        </Link>
+                    </Button>
                 </Card>
             )}
 
@@ -451,7 +462,11 @@ export default function WatchlistPage() {
                 </div>
             </div>
         </div>
-         <AlertEditorDialog onOpenChange={setIsEditorOpen} entity={editorEntity} />
+        <Dialog open={isEditorOpen} onOpenChange={setIsEditorOpen}>
+            <AlertEditorDialog onOpenChange={setIsEditorOpen} entity={editorEntity} />
+        </Dialog>
     </div>
   );
 }
+
+      
