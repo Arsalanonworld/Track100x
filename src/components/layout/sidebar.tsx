@@ -148,7 +148,7 @@ export default function Sidebar({ onStateChange }: { onStateChange: (isExpanded:
     <TooltipProvider>
       <aside
         className={cn(
-          "h-screen border-r border-border bg-card flex flex-col justify-between transition-all duration-300 relative",
+          "h-full bg-card flex flex-col justify-between transition-all duration-300 relative",
           isExpanded ? "w-60" : "w-[72px]"
         )}
         onMouseEnter={() => setIsHovered(true)}
@@ -230,7 +230,7 @@ function SidebarSection({ title, items, pathname, isExpanded, user }: { title: s
             const content = (
                 <div
                     className={cn(
-                        "flex items-center gap-3 rounded-md px-2 py-2.5 text-sm font-medium transition-all w-full",
+                        "flex items-center gap-3 rounded-md px-2 py-2.5 text-sm font-medium transition-all w-full overflow-hidden",
                         pathname === item.href
                         ? "bg-muted text-foreground"
                         : "text-muted-foreground hover:bg-muted/40",
@@ -238,7 +238,7 @@ function SidebarSection({ title, items, pathname, isExpanded, user }: { title: s
                         isLocked && "cursor-not-allowed"
                     )}
                 >
-                    <div className="relative">
+                    <div className="relative shrink-0">
                         {item.icon}
                         {isLocked && isExpanded && (
                         <Lock
@@ -247,7 +247,7 @@ function SidebarSection({ title, items, pathname, isExpanded, user }: { title: s
                         />
                         )}
                     </div>
-                    <span className={cn("whitespace-nowrap transition-opacity duration-300", !isExpanded && "opacity-0 w-0")}>{item.label}</span>
+                    <span className={cn("whitespace-nowrap transition-opacity", !isExpanded && "opacity-0 w-0")}>{item.label}</span>
                 </div>
             );
 
