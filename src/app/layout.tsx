@@ -4,7 +4,6 @@ import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
 import { ThemeProvider } from '@/components/theme-provider';
 import DashboardLayout from '@/components/layout/dashboard-layout';
-import { FirebaseClientProvider } from '@/firebase/client-provider';
 
 export const metadata: Metadata = {
   title: 'Track100x | Blockchain Intelligence Platform',
@@ -31,11 +30,9 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <FirebaseClientProvider>
-            <DashboardLayout>
-              {children}
-            </DashboardLayout>
-          </FirebaseClientProvider>
+          <DashboardLayout>
+            {children}
+          </DashboardLayout>
           <Toaster />
         </ThemeProvider>
       </body>

@@ -1,4 +1,5 @@
 
+
 'use client';
 import { UserNav } from "@/components/user-nav";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -9,12 +10,14 @@ import { useUser } from "@/firebase";
 import { cn } from "@/lib/utils";
 import { CommandMenu } from "../command-menu";
 import { MainNav } from "./main-nav";
+import { Button } from "../ui/button";
+import { ChevronLeft } from "lucide-react";
 
 function LogoIcon() {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
+      viewBox="0 0 24"
       fill="none"
       stroke="currentColor"
       strokeWidth="2"
@@ -27,27 +30,47 @@ function LogoIcon() {
   );
 }
 
+interface HeaderProps {
+  isSidebarExpanded: boolean;
+  onToggleSidebar: () => void;
+}
 
-export default function Header() {
+
+export default function Header({ isSidebarExpanded, onToggleSidebar }: HeaderProps) {
     const { user } = useUser();
     
     return (
         <header className={cn(
-            "sticky top-0 z-30 w-full bg-background/95 backdrop-blur-sm border-b"
+            "fixed top-0 z-30 w-full bg-background/95 backdrop-blur-sm border-b"
         )}>
             <div className={cn("flex h-14 items-center lg:h-[60px] px-4")}>
                 <div className="flex items-center gap-2">
                    <div className="md:hidden">
                     <MobileNav />
                    </div>
-                    <Link href="/" className="hidden md:flex items-center space-x-2">
-                        <LogoIcon />
-                        <span className="font-bold">Track100x</span>
-                    </Link>
+                    <div className="hidden md:flex items-center gap-2">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 rounded-full"
+                        onClick={onToggleSidebar}
+                      >
+                        <ChevronLeft
+                          size={16}
+                          className={cn("transition-transform", !isSidebarExpanded && "rotate-180")}
+                        />
+                      </Button>
+                      <Link href="/" className="flex items-center space-x-2">
+                          <LogoIcon />
+                          <span className="font-bold">Track100x</span>
+                      </Link>
+                    </div>
                 </div>
                 
                 <div className="flex-1 flex justify-center">
-                    <MainNav />
+                    <div className={cn("transition-all duration-300", isSidebarExpanded ? 'md:ml-[-120px]' : 'md:ml-[-170px]')}>
+                      <MainNav />
+                    </div>
                 </div>
                 
                 <div className="flex flex-1 items-center justify-end space-x-2 sm:space-x-4">

@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -29,52 +30,7 @@ import { useUser } from "@/firebase";
 import { useLogout } from "../auth/auth-actions";
 import { Button } from "../ui/button";
 
-function LogoIcon() {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className="h-6 w-6"
-    >
-      <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-    </svg>
-  );
-}
-
-export default function Sidebar({
-  onStateChange,
-}: {
-  onStateChange: (isExpanded: boolean) => void;
-}) {
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  const pathname = usePathname();
-  const { user, claims } = useUser();
-  const logout = useLogout();
-  const userPlan = claims?.plan || "free";
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-    const savedState = localStorage.getItem("sidebar-collapsed");
-    const collapsed = savedState === 'true';
-    setIsCollapsed(collapsed);
-    onStateChange(!collapsed);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-  
-  const handleToggle = () => {
-    const newCollapsedState = !isCollapsed;
-    setIsCollapsed(newCollapsedState);
-    localStorage.setItem("sidebar-collapsed", String(newCollapsedState));
-    onStateChange(!newCollapsedState);
-  };
-
-  const navItems = [
+const navItems = [
     {
       label: "Whale Feed",
       icon: <Rss size={18} />,
@@ -105,18 +61,25 @@ export default function Sidebar({
       href: "/portfolio",
       authRequired: true,
     },
-  ];
-
-  const analyticsItems = [
     {
       label: "Analytics",
       icon: <BarChart3 size={18} />,
       href: "/analytics",
       authRequired: true,
-      locked: user ? userPlan === "free" : true, // Locked for guests and free users
+      locked: true,
     },
   ];
 
+export default function Sidebar({
+  isExpanded
+}: {
+  isExpanded: boolean;
+}) {
+  const pathname = usePathname();
+  const { user, claims } = useUser();
+  const logout = useLogout();
+  const userPlan = claims?.plan || "free";
+  
   const accountItems = user 
     ? [
         {
@@ -142,52 +105,29 @@ export default function Sidebar({
         },
       ];
 
+  // Update locked status based on user plan
+  const finalNavItems = navItems.map(item => {
+    if (item.href === '/analytics') {
+      return { ...item, locked: user ? userPlan === 'free' : true };
+    }
+    return item;
+  });
 
-  const isExpanded = !isCollapsed;
-
-  if (!isClient) {
-      return null;
-  }
 
   return (
     <TooltipProvider>
       <aside
         className={cn(
-          "fixed top-0 left-0 h-full bg-card flex flex-col justify-between transition-all duration-300 z-40 border-r",
+          "fixed top-0 left-0 h-full bg-card flex flex-col justify-between transition-all duration-300 z-20 border-r",
+          "pt-14 lg:pt-[60px]", // Add padding to account for the fixed header
           isExpanded ? "w-60" : "w-[72px]"
         )}
       >
-        <div>
-          <div className={cn(
-            "flex items-center border-b h-14 lg:h-[60px] px-4",
-            isExpanded ? "justify-end" : "justify-center"
-          )}>
-             <Button
-              variant="outline"
-              size="icon"
-              className="h-8 w-8 rounded-full bg-card"
-              onClick={handleToggle}
-            >
-              <ChevronLeft
-                size={16}
-                className={cn("transition-transform", !isExpanded && "rotate-180")}
-              />
-            </Button>
-          </div>
-        
-          <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden pt-4">
-            <div className="px-3 py-4 space-y-6 flex-1">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden">
+            <div className="px-3 py-4 space-y-6">
               <SidebarSection
                 title="CORE"
-                items={navItems}
-                pathname={pathname}
-                isExpanded={isExpanded}
-                user={user}
-              />
-
-              <SidebarSection
-                title="ANALYTICS"
-                items={analyticsItems}
+                items={finalNavItems}
                 pathname={pathname}
                 isExpanded={isExpanded}
                 user={user}
@@ -201,7 +141,6 @@ export default function Sidebar({
                 user={user}
               />
             </div>
-          </div>
         </div>
 
         <div
