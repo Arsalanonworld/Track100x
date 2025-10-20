@@ -1,28 +1,8 @@
-
 'use client';
 
 import React from 'react';
 import { useUser } from '@/firebase';
 import { FeatureLock } from '@/components/feature-lock';
-import { Skeleton } from '@/components/ui/skeleton';
-
-function DefaultPageSkeleton() {
-    return (
-        <div className='space-y-8'>
-            <div className='flex justify-between items-center'>
-                 <Skeleton className="h-12 w-1/3" />
-            </div>
-            <div className="space-y-2">
-                <Skeleton className="h-10 w-full" />
-                {[...Array(5)].map((_, i) => (
-                    <div key={i} className="h-[73px] rounded-lg border">
-                        <Skeleton className="h-full w-full" />
-                    </div>
-                ))}
-            </div>
-        </div>
-    )
-}
 
 type WithAuthOptions = {
     skeleton?: React.ComponentType;
@@ -34,19 +14,28 @@ export function withAuth<P extends object>(
 ) {
   const AuthComponent = (props: P) => {
     const { user, loading } = useUser();
-    const SkeletonComponent = options.skeleton || DefaultPageSkeleton;
+    const SkeletonComponent = options.skeleton;
 
     if (loading) {
-      return <SkeletonComponent />;
+      if (SkeletonComponent) {
+        return <SkeletonComponent />;
+      }
+      return (
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      );
     }
 
     if (!user) {
       return (
         <div className="relative h-[calc(100vh-200px)]">
             <FeatureLock />
-            <div className='invisible'>
-                <SkeletonComponent />
-            </div>
+            {SkeletonComponent && (
+                 <div className='invisible'>
+                    <SkeletonComponent />
+                </div>
+            )}
         </div>
       );
     }
