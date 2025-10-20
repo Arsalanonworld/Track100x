@@ -54,30 +54,17 @@ function DashboardSkeleton() {
 }
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-    const { user, loading } = useUser();
-    const router = useRouter();
-    const [isCollapsed, setIsCollapsed] = useState(false);
-
-    // This logic can be removed if pages handle their own auth redirects/skeletons
-    // useEffect(() => {
-    //     if (!loading && !user) {
-    //         router.replace('/login');
-    //     }
-    // }, [loading, user, router]);
-
-    if (loading && !user) { // Only show skeleton on initial load for non-logged in users
-        return <DashboardSkeleton />;
-    }
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   return (
     <div className="min-h-screen w-full">
       <div className={cn("hidden md:fixed md:inset-y-0 md:left-0 md:z-50 md:block transition-all duration-300")}>
         <Sidebar 
-            isCollapsed={isCollapsed}
-            onCollapseToggle={() => setIsCollapsed(!isCollapsed)}
+            isCollapsed={isSidebarCollapsed}
+            onCollapseToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
         />
       </div>
-      <div className={cn("flex flex-col transition-all duration-300", isCollapsed ? "md:pl-[72px]" : "md:pl-60")}>
+      <div className={cn("flex flex-col transition-all duration-300", isSidebarCollapsed ? "md:pl-[72px]" : "md:pl-60")}>
         <TickerBar />
         <Header />
         <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6 animate-fade-in-up">

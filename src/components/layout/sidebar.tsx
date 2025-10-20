@@ -1,15 +1,12 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  LayoutDashboard,
   Bell,
-  Trophy,
   BarChart3,
-  User,
   LogOut,
   ArrowLeftRight,
   Star,
@@ -25,12 +22,49 @@ import { cn } from "@/lib/utils";
 import { useUser } from "@/firebase";
 import { useLogout } from "../auth/auth-actions";
 
+function LogoIcon() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="h-6 w-6"
+    >
+      <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+    </svg>
+  );
+}
 
-export default function Sidebar({ isCollapsed, onCollapseToggle }: { isCollapsed: boolean, onCollapseToggle: () => void }) {
+
+export default function Sidebar({ isCollapsed: isParentCollapsed, onCollapseToggle }: { isCollapsed: boolean, onCollapseToggle: () => void }) {
   const pathname = usePathname();
   const { claims } = useUser();
   const logout = useLogout();
   const userPlan = claims?.plan || 'free';
+  const [isCollapsed, setIsCollapsed] = useState(isParentCollapsed);
+
+   useEffect(() => {
+    const savedState = localStorage.getItem('sidebar-collapsed');
+    const initialState = savedState === 'true';
+    if (initialState !== isCollapsed) {
+        setIsCollapsed(initialState);
+        if (isParentCollapsed !== initialState) {
+             onCollapseToggle();
+        }
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleToggle = () => {
+    const newState = !isCollapsed;
+    setIsCollapsed(newState);
+    localStorage.setItem('sidebar-collapsed', String(newState));
+    onCollapseToggle();
+  }
 
   const navItems = [
     {
@@ -102,10 +136,15 @@ export default function Sidebar({ isCollapsed, onCollapseToggle }: { isCollapsed
         <div>
           {/* Header / Logo */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-border h-14 lg:h-[60px]">
-            {!isCollapsed && <span className="text-lg font-semibold">Track100x</span>}
+            {!isCollapsed && (
+                <Link href="/" className="flex items-center gap-2">
+                    <LogoIcon />
+                    <span className="text-lg font-semibold">Track100x</span>
+                </Link>
+            )}
             <button
               className="p-2 rounded-md hover:bg-muted"
-              onClick={onCollapseToggle}
+              onClick={handleToggle}
             >
               <ArrowLeftRight size={18} />
             </button>
@@ -163,7 +202,7 @@ export default function Sidebar({ isCollapsed, onCollapseToggle }: { isCollapsed
 }
 
 /* ---- Helper Component: Sidebar Section ---- */
-function SidebarSection({ title, items, pathname, isCollapsed }) {
+function SidebarSection({ title, items, pathname, isCollapsed }: { title: string, items: any[], pathname: string, isCollapsed: boolean }) {
   return (
     <div className="space-y-1">
       {!isCollapsed && (
