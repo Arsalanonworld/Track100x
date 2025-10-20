@@ -14,7 +14,7 @@ import { cn } from '@/lib/utils';
 
 function DashboardSkeleton() {
     return (
-        <div className="flex min-h-screen w-full">
+        <div className="flex min-h-screen w-full animate-pulse-slow">
             <div className="hidden md:block md:w-64 border-r">
                 <div className="flex h-full max-h-screen flex-col gap-2 p-4">
                      <Skeleton className="h-8 w-32 mb-4" />
@@ -65,7 +65,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </div>
       <div className={cn("flex flex-col transition-all duration-300", isCollapsed ? "md:pl-[72px]" : "md:pl-[220px] lg:pl-[280px]")}>
         <Header />
-        <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
+        <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6 animate-fade-in-up">
           {children}
         </main>
       </div>

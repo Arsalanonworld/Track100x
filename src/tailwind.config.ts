@@ -108,7 +108,8 @@ export default {
           },
         },
         'pulse-slow': {
-            '50%': { transform: 'scale(1.02)' },
+            '0%, 100%': { opacity: '1' },
+            '50%': { opacity: '0.8' },
         }
       },
       animation: {
