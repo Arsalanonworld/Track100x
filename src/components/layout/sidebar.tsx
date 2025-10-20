@@ -163,10 +163,10 @@ export default function Sidebar({ onStateChange }: { onStateChange: (isExpanded:
             <ChevronLeft size={16} className={cn("transition-transform", isExpanded && "rotate-180")} />
         </Button>
 
-        <div className="flex flex-col flex-1 overflow-hidden">
+        <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
           {/* Header / Logo */}
           <div className={cn("flex items-center border-b border-border h-14 lg:h-[60px]", isExpanded ? 'pl-4 pr-2 justify-between' : 'px-2 justify-center')}>
-            <Link href="/" className={cn("flex items-center gap-2 font-semibold")}>
+             <Link href="/" className={cn("flex items-center gap-2 font-semibold")}>
                 <LogoIcon />
                 <span className={cn("text-lg transition-opacity duration-300 whitespace-nowrap", !isExpanded && "opacity-0 w-0")}>Track100x</span>
             </Link>
