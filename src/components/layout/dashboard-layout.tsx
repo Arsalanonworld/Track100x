@@ -30,10 +30,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           isExpanded={!isSidebarLocked}
           onToggle={handleToggleLock}
         />
-        <main className={cn(
-            "flex-1 flex flex-col transition-all duration-300", 
-            !isSidebarLocked ? 'md:ml-60' : 'md:ml-[72px]'
-            )}>
+        <main className="flex-1 flex flex-col">
           <div className="flex-1 p-4 lg:p-6 pb-16">
             {children}
           </div>
