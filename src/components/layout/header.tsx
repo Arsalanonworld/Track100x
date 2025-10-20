@@ -74,8 +74,8 @@ export default function Header() {
                     </Button>
                     </SheetTrigger>
                     <SheetContent side="left" className="flex flex-col p-0">
-                        <SheetHeader className='hidden'>
-                            <SheetTitle className='sr-only'>Navigation Menu</SheetTitle>
+                        <SheetHeader className="p-6 text-left border-b">
+                          <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
                         </SheetHeader>
                         <Sidebar isCollapsed={false} onCollapseToggle={() => {}} />
                     </SheetContent>
