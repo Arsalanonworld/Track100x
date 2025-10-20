@@ -119,8 +119,7 @@ export default function Sidebar({
     <TooltipProvider>
       <aside
         className={cn(
-          "fixed top-0 left-0 h-full bg-card flex flex-col transition-all duration-300 z-40 border-r",
-          "pt-14 lg:pt-[60px]", // Add padding to account for the fixed header
+          "fixed top-0 left-0 h-full bg-card flex flex-col transition-all duration-300 z-20 border-r pt-14 lg:pt-[60px]",
           isExpanded ? "w-60" : "w-[72px]"
         )}
       >
@@ -145,10 +144,10 @@ export default function Sidebar({
         </div>
         
         {/* Footer section for Upgrade card and Toggle button */}
-        <div className="mt-auto p-4">
+        <div className="mt-auto p-3">
           <div
             className={cn(
-                "transition-all duration-300 whitespace-nowrap",
+                "transition-opacity duration-200",
                 !isExpanded && "opacity-0"
             )}
           >

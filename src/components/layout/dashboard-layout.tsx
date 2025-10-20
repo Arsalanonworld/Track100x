@@ -38,14 +38,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     <FirebaseClientProvider>
       <div className="min-h-screen w-full bg-background">
         <Header />
-        <Sidebar isExpanded={isSidebarExpanded} onToggle={handleSidebarToggle} />
-        <div className={cn(
-            "pt-14 lg:pt-[60px] transition-all duration-300",
-            isSidebarExpanded ? "md:pl-60" : "md:pl-[72px]"
-        )}>
-          <main className="flex-1 p-4 lg:p-6">
-            {children}
-          </main>
+        <div className="flex h-full">
+            <Sidebar isExpanded={isSidebarExpanded} onToggle={handleSidebarToggle} />
+            <main className={cn(
+                "flex-1 flex flex-col pt-14 lg:pt-[60px] transition-all duration-300",
+                isSidebarExpanded ? "md:pl-60" : "md:pl-[72px]"
+            )}>
+              <div className="flex-1 p-4 lg:p-6">
+                {children}
+              </div>
+            </main>
         </div>
       </div>
     </FirebaseClientProvider>
