@@ -2,7 +2,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Bell, Home, LineChart, Package, Package2, ShoppingCart, Users, Eye, Rss, Compass, Settings, LogOut } from 'lucide-react';
+import { Bell, Home, LineChart, Package, Package2, ShoppingCart, Users, Eye, Rss, Compass, Settings, LogOut, Wallet } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -16,6 +16,7 @@ import { useLogout } from '../auth/auth-actions';
 
 const navItems = [
     { href: '/watchlist', label: 'My Watchlist', icon: Eye },
+    { href: '/portfolio', label: 'Portfolio', icon: Wallet },
     { href: '/feed', label: 'Whale Feed', icon: Rss },
     { href: '/leaderboard', label: 'Explore', icon: Compass },
 ];
@@ -55,8 +56,8 @@ export function Sidebar() {
                     ))}
                 </nav>
             </div>
-             <div className="mt-auto border-t">
-                <nav className="grid items-start px-2 text-sm font-medium lg:px-4 py-4">
+             <div className="mt-auto border-t p-4">
+                <nav className="grid items-start text-sm font-medium gap-1">
                     {secondaryNavItems.map(item => (
                          <Link
                             key={item.href}
@@ -78,8 +79,8 @@ export function Sidebar() {
                         Log out
                     </button>
                 </nav>
-                <Separator />
-                <div className='flex items-center justify-between p-4'>
+                <Separator className="my-4"/>
+                <div className='flex items-center justify-between'>
                     <UserNav />
                     <ThemeToggle />
                 </div>
