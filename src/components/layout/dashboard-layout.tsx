@@ -44,7 +44,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <Sidebar isExpanded={isSidebarExpanded} onToggle={handleSidebarToggle} />
             <main className={cn(
                 "flex-1 flex flex-col pt-14 lg:pt-[60px] transition-all duration-300",
-                isSidebarExpanded ? "md:pl-60" : "md:pl-[72px]"
+                isSidebarExpanded ? "pl-0 md:pl-60" : "pl-0 md:pl-[72px]"
             )}>
               <div className="flex-1 p-4 lg:p-6">
                 {children}
