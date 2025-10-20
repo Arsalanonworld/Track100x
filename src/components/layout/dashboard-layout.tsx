@@ -60,7 +60,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     <FirebaseClientProvider>
       <div className="min-h-screen w-full bg-background">
         <Header />
-        <div className="flex h-full pt-14 lg:pt-[60px]">
+        <div className="flex h-full">
             <Sidebar 
               isExpanded={isSidebarExpanded} 
               onMouseEnter={handleMouseEnter}
@@ -68,7 +68,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               onToggleLock={handleToggleLock}
             />
             <main className={cn(
-                "flex-1 flex flex-col transition-all duration-300 pl-0 md:pl-[72px]",
+                "flex-1 flex flex-col transition-all duration-300 pt-14 lg:pt-[60px]",
+                "pl-0 md:pl-[72px]",
                 isSidebarExpanded && "md:pl-60"
             )}>
               <div className="flex-1 p-4 lg:p-6">
