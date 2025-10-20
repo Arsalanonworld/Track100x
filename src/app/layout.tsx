@@ -1,10 +1,8 @@
-
 import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
 import { ThemeProvider } from '@/components/theme-provider';
-import { FirebaseClientProvider } from '@/firebase/client-provider';
 import DashboardLayout from '@/components/layout/dashboard-layout';
 
 export const metadata: Metadata = {
@@ -32,11 +30,9 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <FirebaseClientProvider>
-            <DashboardLayout>
-              {children}
-            </DashboardLayout>
-          </FirebaseClientProvider>
+          <DashboardLayout>
+            {children}
+          </DashboardLayout>
           <Toaster />
         </ThemeProvider>
       </body>

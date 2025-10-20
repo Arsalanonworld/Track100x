@@ -1,4 +1,3 @@
-
 'use client';
 import { UserNav } from "@/components/user-nav";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -13,7 +12,7 @@ function LogoIcon() {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24"
+      viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
       strokeWidth="2"
@@ -35,15 +34,8 @@ export default function Header() {
             "sticky top-0 z-30 w-full bg-background/95 backdrop-blur-sm border-b"
         )}>
             <div className={cn("flex h-14 items-center lg:h-[60px] px-4")}>
-                
-                <div className="flex items-center gap-4">
-                   <div className="md:hidden">
-                    <MobileNav items={[]} />
-                   </div>
-                   <Link href="/" className="items-center gap-2 font-bold hidden md:flex">
-                        <LogoIcon />
-                        <span className="text-lg">Track100x</span>
-                    </Link>
+                <div className="flex items-center gap-4 lg:hidden">
+                   <MobileNav items={[]} />
                 </div>
                 
                 <div className="flex flex-1 items-center justify-center">
