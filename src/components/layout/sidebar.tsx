@@ -17,7 +17,12 @@ import {
   Settings,
   ChevronLeft,
 } from "lucide-react";
-import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+} from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { useUser } from "@/firebase";
 import { useLogout } from "../auth/auth-actions";
@@ -40,36 +45,30 @@ function LogoIcon() {
   );
 }
 
-export default function Sidebar({ onStateChange }: { onStateChange: (isExpanded: boolean) => void }) {
+export default function Sidebar({
+  onStateChange,
+}: {
+  onStateChange: (isExpanded: boolean) => void;
+}) {
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
   const pathname = usePathname();
   const { user, claims } = useUser();
   const logout = useLogout();
-  const userPlan = claims?.plan || 'free';
-  
+  const userPlan = claims?.plan || "free";
+
   useEffect(() => {
-    const savedState = localStorage.getItem('sidebar-collapsed');
-    if (savedState) {
-      const collapsed = savedState === 'true';
-      setIsCollapsed(collapsed);
-      onStateChange(!collapsed);
-    } else {
-      onStateChange(true);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    const savedState = localStorage.getItem("sidebar-collapsed");
+    const collapsed = savedState === 'true';
+    setIsCollapsed(collapsed);
+    onStateChange(!collapsed);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  useEffect(() => {
-    onStateChange(isHovered || !isCollapsed);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isHovered, isCollapsed]);
-
+  
   const handleToggle = () => {
     const newCollapsedState = !isCollapsed;
     setIsCollapsed(newCollapsedState);
-    localStorage.setItem('sidebar-collapsed', String(newCollapsedState));
-    onStateChange(isHovered || !newCollapsedState);
+    localStorage.setItem("sidebar-collapsed", String(newCollapsedState));
+    onStateChange(!newCollapsedState);
   };
 
   const navItems = [
@@ -130,41 +129,60 @@ export default function Sidebar({ onStateChange }: { onStateChange: (isExpanded:
       authRequired: true,
     },
   ];
-  
+
   if (user) {
     accountItems.push({
-        label: "Log Out",
-        icon: <LogOut size={18} />,
-        href: "#",
-        onClick: logout,
-        visibleFor: ["free", "pro"],
-        authRequired: true,
-      });
+      label: "Log Out",
+      icon: <LogOut size={18} />,
+      href: "#",
+      onClick: logout,
+      visibleFor: ["free", "pro"],
+      authRequired: true,
+    });
   }
 
-  const isExpanded = isHovered || !isCollapsed;
+  const isExpanded = !isCollapsed;
 
   return (
     <TooltipProvider>
       <aside
         className={cn(
-          "h-full bg-card flex flex-col justify-between transition-all duration-300 relative",
+          "h-full bg-card flex flex-col justify-between transition-all duration-300 relative border-r",
           isExpanded ? "w-60" : "w-[72px]"
         )}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
       >
-        <Button
-            variant="outline"
-            size="icon"
-            className="absolute -right-4 top-14 z-50 h-8 w-8 rounded-full bg-card"
-            onClick={handleToggle}
+        <div
+          className={cn(
+            "flex items-center border-b border-border h-14 lg:h-[60px] px-4",
+            isExpanded ? "justify-between" : "justify-center"
+          )}
         >
-            <ChevronLeft size={16} className={cn("transition-transform", isExpanded && "rotate-180")} />
+          <div className={cn("flex items-center gap-2 overflow-hidden", !isExpanded && "w-0")}>
+            <LogoIcon />
+            <span
+              className={cn(
+                "font-bold text-lg whitespace-nowrap transition-opacity duration-300",
+                !isExpanded && "opacity-0"
+              )}
+            >
+              Track100x
+            </span>
+          </div>
+          {!isExpanded && <LogoIcon />}
+        </div>
+        <Button
+          variant="outline"
+          size="icon"
+          className="absolute -right-4 top-14 z-50 h-8 w-8 rounded-full bg-card hidden md:flex"
+          onClick={handleToggle}
+        >
+          <ChevronLeft
+            size={16}
+            className={cn("transition-transform", isExpanded && "rotate-180")}
+          />
         </Button>
 
         <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden pt-4">
-          {/* NAVIGATION */}
           <div className="px-3 py-4 space-y-6 flex-1">
             <SidebarSection
               title="CORE"
@@ -181,30 +199,35 @@ export default function Sidebar({ onStateChange }: { onStateChange: (isExpanded:
               isExpanded={isExpanded}
               user={user}
             />
-            
+
             {user && (
-                 <SidebarSection
-                    title="ACCOUNT"
-                    items={accountItems}
-                    pathname={pathname}
-                    isExpanded={isExpanded}
-                    user={user}
-                />
+              <SidebarSection
+                title="ACCOUNT"
+                items={accountItems}
+                pathname={pathname}
+                isExpanded={isExpanded}
+                user={user}
+              />
             )}
           </div>
         </div>
 
-        <div className={cn("border-t transition-opacity duration-300 whitespace-nowrap", !isExpanded && "opacity-0")}>
+        <div
+          className={cn(
+            "border-t transition-opacity duration-300 whitespace-nowrap",
+            !isExpanded && "opacity-0"
+          )}
+        >
           {user && userPlan === "free" && isExpanded && (
             <div className="p-4">
-              <div className="p-3 rounded-xl bg-gradient-to-br from-primary to-blue-500/80 text-primary-foreground">
-                <p className="font-medium text-sm mb-1">Unlock Full Power</p>
+              <div className="p-4 rounded-xl bg-gradient-to-br from-primary via-blue-600 to-blue-700 text-primary-foreground">
+                <p className="font-bold text-sm mb-1">Unlock Full Power</p>
                 <p className="text-xs opacity-90 mb-3">
                   Get advanced analytics, unlimited alerts & more.
                 </p>
                 <Link
                   href="/upgrade"
-                  className="inline-flex items-center gap-1 text-xs font-semibold bg-primary-foreground/10 hover:bg-primary-foreground/20 px-3 py-1.5 rounded-lg transition-all"
+                  className="inline-flex items-center gap-1 text-xs font-semibold bg-primary-foreground/20 hover:bg-primary-foreground/30 px-3 py-1.5 rounded-lg transition-all"
                 >
                   <Star size={14} />
                   Upgrade to Pro
@@ -218,62 +241,89 @@ export default function Sidebar({ onStateChange }: { onStateChange: (isExpanded:
   );
 }
 
-function SidebarSection({ title, items, pathname, isExpanded, user }: { title: string, items: any[], pathname: string, isExpanded: boolean, user: any }) {
+function SidebarSection({
+  title,
+  items,
+  pathname,
+  isExpanded,
+  user,
+}: {
+  title: string;
+  items: any[];
+  pathname: string;
+  isExpanded: boolean;
+  user: any;
+}) {
   return (
     <div className="space-y-1">
-      <h4 className={cn("text-[11px] font-medium text-muted-foreground px-2 transition-opacity duration-300 whitespace-nowrap", !isExpanded && "opacity-0")}>{title}</h4>
-      {items.map(
-        (item) => {
-            const isLocked = item.locked || (item.authRequired && !user);
-            const isButton = !!item.onClick;
+      <h4
+        className={cn(
+          "text-[11px] font-bold tracking-wider uppercase text-muted-foreground px-4 transition-opacity duration-300 whitespace-nowrap",
+          !isExpanded ? "opacity-0 text-center" : "opacity-100"
+        )}
+      >
+        {!isExpanded ? title[0] : title}
+      </h4>
+      {items.map((item) => {
+        const isLocked = item.locked || (item.authRequired && !user);
+        const isActive = pathname === item.href;
+        const isButton = !!item.onClick;
 
-            const content = (
-                <div
-                    className={cn(
-                        "flex items-center gap-3 rounded-md px-2 py-2.5 text-sm font-medium transition-all w-full overflow-hidden",
-                        pathname === item.href
-                        ? "bg-muted text-foreground"
-                        : "text-muted-foreground hover:bg-muted/40",
-                        !isExpanded ? "justify-center" : "",
-                        isLocked && "cursor-not-allowed"
-                    )}
-                >
-                    <div className="relative shrink-0">
-                        {item.icon}
-                        {isLocked && isExpanded && (
-                        <Lock
-                            size={12}
-                            className="absolute -top-1 -right-1 text-yellow-500"
-                        />
-                        )}
-                    </div>
-                    <span className={cn("whitespace-nowrap transition-opacity", !isExpanded && "opacity-0 w-0")}>{item.label}</span>
-                </div>
-            );
+        const content = (
+          <>
+            <div className="relative shrink-0">{item.icon}</div>
+            <span
+              className={cn(
+                "whitespace-nowrap transition-all duration-300",
+                !isExpanded && "opacity-0 w-0"
+              )}
+            >
+              {item.label}
+            </span>
+             {isLocked && isExpanded && (
+              <Lock
+                size={12}
+                className="ml-auto text-yellow-500 shrink-0"
+              />
+            )}
+          </>
+        );
+        
+        const sharedClasses = cn(
+            "flex items-center gap-3 rounded-lg px-4 py-2.5 text-sm font-semibold transition-all w-full overflow-hidden",
+            isActive
+              ? "bg-primary/10 text-primary"
+              : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
+            !isExpanded && "justify-center",
+            isLocked && "cursor-not-allowed opacity-70"
+          );
 
-            return (
-            <Tooltip key={item.label} delayDuration={0}>
-              <TooltipTrigger asChild>
-                <span>
-                    {isButton ? (
-                        <button onClick={item.onClick} disabled={isLocked} className="w-full">
-                            {content}
-                        </button>
-                    ) : (
-                        <Link
-                            href={isLocked ? '#' : item.href}
-                            className={cn(isLocked && 'pointer-events-none')}
-                        >
-                            {content}
-                        </Link>
-                    )}
-                </span>
-              </TooltipTrigger>
-              {!isExpanded && <TooltipContent side="right">{item.label}</TooltipContent>}
-            </Tooltip>
-          )
-        }
-      )}
+        return (
+          <Tooltip key={item.label} delayDuration={0}>
+            <TooltipTrigger asChild>
+              <span>
+                {isButton ? (
+                  <button onClick={item.onClick} disabled={isLocked} className={sharedClasses}>
+                    {content}
+                  </button>
+                ) : (
+                  <Link
+                    href={isLocked ? "#" : item.href}
+                    className={cn(sharedClasses, isLocked && "pointer-events-none")}
+                  >
+                    {content}
+                  </Link>
+                )}
+              </span>
+            </TooltipTrigger>
+            {!isExpanded && (
+              <TooltipContent side="right">
+                {item.label} {isLocked && "(Locked)"}
+                </TooltipContent>
+            )}
+          </Tooltip>
+        );
+      })}
     </div>
   );
 }
