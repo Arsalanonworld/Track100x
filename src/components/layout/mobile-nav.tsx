@@ -3,13 +3,13 @@
 
 import * as React from "react"
 import Link, { type LinkProps } from "next/link"
-import { usePathname, useRouter } from "next/navigation"
-import { Menu, Rss, Trophy, LayoutDashboard, Compass, Eye, Star, Sparkles } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { Menu, Rss, Trophy, LayoutDashboard, Compass, Eye, Star, Sparkles, Bell } from "lucide-react"
+import type { NavItem } from "@/lib/types";
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetTrigger } from "@/components/ui/sheet"
-import { useUser } from "@/firebase"
 
 function LogoIcon() {
   return (
@@ -28,29 +28,17 @@ function LogoIcon() {
   );
 }
 
+const iconMap: { [key: string]: React.ElementType } = {
+  '/feed': Rss,
+  '/leaderboard': Compass,
+  '/watchlist': Eye,
+  '/alerts': Bell,
+  '/#features': Sparkles,
+  '/#pricing': Star,
+};
 
-export function MobileNav() {
+export function MobileNav({ items }: { items: NavItem[]}) {
   const [open, setOpen] = React.useState(false);
-  const { user } = useUser();
-  const [isClient, setIsClient] = React.useState(false);
-
-  React.useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  const publicItems = [
-      { href: '/#features', label: 'Features', icon: Sparkles, visible: true },
-      { href: '/#pricing', label: 'Pricing', icon: Star, visible: true },
-  ];
-
-  const privateItems = [
-      { href: '/feed', label: 'Whale Feed', icon: Rss, visible: true },
-      { href: '/leaderboard', label: 'Explore', icon: Compass, visible: true },
-      { href: '/watchlist', label: 'My Watchlist', icon: Eye, visible: true },
-  ];
-
-  const navItems = !user ? publicItems : privateItems;
-  const visibleItems = navItems.filter(item => item.visible);
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -75,22 +63,22 @@ export function MobileNav() {
                     <span className="ml-2 font-bold">Track100x</span>
                 </MobileLink>
             </SheetTitle>
-            <SheetDescription className="sr-only">
-                Main navigation menu.
-            </SheetDescription>
         </SheetHeader>
         <div className="flex flex-col gap-4 pl-6 mt-4 text-lg font-medium flex-1">
-          {isClient && visibleItems.map((item) => (
-            <MobileLink
-              key={item.href}
-              href={item.href}
-              onOpenChange={setOpen}
-              className="flex items-center gap-3"
-            >
-              <item.icon className="h-5 w-5 text-muted-foreground" />
-              {item.label}
-            </MobileLink>
-          ))}
+          {items.map((item) => {
+            const Icon = iconMap[item.href] || Star;
+            return (
+              <MobileLink
+                key={item.href}
+                href={item.href}
+                onOpenChange={setOpen}
+                className="flex items-center gap-3"
+              >
+                <Icon className="h-5 w-5 text-muted-foreground" />
+                {item.label}
+              </MobileLink>
+            );
+          })}
         </div>
       </SheetContent>
     </Sheet>

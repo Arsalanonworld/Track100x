@@ -2,6 +2,11 @@
 
 import type { Timestamp } from "firebase/firestore";
 
+export type NavItem = {
+  href: string;
+  label: string;
+};
+
 export type UserPlan = 'free' | 'pro';
 
 export type UserProfile = {
