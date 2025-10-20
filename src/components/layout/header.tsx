@@ -1,5 +1,4 @@
 
-
 'use client';
 import { UserNav } from "@/components/user-nav";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -9,7 +8,6 @@ import { MobileNav } from "./mobile-nav";
 import { useUser } from "@/firebase";
 import { cn } from "@/lib/utils";
 import { CommandMenu } from "../command-menu";
-import { MainNav } from "./main-nav";
 import { Button } from "../ui/button";
 import { ChevronLeft } from "lucide-react";
 
@@ -67,16 +65,13 @@ export default function Header({ isSidebarExpanded, onToggleSidebar }: HeaderPro
                     </div>
                 </div>
                 
-                <div className="flex-1 flex justify-center">
-                    <div className={cn("transition-all duration-300", isSidebarExpanded ? 'md:ml-[-120px]' : 'md:ml-[-170px]')}>
-                      <MainNav />
+                <div className="flex-1 flex justify-center px-4">
+                    <div className="w-full max-w-md">
+                      <CommandMenu />
                     </div>
                 </div>
                 
-                <div className="flex flex-1 items-center justify-end space-x-2 sm:space-x-4">
-                    <div className="w-full max-w-xs lg:max-w-sm">
-                      <CommandMenu />
-                    </div>
+                <div className="flex items-center justify-end space-x-2 sm:space-x-4">
                     {user && <NotificationBell />}
                     <UserNav />
                     <ThemeToggle />
