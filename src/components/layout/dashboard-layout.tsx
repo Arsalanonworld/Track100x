@@ -24,7 +24,7 @@ function DashboardSkeleton() {
                 </div>
             </div>
             <div className="flex flex-col flex-1">
-                 <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6 sticky top-0">
+                 <header className="sticky top-0 flex h-14 items-center gap-4 border-b bg-background/80 backdrop-blur-sm px-4 sm:px-6 z-30">
                     <Skeleton className="h-8 w-8 md:hidden" />
                     <Skeleton className="h-9 w-full max-w-sm" />
                     <div className="ml-auto flex items-center gap-2">
@@ -57,7 +57,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="min-h-screen w-full">
-      <div className={cn("hidden md:fixed md:inset-y-0 md:left-0 md:z-50 md:block border-r bg-muted/40 transition-all duration-300", isCollapsed ? "md:w-[72px]" : "md:w-[220px] lg:w-[280px]")}>
+      <div className={cn("hidden md:fixed md:inset-y-0 md:left-0 md:z-50 md:block border-r bg-card transition-all duration-300", isCollapsed ? "md:w-[72px]" : "md:w-[220px] lg:w-[280px]")}>
         <Sidebar 
             isCollapsed={isCollapsed}
             onCollapseToggle={() => setIsCollapsed(!isCollapsed)}

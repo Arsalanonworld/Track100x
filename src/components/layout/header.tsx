@@ -61,7 +61,7 @@ export default function Header() {
 
     if (isDashboard) {
         return (
-             <header className="sticky top-0 z-40 flex h-14 items-center gap-4 border-b bg-background px-4 sm:px-6">
+             <header className="sticky top-0 z-40 flex h-14 items-center gap-4 border-b bg-background/80 backdrop-blur-sm px-4 sm:px-6">
                 <Sheet>
                     <SheetTrigger asChild>
                     <Button

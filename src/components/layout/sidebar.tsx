@@ -143,7 +143,7 @@ export function Sidebar({ isCollapsed, onCollapseToggle }: { isCollapsed: boolea
             </div>
              <div className={cn("mt-auto border-t p-4 space-y-4", isCollapsed && 'p-2 space-y-2')}>
                 {!isPro && !isCollapsed && (
-                     <Card>
+                     <Card className="bg-muted">
                         <CardHeader className="p-4">
                             <CardTitle>Upgrade to Pro</CardTitle>
                             <CardDescription>
