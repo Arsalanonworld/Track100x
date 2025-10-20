@@ -2,10 +2,10 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
-import MainLayout from '@/components/layout/main-layout';
 import { cn } from '@/lib/utils';
 import { ThemeProvider } from '@/components/theme-provider';
 import { FirebaseProvider } from '@/firebase';
+import { LayoutSwitcher } from '@/components/layout/layout-switcher';
 
 export const metadata: Metadata = {
   title: 'Track100x | Blockchain Intelligence Platform',
@@ -33,9 +33,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <FirebaseProvider>
-            <MainLayout>
+            <LayoutSwitcher>
               {children}
-            </MainLayout>
+            </LayoutSwitcher>
           </FirebaseProvider>
           <Toaster />
         </ThemeProvider>

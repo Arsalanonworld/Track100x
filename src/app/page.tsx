@@ -8,8 +8,27 @@ import React from 'react';
 import { HomePageCta } from '@/components/home-page-cta';
 import { FeatureHighlights } from '@/components/feature-highlights';
 import { PricingPreview } from '@/components/pricing-preview';
+import { useUser } from '@/firebase';
+import { useRouter } from 'next/navigation';
 
 export default function HomePage() {
+  const { user, loading } = useUser();
+  const router = useRouter();
+
+  React.useEffect(() => {
+    if (!loading && user) {
+      router.replace('/watchlist');
+    }
+  }, [user, loading, router]);
+  
+  if (loading || user) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-muted-foreground">Loading...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8 md:space-y-12 lg:-mt-8">
       {/* Hero Section */}

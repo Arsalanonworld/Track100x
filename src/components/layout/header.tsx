@@ -9,6 +9,7 @@ import { MobileNav } from "./mobile-nav";
 import { useUser } from "@/firebase";
 import { useState, useEffect } from 'react';
 import { cn } from "@/lib/utils";
+import { usePathname } from "next/navigation";
 
 export const LogoIcon = () => (
     <svg
@@ -33,6 +34,9 @@ export default function Header() {
     const { user, claims } = useUser();
     const [scrolled, setScrolled] = useState(false);
     const [isClient, setIsClient] = useState(false);
+    const pathname = usePathname();
+
+    const isDashboard = pathname.startsWith('/watchlist') || pathname.startsWith('/feed') || pathname.startsWith('/leaderboard') || pathname.startsWith('/account');
 
     useEffect(() => {
         setIsClient(true);
@@ -49,6 +53,16 @@ export default function Header() {
         };
     }, [scrolled]);
 
+
+    if (isDashboard) {
+        return (
+             <div className="ml-auto flex items-center space-x-4">
+                {isClient && user && <NotificationBell />}
+                <UserNav />
+                <ThemeToggle />
+            </div>
+        )
+    }
 
     return (
         <header className={cn(
