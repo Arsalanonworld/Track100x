@@ -19,8 +19,13 @@ const publicNavItems: NavItem[] = [
 ];
 
 const privateNavItems: NavItem[] = [
-    // These are now in the sidebar, so this can be empty
+    // This is handled by the sidebar now, but we keep the array for the mobile nav
+    { href: '/feed', label: 'Whale Feed' },
+    { href: '/leaderboard', label: 'Explore' },
+    { href: '/watchlist', label: 'Watchlist' },
+    { href: '/alerts', label: 'Alerts' },
 ];
+
 
 function LogoIcon() {
   return (
@@ -66,14 +71,16 @@ function DesktopNav({ items }: { items: NavItem[] }) {
 export default function Header() {
     const { user } = useUser();
     const [scrolled, setScrolled] = useState(false);
-    const [isClient, setIsClient] = useState(false);
+    
+    // Check if we are on a page that uses the DashboardLayout.
+    // This is a bit of a hack, a better solution would involve a layout context.
+    const pathname = usePathname();
+    const isDashboardLayout = !['/', '/upgrade', '/terms-of-service', '/privacy-policy', '/login'].includes(pathname);
 
-    // If user is logged in, dashboard has its own header, so we render a simplified version
-    // If not logged in, we are on a public page, so show public nav
+
     const navItems = user ? privateNavItems : publicNavItems;
     
     useEffect(() => {
-        setIsClient(true);
         const handleScroll = () => {
             const isScrolled = window.scrollY > 10;
             if (isScrolled !== scrolled) {
@@ -87,33 +94,34 @@ export default function Header() {
         };
     }, [scrolled]);
 
-    const isDashboard = !!user;
 
     return (
         <header className={cn(
             "sticky top-0 z-50 w-full transition-all duration-300",
-            isDashboard ? 'border-b' : '',
-            scrolled && !isDashboard ? "border-b bg-background/95 backdrop-blur-sm" : "",
-            !isDashboard ? "bg-transparent" : "bg-card"
+            isDashboardLayout ? 'border-b bg-card' : '',
+            scrolled && !isDashboardLayout ? "border-b bg-background/95 backdrop-blur-sm" : "",
+            !isDashboardLayout ? "bg-transparent" : ""
         )}>
-            <div className={cn("flex h-14 items-center lg:h-[60px]", isDashboard ? "px-4" : "container")}>
+            <div className={cn("flex h-14 items-center lg:h-[60px]", isDashboardLayout ? "px-4" : "container")}>
                 
-                {/* Logo for public pages, search for dashboard */}
                 <div className="flex items-center gap-4">
-                     {!isDashboard && (
-                        <>
-                            <div className="md:hidden">
-                                <MobileNav items={navItems} />
-                            </div>
-                            <Link href="/" className="mr-6 hidden items-center space-x-2 md:flex">
-                                <LogoIcon />
-                                <span className="font-semibold text-lg">
-                                    Track100x
-                                </span>
-                            </Link>
-                        </>
+                    {/* Show mobile nav toggle only if not in dashboard */}
+                     {!isDashboardLayout && (
+                        <div className="md:hidden">
+                            <MobileNav items={navItems} />
+                        </div>
                     )}
-                     {isDashboard && (
+                    {/* Show full logo only if not in dashboard */}
+                     {!isDashboardLayout && (
+                        <Link href="/" className="mr-6 hidden items-center space-x-2 md:flex">
+                            <LogoIcon />
+                            <span className="font-semibold text-lg">
+                                Track100x
+                            </span>
+                        </Link>
+                     )}
+                     {/* Show command menu only in dashboard */}
+                     {isDashboardLayout && (
                         <div className="w-full max-w-sm lg:max-w-md">
                             <CommandMenu />
                         </div>
@@ -121,14 +129,14 @@ export default function Header() {
                 </div>
 
                 {/* Centered nav for public pages */}
-                {!isDashboard && (
+                {!isDashboardLayout && (
                      <div className="hidden md:flex flex-1 items-center justify-center">
                         <DesktopNav items={navItems} />
                     </div>
                 )}
                 
                 <div className="flex flex-1 items-center justify-end space-x-2 sm:space-x-4">
-                    {isClient && user && <NotificationBell />}
+                    {user && <NotificationBell />}
                     <UserNav />
                     <ThemeToggle />
                 </div>
