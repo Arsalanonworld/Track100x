@@ -6,9 +6,7 @@ import Link from "next/link";
 import NotificationBell from "./notification-bell";
 import { MobileNav } from "./mobile-nav";
 import { useUser } from "@/firebase";
-import { useState, useEffect } from 'react';
 import { cn } from "@/lib/utils";
-import { usePathname } from "next/navigation";
 import { CommandMenu } from "../command-menu";
 
 function LogoIcon() {
@@ -31,8 +29,6 @@ function LogoIcon() {
 
 export default function Header() {
     const { user } = useUser();
-    const pathname = usePathname();
-    const isAppPage = !['/', '/upgrade', '/login', '/terms-of-service', '/privacy-policy'].includes(pathname);
     
     return (
         <header className={cn(
@@ -40,11 +36,17 @@ export default function Header() {
         )}>
             <div className={cn("flex h-14 items-center lg:h-[60px] px-4")}>
                 
-                <div className="flex items-center gap-4 md:hidden">
-                   <MobileNav items={[]} />
+                <div className="flex items-center gap-4">
+                   <div className="md:hidden">
+                    <MobileNav items={[]} />
+                   </div>
+                   <Link href="/" className="items-center gap-2 font-bold hidden md:flex">
+                        <LogoIcon />
+                        <span className="text-lg">Track100x</span>
+                    </Link>
                 </div>
                 
-                <div className="flex-1">
+                <div className="flex flex-1 items-center justify-center">
                     <div className="w-full max-w-sm lg:max-w-md">
                         <CommandMenu />
                     </div>
