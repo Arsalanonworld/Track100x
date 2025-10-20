@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import { Button } from "../ui/button";
 import { Menu, Search } from "lucide-react";
-import { Sheet, SheetTrigger, SheetContent } from "../ui/sheet";
+import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle } from "../ui/sheet";
 import { Sidebar } from "./sidebar";
 import { CommandMenu } from "../command-menu";
 
@@ -74,6 +74,9 @@ export default function Header() {
                     </Button>
                     </SheetTrigger>
                     <SheetContent side="left" className="flex flex-col p-0">
+                        <SheetHeader className='hidden'>
+                            <SheetTitle className='sr-only'>Navigation Menu</SheetTitle>
+                        </SheetHeader>
                         <Sidebar isCollapsed={false} onCollapseToggle={() => {}} />
                     </SheetContent>
                 </Sheet>
