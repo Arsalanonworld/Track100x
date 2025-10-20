@@ -46,7 +46,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   if (!isClient) {
     // Return a skeleton or loading state that matches the layout
     return (
-        <div className="relative min-h-screen flex flex-col">
+        <div className="relative min-h-screen">
             <header className="fixed top-0 left-0 right-0 z-30 w-full bg-background/95 backdrop-blur-sm border-b h-14 lg:h-[60px]"></header>
             <div className="flex h-full pt-14 lg:pt-[60px]">
                 <aside className="hidden md:flex fixed top-0 left-0 h-full flex-col z-20 border-r pt-14 lg:pt-[60px] w-[72px]"></aside>
@@ -60,9 +60,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <FirebaseClientProvider>
-      <div className="relative min-h-screen flex flex-col">
+      <div className="relative min-h-screen">
         <Header />
-        <div className="flex flex-1 pt-14 lg:pt-[60px]">
+        <div className="flex h-full pt-14 lg:pt-[60px]">
           <Sidebar 
             isExpanded={isSidebarExpanded} 
             isLocked={isSidebarLocked}
