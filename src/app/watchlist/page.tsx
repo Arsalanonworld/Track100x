@@ -10,7 +10,7 @@ import type { WatchlistItem } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { withAuth } from '@/components/auth/withAuth';
 import Link from 'next/link';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { WatchlistActionForm } from '@/components/watchlist/watchlist-action-form';
 import { AlertEditorDialog } from '@/components/alert-editor-dialog';
 import { useToast } from '@/hooks/use-toast';
