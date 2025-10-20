@@ -57,11 +57,13 @@ export default function Sidebar({ onStateChange }: { onStateChange: (isExpanded:
     } else {
       onStateChange(true);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     onStateChange(isHovered || !isCollapsed);
-  }, [isHovered, isCollapsed, onStateChange]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isHovered, isCollapsed]);
 
   const handleToggle = () => {
     const newCollapsedState = !isCollapsed;
@@ -146,12 +148,21 @@ export default function Sidebar({ onStateChange }: { onStateChange: (isExpanded:
     <TooltipProvider>
       <aside
         className={cn(
-          "h-screen border-r border-border bg-card flex flex-col justify-between transition-all duration-300",
+          "h-screen border-r border-border bg-card flex flex-col justify-between transition-all duration-300 relative",
           isExpanded ? "w-60" : "w-[72px]"
         )}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
+        <Button
+            variant="outline"
+            size="icon"
+            className="absolute -right-4 top-14 z-50 h-8 w-8 rounded-full bg-card"
+            onClick={handleToggle}
+        >
+            <ChevronLeft size={16} className={cn("transition-transform", isExpanded && "rotate-180")} />
+        </Button>
+
         <div className="flex flex-col flex-1">
           {/* Header / Logo */}
           <div className={cn("flex items-center justify-between border-b border-border h-14 lg:h-[60px]", isExpanded ? 'pl-4 pr-2' : 'px-2 justify-center')}>
@@ -159,15 +170,6 @@ export default function Sidebar({ onStateChange }: { onStateChange: (isExpanded:
                 <LogoIcon />
                 {isExpanded && <span className="text-lg">Track100x</span>}
             </Link>
-            {isExpanded && (
-                <Button
-                    variant="ghost"
-                    className="p-2 h-auto"
-                    onClick={handleToggle}
-                    >
-                    <ChevronLeft size={18} />
-                </Button>
-            )}
           </div>
 
           {/* NAVIGATION */}
