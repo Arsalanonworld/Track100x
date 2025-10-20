@@ -4,7 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 
 export default function PrivacyPolicyPage() {
   return (
-    <div className="container py-8">
+    <div className="container py-8 max-w-4xl mx-auto">
       <PageHeader
         title="Privacy Policy"
         description="Last updated: July 29, 2024"

@@ -36,7 +36,7 @@ export default function Header() {
     
     return (
         <header className={cn(
-            "sticky top-0 z-50 w-full bg-background border-b"
+            "sticky top-0 z-50 w-full bg-background/95 backdrop-blur-sm border-b"
         )}>
             <div className={cn("flex h-14 items-center lg:h-[60px] px-4")}>
                 
@@ -51,13 +51,16 @@ export default function Header() {
                     </Link>
                      
                      {isAppPage && (
-                        <div className="w-full max-w-sm lg:max-w-md">
+                        <div className="w-full max-w-sm lg:max-w-md hidden md:block">
                             <CommandMenu />
                         </div>
                      )}
                 </div>
                 
                 <div className="flex flex-1 items-center justify-end space-x-2 sm:space-x-4">
+                    <div className="md:hidden">
+                        <CommandMenu />
+                    </div>
                     {user && <NotificationBell />}
                     <UserNav />
                     <ThemeToggle />

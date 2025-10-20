@@ -4,7 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 
 export default function TermsOfServicePage() {
   return (
-    <div className="container py-8">
+    <div className="container py-8 max-w-4xl mx-auto">
       <PageHeader
         title="Terms of Service"
         description="Last updated: July 29, 2024"

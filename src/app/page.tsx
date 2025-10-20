@@ -24,7 +24,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="space-y-8 md:space-y-12 lg:-mt-8">
+    <div className="space-y-8 md:space-y-12 lg:-mt-16">
       {/* Hero Section */}
       <HeroSection />
 
@@ -36,10 +36,11 @@ export default function HomePage() {
         
         {/* Feature Highlights Section */}
         <FeatureHighlights />
-
+      </div>
         {/* Leaderboard Preview */}
         <LeaderboardPreview />
 
+      <div className="container">
         {/* Pricing Section */}
         <section id="pricing" className="py-16 sm:py-24">
            <div className="text-center mb-16">

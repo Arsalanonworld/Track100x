@@ -73,7 +73,7 @@ export default function UpgradePage() {
 
   return (
     <>
-      <div className="container mx-auto px-4 py-12 sm:py-16">
+      <div className="container mx-auto px-4 py-12 sm:py-16 max-w-5xl">
         {/* Hero Section */}
         <section className="text-center max-w-4xl mx-auto">
           <h1 className="text-4xl font-extrabold tracking-tighter sm:text-5xl lg:text-6xl">

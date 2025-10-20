@@ -298,4 +298,3 @@ function PortfolioPage() {
 
 
 export default withAuth(PortfolioPage, { skeleton: PageSkeleton });
-
