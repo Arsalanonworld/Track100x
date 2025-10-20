@@ -40,22 +40,26 @@ const generateChartData = (baseValue: number, days: number, volatility: number) 
         const date = new Date();
         date.setDate(date.getDate() - (i * days / points));
         
-        const dayNumber = Math.floor(i * days / points);
-        let dayLabel = `${dayNumber}d`;
-
+        let dayLabel;
         if (i === points) {
             dayLabel = `${days}d ago`;
         } else if (i === 0) {
             dayLabel = 'Today';
+        } else {
+             // Create intermediate labels for better readability
+            const step = Math.floor(points / 5);
+            if (points > 5 && i % step === 0) {
+                dayLabel = `${Math.round(i * days / points)}d`;
+            } else {
+                dayLabel = '';
+            }
         }
-        
+
         if (i < points) {
          currentValue *= 1 + (Math.random() - 0.48) * volatility * (Math.sqrt(days / points));
         }
 
-        const shouldLabel = i === 0 || i === points || (points > 10 && i % Math.floor(points / 5) === 0);
-
-        data.push({ name: shouldLabel ? dayLabel : '', value: currentValue });
+        data.push({ name: dayLabel, value: currentValue });
     }
     return data;
 }
@@ -319,31 +323,38 @@ export default function WatchlistPage() {
                         <div className="lg:col-span-2">
                             <h3 className="font-semibold mb-4 text-center lg:text-left">Net Worth Over Time</h3>
                             <div className="h-[250px] sm:h-[350px]">
-                                <ResponsiveContainer width="100%" height="100%">
+                               <ChartContainer config={{
+                                    value: {
+                                        label: "Net Worth",
+                                        color: "hsl(var(--primary))",
+                                    },
+                                    }} className="h-full w-full">
                                     <AreaChart data={chartData} margin={{ top: 5, right: 10, left: -25, bottom: 0 }}>
                                         <CartesianGrid vertical={false} strokeDasharray="3 3" />
                                         <XAxis dataKey="name" tick={{ fill: 'hsl(var(--muted-foreground))' }} fontSize={12} axisLine={false} tickLine={false} interval="preserveStartEnd" />
                                         <YAxis tickFormatter={(value) => `$${(Number(value) / 1000)}k`} tick={{ fill: 'hsl(var(--muted-foreground))' }} fontSize={12} axisLine={false} tickLine={false} />
                                         <Tooltip
                                             cursor={{ stroke: 'hsl(var(--border))' }}
-                                            content={({ active, payload, label }) => active && payload && payload.length && (
-                                                <ChartTooltipContent
-                                                  label={label}
-                                                  payload={payload.map((p) => ({
-                                                      ...p,
-                                                      value: (p.value as number).toLocaleString('en-US', {
+                                            content={<ChartTooltipContent
+                                                  indicator="line"
+                                                  labelFormatter={(label, payload) => {
+                                                    const item = payload[0];
+                                                    if (item && item.payload.name) {
+                                                        return item.payload.name;
+                                                    }
+                                                    return label;
+                                                  }}
+                                                  formatter={(value) => (value as number).toLocaleString('en-US', {
                                                         style: 'currency',
                                                         currency: 'USD',
                                                         minimumFractionDigits: 0,
                                                         maximumFractionDigits: 0,
-                                                      })
-                                                  }))}
-                                                />
-                                            )}
+                                                      })}
+                                                />}
                                         />
                                         <Area type="monotone" dataKey="value" stroke="hsl(var(--primary))" fill="hsl(var(--primary))" fillOpacity={0.1} />
                                     </AreaChart>
-                                </ResponsiveContainer>
+                                </ChartContainer>
                             </div>
                         </div>
                         <div className="h-[250px] sm:h-[350px]">
@@ -400,11 +411,9 @@ export default function WatchlistPage() {
                     <p className="text-muted-foreground max-w-sm mx-auto mt-2 mb-6">
                         Add a wallet to your watchlist to start tracking your portfolio's performance.
                     </p>
-                    <Button asChild>
-                        <Link href="/watchlist">
-                            <Eye className="mr-2 h-4 w-4" />
-                            Go to Watchlist
-                        </Link>
+                    <Button onClick={() => document.getElementById('add-item-input')?.focus()}>
+                        <Eye className="mr-2 h-4 w-4" />
+                        Add a Wallet
                     </Button>
                 </Card>
             )}
@@ -459,7 +468,7 @@ export default function WatchlistPage() {
                            )
                         )}
                     </div>
-                    {hasWallets && (
+                     {hasWallets && (
                         <div className="pt-4">
                             <HoldingsTable />
                         </div>
@@ -476,5 +485,7 @@ export default function WatchlistPage() {
     </div>
   );
 }
+
+    
 
     
