@@ -1,11 +1,10 @@
 
 'use client';
 
-import React, { createContext, useContext, useMemo } from 'react';
-import { FirebaseApp } from 'firebase/app';
-import { Auth } from 'firebase/auth';
-import { Firestore } from 'firebase/firestore';
-import { initializeFirebase } from '.';
+import React, { createContext, useContext } from 'react';
+import type { FirebaseApp } from 'firebase/app';
+import type { Auth } from 'firebase/auth';
+import type { Firestore } from 'firebase/firestore';
 import { UserProvider } from './auth/use-user';
 import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
 
@@ -21,20 +20,29 @@ const FirebaseContext = createContext<FirebaseContextValue>({
   firestore: null,
 });
 
-export function FirebaseProvider({ children }: { children: React.ReactNode }) {
-  const firebase = useMemo(() => initializeFirebase(), []);
-
+// This provider now accepts the firebase instances as props
+export function FirebaseProvider({
+  children,
+  app,
+  auth,
+  firestore,
+}: {
+  children: React.ReactNode;
+  app: FirebaseApp;
+  auth: Auth;
+  firestore: Firestore;
+}) {
   return (
-    <FirebaseContext.Provider value={firebase}>
+    <FirebaseContext.Provider value={{ app, auth, firestore }}>
       <UserProvider>
-          <FirebaseErrorListener />
-          {children}
+        <FirebaseErrorListener />
+        {children}
       </UserProvider>
     </FirebaseContext.Provider>
   );
 }
 
 export const useFirebase = () => useContext(FirebaseContext);
-export const useFirebaseApp = () => useContext(FirebaseContext)?.app;
-export const useAuth = () => useContext(FirebaseContext)?.auth;
-export const useFirestore = () => useContext(FirebaseContext)?.firestore;
+export const useFirebaseApp = () => useContext(FirebaseContext)?.app ?? null;
+export const useAuth = () => useContext(FirebaseContext)?.auth ?? null;
+export const useFirestore = () => useContext(FirebaseContext)?.firestore ?? null;

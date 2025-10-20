@@ -4,7 +4,7 @@ import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
 import { ThemeProvider } from '@/components/theme-provider';
-import { FirebaseProvider } from '@/firebase';
+import { FirebaseClientProvider } from '@/firebase/client-provider';
 import { LayoutSwitcher } from '@/components/layout/layout-switcher';
 
 export const metadata: Metadata = {
@@ -32,11 +32,11 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <FirebaseProvider>
+          <FirebaseClientProvider>
             <LayoutSwitcher>
               {children}
             </LayoutSwitcher>
-          </FirebaseProvider>
+          </FirebaseClientProvider>
           <Toaster />
         </ThemeProvider>
       </body>

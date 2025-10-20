@@ -6,25 +6,24 @@ import MainLayout from './main-layout';
 import { useUser } from '@/firebase';
 import { Skeleton } from '../ui/skeleton';
 
-const mainLayoutRoutes = ['/', '/upgrade', '/login', '/terms-of-service', '/privacy-policy'];
-
 export function LayoutSwitcher({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
   const { user, loading } = useUser();
 
   if (loading) {
-    // Show a basic layout skeleton while determining auth state
+    // Show a full-page skeleton while determining auth state.
+    // This prevents layout flashes and ensures server/client match before a layout is chosen.
     return (
         <div className="min-h-screen w-full bg-background">
             <Skeleton className="h-14 lg:h-[60px] w-full rounded-none border-b" />
-            <main className="flex-1 p-4 lg:p-6">
-                <div className="container">
+            <div className='flex'>
+                <Skeleton className="h-[calc(100vh-56px)] w-[72px] hidden md:block rounded-none" />
+                <main className="flex-1 p-4 lg:p-6">
                     <div className="space-y-4">
                         <Skeleton className="h-12 w-1/3" />
                         <Skeleton className="h-96 w-full" />
                     </div>
-                </div>
-            </main>
+                </main>
+            </div>
         </div>
     )
   }
