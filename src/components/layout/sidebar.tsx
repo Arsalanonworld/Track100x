@@ -119,12 +119,39 @@ export default function Sidebar({
     <TooltipProvider>
       <aside
         className={cn(
-          "hidden md:flex flex-col transition-all duration-300 z-20 border-r bg-background",
+          "hidden md:flex flex-col transition-all duration-300 z-40 border-r bg-background",
           "sticky top-14 lg:top-[60px]",
           "h-[calc(100vh-56px)] lg:h-[calc(100vh-60px)]",
           isExpanded ? "w-60" : "w-[72px]"
         )}
       >
+        <div
+          className={cn(
+            "absolute top-1/2 -right-[12px] -translate-y-1/2 z-50",
+          )}
+        >
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="outline"
+                className="h-6 w-6 rounded-full p-0 flex items-center justify-center"
+                onClick={onToggle}
+              >
+                <ChevronLeft
+                  size={14}
+                  className={cn(
+                    "transition-transform",
+                    isExpanded ? "rotate-0" : "rotate-180"
+                  )}
+                />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="right">
+              {isExpanded ? "Collapse Sidebar" : "Expand Sidebar"}
+            </TooltipContent>
+          </Tooltip>
+        </div>
+
         <div className="flex-1 overflow-y-auto overflow-x-hidden">
             <div className="px-3 py-4 space-y-6">
               <SidebarSection
@@ -145,7 +172,7 @@ export default function Sidebar({
             </div>
         </div>
           
-        {/* Footer section for Upgrade card and Toggle button */}
+        {/* Footer section for Upgrade card */}
         <div className="p-3 mt-auto border-t">
           <div
             className={cn(
@@ -169,30 +196,6 @@ export default function Sidebar({
               </div>
             )}
           </div>
-           <Tooltip>
-                <TooltipTrigger asChild>
-                    <Button
-                        variant="ghost"
-                        className="w-full flex items-center justify-center"
-                        onClick={onToggle}
-                    >
-                         <div className={cn("flex items-center w-full", !isExpanded && "justify-center")}>
-                            <ChevronLeft
-                                size={16}
-                                className={cn("transition-transform", isExpanded ? "rotate-0" : "rotate-180")}
-                            />
-                            <span className={cn("ml-2 font-semibold text-sm transition-all duration-200", !isExpanded && 'w-0 opacity-0')}>
-                                Collapse
-                            </span>
-                        </div>
-                    </Button>
-                </TooltipTrigger>
-                {!isExpanded && (
-                    <TooltipContent side="right">
-                        Expand Sidebar
-                    </TooltipContent>
-                )}
-            </Tooltip>
         </div>
       </aside>
     </TooltipProvider>
@@ -234,7 +237,7 @@ function SidebarSection({
             <span
               className={cn(
                 "whitespace-nowrap transition-all duration-200",
-                isExpanded ? "opacity-100 w-auto" : "opacity-0 w-0"
+                isExpanded ? "opacity-100" : "opacity-0"
               )}
             >
               {item.label}
