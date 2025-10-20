@@ -3,7 +3,6 @@
 
 import { useMemo, useState } from 'react';
 import PageHeader from '@/components/page-header';
-import { Button } from '@/components/ui/button';
 import { Wallet, Eye, Lock, Download, Edit, BellPlus } from 'lucide-react';
 import { useUser, useCollection, useFirestore } from '@/firebase';
 import { collection, query, doc, deleteDoc, updateDoc } from 'firebase/firestore';
@@ -20,6 +19,7 @@ import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { Dialog } from '@/components/ui/dialog';
 import { WatchlistItemCard } from '@/components/watchlist/watchlist-item-card';
+import { Button } from '@/components/ui/button';
 
 
 const WATCHLIST_LIMIT_FREE = 5;
@@ -75,8 +75,7 @@ function WatchlistPage() {
   const [refreshKey, setRefreshKey] = useState(0);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [editorEntity, setEditorEntity] = useState<{type: 'wallet' | 'token', identifier: string} | undefined>(undefined);
-  const [editingItem, setEditingItem] = useState<WatchlistItem | null>(null);
-
+  
   const isPro = claims?.plan === 'pro';
 
   const watchlistQuery = useMemo(() => {
@@ -138,13 +137,10 @@ function WatchlistPage() {
     setIsEditorOpen(true);
   }
   
-  const handleOpenAlertEditorForWatchlistItem = (item: WatchlistItem) => {
-    setEditorEntity({ type: item.type, identifier: item.identifier });
-    setIsEditorOpen(true);
-  };
-  
-  const handleItemAdded = () => {
+  const handleItemAdded = (entity: {type: 'wallet' | 'token', identifier: string}) => {
     setRefreshKey(prev => prev + 1);
+    // Optionally open the alert editor right after adding an item
+    // handleOpenEditor(entity);
   }
   
   return (
@@ -188,7 +184,7 @@ function WatchlistPage() {
                                item={item} 
                                onUpdate={handleUpdate} 
                                onRemove={handleRemove}
-                               onAlertCreate={() => handleOpenAlertEditorForWatchlistItem(item)}
+                               onAlertCreate={() => handleOpenEditor({type: item.type, identifier: item.identifier})}
                             />
                         ))
                     ) : (
@@ -197,7 +193,7 @@ function WatchlistPage() {
                             <Eye className="h-10 w-10 mb-4" />
                             <p className="font-semibold text-lg">Your watchlist is empty.</p>
                             <p className="text-sm max-w-xs mx-auto">
-                               Use the form above to add wallets or tokens.
+                               Use the form above to add wallets or tokens to begin.
                             </p>
                         </div>
                        )

@@ -3,10 +3,10 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogClose } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Search, Eye } from 'lucide-react';
+import { Search, Eye, BellPlus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useFirestore } from '@/firebase';
 import { collection, addDoc, serverTimestamp, query, where, getDocs } from 'firebase/firestore';
@@ -19,13 +19,12 @@ import type { User } from 'firebase/auth';
 
 type WatchlistActionFormProps = {
     user: User | null;
-    onItemAdded: () => void;
-    onAlertCreate: (entity: { type: 'wallet' | 'token'; identifier: string }) => void;
+    onItemAdded: (entity: { type: 'wallet' | 'token'; identifier: string }) => void;
     atLimit: boolean;
     isLoading: boolean;
 };
 
-export function WatchlistActionForm({ user, onItemAdded, onAlertCreate, atLimit, isLoading }: WatchlistActionFormProps) {
+export function WatchlistActionForm({ user, onItemAdded, atLimit, isLoading }: WatchlistActionFormProps) {
   const [identifier, setIdentifier] = useState('');
   const [alias, setAlias] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -93,7 +92,7 @@ export function WatchlistActionForm({ user, onItemAdded, onAlertCreate, atLimit,
         };
         await addDoc(collection(firestore, `users/${user.uid}/watchlist`), newDoc);
         toast({ title: 'Item Added!', description: `${id} has been added to your watchlist.` });
-        onItemAdded();
+        onItemAdded({ identifier: id, type });
       } else {
           toast({ title: 'Already Watched', description: `${id} is already in your watchlist.` });
       }
@@ -130,7 +129,7 @@ export function WatchlistActionForm({ user, onItemAdded, onAlertCreate, atLimit,
                 <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2"/>
                 <Input 
                     id="add-item-input"
-                    placeholder="Paste address or token symbol..."
+                    placeholder="Paste address or token symbol to add to watchlist..."
                     value={identifier}
                     onChange={(e) => setIdentifier(e.target.value)}
                     disabled={isFormDisabled}
@@ -144,29 +143,41 @@ export function WatchlistActionForm({ user, onItemAdded, onAlertCreate, atLimit,
                 <Button 
                     onClick={handleAddItem}
                     disabled={isFormDisabled || !identifier || atLimit} 
-                    className="shrink-0 rounded-full h-10 px-3 sm:px-4"
+                    className="shrink-0 rounded-full h-10 px-4 sm:px-6"
                 >
                     <Eye className="h-4 w-4 mr-2" />
-                    Watch
+                    Add
                 </Button>
             </div>
         </div>
       <Dialog open={isAliasModalOpen} onOpenChange={setIsAliasModalOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Add Wallet to Watchlist</DialogTitle>
+            <DialogTitle>Add Wallet Alias</DialogTitle>
             <DialogDescription>
-              Optionally, you can add a recognizable alias for the wallet address <span className='font-mono bg-muted p-1 rounded-sm'>{itemToAdd?.identifier}</span>.
+              You're adding{' '}
+              <span className='font-mono bg-muted p-1 rounded-sm text-xs'>
+                {itemToAdd?.identifier}
+              </span>
+              . Give it a memorable name.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-2 pt-4">
             <Label htmlFor="alias">Alias (Optional)</Label>
-            <Input id="alias" value={alias} onChange={(e) => setAlias(e.target.value)} placeholder="e.g., My Trading Wallet"/>
+            <Input 
+                id="alias" 
+                value={alias} 
+                onChange={(e) => setAlias(e.target.value)} 
+                placeholder="e.g., My Trading Wallet"
+                onKeyDown={(e) => {
+                    if (e.key === 'Enter') handleWalletAliasSubmit();
+                }}
+            />
           </div>
           <DialogFooter className="pt-4">
             <Button variant="ghost" onClick={() => setIsAliasModalOpen(false)}>Cancel</Button>
             <Button onClick={handleWalletAliasSubmit} disabled={isSubmitting}>
-              {isSubmitting ? 'Saving...' : 'Confirm'}
+              {isSubmitting ? 'Saving...' : 'Add to Watchlist'}
             </Button>
           </DialogFooter>
         </DialogContent>
