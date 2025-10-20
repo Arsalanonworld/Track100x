@@ -240,8 +240,8 @@ function SidebarSection({
             <div className="relative shrink-0">{item.icon}</div>
             <span
               className={cn(
-                "whitespace-nowrap",
-                !isExpanded && "opacity-0 w-0"
+                "whitespace-nowrap transition-all duration-300 ease-in-out",
+                isExpanded ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-full"
               )}
             >
               {item.label}
