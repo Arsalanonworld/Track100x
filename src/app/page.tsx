@@ -8,21 +8,10 @@ import React from 'react';
 import { HomePageCta } from '@/components/home-page-cta';
 import { FeatureHighlights } from '@/components/feature-highlights';
 import { PricingPreview } from '@/components/pricing-preview';
-import { useUser } from '@/firebase';
 
 export default function HomePage() {
-  const { user, loading } = useUser();
-  
-  // This page is now public, but we might redirect logged-in users away from it.
-  // The useUser hook already contains logic to redirect logged-in users from '/'
-  if (loading || user) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <p className="text-muted-foreground">Loading...</p>
-      </div>
-    );
-  }
-
+  // The useUser hook and LayoutSwitcher now handle redirection and loading states.
+  // This page is for guests. Logged-in users are redirected from '/' by the useUser hook.
   return (
     <div className="space-y-8 md:space-y-12">
       {/* Hero Section */}
