@@ -152,7 +152,7 @@ export default function Sidebar({
           </Tooltip>
         </div>
 
-        <div className="flex-1 overflow-y-auto overflow-x-hidden">
+        <div className="flex-1 flex flex-col justify-between overflow-y-auto overflow-x-hidden">
             <div className="px-3 py-4 space-y-6">
               <SidebarSection
                 title="CORE"
@@ -161,27 +161,21 @@ export default function Sidebar({
                 isExpanded={isExpanded}
                 user={user}
               />
-
+            </div>
+            <div className="px-3 py-4 space-y-6 mt-auto">
               <SidebarSection
-                title="ACCOUNT"
-                items={accountItems}
-                pathname={pathname}
-                isExpanded={isExpanded}
-                user={user}
-              />
+                  title="ACCOUNT"
+                  items={accountItems}
+                  pathname={pathname}
+                  isExpanded={isExpanded}
+                  user={user}
+                />
             </div>
         </div>
           
-        {/* Footer section for Upgrade card */}
-        <div className="p-3 mt-auto border-t">
-          <div
-            className={cn(
-                "transition-opacity duration-200",
-                !isExpanded && "opacity-0 h-0 invisible"
-            )}
-          >
-            {(!user || userPlan === "free") && isExpanded && (
-              <div className="p-4 rounded-xl bg-gradient-to-br from-primary via-blue-600 to-blue-700 text-primary-foreground animate-pulse-slow mb-3">
+        {isExpanded && (!user || userPlan === "free") && (
+          <div className="p-3 border-t">
+              <div className="p-4 rounded-xl bg-gradient-to-br from-primary via-blue-600 to-blue-700 text-primary-foreground animate-pulse-slow">
                 <p className="font-bold text-sm mb-1">Unlock Full Power</p>
                 <p className="text-xs opacity-90 mb-3">
                   Get advanced analytics, unlimited alerts & more.
@@ -194,9 +188,8 @@ export default function Sidebar({
                   Upgrade to Pro
                 </Link>
               </div>
-            )}
           </div>
-        </div>
+        )}
       </aside>
     </TooltipProvider>
   );
@@ -237,7 +230,7 @@ function SidebarSection({
             <span
               className={cn(
                 "whitespace-nowrap transition-all duration-200",
-                isExpanded ? "opacity-100" : "opacity-0"
+                isExpanded ? "opacity-100" : "opacity-0 w-0"
               )}
             >
               {item.label}

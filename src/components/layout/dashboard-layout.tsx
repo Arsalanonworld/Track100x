@@ -8,16 +8,15 @@ import Header from './header';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [isSidebarLocked, setIsSidebarLocked] = useState(false);
-
+  
   useEffect(() => {
-    const savedState = localStorage.getItem('sidebar-collapsed') === 'true';
-    if (window.innerWidth >= 768) {
-      setIsSidebarLocked(savedState);
-    } else {
-      setIsSidebarLocked(false);
-    }
+      const savedState = localStorage.getItem('sidebar-collapsed') === 'true';
+      if (window.innerWidth >= 768) {
+          setIsSidebarLocked(savedState);
+      } else {
+          setIsSidebarLocked(false);
+      }
   }, []);
-
 
   const handleToggleLock = () => {
     const newLockedState = !isSidebarLocked;
