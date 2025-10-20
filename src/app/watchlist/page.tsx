@@ -4,46 +4,29 @@
 import { useMemo, useState } from 'react';
 import PageHeader from '@/components/page-header';
 import { Button } from '@/components/ui/button';
-import { Trash2, BellPlus, Pencil, Check, X, Wallet, Eye, Lock, Download } from 'lucide-react';
+import { Wallet, Eye, Lock, Download } from 'lucide-react';
 import { useUser, useCollection, useFirestore } from '@/firebase';
-import { collection, query, doc, deleteDoc, updateDoc } from 'firebase/firestore';
+import { collection, query } from 'firebase/firestore';
 import type { WatchlistItem } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useToast } from '@/hooks/use-toast';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-import {
-  Dialog,
-  DialogTrigger,
-} from "@/components/ui/dialog"
 import { FeatureLock } from '@/components/feature-lock';
-import { errorEmitter } from '@/firebase/error-emitter';
-import { FirestorePermissionError } from '@/firebase/errors';
-import { AlertEditorDialog } from '@/components/alert-editor-dialog';
 import Link from 'next/link';
-import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { CryptoIcon } from '@/components/crypto-icon';
-import { getExplorerUrl } from '@/lib/explorers';
-import { WatchlistActionForm } from '@/components/watchlist/watchlist-action-form';
-import { tokenLibrary } from '@/lib/tokens';
-import { AlertsPanel } from '@/components/watchlist/alerts-panel';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Sector, Legend } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell, Sector, Legend } from 'recharts';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ChartTooltipContent, ChartContainer } from '@/components/ui/chart';
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { HoldingsTable } from '@/components/dashboard/holdings-table';
+import { WatchlistActionForm } from '@/components/watchlist/watchlist-action-form';
+import { AlertsPanel } from '@/components/watchlist/alerts-panel';
+import { AlertEditorDialog } from '@/components/alert-editor-dialog';
+import { WatchlistItemCard } from '@/components/watchlist/watchlist-item-card';
+import { useToast } from '@/hooks/use-toast';
+import { doc, deleteDoc, updateDoc } from 'firebase/firestore';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 
 const WATCHLIST_LIMIT_FREE = 5;
@@ -59,10 +42,10 @@ const generateChartData = (baseValue: number, days: number, volatility: number) 
         let dayLabel;
         const dayNumber = Math.floor(i * days / points);
 
-        if (i === 0) {
+        if (i === points) {
+            dayLabel = `${dayNumber}d ago`;
+        } else if (i === 0) {
             dayLabel = 'Today';
-        } else if (days <= 14) {
-             dayLabel = `${dayNumber}d ago`;
         } else {
             // For longer ranges, only label every 5-ish points to avoid clutter
             const labelFrequency = Math.floor(points / 6);
@@ -148,135 +131,17 @@ function PageSkeleton() {
             <div className='flex justify-between items-center'>
                  <Skeleton className="h-12 w-1/3" />
             </div>
+             <Skeleton className="h-96 w-full" />
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
               <div className="lg:col-span-2 space-y-4">
                   <Skeleton className="h-12 w-full" />
-                  <WatchlistSkeleton />
+                  <Skeleton className="h-48 w-full" />
               </div>
               <div className="lg:col-span-1">
                   <Skeleton className="h-96 w-full" />
               </div>
             </div>
         </div>
-    )
-}
-
-function WatchlistItemCard({ item, onUpdate, onRemove }: { item: WatchlistItem, onUpdate: (id: string, name: string) => void, onRemove: (item: WatchlistItem) => void}) {
-    const [isAlertEditorOpen, setIsAlertEditorOpen] = useState(false);
-    const [isEditing, setIsEditing] = useState(false);
-    const [newName, setNewName] = useState(item.name || '');
-
-    const handleStartEditing = () => {
-        setNewName(item.name || '');
-        setIsEditing(true);
-    };
-
-    const handleCancelEditing = () => {
-        setIsEditing(false);
-    };
-
-    const handleSave = () => {
-        onUpdate(item.id, newName);
-        setIsEditing(false);
-    };
-    
-    if (!item.identifier) return null;
-
-    const currentToken = tokenLibrary[item.identifier.toUpperCase()];
-
-    return (
-        <Dialog open={isAlertEditorOpen} onOpenChange={setIsAlertEditorOpen}>
-            <Card className='group'>
-                <CardContent className='p-4'>
-                    <div className='flex items-start gap-4'>
-                        {/* Icon */}
-                        <div className='mt-1'>
-                            {item.type === 'wallet' ? <Wallet className="h-6 w-6 text-muted-foreground"/> : <CryptoIcon token={item.identifier} className="h-6 w-6"/>}
-                        </div>
-
-                        {/* Main Content */}
-                        <div className='flex-1 space-y-2 min-w-0'>
-                           {item.type === 'wallet' ? (
-                                <>
-                                {isEditing ? (
-                                    <div className="flex items-center gap-2">
-                                        <Input 
-                                            value={newName} 
-                                            onChange={e => setNewName(e.target.value)} 
-                                            placeholder='Set an alias' 
-                                            className="h-9"
-                                        />
-                                        <Button size="icon" variant="ghost" onClick={handleSave} className="h-9 w-9 text-green-500 hover:text-green-600">
-                                            <Check className='h-5 w-5'/>
-                                        </Button>
-                                        <Button size="icon" variant="ghost" onClick={handleCancelEditing} className="h-9 w-9 text-red-500 hover:text-red-600">
-                                            <X className='h-5 w-5'/>
-                                        </Button>
-                                    </div>
-                                ) : (
-                                    <div className='flex items-center gap-1'>
-                                        <h3 className='text-lg font-semibold truncate'>
-                                            {item.name || item.identifier}
-                                        </h3>
-                                        <Button size="icon" variant="ghost" className='h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity' onClick={handleStartEditing}><Pencil className='h-4 w-4'/></Button>
-                                    </div>
-                                )}
-                                {item.name && (
-                                    <Link href={getExplorerUrl('ethereum', item.identifier, 'address')} target="_blank" rel="noopener noreferrer" className='font-mono text-sm text-muted-foreground hover:text-primary transition-colors inline-block truncate max-w-full'>
-                                        {item.identifier}
-                                    </Link>
-                                )}
-                                 <div className='text-xs text-muted-foreground pt-1'>
-                                    <p>Net Worth & P/L: <span className='italic'>Fetching data...</span></p>
-                                 </div>
-                                </>
-                           ) : (
-                                <div>
-                                    <h3 className='text-lg font-semibold truncate'>
-                                        {currentToken?.name || item.name || item.identifier}
-                                    </h3>
-                                    <p className="font-mono text-sm text-muted-foreground">{item.identifier.toUpperCase()}</p>
-                                </div>
-                           )}
-                        </div>
-
-                        {/* Actions */}
-                        <div className='flex items-center gap-1'>
-                            <DialogTrigger asChild>
-                                <Button variant="outline" size="icon" className="h-9 w-9" onClick={() => setIsAlertEditorOpen(true)}>
-                                    <BellPlus className="h-4 w-4" />
-                                </Button>
-                            </DialogTrigger>
-                             <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                    <Button variant="outline" size="icon" className="text-destructive hover:text-destructive hover:bg-destructive/5 h-9 w-9">
-                                        <Trash2 className="h-4 w-4" />
-                                    </Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                        This will permanently remove <span className='font-mono bg-muted p-1 rounded-sm'>{item.name || item.identifier}</span> from your watchlist and delete any associated alerts.
-                                    </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                    <AlertDialogAction onClick={() => onRemove(item)} className="bg-destructive hover:bg-destructive/90">Remove</AlertDialogAction>
-                                    </AlertDialogFooter>
-                                </AlertDialogContent>
-                            </AlertDialog>
-                        </div>
-                    </div>
-                </CardContent>
-            </Card>
-             {isAlertEditorOpen && (
-                <AlertEditorDialog 
-                    onOpenChange={setIsAlertEditorOpen} 
-                    entity={{ type: item.type, identifier: item.identifier }}
-                />
-            )}
-        </Dialog>
     )
 }
 
@@ -399,177 +264,194 @@ export default function WatchlistPage() {
   }
 
   return (
-    <Dialog open={isEditorOpen} onOpenChange={setIsEditorOpen}>
-        <div className="relative">
-            {!user && !userLoading && <FeatureLock />}
-            <div className="space-y-8">
-                 <PageHeader
-                    title="My Watchlist"
-                    description={pageDescription}
-                />
+    <div className="relative">
+        {!user && !userLoading && <FeatureLock />}
+        <div className="space-y-8">
+             <PageHeader
+                title="My Watchlist"
+                description={pageDescription}
+            />
 
-                {hasWallets && (
-                  <section id="overview">
-                    <Card>
-                        <CardHeader>
+            {hasWallets ? (
+              <section id="overview">
+                <Card>
+                    <CardHeader>
+                      <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2'>
+                        <div>
                           <CardTitle>Portfolio Overview</CardTitle>
                           <CardDescription>Aggregated view of your on-chain wealth from your watched wallets.</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-8">
-                          <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
-                            <div>
-                              <p className="text-sm text-muted-foreground">Total Net Worth</p>
-                              <p className="text-4xl font-bold">${portfolioData.netWorth.toLocaleString()}</p>
-                              <PnlBadge value={portfolioData.change24h} />
-                            </div>
-                            <Select value={timeRange} onValueChange={(val) => setTimeRange(val as '7d' | '30d' | 'all')}>
-                              <SelectTrigger className="w-full sm:w-[180px]">
-                                <SelectValue placeholder="Select time range" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="7d">Last 7 Days</SelectItem>
-                                <SelectItem value="30d" disabled={!isPro}>
-                                  <div className="flex items-center gap-2">Last 30 Days {!isPro && <Lock className='h-3 w-3' />}</div>
-                                </SelectItem>
-                                <SelectItem value="all" disabled={!isPro}>
-                                  <div className="flex items-center gap-2">All Time {!isPro && <Lock className='h-3 w-3' />}</div>
-                                </SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          
-                          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-                            <div className="lg:col-span-2">
-                                <h3 className="font-semibold mb-4 text-center lg:text-left">Net Worth Over Time</h3>
-                                <div className="h-[350px]">
-                                    <ChartContainer config={{value: {label: 'Net Worth', color: 'hsl(var(--primary))'}}} className='h-full w-full'>
-                                        <AreaChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-                                            <CartesianGrid vertical={false} strokeDasharray="3 3" />
-                                            <XAxis dataKey="name" tick={{ fill: 'hsl(var(--muted-foreground))' }} fontSize={12} axisLine={false} tickLine={false} tickFormatter={(value) => {
-                                              if (chartData.length > 20 && value) return value.replace(' ago', '');
-                                              return value;
-                                            }}/>
-                                            <YAxis tickFormatter={(value) => `$${(Number(value) / 1000)}k`} tick={{ fill: 'hsl(var(--muted-foreground))' }} fontSize={12} axisLine={false} tickLine={false} />
-                                            <Tooltip
-                                                cursor={{ stroke: 'hsl(var(--border))' }}
-                                                content={({ active, payload, label }) => active && payload && payload.length && (
-                                                    <ChartTooltipContent
-                                                      label={label}
-                                                      payload={payload.map((p) => ({
-                                                          ...p,
-                                                          value: (p.value as number).toLocaleString('en-US', {
-                                                            style: 'currency',
-                                                            currency: 'USD',
-                                                            minimumFractionDigits: 0,
-                                                            maximumFractionDigits: 0,
-                                                          })
-                                                      }))}
-                                                    />
-                                                )}
-                                            />
-                                            <Area type="monotone" dataKey="value" stroke="hsl(var(--primary))" fill="hsl(var(--primary))" fillOpacity={0.1} />
-                                        </AreaChart>
-                                    </ChartContainer>
-                                </div>
-                            </div>
+                        </div>
+                         <Button variant="outline" disabled>
+                           <Download className="mr-2 h-4 w-4" />
+                           Export Data
+                         </Button>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="space-y-8">
+                      <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
+                        <div>
+                          <p className="text-sm text-muted-foreground">Total Net Worth</p>
+                          <p className="text-4xl font-bold">${portfolioData.netWorth.toLocaleString()}</p>
+                          <PnlBadge value={portfolioData.change24h} />
+                        </div>
+                        <Select value={timeRange} onValueChange={(val) => setTimeRange(val as '7d' | '30d' | 'all')}>
+                          <SelectTrigger className="w-full sm:w-[180px]">
+                            <SelectValue placeholder="Select time range" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="7d">Last 7 Days</SelectItem>
+                            <SelectItem value="30d" disabled={!isPro}>
+                              <div className="flex items-center gap-2">Last 30 Days {!isPro && <Lock className='h-3 w-3' />}</div>
+                            </SelectItem>
+                            <SelectItem value="all" disabled={!isPro}>
+                              <div className="flex items-center gap-2">All Time {!isPro && <Lock className='h-3 w-3' />}</div>
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      
+                      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+                        <div className="lg:col-span-2">
+                            <h3 className="font-semibold mb-4 text-center lg:text-left">Net Worth Over Time</h3>
                             <div className="h-[350px]">
-                                <h3 className="font-semibold mb-4 text-center lg:text-left">Asset Allocation</h3>
-                                 <ChartContainer config={{}} className="h-full w-full">
-                                    <PieChart>
-                                        <Pie 
-                                            activeIndex={activeIndex}
-                                            activeShape={renderActiveShape}
-                                            data={allocationData} 
-                                            cx="50%"
-                                            cy="50%"
-                                            innerRadius={80}
-                                            outerRadius={100}
-                                            fill="var(--color-value)"
-                                            dataKey="value"
-                                            onMouseEnter={onPieEnter}
-                                            labelLine={false}
-                                            label={false}
-                                        >
-                                            {allocationData.map((entry, index) => (
-                                                <Cell key={`cell-${index}`} fill={entry.color} />
-                                            ))}
-                                        </Pie>
-                                         <Legend
-                                            onMouseEnter={(_, index) => onPieEnter(_, index)}
-                                            verticalAlign="bottom" 
-                                            height={40} 
-                                            content={({ payload }) => (
-                                            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 mt-4 text-xs text-muted-foreground">
-                                                {payload?.map((entry, index) => (
-                                                <div key={`item-${index}`} className={cn("flex items-center gap-1.5 cursor-pointer transition-opacity", activeIndex !== index && 'opacity-50 hover:opacity-100')}>
-                                                    <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: entry.color }} />
-                                                    <span>{entry.value}</span>
-                                                </div>
-                                                ))}
-                                            </div>
+                                <ChartContainer config={{value: {label: 'Net Worth', color: 'hsl(var(--primary))'}}} className='h-full w-full'>
+                                    <AreaChart data={chartData} margin={{ top: 5, right: 10, left: -25, bottom: 0 }}>
+                                        <CartesianGrid vertical={false} strokeDasharray="3 3" />
+                                        <XAxis dataKey="name" tick={{ fill: 'hsl(var(--muted-foreground))' }} fontSize={12} axisLine={false} tickLine={false} interval="preserveStartEnd" />
+                                        <YAxis tickFormatter={(value) => `$${(Number(value) / 1000)}k`} tick={{ fill: 'hsl(var(--muted-foreground))' }} fontSize={12} axisLine={false} tickLine={false} />
+                                        <Tooltip
+                                            cursor={{ stroke: 'hsl(var(--border))' }}
+                                            content={({ active, payload, label }) => active && payload && payload.length && (
+                                                <ChartTooltipContent
+                                                  label={label}
+                                                  payload={payload.map((p) => ({
+                                                      ...p,
+                                                      value: (p.value as number).toLocaleString('en-US', {
+                                                        style: 'currency',
+                                                        currency: 'USD',
+                                                        minimumFractionDigits: 0,
+                                                        maximumFractionDigits: 0,
+                                                      })
+                                                  }))}
+                                                />
                                             )}
                                         />
-                                    </PieChart>
+                                        <Area type="monotone" dataKey="value" stroke="hsl(var(--primary))" fill="hsl(var(--primary))" fillOpacity={0.1} />
+                                    </AreaChart>
                                 </ChartContainer>
                             </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                  </section>
-                )}
+                        </div>
+                        <div className="h-[350px]">
+                            <h3 className="font-semibold mb-4 text-center lg:text-left">Asset Allocation</h3>
+                             <ChartContainer config={{}} className="h-full w-full">
+                                <PieChart>
+                                    <Pie 
+                                        activeIndex={activeIndex}
+                                        activeShape={renderActiveShape}
+                                        data={allocationData} 
+                                        cx="50%"
+                                        cy="50%"
+                                        innerRadius={80}
+                                        outerRadius={100}
+                                        fill="var(--color-value)"
+                                        dataKey="value"
+                                        onMouseEnter={onPieEnter}
+                                        labelLine={false}
+                                        label={false}
+                                    >
+                                        {allocationData.map((entry, index) => (
+                                            <Cell key={`cell-${index}`} fill={entry.color} />
+                                        ))}
+                                    </Pie>
+                                     <Legend
+                                        onMouseEnter={(_, index) => onPieEnter(_, index)}
+                                        verticalAlign="bottom" 
+                                        height={40} 
+                                        content={({ payload }) => (
+                                        <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 mt-4 text-xs text-muted-foreground">
+                                            {payload?.map((entry, index) => (
+                                            <div key={`item-${index}`} className={cn("flex items-center gap-1.5 cursor-pointer transition-opacity", activeIndex !== index && 'opacity-50 hover:opacity-100')}>
+                                                <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: entry.color }} />
+                                                <span>{entry.value}</span>
+                                            </div>
+                                            ))}
+                                        </div>
+                                        )}
+                                    />
+                                </PieChart>
+                            </ChartContainer>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+              </section>
+            ) : (
+                <Card className="text-center p-8 border-2 border-dashed">
+                    <Wallet className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                    <h3 className="text-2xl font-bold">Your Portfolio is Empty</h3>
+                    <p className="text-muted-foreground max-w-sm mx-auto mt-2 mb-6">
+                        Add a wallet to your watchlist to start tracking your portfolio's performance.
+                    </p>
+                </Card>
+            )}
 
-                <div className='grid grid-cols-1 lg:grid-cols-3 gap-8 items-start'>
-                    <div className='lg:col-span-2 space-y-6'>
-                         <h2 className='text-2xl font-bold tracking-tight'>Tracked Items</h2>
-                        <div className="flex flex-col sm:flex-row gap-2">
-                             <WatchlistActionForm 
-                                user={user}
-                                onItemAdded={handleItemAdded}
-                                onAlertCreate={handleOpenEditor}
-                                atLimit={!!watchlistAtLimit}
-                                isLoading={isLoading}
-                             />
-                        </div>
-                        
-                        {watchlistAtLimit && (
-                            <Card className="text-center p-8 space-y-4 rounded-lg bg-card border shadow-lg border-primary">
-                                <Lock className="w-8 h-8 text-primary mx-auto" />
-                                <h3 className="text-2xl font-bold">Watchlist Limit Reached</h3>
-                                <p className="text-muted-foreground max-w-sm mx-auto">
-                                    You've reached the limit of ${WATCHLIST_LIMIT_FREE} items for the Free plan. Upgrade to track unlimited wallets and tokens.
+            <div className='grid grid-cols-1 lg:grid-cols-3 gap-8 items-start'>
+                <div className='lg:col-span-2 space-y-6'>
+                     <h2 className='text-2xl font-bold tracking-tight'>Tracked Items</h2>
+                    <div className="flex flex-col sm:flex-row gap-2">
+                         <WatchlistActionForm 
+                            user={user}
+                            onItemAdded={handleItemAdded}
+                            onAlertCreate={handleOpenEditor}
+                            atLimit={!!watchlistAtLimit}
+                            isLoading={isLoading}
+                         />
+                    </div>
+                    
+                    {watchlistAtLimit && (
+                        <Card className="text-center p-8 space-y-4 rounded-lg bg-card border shadow-lg border-primary">
+                            <Lock className="w-8 h-8 text-primary mx-auto" />
+                            <h3 className="text-2xl font-bold">Watchlist Limit Reached</h3>
+                            <p className="text-muted-foreground max-w-sm mx-auto">
+                                You've reached the limit of ${WATCHLIST_LIMIT_FREE} items for the Free plan. Upgrade to track unlimited wallets and tokens.
+                            </p>
+                            <Button asChild>
+                                <Link href="/upgrade">Upgrade to Pro</Link>
+                            </Button>
+                        </Card>
+                    )}
+                    
+                    <div className="space-y-4">
+                       
+                        {isLoading ? <WatchlistSkeleton /> : user && watchlist && watchlist.length > 0 ? (
+                            watchlist.map((item) => (
+                               <WatchlistItemCard 
+                                   key={item.id} 
+                                   item={item} 
+                                   onUpdate={handleUpdate} 
+                                   onRemove={handleRemove}
+                                   onAlertCreate={handleOpenEditor}
+                                />
+                            ))
+                        ) : (
+                           !isLoading && (
+                            <div className="flex flex-col items-center justify-center text-center text-muted-foreground p-8 rounded-lg border-2 border-dashed">
+                                <Eye className="h-10 w-10 mb-4" />
+                                <p className="font-semibold text-lg">Your watchlist is empty.</p>
+                                <p className="text-sm max-w-xs mx-auto">
+                                   Use the form above to add wallets or tokens.
                                 </p>
-                                <Button asChild>
-                                    <Link href="/upgrade">Upgrade to Pro</Link>
-                                </Button>
-                            </Card>
+                            </div>
+                           )
                         )}
-                        
-                        <div className="space-y-4">
-                           
-                            {isLoading ? <WatchlistSkeleton /> : user && watchlist && watchlist.length > 0 ? (
-                                watchlist.map((item) => (
-                                   <WatchlistItemCard key={item.id} item={item} onUpdate={handleUpdate} onRemove={handleRemove} />
-                                ))
-                            ) : (
-                               !isLoading && (
-                                <div className="flex flex-col items-center justify-center text-center text-muted-foreground p-8 rounded-lg border-2 border-dashed">
-                                    <Eye className="h-10 w-10 mb-4" />
-                                    <p className="font-semibold text-lg">Your watchlist is empty.</p>
-                                    <p className="text-sm max-w-xs mx-auto">
-                                       Use the form above to add wallets or tokens to your watchlist.
-                                    </p>
-                                </div>
-                               )
-                            )}
-                        </div>
                     </div>
-                    <div className='lg:col-span-1 lg:mt-[44px]'>
-                       <AlertsPanel onNewAlert={() => handleOpenEditor()} />
-                    </div>
+                </div>
+                <div className='lg:col-span-1 lg:mt-[44px]'>
+                   <AlertsPanel onNewAlert={() => handleOpenEditor()} />
                 </div>
             </div>
         </div>
          <AlertEditorDialog onOpenChange={setIsEditorOpen} entity={editorEntity} />
-    </Dialog>
+    </div>
   );
 }
