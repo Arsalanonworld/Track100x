@@ -4,7 +4,7 @@
 import * as React from "react"
 import Link, { type LinkProps } from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { Menu, Rss, Trophy, LayoutDashboard, Compass, Eye } from "lucide-react"
+import { Menu, Rss, Trophy, LayoutDashboard, Compass, Eye, Star, Sparkles } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -17,16 +17,22 @@ export function MobileNav() {
   const { user } = useUser();
   const [isClient, setIsClient] = React.useState(false);
 
-    React.useEffect(() => {
-        setIsClient(true);
-    }, []);
+  React.useEffect(() => {
+    setIsClient(true);
+  }, []);
 
-  const navItems = [
-      { href: '/feed', label: 'Whale Feed', icon: Rss, visible: true },
-      { href: '/leaderboard', label: 'Explore', icon: Compass, visible: true },
-      { href: '/watchlist', label: 'My Watchlist', icon: Eye, visible: !!user },
+  const publicItems = [
+      { href: '/#features', label: 'Features', icon: Sparkles, visible: true },
+      { href: '/upgrade', label: 'Pricing', icon: Star, visible: true },
   ];
 
+  const privateItems = [
+      { href: '/feed', label: 'Whale Feed', icon: Rss, visible: true },
+      { href: '/leaderboard', label: 'Explore', icon: Compass, visible: true },
+      { href: '/watchlist', label: 'My Watchlist', icon: Eye, visible: true },
+  ];
+
+  const navItems = !user ? publicItems : privateItems;
   const visibleItems = navItems.filter(item => item.visible);
 
   return (
@@ -92,7 +98,12 @@ function MobileLink({
     <Link
       href={href}
       onClick={() => {
-        router.push(href.toString())
+        if (href.toString().startsWith('/#')) {
+            const id = href.toString().substring(2);
+            document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+        } else {
+            router.push(href.toString());
+        }
         onOpenChange?.(false)
       }}
       className={cn(className)}

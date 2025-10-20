@@ -16,13 +16,18 @@ export function MainNav() {
         setIsClient(true);
     }, []);
 
+    const publicItems = [
+        { href: '/#features', label: 'Features', visible: true },
+        { href: '/upgrade', label: 'Pricing', visible: true },
+    ];
 
-    const navItems = [
+    const privateItems = [
         { href: '/feed', label: 'Whale Feed', visible: true },
         { href: '/leaderboard', label: 'Explore', visible: true },
-        { href: '/watchlist', label: 'My Watchlist', visible: !!user },
+        { href: '/watchlist', label: 'My Watchlist', visible: true },
     ];
     
+    const navItems = !user ? publicItems : privateItems;
     const visibleItems = navItems.filter(item => item.visible);
 
   return (
@@ -33,7 +38,7 @@ export function MainNav() {
                 href={item.href}
                 className={cn(
                     "transition-colors hover:text-foreground",
-                    (pathname.startsWith(item.href) && item.href !== '/') || (pathname === '/' && item.href === '/') ? "text-foreground" : "text-foreground/60"
+                    (pathname.startsWith(item.href) && item.href !== '/#features') || (pathname === '/' && item.href === '/') ? "text-foreground" : "text-foreground/60"
                 )}
             >
                 {item.label}
