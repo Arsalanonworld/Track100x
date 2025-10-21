@@ -1,10 +1,11 @@
 
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { tokenLibrary } from '@/lib/tokens';
 import { CryptoIcon } from './crypto-icon';
 import { cn } from '@/lib/utils';
+import { motion, AnimatePresence } from 'framer-motion';
 
 
 function LogoIcon() {
@@ -99,60 +100,76 @@ const icons = [
 ];
 
 export const RotatingCryptoCircle = () => {
-    const iconSize = 48; // size of the icon in pixels
-    const radius = 160; // radius of the circle in pixels
+    const radius = 160;
     const numIcons = icons.length;
+    const [isMounted, setIsMounted] = useState(false);
+
+    useEffect(() => {
+        // This component uses Math.random(), so we only render it on the client.
+        setIsMounted(true);
+    }, []);
+
+    if (!isMounted) {
+        return null; // Or a loading spinner
+    }
 
     return (
         <div className="relative flex items-center justify-center h-[400px]">
             {/* Center Logo */}
-            <div className="absolute z-10 w-24 h-24 bg-card rounded-full flex items-center justify-center shadow-lg">
+             <motion.div
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ type: 'spring', stiffness: 260, damping: 20, delay: 0.5 }}
+                className="absolute z-10 w-24 h-24 bg-card rounded-full flex items-center justify-center shadow-lg"
+            >
                 <LogoIcon />
-            </div>
+            </motion.div>
+
 
             {/* Rotating container */}
-            <div className="w-full h-full animate-orbit group-hover:pause">
-                {icons.map((symbol, i) => {
-                    const angle = (i / numIcons) * 2 * Math.PI;
-                    const x = Math.cos(angle) * radius;
-                    const y = Math.sin(angle) * radius;
-                    
-                    const rotation = (angle * 180) / Math.PI + 90;
+            <AnimatePresence>
+                <motion.div
+                    className="w-full h-full animate-orbit group-hover:pause"
+                >
+                    {icons.map((symbol, i) => {
+                        const angle = (i / numIcons) * 2 * Math.PI;
+                        const x = Math.cos(angle) * radius;
+                        const y = Math.sin(angle) * radius;
 
-                    return (
-                        <div
-                            key={symbol}
-                            className="absolute top-1/2 left-1/2"
-                            style={{
-                                transform: `translate(-50%, -50%) translate(${x}px, ${y}px)`
-                            }}
-                        >
-                            <div className="relative flex items-center justify-center">
-                                {/* Dotted Line */}
-                                <div 
-                                    className="absolute origin-left h-px w-[160px] bg-repeat bg-center"
-                                    style={{
-                                        backgroundImage: 'radial-gradient(circle, currentColor 1px, transparent 1px)',
-                                        backgroundSize: '8px 8px',
-                                        transform: `rotate(${rotation}deg) translateX(-50%)`,
-                                        color: 'hsl(var(--border))'
-                                    }}
-                                />
-                                <div className="absolute w-2 h-2 bg-primary/50 rounded-full right-full -translate-x-1/2" style={{
-                                     transform: `rotate(${rotation}deg) translateX(-${radius - 28}px)`
-                                }}></div>
+                        const randomX = (Math.random() - 0.5) * 400;
+                        const randomY = (Math.random() - 0.5) * 400;
 
-                                {/* Icon */}
-                                <div 
-                                    className="z-10 w-12 h-12 bg-card rounded-full flex items-center justify-center shadow-md p-2"
-                                >
+                        return (
+                             <motion.div
+                                key={symbol}
+                                className="absolute top-1/2 left-1/2"
+                                initial={{
+                                    x: randomX,
+                                    y: randomY,
+                                    opacity: 0,
+                                    scale: 0.5
+                                }}
+                                animate={{
+                                    x: x - 24, // Adjust for icon size
+                                    y: y - 24, // Adjust for icon size
+                                    opacity: 1,
+                                    scale: 1,
+                                }}
+                                transition={{
+                                    type: 'spring',
+                                    stiffness: 100,
+                                    damping: 20,
+                                    delay: 0.5 + i * 0.1,
+                                }}
+                            >
+                                <div className="z-10 w-12 h-12 bg-card rounded-full flex items-center justify-center shadow-md p-2">
                                     <CryptoIcon token={symbol} className='h-8 w-8' />
                                 </div>
-                            </div>
-                        </div>
-                    );
-                })}
-            </div>
+                            </motion.div>
+                        );
+                    })}
+                </motion.div>
+            </AnimatePresence>
         </div>
     );
 };
