@@ -113,7 +113,7 @@ export default function Header() {
                     </Link>
                 </div>
                 
-                <div className="flex-1 flex justify-center px-4">
+                <div className="flex-1 flex justify-center px-4 md:px-0">
                     <div className="w-full max-w-md">
                       <CommandMenu />
                     </div>
