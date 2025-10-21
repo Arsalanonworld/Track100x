@@ -24,7 +24,7 @@ function FeedPage() {
             title="Whale Feed"
             description="A live stream of significant on-chain transactions."
         />
-        <WhaleFeed />
+        <WhaleFeed showTitle={false} />
     </div>
   );
 }

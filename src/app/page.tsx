@@ -18,7 +18,7 @@ export default function HomePage() {
       <div className="container">
         {/* Whale Feed Section */}
         <div id="whale-feed">
-          <WhaleFeed isPreview={true} />
+          <WhaleFeed isPreview={true} showTitle={true} />
         </div>
         
         {/* Feature Highlights Section */}
