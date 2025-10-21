@@ -3,22 +3,14 @@
 
 import * as React from 'react';
 import {
-  Calculator,
-  Calendar,
-  CreditCard,
   Search,
-  Settings,
-  Smile,
-  User,
-  Wallet,
   Rss,
   Compass,
   Eye,
-  File,
+  Settings,
 } from 'lucide-react';
 import {
   Command,
-  CommandDialog,
   CommandEmpty,
   CommandGroup,
   CommandInput,
@@ -33,75 +25,23 @@ import { leaderboardData } from '@/lib/mock-data';
 import { tokenLibrary } from '@/lib/tokens';
 import { CryptoIcon } from './crypto-icon';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
+import { Wallet } from 'lucide-react';
+import dynamic from 'next/dynamic';
 
 
-const searchPlaceholders = [
-  'Search for wallets...',
-  'Search for tokens...',
-  'e.g. 0xde0b2...',
-  'e.g. WIF, ETH, SOL',
-  'Navigate to your portfolio...',
-];
+const AnimatedPlaceholder = dynamic(
+  () => import('./animated-placeholder').then((mod) => mod.AnimatedPlaceholder),
+  { 
+    ssr: false,
+    loading: () => <>Search...</>
+  }
+);
 
 
 export function CommandMenu() {
   const [open, setOpen] = React.useState(false);
   const router = useRouter();
-
-  const [placeholder, setPlaceholder] = React.useState('Search...');
-  const placeholderIndex = React.useRef(0);
-  const isDeleting = React.useRef(false);
-  const timeoutRef = React.useRef<NodeJS.Timeout | null>(null);
-
-  const [isClient, setIsClient] = React.useState(false);
-
-  React.useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-   React.useEffect(() => {
-    if (!isClient) return;
-    
-    const handleTyping = () => {
-      const currentPhrase = searchPlaceholders[placeholderIndex.current];
-      
-      let newText;
-      if (isDeleting.current) {
-        newText = placeholder.substring(0, placeholder.length - 1);
-      } else {
-        newText = currentPhrase.substring(0, placeholder.length + 1);
-      }
-      setPlaceholder(newText);
-      
-      let delay = isDeleting.current ? 50 : 100;
-
-      if (!isDeleting.current && newText === currentPhrase) {
-        delay = 2000; // Pause at the end of the phrase
-        isDeleting.current = true;
-      } else if (isDeleting.current && newText === '') {
-        isDeleting.current = false;
-        placeholderIndex.current = (placeholderIndex.current + 1) % searchPlaceholders.length;
-        delay = 500; // Pause before typing new phrase
-      }
-      
-      timeoutRef.current = setTimeout(handleTyping, delay);
-    };
-
-    if (!open) {
-        if (timeoutRef.current) clearTimeout(timeoutRef.current);
-        timeoutRef.current = setTimeout(handleTyping, 1000);
-    } else {
-        if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    }
-
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-    };
-  }, [placeholder, open, isClient]);
-
-
+  
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {
       if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
@@ -133,14 +73,7 @@ export function CommandMenu() {
         >
           <Search className="mr-2 h-4 w-4 shrink-0" />
           <span className='flex-1 text-left whitespace-nowrap overflow-hidden'>
-            {!open && isClient ? (
-              <>
-                {placeholder}
-                <span className="animate-blinking-cursor w-px h-4 ml-0.5 bg-foreground inline-block" />
-              </>
-            ) : (
-                'Search...'
-            )}
+            {!open ? <AnimatedPlaceholder /> : 'Search...'}
           </span>
            <kbd className="pointer-events-none hidden h-5 select-none items-center gap-1 rounded border bg-background px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
             <span className="text-xs">⌘</span>K
