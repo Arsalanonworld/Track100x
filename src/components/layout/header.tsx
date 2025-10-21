@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import { CommandMenu } from "../command-menu";
 import { Button } from "../ui/button";
 import { ChevronLeft } from "lucide-react";
+import React, { useState, useEffect } from "react";
 
 function LogoIcon() {
   return (
@@ -30,22 +31,41 @@ function LogoIcon() {
 
 export default function Header() {
     const { user } = useUser();
+    const [isSidebarLocked, setIsSidebarLocked] = useState(false);
+
+    useEffect(() => {
+        const savedState = localStorage.getItem('sidebar-collapsed');
+        setIsSidebarLocked(savedState === 'true');
+        
+        const handleStorageChange = () => {
+            const savedState = localStorage.getItem('sidebar-collapsed');
+            setIsSidebarLocked(savedState === 'true');
+        };
+
+        window.addEventListener('storage', handleStorageChange);
+        // Custom event to handle changes in the same tab
+        window.addEventListener('sidebarToggle', handleStorageChange);
+
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+            window.removeEventListener('sidebarToggle', handleStorageChange);
+        };
+    }, []);
+
+    const headerMargin = isSidebarLocked ? 'md:ml-[72px]' : 'md:ml-60';
     
     return (
         <header className={cn(
-            "absolute top-0 z-30 w-full bg-background/95 backdrop-blur-sm border-b"
+            "fixed top-0 z-30 w-full bg-background/95 backdrop-blur-sm border-b transition-all duration-300",
+            headerMargin
         )}>
             <div className={cn("flex h-14 items-center lg:h-[60px] px-4")}>
-                <div className="flex items-center gap-2">
-                   <div className="md:hidden">
-                    <MobileNav />
-                   </div>
-                    <div className="hidden md:flex items-center gap-2">
-                      <Link href="/" className="flex items-center space-x-2 pl-2">
-                          <LogoIcon />
-                          <span className="font-bold">Track100x</span>
-                      </Link>
-                    </div>
+                <div className="flex items-center gap-2 md:hidden">
+                   <MobileNav />
+                   <Link href="/" className="flex items-center space-x-2 pl-2">
+                        <LogoIcon />
+                        <span className="font-bold">Track100x</span>
+                    </Link>
                 </div>
                 
                 <div className="flex-1 flex justify-center px-4">

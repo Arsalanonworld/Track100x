@@ -28,6 +28,23 @@ import { useUser } from "@/firebase";
 import { useLogout } from "../auth/auth-actions";
 import { Button } from "../ui/button";
 
+function LogoIcon() {
+    return (
+      <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="h-6 w-6"
+      >
+          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+      </svg>
+    );
+  }
+
 const navItems = [
     {
       label: "Whale Feed",
@@ -112,15 +129,28 @@ export default function Sidebar({
     return item;
   });
 
+  const handleToggle = () => {
+    onToggle();
+    // Dispatch a custom event that the header can listen to
+    window.dispatchEvent(new CustomEvent('sidebarToggle'));
+  }
+
 
   return (
     <TooltipProvider>
       <aside
         className={cn(
-          "hidden md:flex flex-col transition-all duration-300 z-40 border-r bg-background fixed h-full top-0 pt-14 lg:pt-[60px] shadow-lg",
+          "hidden md:flex flex-col transition-all duration-300 z-40 border-r bg-background fixed h-full top-0 shadow-lg",
           isExpanded ? "w-60" : "w-[72px]"
         )}
       >
+        <div className="flex items-center h-14 lg:h-[60px] border-b px-6">
+             <Link href="/" className="flex items-center space-x-2">
+                <LogoIcon />
+                <span className={cn("font-bold transition-opacity duration-300 whitespace-nowrap", isExpanded ? "opacity-100" : "opacity-0")}>Track100x</span>
+            </Link>
+        </div>
+
         <div className="flex-1 flex flex-col justify-between overflow-y-auto overflow-x-hidden">
             <div className="px-3 py-4 space-y-6">
               <SidebarSection
@@ -169,7 +199,7 @@ export default function Sidebar({
               <Button
                 variant="outline"
                 className="h-7 w-7 rounded-full p-0 flex items-center justify-center bg-background hover:bg-muted border-primary/50 text-primary hover:text-primary shadow-lg"
-                onClick={onToggle}
+                onClick={handleToggle}
               >
                 <ChevronLeft
                   size={16}
