@@ -53,13 +53,21 @@ export function CommandMenu() {
   const isDeleting = React.useRef(false);
   const timeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
+  const [isClient, setIsClient] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsClient(true);
+  }, []);
+
    React.useEffect(() => {
+    if (!isClient) return;
+    
     const handleTyping = () => {
       const currentPhrase = searchPlaceholders[placeholderIndex.current];
       
       let newText;
       if (isDeleting.current) {
-        newText = currentPhrase.substring(0, placeholder.length - 1);
+        newText = placeholder.substring(0, placeholder.length - 1);
       } else {
         newText = currentPhrase.substring(0, placeholder.length + 1);
       }
@@ -80,6 +88,7 @@ export function CommandMenu() {
     };
 
     if (!open) {
+        if (timeoutRef.current) clearTimeout(timeoutRef.current);
         timeoutRef.current = setTimeout(handleTyping, 1000);
     } else {
         if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -90,7 +99,7 @@ export function CommandMenu() {
         clearTimeout(timeoutRef.current);
       }
     };
-  }, [placeholder, open]);
+  }, [placeholder, open, isClient]);
 
 
   React.useEffect(() => {
@@ -124,13 +133,14 @@ export function CommandMenu() {
         >
           <Search className="mr-2 h-4 w-4 shrink-0" />
           <span className='flex-1 text-left whitespace-nowrap overflow-hidden'>
-            {!open && (
+            {!open && isClient ? (
               <>
                 {placeholder}
                 <span className="animate-blinking-cursor w-px h-4 ml-0.5 bg-foreground inline-block" />
               </>
+            ) : (
+                'Search...'
             )}
-             {open && 'Search...'}
           </span>
            <kbd className="pointer-events-none hidden h-5 select-none items-center gap-1 rounded border bg-background px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
             <span className="text-xs">⌘</span>K
