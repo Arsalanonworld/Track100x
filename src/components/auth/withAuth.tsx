@@ -30,9 +30,9 @@ export function withAuth<P extends object>(
 
     if (!user) {
       return (
-        <div className="relative">
+        <div className="relative min-h-[60vh]">
             <div aria-hidden="true" className="pointer-events-none">
-                {SkeletonComponent ? <SkeletonComponent /> : <div className='h-[calc(100vh-200px)]'></div>}
+                {SkeletonComponent ? <SkeletonComponent /> : null}
             </div>
             <FeatureLock />
         </div>
