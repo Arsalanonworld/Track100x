@@ -247,7 +247,7 @@ export function WhaleFeed({ isPreview = false, showTitle = true }: { isPreview?:
   }
 
   return (
-        <Card className="border-x-0 sm:border-x">
+        <Card>
             {showTitle && (
                 <CardHeader>
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -339,5 +339,7 @@ export function WhaleFeed({ isPreview = false, showTitle = true }: { isPreview?:
         </Card>
   );
 }
+
+    
 
     
