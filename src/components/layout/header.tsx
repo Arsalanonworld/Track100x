@@ -8,8 +8,6 @@ import { MobileNav } from "./mobile-nav";
 import { useUser } from "@/firebase";
 import { cn } from "@/lib/utils";
 import { CommandMenu } from "../command-menu";
-import { Button } from "../ui/button";
-import { ChevronLeft } from "lucide-react";
 import React, { useState, useEffect } from "react";
 
 function LogoIcon() {
@@ -51,13 +49,10 @@ export default function Header() {
         };
     }, []);
 
-    const headerMargin = isSidebarLocked ? 'md:ml-[72px]' : 'md:ml-60';
-    
     return (
         <header className={cn(
             "fixed top-0 z-30 w-full bg-background/95 backdrop-blur-sm border-b transition-all duration-300",
-            // Apply margin to the header itself to align with the sidebar
-             isSidebarLocked ? 'md:w-[calc(100%-72px)]' : 'md:w-[calc(100%-240px)]', headerMargin
+            isSidebarLocked ? 'md:pl-[72px]' : 'md:pl-60'
         )}>
             <div className={cn("flex h-14 items-center lg:h-[60px] px-4")}>
                 <div className="flex items-center gap-2 md:hidden">
