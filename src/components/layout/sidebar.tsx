@@ -41,7 +41,7 @@ function LogoIcon() {
       viewBox="0 0 784 464"
       enableBackground="new 0 0 784 464"
       xmlSpace="preserve"
-      className="h-8 w-8 md:h-9 md:w-9 text-primary"
+      className="h-9 w-9 md:h-10 md:w-10 text-primary"
     >
       <path
         fill="currentColor"
@@ -368,3 +368,5 @@ function SidebarSection({
     </div>
   );
 }
+
+    
