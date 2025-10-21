@@ -117,7 +117,7 @@ export default function Sidebar({
     <TooltipProvider>
       <aside
         className={cn(
-          "hidden md:flex flex-col transition-all duration-300 z-40 border-r bg-background fixed top-14 lg:top-[60px] h-full",
+          "hidden md:flex flex-col transition-all duration-300 z-40 border-r bg-background fixed h-full top-0 pt-14 lg:pt-[60px] shadow-lg",
           isExpanded ? "w-60" : "w-[72px]"
         )}
       >
@@ -220,27 +220,27 @@ function SidebarSection({
         const href = isLocked && item.authRequired ? "/login" : item.href;
 
         const content = (
-          <div className="flex items-center gap-3 overflow-hidden">
-            <div className="relative shrink-0">{item.icon}</div>
-            <span
-              className={cn(
-                "whitespace-nowrap transition-all duration-200",
-                isExpanded ? "opacity-100" : "opacity-0 w-0"
-              )}
-            >
-              {item.label}
-            </span>
-             {item.locked && isExpanded && (
-              <Lock
-                size={12}
-                className="ml-auto text-yellow-500 shrink-0"
-              />
-            )}
+            <div className="relative flex items-center gap-3 overflow-hidden">
+                <div className="relative shrink-0">{item.icon}</div>
+                <span
+                className={cn(
+                    "whitespace-nowrap transition-all duration-200",
+                    isExpanded ? "opacity-100" : "opacity-0 w-0"
+                )}
+                >
+                {item.label}
+                </span>
+                {item.locked && isExpanded && (
+                <Lock
+                    size={12}
+                    className="ml-auto text-yellow-500 shrink-0"
+                />
+                )}
           </div>
         );
         
         const sharedClasses = cn(
-            "flex items-center rounded-lg py-2.5 text-sm font-semibold transition-all w-full",
+            "relative flex items-center rounded-lg py-2.5 text-sm font-semibold transition-all w-full",
             isActive
               ? "bg-primary/10 text-primary"
               : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
@@ -250,7 +250,8 @@ function SidebarSection({
         return (
           <Tooltip key={item.label} delayDuration={0}>
             <TooltipTrigger asChild>
-              <span>
+              <span className="relative">
+                 {isActive && <div className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-1 bg-primary rounded-r-full"></div>}
                 {isButton ? (
                   <button onClick={item.onClick} className={sharedClasses}>
                     {content}
