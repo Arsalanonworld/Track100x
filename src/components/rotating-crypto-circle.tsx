@@ -52,18 +52,12 @@ const IconContainer = forwardRef<
       {...rest}
       ref={ref}
       className={cn(
-        "relative flex h-20 w-20 items-center justify-center rounded-full bg-background/80 shadow-inner backdrop-blur-md",
+        "relative flex h-20 w-20 items-center justify-center rounded-full bg-background shadow-inner",
         className
       )}
     >
-      <div className="absolute inset-0 z-10 rounded-full [mask-image:linear-gradient(to_bottom,white_20%,transparent_75%)]" />
-
-      {/* Inner rings */}
-      <div className="absolute inset-2 z-0 animate-[spin_12s_linear_infinite] rounded-full bg-gradient-to-br from-primary/80 via-primary/50 to-secondary/30" />
-      <div className="absolute inset-3 z-0 animate-[spin_18s_linear_infinite_reverse] rounded-full bg-gradient-to-tl from-primary/50 via-primary/30 to-secondary/10" />
-
       {/* Glow */}
-      <div className="absolute inset-0 z-0 rounded-full bg-primary/20 blur-md" />
+      <div className="absolute inset-0 z-0 rounded-full bg-primary/20 blur-lg animate-pulse-slow" />
 
       {/* Central icon */}
       <div className="relative z-20">{children}</div>
@@ -104,13 +98,12 @@ const CryptoFeatureWeb = () => {
       <div className="relative" style={{ width: containerSize, height: containerSize }}>
         {/* Central Logo */}
         <motion.div
-          className="absolute flex items-center justify-center"
+          className="absolute z-20"
           style={{
               top: '50%',
               left: '50%',
               x: '-50%',
               y: '-50%',
-              zIndex: 20
           }}
           animate={{ scale: isScattered ? 0.9 : 1 }}
           transition={{ type: 'spring', stiffness: 200, damping: 10 }}
@@ -142,9 +135,9 @@ const CryptoFeatureWeb = () => {
                                 x2={center + x}
                                 y2={center + y}
                                 stroke="hsl(var(--border))"
-                                strokeWidth="2"
+                                strokeWidth="1"
                                 strokeOpacity={0.8}
-                                strokeDasharray="4 8"
+                                strokeDasharray="2 6"
                             />
                          )
                     })}
