@@ -34,9 +34,64 @@ import { tokenLibrary } from '@/lib/tokens';
 import { CryptoIcon } from './crypto-icon';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 
+
+const searchPlaceholders = [
+  'Search for wallets...',
+  'Search for tokens...',
+  'e.g. 0xde0b2...',
+  'e.g. WIF, ETH, SOL',
+  'Navigate to your portfolio...',
+];
+
+
 export function CommandMenu() {
   const [open, setOpen] = React.useState(false);
   const router = useRouter();
+
+  const [placeholder, setPlaceholder] = React.useState(searchPlaceholders[0]);
+  const placeholderIndex = React.useRef(0);
+  const isDeleting = React.useRef(false);
+  const timeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+
+   React.useEffect(() => {
+    const handleTyping = () => {
+      const currentPhrase = searchPlaceholders[placeholderIndex.current];
+      
+      let newText;
+      if (isDeleting.current) {
+        newText = currentPhrase.substring(0, placeholder.length - 1);
+      } else {
+        newText = currentPhrase.substring(0, placeholder.length + 1);
+      }
+      setPlaceholder(newText);
+      
+      let delay = isDeleting.current ? 50 : 100;
+
+      if (!isDeleting.current && newText === currentPhrase) {
+        delay = 2000; // Pause at the end of the phrase
+        isDeleting.current = true;
+      } else if (isDeleting.current && newText === '') {
+        isDeleting.current = false;
+        placeholderIndex.current = (placeholderIndex.current + 1) % searchPlaceholders.length;
+        delay = 500; // Pause before typing new phrase
+      }
+      
+      timeoutRef.current = setTimeout(handleTyping, delay);
+    };
+
+    if (!open) {
+        timeoutRef.current = setTimeout(handleTyping, 1000);
+    } else {
+        if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    }
+
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, [placeholder, open]);
+
 
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -68,7 +123,15 @@ export function CommandMenu() {
           className="w-full justify-start rounded-full bg-muted text-muted-foreground"
         >
           <Search className="mr-2 h-4 w-4 shrink-0" />
-          <span className='flex-1 text-left'>Search...</span>
+          <span className='flex-1 text-left whitespace-nowrap overflow-hidden'>
+            {!open && (
+              <>
+                {placeholder}
+                <span className="animate-blinking-cursor w-px h-4 ml-0.5 bg-foreground inline-block" />
+              </>
+            )}
+             {open && 'Search...'}
+          </span>
            <kbd className="pointer-events-none hidden h-5 select-none items-center gap-1 rounded border bg-background px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
             <span className="text-xs">⌘</span>K
           </kbd>
@@ -120,6 +183,7 @@ export function CommandMenu() {
                     <CommandItem
                         key={token.symbol}
                         value={`Token ${token.name} ${token.symbol}`}
+                         onSelect={() => runCommand(() => {})}
                     >
                         <CryptoIcon token={token.symbol} className="mr-2 h-4 w-4" />
                         <span>{token.name}</span>
