@@ -43,7 +43,6 @@ export default function Header() {
         };
 
         window.addEventListener('storage', handleStorageChange);
-        // Custom event to handle changes in the same tab
         window.addEventListener('sidebarToggle', handleStorageChange);
 
         return () => {
@@ -57,7 +56,8 @@ export default function Header() {
     return (
         <header className={cn(
             "fixed top-0 z-30 w-full bg-background/95 backdrop-blur-sm border-b transition-all duration-300",
-            headerMargin
+            // Apply margin to the header itself to align with the sidebar
+             isSidebarLocked ? 'md:w-[calc(100%-72px)]' : 'md:w-[calc(100%-240px)]', headerMargin
         )}>
             <div className={cn("flex h-14 items-center lg:h-[60px] px-4")}>
                 <div className="flex items-center gap-2 md:hidden">

@@ -10,8 +10,24 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [isSidebarLocked, setIsSidebarLocked] = useState(false);
 
   useEffect(() => {
+    // On mount, read the saved state from localStorage
     const savedState = localStorage.getItem('sidebar-collapsed');
     setIsSidebarLocked(savedState === 'true');
+
+    // Also listen for changes from other tabs
+    const handleStorageChange = () => {
+        const updatedState = localStorage.getItem('sidebar-collapsed');
+        setIsSidebarLocked(updatedState === 'true');
+    };
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Listen for custom event from the sidebar toggle button
+    window.addEventListener('sidebarToggle', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('sidebarToggle', handleStorageChange);
+    };
   }, []);
 
   const handleToggleLock = () => {
@@ -19,7 +35,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     setIsSidebarLocked(newLockedState);
     if (typeof window !== 'undefined') {
       localStorage.setItem('sidebar-collapsed', String(newLockedState));
-      // Dispatch a custom event that the header can listen to
+      // Dispatch a custom event that other components (like Header) can listen to
       window.dispatchEvent(new CustomEvent('sidebarToggle'));
     }
   };
