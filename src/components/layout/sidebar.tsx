@@ -1,7 +1,6 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -106,7 +105,6 @@ export default function Sidebar({
         },
       ];
 
-  // Update locked status based on user plan
   const finalNavItems = navItems.map(item => {
     if (item.href === '/analytics') {
       return { ...item, locked: user ? userPlan === 'free' : true };
@@ -119,7 +117,7 @@ export default function Sidebar({
     <TooltipProvider>
       <aside
         className={cn(
-          "hidden md:flex flex-col transition-all duration-300 z-40 border-r bg-background",
+          "hidden md:flex flex-col transition-all duration-300 z-40 border-r bg-background relative",
           isExpanded ? "w-60" : "w-[72px]"
         )}
       >
