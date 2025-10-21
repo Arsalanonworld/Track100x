@@ -3,7 +3,7 @@
 
 import React from 'react';
 import { featureHighlights } from '@/lib/app-data';
-import { RotatingCryptoCircle } from './rotating-crypto-circle';
+import { CryptoFeatureWeb } from './rotating-crypto-circle';
 
 export function FeatureHighlights() {
     return (
@@ -14,7 +14,7 @@ export function FeatureHighlights() {
                 Go beyond simple balance checks. We provide institutional-grade tools to give you an edge.
             </p>
           </div>
-          <RotatingCryptoCircle />
+          <CryptoFeatureWeb />
         </section>
     );
 }

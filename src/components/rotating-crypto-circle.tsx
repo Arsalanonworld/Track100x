@@ -1,207 +1,78 @@
 
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { tokenLibrary } from '@/lib/tokens';
+import React from 'react';
+import { motion } from 'framer-motion';
 import { CryptoIcon } from './crypto-icon';
-import { cn } from '@/lib/utils';
-import { motion, AnimatePresence, useAnimation } from 'framer-motion';
-
-
-function LogoIcon() {
-  return (
-    <svg
-      version="1.1"
-      id="Layer_1"
-      xmlns="http://www.w3.org/2000/svg"
-      xmlnsXlink="http://www.w3.org/1999/xlink"
-      x="0px"
-      y="0px"
-      width="24px"
-      height="24px"
-      viewBox="0 0 784 464"
-      enableBackground="new 0 0 784 464"
-      xmlSpace="preserve"
-      className="h-16 w-16 text-primary"
-    >
-      <path
-        fill="currentColor"
-        d="
-M502.007019,336.001587 
-	C470.929077,308.511230 440.102692,281.270081 409.277649,254.027451 
-	C408.653442,253.475754 408.078979,252.862381 407.423096,252.352676 
-	C403.232361,249.095749 401.547577,246.023178 403.276031,239.822342 
-	C408.936829,219.514053 394.400696,200.390900 373.373779,199.545593 
-	C368.089203,199.333160 362.716248,200.419601 358.018616,203.261230 
-	C355.286194,204.914108 353.319275,204.418900 350.955261,202.307251 
-	C324.994110,179.117294 298.954010,156.015549 272.900085,132.929642 
-	C254.326172,116.471649 235.696838,100.076256 217.099396,83.644814 
-	C215.871445,82.559860 214.357346,81.709305 213.821655,79.877090 
-	C215.088837,77.940300 217.099548,78.752594 218.761124,78.742531 
-	C230.425629,78.671875 242.097595,78.946693 253.752533,78.607498 
-	C258.676208,78.464211 262.296600,80.102638 265.829956,83.269501 
-	C288.162140,103.285255 310.596039,123.187592 333.000427,143.122787 
-	C344.575958,153.422623 356.156586,163.716751 367.746674,174.000214 
-	C368.604126,174.761002 369.556671,175.414642 370.412445,176.077393 
-	C372.897339,175.480560 374.082184,173.526535 375.479797,171.959137 
-	C401.647705,142.611710 427.822174,113.269691 453.841370,83.790680 
-	C456.947876,80.271103 460.053925,78.562950 464.911285,78.600822 
-	C493.405426,78.823013 521.902161,78.704422 550.398071,78.700806 
-	C552.366638,78.700562 554.335205,78.700775 556.303772,78.700775 
-	C556.638000,79.184830 556.972290,79.668884 557.306519,80.152946 
-	C514.077759,128.807266 470.849060,177.461578 427.095001,226.707138 
-	C490.561615,283.221313 553.666504,339.413391 616.795654,395.627075 
-	C614.994873,397.989197 613.011963,397.214935 611.327759,397.225555 
-	C599.829895,397.298126 588.328674,397.119385 576.834473,397.335693 
-	C572.869385,397.410309 569.781799,396.198364 566.907288,393.632965 
-	C551.249573,379.658875 535.541321,365.741302 519.844788,351.810638 
-	C513.990662,346.615082 508.121216,341.436798 502.007019,336.001587 
-z"
-      />
-      <path
-        fill="currentColor"
-        d="
-M260.820160,300.839081 
-	C280.853333,278.338654 300.655121,256.107697 320.795441,233.496689 
-	C263.168701,182.200897 206.012634,131.324097 148.630005,80.245605 
-	C149.706787,79.444626 150.075089,78.931305 150.447144,78.928596 
-	C162.440369,78.841057 174.434006,78.810989 186.427475,78.749794 
-	C188.646301,78.738480 190.122253,80.103569 191.618347,81.423889 
-	C208.100372,95.969490 224.575241,110.523216 241.047394,125.079994 
-	C266.004639,147.135254 290.962616,169.189667 315.910858,191.255096 
-	C324.395264,198.759079 332.785522,206.371368 341.363129,213.766800 
-	C343.698242,215.780075 343.804230,217.582718 342.773407,220.289612 
-	C335.936066,238.244217 346.440735,256.181366 361.987518,261.723907 
-	C370.482422,264.752411 378.783081,264.347992 386.607178,260.166168 
-	C390.130981,258.282776 392.300262,258.955688 394.955780,261.320892 
-	C410.132019,274.837677 425.413422,288.236267 440.618805,301.720428 
-	C466.288513,324.484375 491.920380,347.290985 517.584595,370.061157 
-	C526.553345,378.018555 535.572876,385.918762 544.561096,393.854309 
-	C545.291931,394.499542 546.096619,395.137878 546.030823,396.333130 
-	C544.693237,397.863831 542.916260,397.233368 541.360840,397.242340 
-	C531.029968,397.301971 520.695862,397.139557 510.368591,397.342529 
-	C506.592285,397.416748 503.732666,396.250732 500.945404,393.765076 
-	C462.522003,359.499359 424.034973,325.305084 385.550354,291.108124 
-	C382.709961,288.584167 379.768616,286.173889 376.565186,283.447815 
-	C370.439484,290.293121 364.550323,296.821625 358.717957,303.400513 
-	C331.863678,333.692230 305.017578,363.991211 278.198425,394.314026 
-	C276.427185,396.316681 274.465210,397.350739 271.708099,397.345490 
-	C241.547546,397.288116 211.386826,397.317200 181.226181,397.297333 
-	C179.946075,397.296509 178.549530,397.552673 176.639771,395.636780 
-	C204.599030,364.154114 232.593918,332.631317 260.820160,300.839081 
-z"
-      />
-    </svg>
-  );
-}
 
 const icons = [
-    'ETH', 'USDT', 'USDC', 'WIF', 'SOL', 'JUP', 'SHIB', 'BONK', 'LDO', 'PEPE', 'DOGE', 'AVAX'
+  { symbol: 'ETH', x: '50%', y: '10%' },
+  { symbol: 'USDT', x: '85%', y: '30%' },
+  { symbol: 'USDC', x: '90%', y: '65%' },
+  { symbol: 'WIF', x: '70%', y: '90%' },
+  { symbol: 'SOL', x: '30%', y: '95%' },
+  { symbol: 'JUP', x: '5%', y: '75%' },
+  { symbol: 'SHIB', x: '15%', y: '35%' },
+  { symbol: 'BONK', x: '35%', y: '50%' },
+  { symbol: 'LDO', x: '65%', y: '45%' },
 ];
 
-export const RotatingCryptoCircle = () => {
-    const radius = 160;
-    const numIcons = icons.length;
-    const [isMounted, setIsMounted] = useState(false);
-    const controls = useAnimation();
-    const [animationKey, setAnimationKey] = useState(0); 
-
-    useEffect(() => {
-        setIsMounted(true);
-    }, []);
-    
-
-    if (!isMounted) {
-        return (
-             <div className="relative flex items-center justify-center h-[350px]">
-                 <div className="absolute z-10 w-24 h-24 bg-card rounded-full flex items-center justify-center shadow-lg">
-                    <LogoIcon />
-                </div>
-            </div>
-        ); 
-    }
-
-    return (
-        <div className="relative flex items-center justify-center h-[350px]">
-            {/* Center Logo */}
-             <motion.div
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ type: 'spring', stiffness: 260, damping: 20, delay: 0.5 }}
-                className="absolute z-10 w-24 h-24 bg-card rounded-full flex items-center justify-center shadow-lg"
-            >
-                <LogoIcon />
-            </motion.div>
+const Path = ({ from, to }: { from: (typeof icons)[0], to: (typeof icons)[0] }) => {
+  const d = `M${from.x.replace('%', '') * 4} ${from.y.replace('%', '') * 3} Q${(from.x.replace('%', '') * 4 + to.x.replace('%', '') * 4) / 2 + Math.random() * 80 - 40} ${(from.y.replace('%', '') * 3 + to.y.replace('%', '') * 3) / 2 + Math.random() * 80 - 40} ${to.x.replace('%', '') * 4} ${to.y.replace('%', '') * 3}`;
+  
+  return (
+    <motion.path
+      d={d}
+      fill="none"
+      stroke="hsl(var(--border))"
+      strokeWidth="1"
+      strokeDasharray="4 4"
+      initial={{ pathLength: 0, opacity: 0 }}
+      animate={{ pathLength: 1, opacity: 1 }}
+      transition={{ duration: 1, delay: 0.5 }}
+    >
+      <animate
+        attributeName="stroke-dashoffset"
+        from="8"
+        to="0"
+        dur="1s"
+        repeatCount="indefinite"
+      />
+    </motion.path>
+  );
+};
 
 
-            {/* Rotating container */}
-            <AnimatePresence>
-                <motion.div
-                    key={animationKey}
-                    className="w-full h-full animate-orbit group-hover:pause"
-                >
-                    <svg
-                      className="absolute top-0 left-0 w-full h-full"
-                      style={{ transform: "translate(-50%, -50%)", top: "50%", left: "50%" }}
-                      viewBox={`0 0 ${radius * 2 + 60} ${radius * 2 + 60}`}
-                    >
-                      <g transform={`translate(${radius + 30}, ${radius + 30})`}>
-                          {icons.map((_, i) => {
-                              const angle = (i / numIcons) * 2 * Math.PI;
-                              const x = Math.cos(angle) * (radius - 12);
-                              const y = Math.sin(angle) * (radius - 12);
-                              return (
-                                  <motion.line
-                                      key={`line-${i}`}
-                                      x1="0"
-                                      y1="0"
-                                      x2={x}
-                                      y2={y}
-                                      stroke="hsl(var(--border))"
-                                      strokeWidth="1"
-                                      strokeDasharray="4 4"
-                                      initial={{ opacity: 0 }}
-                                      animate={{ opacity: 0.5 }}
-                                      transition={{ duration: 0.5, delay: 1 + i * 0.1 }}
-                                  />
-                              );
-                          })}
-                      </g>
-                    </svg>
-                    {icons.map((symbol, i) => {
-                        const angle = (i / numIcons) * 2 * Math.PI;
-                        const x = Math.cos(angle) * radius;
-                        const y = Math.sin(angle) * radius;
+export const CryptoFeatureWeb = () => {
+  const connections = [
+    [0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8], [8, 0],
+    [0, 4], [1, 5], [2, 6], [3, 7],
+  ];
 
-                        return (
-                             <motion.div
-                                key={symbol}
-                                className="absolute top-1/2 left-1/2"
-                                initial={{
-                                    x: x - 24,
-                                    y: y - 24,
-                                    opacity: 0,
-                                    scale: 0.5
-                                }}
-                                animate={{
-                                    opacity: 1,
-                                    scale: 1,
-                                }}
-                                transition={{
-                                    type: 'spring',
-                                    stiffness: 100,
-                                    damping: 20,
-                                    delay: 0.5 + i * 0.1,
-                                }}
-                            >
-                                <div className="z-10 w-12 h-12 bg-card rounded-full flex items-center justify-center shadow-md p-2">
-                                    <CryptoIcon token={symbol} className='h-8 w-8' />
-                                </div>
-                            </motion.div>
-                        );
-                    })}
-                </motion.div>
-            </AnimatePresence>
-        </div>
-    );
+  return (
+    <div className="relative w-full max-w-2xl mx-auto h-[350px]">
+      <svg className="absolute inset-0 w-full h-full" viewBox="0 0 400 300">
+        {connections.map(([fromIndex, toIndex], i) => (
+          <Path key={i} from={icons[fromIndex]} to={icons[toIndex]} />
+        ))}
+      </svg>
+      {icons.map((icon, i) => (
+        <motion.div
+          key={icon.symbol}
+          className="absolute"
+          style={{
+            left: `calc(${icon.x} - 24px)`,
+            top: `calc(${icon.y} - 24px)`,
+          }}
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, delay: i * 0.1 }}
+        >
+          <div className="w-12 h-12 bg-card rounded-full flex items-center justify-center shadow-md p-2">
+            <CryptoIcon token={icon.symbol} className="h-8 w-8" />
+          </div>
+        </motion.div>
+      ))}
+    </div>
+  );
 };
