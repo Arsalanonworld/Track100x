@@ -17,7 +17,7 @@ export function FeatureLock() {
 
   return (
     <>
-      <div className="absolute inset-0 z-10 bg-background/80 backdrop-blur-sm flex items-center justify-center rounded-lg">
+      <div className="absolute inset-0 z-20 bg-background/80 backdrop-blur-md flex items-center justify-center rounded-lg">
         <div className="text-center p-8 space-y-4">
           <div className="mx-auto w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
             <Lock className="w-8 h-8 text-primary" />
