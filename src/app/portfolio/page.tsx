@@ -16,6 +16,7 @@ import { Lock, Wallet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { withAuth } from '@/components/auth/withAuth';
+import { FeatureLockInline } from '@/components/feature-lock-inline';
 
 const generateChartData = (baseValue: number, days: number, volatility: number) => {
     const data = [];
@@ -189,9 +190,9 @@ function PortfolioPage() {
                         </div>
                         
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-                            <div className="lg:col-span-2">
+                            <div className="lg:col-span-2 relative">
                                 <h3 className="font-semibold mb-4 text-center lg:text-left">Net Worth Over Time</h3>
-                                <div className="h-[250px] sm:h-[350px]">
+                                <div className={cn("h-[250px] sm:h-[350px]", !isPro && "blur-md")}>
                                 <ChartContainer config={{
                                         value: {
                                             label: "Net Worth",
@@ -225,6 +226,11 @@ function PortfolioPage() {
                                         </AreaChart>
                                     </ChartContainer>
                                 </div>
+                                {!isPro && (
+                                    <div className="absolute inset-0">
+                                        <FeatureLockInline title="Unlock Full History" description="Upgrade to Pro to view 30-day and all-time portfolio performance."/>
+                                    </div>
+                                )}
                             </div>
                             <div className="h-[250px] sm:h-[350px]">
                                 <h3 className="font-semibold mb-4 text-center lg:text-left">Asset Allocation</h3>

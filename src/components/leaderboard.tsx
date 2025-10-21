@@ -28,6 +28,7 @@ import { Label } from './ui/label';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useUser } from '@/firebase';
+import { FeatureLockInline } from './feature-lock-inline';
 
 
 const PnlCell = ({ value }: { value: number }) => (
@@ -264,18 +265,10 @@ export function Leaderboard() {
             <div className="relative">
                 <LeaderboardTable data={displayData} isLoading={isLoading} />
                 {!isPro && !isLoading && (
-                    <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-background to-transparent flex flex-col items-center justify-center text-center p-8">
-                        <div className="bg-background/80 backdrop-blur-sm p-8 rounded-lg">
-                            <Lock className="h-8 w-8 mx-auto text-primary mb-4" />
-                            <h3 className="text-xl font-bold">View the Full Leaderboard</h3>
-                            <p className="text-muted-foreground text-sm max-w-xs mx-auto mt-1 mb-4">
-                                Upgrade to Pro to unlock the top 100 wallets, deep wallet profiles, and more.
-                            </p>
-                            <Button asChild>
-                                <Link href="/upgrade">Upgrade to Pro</Link>
-                            </Button>
-                        </div>
-                    </div>
+                    <FeatureLockInline 
+                        title="View the Full Leaderboard"
+                        description="Upgrade to Pro to unlock the top 100 wallets, deep wallet profiles, and more."
+                    />
                 )}
             </div>
         </div>

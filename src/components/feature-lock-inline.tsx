@@ -10,45 +10,21 @@ import { Card, CardContent } from '@/components/ui/card';
 type FeatureLockInlineProps = {
   title: string;
   description: string;
-  icon: React.ReactNode;
-  isLocked?: boolean; // Controls whether to show lock state or normal state
 };
 
-export function FeatureLockInline({ title, description, icon, isLocked = true }: FeatureLockInlineProps) {
-  if (!isLocked) {
-    // If the feature is not locked, you might want to render something else,
-    // or nothing at all, depending on the use case.
-    return (
-        <Card className="flex items-center p-6">
-            <div className="mr-4 w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                {icon}
-            </div>
-            <div>
-                <h3 className="text-lg font-bold">{title}</h3>
-                <p className="text-muted-foreground mt-1">{description}</p>
-            </div>
-        </Card>
-    );
-  }
-  
+export function FeatureLockInline({ title, description }: FeatureLockInlineProps) {
   return (
-    <Card className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-6 bg-card border-2 border-dashed relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-t from-background/50 to-transparent"></div>
-        <div className="relative z-10 flex items-center">
-            <div className="mr-4 w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                {icon}
-            </div>
-            <div>
-                <h3 className="text-lg font-bold">{title}</h3>
-                <p className="text-muted-foreground mt-1 max-w-xs">{description}</p>
-            </div>
+    <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-background to-transparent flex flex-col items-center justify-center text-center p-8">
+        <div className="bg-background/80 backdrop-blur-sm p-8 rounded-lg">
+            <Lock className="h-8 w-8 mx-auto text-primary mb-4" />
+            <h3 className="text-xl font-bold">{title}</h3>
+            <p className="text-muted-foreground text-sm max-w-xs mx-auto mt-1 mb-4">
+                {description}
+            </p>
+            <Button asChild>
+                <Link href="/upgrade">Upgrade to Pro</Link>
+            </Button>
         </div>
-         <Button asChild size="sm" className="mt-4 sm:mt-0 shrink-0">
-            <Link href="/upgrade">
-                <Lock className="mr-2 h-4 w-4" />
-                Upgrade to Pro
-            </Link>
-        </Button>
-    </Card>
+    </div>
   );
 }
