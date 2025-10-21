@@ -4,6 +4,7 @@
 import React from 'react';
 import { useUser } from '@/firebase';
 import { FeatureLock } from '@/components/feature-lock';
+import { Skeleton } from '../ui/skeleton';
 
 type WithAuthOptions = {
     skeleton?: React.ComponentType;
@@ -33,9 +34,9 @@ export function withAuth<P extends object>(
         <div className="relative min-h-[60vh]">
           {/* Render skeleton as the blurred background */}
           <div aria-hidden="true" className="pointer-events-none">
-              {SkeletonComponent ? <SkeletonComponent /> : null}
+              {SkeletonComponent ? <SkeletonComponent /> : <Skeleton className="h-full w-full min-h-[60vh]" />}
           </div>
-          {/* Render the overlay with the blur effect */}
+          {/* The FeatureLock component is now the overlay */}
           <FeatureLock />
         </div>
       );
