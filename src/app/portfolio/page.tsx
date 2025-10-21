@@ -16,6 +16,8 @@ import { Lock } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { FeatureLockInline } from '@/components/feature-lock-inline';
 import { FeatureLock } from '@/components/feature-lock';
+import { useIsMobile } from '@/hooks/use-is-mobile';
+
 
 const generateChartData = (baseValue: number, days: number, volatility: number) => {
     const data = [];
@@ -114,12 +116,19 @@ const PnlBadge = ({ value }: { value: number }) => (
 function PageSkeleton() {
     return (
         <div className='space-y-8'>
-            <div className='space-y-2'>
+            <div className='space-y-2 hidden sm:block'>
                 <Skeleton className="h-8 w-1/4" />
                 <Skeleton className="h-5 w-1/2" />
             </div>
              <Skeleton className="h-96 w-full" />
-             <Skeleton className="h-64 w-full" />
+             <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+                <div className="lg:col-span-3">
+                    <Skeleton className="h-80 w-full" />
+                </div>
+                <div className="lg:col-span-2">
+                    <Skeleton className="h-80 w-full" />
+                </div>
+            </div>
         </div>
     )
 }
@@ -128,6 +137,8 @@ function PortfolioPage() {
     const { user, claims, loading: userLoading } = useUser();
     const [timeRange, setTimeRange] = useState<'7d' | '30d' | 'all'>('30d');
     const [activeIndex, setActiveIndex] = useState(0);
+    const isMobile = useIsMobile();
+
 
     const isPro = claims?.plan === 'pro';
     
@@ -153,6 +164,7 @@ function PortfolioPage() {
             <PageHeader
                 title="Portfolio"
                 description="Aggregated view of your on-chain wealth from your watched wallets."
+                className='hidden sm:block'
             />
             
             {!user ? (
@@ -166,15 +178,7 @@ function PortfolioPage() {
               <div className='space-y-8'>
                 <section id="overview">
                     <Card>
-                        <CardHeader>
-                        <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2'>
-                            <div>
-                            <CardTitle>Portfolio Overview</CardTitle>
-                            <CardDescription>Performance across all your watched wallets.</CardDescription>
-                            </div>
-                        </div>
-                        </CardHeader>
-                        <CardContent className="space-y-8">
+                        <CardContent className="space-y-8 pt-6">
                         <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
                             <div>
                             <p className="text-sm text-muted-foreground">Total Net Worth</p>
@@ -270,8 +274,8 @@ function PortfolioPage() {
                                                     data={allocationData} 
                                                     cx="50%"
                                                     cy="50%"
-                                                    innerRadius={60}
-                                                    outerRadius={80}
+                                                    innerRadius={isMobile ? 50 : 70}
+                                                    outerRadius={isMobile ? 70 : 90}
                                                     fill="var(--color-value)"
                                                     dataKey="value"
                                                     onMouseEnter={onPieEnter}

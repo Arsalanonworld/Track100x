@@ -115,7 +115,7 @@ z"
 }
 
 
-const navItems = [
+export const navItems = [
     {
       label: "Whale Feed",
       icon: <Rss size={18} />,

@@ -26,7 +26,7 @@ const WATCHLIST_LIMIT_FREE = 5;
 function PageSkeleton() {
     return (
         <div className='space-y-8'>
-            <div className='space-y-2'>
+            <div className='space-y-2 hidden sm:block'>
                 <Skeleton className="h-8 w-1/4" />
                 <Skeleton className="h-5 w-1/2" />
             </div>
@@ -120,6 +120,7 @@ function WatchlistPage() {
          <PageHeader
             title="My Watchlist"
             description={user ? pageDescription : "Log in to track wallets and tokens all in one place."}
+            className='hidden sm:block'
         />
 
         {!user ? (

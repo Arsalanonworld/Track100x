@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { notFound } from 'next/navigation';
@@ -98,6 +99,7 @@ export function WalletProfile({ walletData }: { walletData: WalletData | { addre
             
           </div>
         }
+        className='hidden sm:block'
       />
       
       {isLeaderboardWallet && (

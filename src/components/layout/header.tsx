@@ -9,6 +9,8 @@ import { useUser } from "@/firebase";
 import { cn } from "@/lib/utils";
 import { CommandMenu } from "../command-menu";
 import React, { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
+import { navItems } from "./sidebar";
 
 function LogoIcon() {
     return (
@@ -99,6 +101,14 @@ function LogoIcon() {
 
 export default function Header() {
     const { user } = useUser();
+    const pathname = usePathname();
+
+    const getPageTitle = () => {
+        if (pathname === '/') return 'Home';
+        const item = navItems.find(item => item.href === pathname);
+        // Capitalize first letter
+        return item?.label || pathname.substring(1).charAt(0).toUpperCase() + pathname.slice(2);
+    }
     
     return (
         <header className={cn(
@@ -108,8 +118,7 @@ export default function Header() {
                 <div className="flex items-center gap-2 md:hidden">
                    <MobileNav />
                    <Link href="/" className="flex items-center space-x-2 pl-2">
-                        <LogoIcon />
-                        <span className="font-bold">Track100x</span>
+                        <span className="font-bold text-lg">{getPageTitle()}</span>
                     </Link>
                 </div>
                 

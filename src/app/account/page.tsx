@@ -16,7 +16,7 @@ import { FeatureLock } from '@/components/feature-lock';
 function PageSkeleton() {
   return (
     <div className="space-y-8">
-      <div className="space-y-2">
+      <div className="space-y-2 hidden sm:block">
         <Skeleton className="h-10 w-1/3" />
         <Skeleton className="h-6 w-2/3" />
       </div>
@@ -85,6 +85,7 @@ export default function AccountPage() {
       <PageHeader
         title="My Account"
         description="Manage your profile, subscription, and application settings."
+        className='hidden sm:block'
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">

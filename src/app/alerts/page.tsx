@@ -18,7 +18,7 @@ function PageSkeleton() {
     return (
         <div className='space-y-8'>
             <div className='flex justify-between items-center'>
-                 <div className="flex-1">
+                 <div className="flex-1 hidden sm:block">
                     <Skeleton className="h-8 w-1/3" />
                     <Skeleton className="h-5 w-2/3 mt-2" />
                  </div>
@@ -59,6 +59,7 @@ function AlertsPage() {
             title="Alerts"
             description="Create and manage your on-chain alerts. Get notified about significant market movements."
             action={user && <Button onClick={handleOpenEditor}><BellPlus className="h-4 w-4 mr-2" /> New Alert</Button>}
+            className='hidden sm:block'
         />
       
       {user ? (

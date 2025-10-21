@@ -23,6 +23,7 @@ function FeedPage() {
         <PageHeader 
             title="Whale Feed"
             description="A live stream of significant on-chain transactions."
+            className='hidden sm:block'
         />
         <WhaleFeed showTitle={false} />
     </div>

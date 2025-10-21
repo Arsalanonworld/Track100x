@@ -9,7 +9,7 @@ function PageSkeleton() {
     return (
         <div className='space-y-8'>
             <div className='flex justify-between items-center'>
-                 <div className="flex-1 space-y-2">
+                 <div className="flex-1 space-y-2 hidden sm:block">
                     <Skeleton className="h-8 w-1/3" />
                     <Skeleton className="h-5 w-2/3" />
                  </div>
@@ -36,6 +36,7 @@ function LeaderboardPage() {
       <PageHeader
           title="Smart Money Dashboard"
           description="Discover and track the most influential and profitable wallets in real-time."
+          className='hidden sm:block'
       />
       <Leaderboard />
     </div>
