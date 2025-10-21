@@ -65,11 +65,18 @@ const CryptoFeatureWeb = () => {
   const center = containerSize / 2;
 
   return (
-    <div className="relative flex w-full max-w-lg items-center justify-center mx-auto h-[350px]">
+    <div className="relative flex w-full items-center justify-center mx-auto h-[350px]">
       <div className="relative" style={{ width: containerSize, height: containerSize }}>
         {/* Central Logo */}
         <motion.div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex items-center justify-center"
+          className="absolute flex items-center justify-center"
+          style={{
+              top: center,
+              left: center,
+              x: '-50%',
+              y: '-50%',
+              zIndex: 20
+          }}
           animate={{ scale: isScattered ? 0.9 : 1 }}
           transition={{ type: 'spring', stiffness: 200, damping: 10 }}
         >
@@ -117,7 +124,8 @@ const CryptoFeatureWeb = () => {
             return (
               <motion.div
                 key={icon.key}
-                className="absolute top-1/2 left-1/2 z-10"
+                className="absolute"
+                style={{ top: center, left: center, zIndex: 10 }}
                 initial={{ x: randomX, y: randomY, scale: 0.5, opacity: 0 }}
                 animate={{
                   x: isScattered ? randomX : orbitX,
@@ -133,7 +141,7 @@ const CryptoFeatureWeb = () => {
                 }}
                 exit={{ opacity: 0 }}
               >
-                <div className="h-12 w-12 flex items-center justify-center rounded-full bg-card border-2 shadow-md">
+                <div className="h-12 w-12 flex items-center justify-center rounded-full bg-card border-2 shadow-md -translate-x-1/2 -translate-y-1/2">
                    {React.cloneElement(icon.component, { className: "h-6 w-6 text-muted-foreground" })}
                 </div>
               </motion.div>
@@ -244,7 +252,3 @@ z"
     </svg>
   );
 }
-
-    
-
-    
