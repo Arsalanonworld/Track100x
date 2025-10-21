@@ -270,7 +270,7 @@ function PortfolioPage() {
                                             wrapperStyle={{paddingTop: '20px'}}
                                             iconSize={10}
                                             content={({ payload }) => (
-                                            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 mt-4 text-xs text-muted-foreground">
+                                            <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 sm:gap-x-4 mt-4 text-xs text-muted-foreground">
                                                 {payload?.map((entry, index) => (
                                                 <div key={`item-${index}`} onMouseEnter={() => onPieEnter(entry, index)} className={cn("flex items-center gap-1.5 cursor-pointer transition-opacity", activeIndex !== index && 'opacity-50 hover:opacity-100')}>
                                                     <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: entry.color }} />
