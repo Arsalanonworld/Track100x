@@ -1,11 +1,10 @@
-
 'use client';
 
 import React, { useEffect, useState } from 'react';
 import { tokenLibrary } from '@/lib/tokens';
 import { CryptoIcon } from './crypto-icon';
 import { cn } from '@/lib/utils';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useAnimation } from 'framer-motion';
 
 
 function LogoIcon() {
@@ -103,14 +102,60 @@ export const RotatingCryptoCircle = () => {
     const radius = 160;
     const numIcons = icons.length;
     const [isMounted, setIsMounted] = useState(false);
+    const controls = useAnimation();
+    const [animationKey, setAnimationKey] = useState(0); // Add a key to force re-render
+
+    const runAnimation = async () => {
+        // Define initial and animate states for each icon
+        const iconAnimations = icons.map((_, i) => {
+             const angle = (i / numIcons) * 2 * Math.PI;
+             const x = Math.cos(angle) * radius;
+             const y = Math.sin(angle) * radius;
+
+             return controls.start( (custom) => ({
+                    ...custom,
+                    x: x - 24, // Adjust for icon size
+                    y: y - 24, // Adjust for icon size
+                    opacity: 1,
+                    scale: 1,
+                    transition: {
+                        type: 'spring',
+                        stiffness: 100,
+                        damping: 20,
+                        delay: 0.5 + i * 0.1,
+                    },
+                })
+             );
+        });
+
+        await Promise.all(iconAnimations);
+    };
 
     useEffect(() => {
-        // This component uses Math.random(), so we only render it on the client.
         setIsMounted(true);
+
+        const animateAndRepeat = async () => {
+            // Scatter
+            setAnimationKey(prev => prev + 1); // This will re-trigger the initial animation
+            // Wait for arrangement animation to finish
+            await new Promise(resolve => setTimeout(resolve, 500 + numIcons * 100 + 2000));
+        };
+        
+        const interval = setInterval(animateAndRepeat, 15000); // Repeat every 15 seconds
+        animateAndRepeat();
+
+        return () => clearInterval(interval);
     }, []);
+    
 
     if (!isMounted) {
-        return null; // Or a loading spinner
+        return (
+             <div className="relative flex items-center justify-center h-[400px]">
+                 <div className="absolute z-10 w-24 h-24 bg-card rounded-full flex items-center justify-center shadow-lg">
+                    <LogoIcon />
+                </div>
+            </div>
+        ); 
     }
 
     return (
@@ -129,6 +174,7 @@ export const RotatingCryptoCircle = () => {
             {/* Rotating container */}
             <AnimatePresence>
                 <motion.div
+                    key={animationKey}
                     className="w-full h-full animate-orbit group-hover:pause"
                 >
                     {icons.map((symbol, i) => {
