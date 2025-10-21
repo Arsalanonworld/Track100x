@@ -30,6 +30,7 @@ import { Skeleton } from './ui/skeleton';
 import type { WhaleTransaction } from '@/lib/types';
 import { whaleTransactions as mockTransactions } from '@/lib/mock-data';
 import { AnimatePresence, motion } from 'framer-motion';
+import { cn } from '@/lib/utils';
 
 
 function PageSkeleton() {
@@ -298,7 +299,7 @@ export function WhaleFeed({ isPreview = false, showTitle = true }: { isPreview?:
                     </div>
                 </CardHeader>
             )}
-            <CardContent>
+            <CardContent className={cn(!showTitle && "pt-6")}>
                 <div className="space-y-3">
                     {loading && currentTransactions.length === 0 ? (
                        [...Array(isPreview ? 5 : 10)].map((_, i) => <PageSkeleton key={i} />)
@@ -339,7 +340,3 @@ export function WhaleFeed({ isPreview = false, showTitle = true }: { isPreview?:
         </Card>
   );
 }
-
-    
-
-    
