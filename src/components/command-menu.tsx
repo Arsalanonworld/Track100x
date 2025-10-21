@@ -19,28 +19,72 @@ import {
   CommandSeparator,
 } from '@/components/ui/command';
 import { Button } from './ui/button';
-import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
 import { leaderboardData } from '@/lib/mock-data';
 import { tokenLibrary } from '@/lib/tokens';
 import { CryptoIcon } from './crypto-icon';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { Wallet } from 'lucide-react';
-import dynamic from 'next/dynamic';
 
-
-const AnimatedPlaceholder = dynamic(
-  () => import('./animated-placeholder').then((mod) => mod.AnimatedPlaceholder),
-  { 
-    ssr: false,
-    loading: () => <>Search...</>
-  }
-);
+const searchPlaceholders = [
+  'Search for wallets...',
+  'Search for tokens...',
+  'e.g. 0xde0b...',
+  'e.g. WIF, ETH, SOL',
+  'Navigate to your portfolio...',
+];
 
 
 export function CommandMenu() {
   const [open, setOpen] = React.useState(false);
   const router = useRouter();
+  const [isClient, setIsClient] = React.useState(false);
+  const [placeholder, setPlaceholder] = React.useState(searchPlaceholders[0]);
+
+  // Set isClient to true only on the client side
+  React.useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // Typing animation effect
+  React.useEffect(() => {
+    if (!isClient || open) return;
+
+    let currentPlaceholderIndex = 0;
+    let currentText = '';
+    let isDeleting = false;
+
+    const type = () => {
+      const fullText = searchPlaceholders[currentPlaceholderIndex];
+      
+      if (isDeleting) {
+        currentText = fullText.substring(0, currentText.length - 1);
+      } else {
+        currentText = fullText.substring(0, currentText.length + 1);
+      }
+
+      setPlaceholder(currentText);
+
+      let typingSpeed = isDeleting ? 50 : 100;
+
+      if (!isDeleting && currentText === fullText) {
+        // Pause at end of word
+        typingSpeed = 2000;
+        isDeleting = true;
+      } else if (isDeleting && currentText === '') {
+        isDeleting = false;
+        currentPlaceholderIndex = (currentPlaceholderIndex + 1) % searchPlaceholders.length;
+        typingSpeed = 500; // Pause before typing new word
+      }
+      
+      timeoutId = setTimeout(type, typingSpeed);
+    };
+
+    let timeoutId = setTimeout(type, 1000);
+
+    return () => clearTimeout(timeoutId);
+  }, [isClient, open]);
+
   
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -73,7 +117,14 @@ export function CommandMenu() {
         >
           <Search className="mr-2 h-4 w-4 shrink-0" />
           <span className='flex-1 text-left whitespace-nowrap overflow-hidden'>
-            {!open ? <AnimatedPlaceholder /> : 'Search...'}
+            {!open && isClient ? (
+              <>
+                {placeholder}
+                <span className="animate-blinking-cursor w-px h-4 ml-0.5 bg-foreground inline-block" />
+              </>
+            ) : (
+             'Search...'
+            )}
           </span>
            <kbd className="pointer-events-none hidden h-5 select-none items-center gap-1 rounded border bg-background px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
             <span className="text-xs">⌘</span>K
