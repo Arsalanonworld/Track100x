@@ -9,17 +9,17 @@ import { Zap, Eye, Trophy, Wallet } from 'lucide-react';
 
 const featureIcons = [
   { component: <Zap />, key: 'zap' },
+  { component: <CryptoIcon token="BTC" />, key: 'btc' },
   { component: <Eye />, key: 'eye' },
+  { component: <CryptoIcon token="ETH" />, key: 'eth' },
   { component: <Trophy />, key: 'trophy' },
+  { component: <CryptoIcon token="SOL" />, key: 'sol' },
   { component: <Wallet />, key: 'wallet' },
-  { component: <Zap />, key: 'zap-2' },
-  { component: <Eye />, key: 'eye-2' },
-  { component: <Trophy />, key: 'trophy-2' },
-  { component: <Wallet />, key: 'wallet-2' },
-  { component: <Zap />, key: 'zap-3' },
-  { component: <Eye />, key: 'eye-3' },
-  { component: <Trophy />, key: 'trophy-3' },
-  { component: <Wallet />, key: 'wallet-3' },
+  { component: <CryptoIcon token="DOGE" />, key: 'doge' },
+  { component: <CryptoIcon token="LINK" />, key: 'link' },
+  { component: <CryptoIcon token="AVAX" />, key: 'avax' },
+  { component: <CryptoIcon token="SHIB" />, key: 'shib' },
+  { component: <CryptoIcon token="UNI" />, key: 'uni' },
 ];
 
 
