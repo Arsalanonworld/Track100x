@@ -46,8 +46,10 @@ const TickerItem = ({ item }: { item: TickerItemData }) => {
 export const TickerBar = () => {
     const [data, setData] = useState<TickerItemData[]>([]);
     const [loading, setLoading] = useState(true);
+    const [isClient, setIsClient] = useState(false);
 
     useEffect(() => {
+        setIsClient(true);
         // In a real app, you would fetch this data from an API.
         const timer = setTimeout(() => {
             setLoading(false);
@@ -59,7 +61,7 @@ export const TickerBar = () => {
     // Double the data for a seamless loop
     const extendedData = data.length > 0 ? [...data, ...data, ...data, ...data] : [];
 
-    if (loading) {
+    if (!isClient || loading) {
       return (
          <div className="relative w-full overflow-hidden bg-muted/50 border-b h-10 flex items-center">
             <p className='text-xs text-muted-foreground px-4 animate-pulse'>Fetching market data...</p>
