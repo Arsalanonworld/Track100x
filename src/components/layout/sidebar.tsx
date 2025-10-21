@@ -117,37 +117,10 @@ export default function Sidebar({
     <TooltipProvider>
       <aside
         className={cn(
-          "hidden md:flex flex-col transition-all duration-300 z-40 border-r bg-background relative",
+          "hidden md:flex flex-col transition-all duration-300 z-40 border-r bg-background relative h-full",
           isExpanded ? "w-60" : "w-[72px]"
         )}
       >
-        <div
-          className={cn(
-            "absolute top-1/2 -right-[14px] -translate-y-1/2 z-50",
-          )}
-        >
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="outline"
-                className="h-7 w-7 rounded-full p-0 flex items-center justify-center bg-background hover:bg-muted border-primary/50 text-primary hover:text-primary shadow-lg"
-                onClick={onToggle}
-              >
-                <ChevronLeft
-                  size={16}
-                  className={cn(
-                    "transition-transform",
-                    isExpanded ? "rotate-0" : "rotate-180"
-                  )}
-                />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="right">
-              {isExpanded ? "Collapse Sidebar" : "Expand Sidebar"}
-            </TooltipContent>
-          </Tooltip>
-        </div>
-
         <div className="flex-1 flex flex-col justify-between overflow-y-auto overflow-x-hidden">
             <div className="px-3 py-4 space-y-6">
               <SidebarSection
@@ -186,6 +159,32 @@ export default function Sidebar({
               </div>
           </div>
         )}
+         <div
+          className={cn(
+            "absolute top-1/2 -right-[14px] -translate-y-1/2 z-50",
+          )}
+        >
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="outline"
+                className="h-7 w-7 rounded-full p-0 flex items-center justify-center bg-background hover:bg-muted border-primary/50 text-primary hover:text-primary shadow-lg"
+                onClick={onToggle}
+              >
+                <ChevronLeft
+                  size={16}
+                  className={cn(
+                    "transition-transform",
+                    isExpanded ? "rotate-0" : "rotate-180"
+                  )}
+                />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="right">
+              {isExpanded ? "Collapse Sidebar" : "Expand Sidebar"}
+            </TooltipContent>
+          </Tooltip>
+        </div>
       </aside>
     </TooltipProvider>
   );

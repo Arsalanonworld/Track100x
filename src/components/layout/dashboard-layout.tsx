@@ -6,13 +6,12 @@ import Sidebar from './sidebar';
 import { cn } from '@/lib/utils';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const [isSidebarLocked, setIsSidebarLocked] = useState(true);
+  const [isSidebarLocked, setIsSidebarLocked] = useState(false);
 
   useEffect(() => {
     const savedState = localStorage.getItem('sidebar-collapsed');
-    if (savedState !== null) {
-      setIsSidebarLocked(savedState === 'true');
-    }
+    // Default to expanded (false) if nothing is saved
+    setIsSidebarLocked(savedState === 'true');
   }, []);
 
   const handleToggleLock = () => {
