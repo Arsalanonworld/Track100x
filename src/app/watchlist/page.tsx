@@ -8,7 +8,6 @@ import { useUser, useCollection, useFirestore } from '@/firebase';
 import { collection, query, doc, deleteDoc, updateDoc } from 'firebase/firestore';
 import type { WatchlistItem } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
-import { withAuth } from '@/components/auth/withAuth';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { WatchlistActionForm } from '@/components/watchlist/watchlist-action-form';
@@ -19,6 +18,8 @@ import { FirestorePermissionError } from '@/firebase/errors';
 import { Dialog } from '@/components/ui/dialog';
 import { WatchlistItemCard } from '@/components/watchlist/watchlist-item-card';
 import { Button } from '@/components/ui/button';
+import { AuthDialog } from '@/components/auth/auth-dialog';
+import { useRouter } from 'next/navigation';
 
 
 const WATCHLIST_LIMIT_FREE = 5;
@@ -66,8 +67,10 @@ function WatchlistPage() {
   const { user, claims, loading: userLoading } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
+  const router = useRouter();
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [editorEntity, setEditorEntity] = useState<{type: 'wallet' | 'token', identifier: string} | undefined>(undefined);
+  const [isAuthDialogOpen, setAuthDialogOpen] = useState(!user && !userLoading);
   
   const isPro = claims?.plan === 'pro';
 
@@ -134,6 +137,27 @@ function WatchlistPage() {
     handleOpenEditor(entity);
   }
   
+  if (isLoading) {
+    return <PageSkeleton />;
+  }
+
+  if (!user) {
+    return (
+        <>
+            <div aria-hidden="true">
+                <PageSkeleton />
+            </div>
+            <AuthDialog 
+                open={isAuthDialogOpen}
+                onOpenChange={(open) => {
+                    if(!open) router.push('/');
+                    setAuthDialogOpen(open)
+                }}
+            />
+        </>
+    )
+  }
+
   return (
     <div>
          <PageHeader
@@ -201,4 +225,4 @@ function WatchlistPage() {
   );
 }
 
-export default withAuth(WatchlistPage, { skeleton: PageSkeleton });
+export default WatchlistPage;

@@ -15,7 +15,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Lock, Wallet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { withAuth } from '@/components/auth/withAuth';
+import { AuthDialog } from '@/components/auth/auth-dialog';
+import { useRouter } from 'next/navigation';
 import { FeatureLockInline } from '@/components/feature-lock-inline';
 
 const generateChartData = (baseValue: number, days: number, volatility: number) => {
@@ -69,7 +70,7 @@ const portfolioData = {
 const renderActiveShape = (props: any) => {
     const RADIAN = Math.PI / 180;
     const { cx, cy, midAngle, innerRadius, outerRadius, startAngle, endAngle, fill, payload, percent, value } = props;
-    const isMobile = window.innerWidth < 768;
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
     
     return (
       <g>
@@ -125,12 +126,14 @@ function PageSkeleton() {
 }
 
 function PortfolioPage() {
-    const { claims, loading: userLoading } = useUser();
+    const { user, claims, loading: userLoading } = useUser();
+    const router = useRouter();
     const [timeRange, setTimeRange] = useState<'7d' | '30d' | 'all'>('30d');
     const [activeIndex, setActiveIndex] = useState(0);
+    const [isAuthDialogOpen, setAuthDialogOpen] = useState(!user && !userLoading);
 
     const isPro = claims?.plan === 'pro';
-
+    
     React.useEffect(() => {
         if (!userLoading && !isPro) {
           setTimeRange('7d');
@@ -146,6 +149,27 @@ function PortfolioPage() {
 
     // Mocking this, in reality we'd check if any wallets are in watchlist
     const hasWallets = true; 
+
+    if (userLoading) {
+      return <PageSkeleton />;
+    }
+
+    if (!user) {
+        return (
+            <>
+                <div aria-hidden="true">
+                    <PageSkeleton />
+                </div>
+                <AuthDialog 
+                    open={isAuthDialogOpen}
+                    onOpenChange={(open) => {
+                        if(!open) router.push('/');
+                        setAuthDialogOpen(open)
+                    }}
+                />
+            </>
+        )
+    }
 
     return (
         <div>
@@ -303,4 +327,4 @@ function PortfolioPage() {
 }
 
 
-export default withAuth(PortfolioPage, { skeleton: PageSkeleton });
+export default PortfolioPage;

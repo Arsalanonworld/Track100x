@@ -2,12 +2,14 @@
 'use client';
 
 import PageHeader from '@/components/page-header';
-import { withAuth } from '@/components/auth/withAuth';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AlertsPanel } from '@/components/watchlist/alerts-panel';
 import { useState } from 'react';
 import { AlertEditorDialog } from '@/components/alert-editor-dialog';
 import { Dialog } from '@/components/ui/dialog';
+import { useUser } from '@/firebase';
+import { AuthDialog } from '@/components/auth/auth-dialog';
+import { useRouter } from 'next/navigation';
 
 function PageSkeleton() {
     return (
@@ -22,9 +24,33 @@ function PageSkeleton() {
 
 function AlertsPage() {
   const [isEditorOpen, setIsEditorOpen] = useState(false);
-  
+  const { user, loading } = useUser();
+  const router = useRouter();
+  const [isAuthDialogOpen, setAuthDialogOpen] = useState(!user && !loading);
+
   const handleOpenEditor = () => {
     setIsEditorOpen(true);
+  }
+
+  if (loading) {
+    return <PageSkeleton />;
+  }
+
+  if (!user) {
+    return (
+        <>
+            <div aria-hidden="true">
+                <PageSkeleton />
+            </div>
+            <AuthDialog 
+                open={isAuthDialogOpen}
+                onOpenChange={(open) => {
+                    if(!open) router.push('/');
+                    setAuthDialogOpen(open)
+                }}
+            />
+        </>
+    )
   }
 
   return (
@@ -42,4 +68,4 @@ function AlertsPage() {
   );
 }
 
-export default withAuth(AlertsPage, { skeleton: PageSkeleton });
+export default AlertsPage;
