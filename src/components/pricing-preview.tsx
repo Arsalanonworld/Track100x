@@ -17,6 +17,7 @@ import { useUser } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { CheckCircle, Star, User } from 'lucide-react';
 import Link from 'next/link';
+import { pricing } from '@/lib/app-data';
 
 export function PricingPreview() {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('yearly');
@@ -52,15 +53,15 @@ export function PricingPreview() {
             {/* Free Plan Card */}
             <Card className={'flex flex-col text-left transition-all duration-300 hover:scale-[1.02] hover:shadow-xl'}>
                 <CardHeader>
-                    <CardTitle className="text-2xl flex items-center gap-2"><User className="h-6 w-6 text-muted-foreground"/>Free</CardTitle>
+                    <CardTitle className="text-2xl flex items-center gap-2"><User className="h-6 w-6 text-muted-foreground"/>{pricing.free.name}</CardTitle>
                     <div className="flex items-baseline pt-4">
-                    <span className="text-4xl font-bold tracking-tight">$0</span>
+                    <span className="text-4xl font-bold tracking-tight">{pricing.free.price}</span>
                     </div>
-                    <CardDescription>Get a feel for our platform with essential tracking tools.</CardDescription>
+                    <CardDescription>{pricing.free.description}</CardDescription>
                 </CardHeader>
                 <CardContent className="flex-1">
                     <ul className="space-y-3">
-                        {['Real-time Whale Feed', '5 Watchlist Items', '5 Active Alerts', '1 Linked Wallet'].map((feature, index) => (
+                        {pricing.free.features.map((feature, index) => (
                         <li key={index} className="flex items-center gap-3">
                             <CheckCircle className="h-5 w-5 text-green-500 shrink-0" />
                             <span>{feature}</span>
@@ -85,17 +86,17 @@ export function PricingPreview() {
             <Card className={'flex flex-col text-left border-primary ring-2 ring-primary shadow-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary/20'}>
                 <CardHeader>
                     <div className="flex justify-between items-center">
-                    <CardTitle className="text-2xl flex items-center gap-2"><Star className="h-6 w-6 text-primary"/>Pro</CardTitle>
+                    <CardTitle className="text-2xl flex items-center gap-2"><Star className="h-6 w-6 text-primary"/>{pricing.pro.name}</CardTitle>
                     </div>
                     <div className="flex items-baseline pt-4">
-                    <span className="text-4xl font-bold tracking-tight">{billingCycle === 'monthly' ? '$7' : '$6'}</span>
+                    <span className="text-4xl font-bold tracking-tight">{billingCycle === 'monthly' ? pricing.pro.priceMonthly : pricing.pro.priceYearly}</span>
                     <span className="ml-1 text-xl font-medium text-muted-foreground">/ month</span>
                     </div>
-                    <CardDescription>Unlimited access to every tool for the serious on-chain analyst.</CardDescription>
+                    <CardDescription>{pricing.pro.description}</CardDescription>
                 </CardHeader>
                 <CardContent className="flex-1">
                     <ul className="space-y-3">
-                        {['Unlimited Watchlist', 'Unlimited Alerts & Advanced Builder', 'Unlimited Linked Wallets', 'Full Portfolio History & Analytics'].map((feature, index) => (
+                        {pricing.pro.features.map((feature, index) => (
                         <li key={index} className="flex items-center gap-3">
                             <CheckCircle className="h-5 w-5 text-green-500 shrink-0" />
                             <span>{feature}</span>

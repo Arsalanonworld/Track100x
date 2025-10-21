@@ -25,6 +25,33 @@ export const featureHighlights = [
     },
 ];
 
+export const pricing = {
+  free: {
+    name: 'Free',
+    description: 'Get a feel for our platform with essential tracking tools.',
+    price: '$0',
+    features: [
+      'Real-time Whale Feed',
+      '5 Watchlist Items',
+      '5 Active Alerts',
+      '1 Linked Wallet',
+    ],
+  },
+  pro: {
+    name: 'Pro',
+    description: 'Unlimited access to every tool for the serious on-chain analyst.',
+    priceMonthly: '$7',
+    priceYearly: '$6',
+    features: [
+      'Unlimited Watchlist',
+      'Unlimited Alerts & Advanced Builder',
+      'Unlimited Linked Wallets',
+      'Full Portfolio History & Analytics',
+    ],
+  },
+};
+
+
 export const features = [
   {
     category: 'Core Features',

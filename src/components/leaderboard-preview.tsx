@@ -16,7 +16,6 @@ import { ArrowRight, Copy, Crown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/card';
 import Link from 'next/link';
-import { useToast } from '@/hooks/use-toast';
 import { getExplorerUrl } from '@/lib/explorers';
 
 const PnlCell = ({ value, label, className }: { value: number, label: string, className?: string }) => (
@@ -29,13 +28,11 @@ const PnlCell = ({ value, label, className }: { value: number, label: string, cl
 );
 
 const WalletCell = ({ alias, address }: { alias: string, address: string}) => {
-    const { toast } = useToast();
     
     const copyAddress = (e: React.MouseEvent) => {
         e.stopPropagation();
         e.preventDefault();
         navigator.clipboard.writeText(address);
-        toast({ title: 'Address Copied!' });
     };
 
     return (

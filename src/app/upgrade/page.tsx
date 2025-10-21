@@ -7,6 +7,7 @@ import {
   XCircle,
   Star,
   ArrowRight,
+  User
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -17,22 +18,15 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion';
 import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
 import { useUser } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { AuthDialog } from '@/components/auth/auth-dialog';
-import { features, faqs } from '@/lib/app-data';
+import { features, pricing } from '@/lib/app-data';
 import { FeatureHighlights } from '@/components/feature-highlights';
+import { Faq } from '@/components/faq';
 
-
-// ----------------- Data -----------------
 
 export default function UpgradePage() {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('yearly');
@@ -122,15 +116,15 @@ export default function UpgradePage() {
             {/* Free Plan Card */}
              <Card className={'flex flex-col text-left'}>
                 <CardHeader>
-                  <CardTitle className="text-2xl">Free</CardTitle>
+                  <CardTitle className="text-2xl">{pricing.free.name}</CardTitle>
                    <div className="flex items-baseline pt-4">
-                    <span className="text-4xl font-bold tracking-tight">$0</span>
+                    <span className="text-4xl font-bold tracking-tight">{pricing.free.price}</span>
                   </div>
-                  <CardDescription>Get a feel for our platform with essential tracking tools.</CardDescription>
+                  <CardDescription>{pricing.free.description}</CardDescription>
                 </CardHeader>
                 <CardContent className="flex-1">
                   <ul className="space-y-3">
-                      {['Real-time Whale Feed', '5 Watchlist Items', '5 Active Alerts', '1 Linked Wallet'].map((feature, index) => (
+                      {pricing.free.features.map((feature, index) => (
                         <li key={index} className="flex items-center gap-3">
                           <CheckCircle className="h-5 w-5 text-green-500 shrink-0" />
                           <span>{feature}</span>
@@ -155,21 +149,21 @@ export default function UpgradePage() {
             <Card className={'flex flex-col text-left border-primary ring-2 ring-primary shadow-lg'}>
                 <CardHeader>
                   <div className="flex justify-between items-center">
-                    <CardTitle className="text-2xl">Pro</CardTitle>
+                    <CardTitle className="text-2xl">{pricing.pro.name}</CardTitle>
                     <div className="flex items-center gap-2 text-sm font-bold text-primary">
                       <Star className="h-5 w-5" />
                       Most Popular
                     </div>
                   </div>
                   <div className="flex items-baseline pt-4">
-                    <span className="text-4xl font-bold tracking-tight">{billingCycle === 'monthly' ? '$7' : '$6'}</span>
+                    <span className="text-4xl font-bold tracking-tight">{billingCycle === 'monthly' ? pricing.pro.priceMonthly : pricing.pro.priceYearly}</span>
                     <span className="ml-1 text-xl font-medium text-muted-foreground">/ month</span>
                   </div>
-                  <CardDescription>Unlimited access to every tool for the serious on-chain analyst.</CardDescription>
+                  <CardDescription>{pricing.pro.description}</CardDescription>
                 </CardHeader>
                 <CardContent className="flex-1">
                    <ul className="space-y-3">
-                      {['Unlimited Watchlist', 'Unlimited Alerts & Advanced Builder', 'Unlimited Linked Wallets', 'Full Portfolio History & Analytics'].map((feature, index) => (
+                      {pricing.pro.features.map((feature, index) => (
                         <li key={index} className="flex items-center gap-3">
                           <CheckCircle className="h-5 w-5 text-green-500 shrink-0" />
                           <span>{feature}</span>
@@ -211,7 +205,9 @@ export default function UpgradePage() {
                         Feature
                       </th>
                       <th scope="col" className="py-3.5 px-3 text-center font-semibold w-40">
-                        Free
+                        <div className="flex items-center justify-center gap-2">
+                          <User className="h-4 w-4" /> Free
+                        </div>
                       </th>
                       <th
                         scope="col"
@@ -278,18 +274,7 @@ export default function UpgradePage() {
               Frequently Asked Questions
             </h2>
           </div>
-          <Accordion type="single" collapsible className="w-full">
-            {faqs.map((faq, index) => (
-              <AccordionItem value={`item-${index + 1}`} key={index}>
-                <AccordionTrigger className="text-left font-semibold hover:no-underline">
-                  {faq.question}
-                </AccordionTrigger>
-                <AccordionContent className="text-muted-foreground text-left">
-                  {faq.answer}
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
+          <Faq />
         </section>
       </div>
       <AuthDialog open={isAuthDialogOpen} onOpenChange={setAuthDialogOpen} />

@@ -22,7 +22,6 @@ import PageHeader from '@/components/page-header';
 import { Button } from '@/components/ui/button';
 import { Copy, ArrowUpRight, Zap, Eye, Download, Lock, TrendingUp, Percent, ArrowRightLeft, Tag } from 'lucide-react';
 import { whaleTransactions, type LeaderboardWallet } from '@/lib/mock-data';
-import { getExplorerUrl } from '@/lib/explorers';
 import { WatchlistButton } from '@/components/track-button';
 import { AlertEditorDialog } from '@/components/alert-editor-dialog';
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
