@@ -61,10 +61,12 @@ const CryptoFeatureWeb = () => {
   }, []);
 
   const radius = 130;
+  const containerSize = 300;
+  const center = containerSize / 2;
 
   return (
     <div className="relative flex w-full max-w-lg items-center justify-center mx-auto h-[350px]">
-      <div className="relative w-[300px] h-[300px]">
+      <div className="relative" style={{ width: containerSize, height: containerSize }}>
         {/* Central Logo */}
         <motion.div
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20"
@@ -73,6 +75,37 @@ const CryptoFeatureWeb = () => {
         >
           <LogoIcon />
         </motion.div>
+        
+        {/* Dotted Lines SVG */}
+        <AnimatePresence>
+            {!isScattered && (
+                <motion.svg
+                    width={containerSize}
+                    height={containerSize}
+                    className="absolute top-0 left-0 z-0"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.5, delay: 0.5 }}
+                >
+                    {featureIcons.map((_, index) => {
+                         const { x, y } = getOrbitPosition(index, featureIcons.length, radius);
+                         return (
+                            <motion.line
+                                key={`line-${index}`}
+                                x1={center}
+                                y1={center}
+                                x2={center + x}
+                                y2={center + y}
+                                stroke="hsl(var(--border))"
+                                strokeWidth="1"
+                                strokeDasharray="2 4"
+                            />
+                         )
+                    })}
+                </motion.svg>
+            )}
+        </AnimatePresence>
 
         {/* Orbiting Icons */}
         <AnimatePresence>
@@ -83,7 +116,7 @@ const CryptoFeatureWeb = () => {
             return (
               <motion.div
                 key={icon.key}
-                className="absolute top-1/2 left-1/2"
+                className="absolute top-1/2 left-1/2 z-10"
                 initial={{ x: randomX, y: randomY, scale: 0.5, opacity: 0 }}
                 animate={{
                   x: isScattered ? randomX : orbitX,
