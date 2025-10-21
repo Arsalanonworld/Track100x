@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -150,7 +151,7 @@ export const RotatingCryptoCircle = () => {
 
     if (!isMounted) {
         return (
-             <div className="relative flex items-center justify-center h-[400px]">
+             <div className="relative flex items-center justify-center h-[350px]">
                  <div className="absolute z-10 w-24 h-24 bg-card rounded-full flex items-center justify-center shadow-lg">
                     <LogoIcon />
                 </div>
@@ -159,7 +160,7 @@ export const RotatingCryptoCircle = () => {
     }
 
     return (
-        <div className="relative flex items-center justify-center h-[400px]">
+        <div className="relative flex items-center justify-center h-[350px]">
             {/* Center Logo */}
              <motion.div
                 initial={{ scale: 0, opacity: 0 }}
