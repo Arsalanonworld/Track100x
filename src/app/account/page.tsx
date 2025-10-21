@@ -11,6 +11,7 @@ import { Star, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Separator } from '@/components/ui/separator';
+import { FeatureLock } from '@/components/feature-lock';
 
 function AccountSkeleton() {
   return (
@@ -19,26 +20,40 @@ function AccountSkeleton() {
         <Skeleton className="h-10 w-1/3" />
         <Skeleton className="h-6 w-2/3" />
       </div>
-      <div className="space-y-8">
-        <Card>
-          <CardHeader>
-            <div className="flex items-center gap-4">
-              <Skeleton className="h-16 w-16 rounded-full" />
-              <div className="space-y-2">
-                <Skeleton className="h-6 w-48" />
-                <Skeleton className="h-4 w-64" />
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Skeleton className="h-8 w-1/4" />
-            <Skeleton className="h-10 w-full" />
-          </CardContent>
-        </Card>
-        <Card>
-            <CardHeader><Skeleton className="h-6 w-1/4" /></CardHeader>
-            <CardContent><Skeleton className="h-10 w-full" /></CardContent>
-        </Card>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+        <div className="lg:col-span-1 space-y-8">
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-6 w-1/2" />
+            </CardHeader>
+            <CardContent className="space-y-6">
+                <div className="flex items-center gap-4">
+                    <Skeleton className="h-20 w-20 rounded-full" />
+                    <div className="space-y-2">
+                        <Skeleton className="h-6 w-32" />
+                        <Skeleton className="h-4 w-48" />
+                    </div>
+                </div>
+                 <div>
+                      <Skeleton className="h-4 w-16" />
+                      <Skeleton className="h-8 w-full mt-2" />
+                  </div>
+            </CardContent>
+          </Card>
+        </div>
+         <div className="lg:col-span-2 space-y-8">
+            <Card>
+                <CardHeader>
+                    <Skeleton className="h-6 w-1/3" />
+                    <Skeleton className="h-4 w-2/3" />
+                </CardHeader>
+                <CardContent className="space-y-6">
+                     <Skeleton className="h-10 w-32" />
+                     <Skeleton className="h-5 w-48" />
+                     <Skeleton className="h-10 w-40 mt-4" />
+                </CardContent>
+            </Card>
+         </div>
       </div>
     </div>
   );
@@ -56,9 +71,12 @@ export default function AccountPage() {
 
   if (!user) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <p className="text-muted-foreground">Please log in to view your account.</p>
-      </div>
+        <div className="relative min-h-[60vh]">
+            <div aria-hidden="true" className="pointer-events-none blur-sm">
+                <AccountSkeleton />
+            </div>
+            <FeatureLock />
+        </div>
     );
   }
 

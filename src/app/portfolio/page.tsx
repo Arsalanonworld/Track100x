@@ -114,8 +114,9 @@ const PnlBadge = ({ value }: { value: number }) => (
 function PageSkeleton() {
     return (
         <div className='space-y-8'>
-            <div className='flex justify-between items-center'>
-                 <Skeleton className="h-12 w-1/3" />
+            <div className='space-y-2'>
+                <Skeleton className="h-8 w-1/4" />
+                <Skeleton className="h-5 w-1/2" />
             </div>
              <Skeleton className="h-96 w-full" />
              <Skeleton className="h-64 w-full" />
@@ -125,7 +126,6 @@ function PageSkeleton() {
 
 function PortfolioPage() {
     const { user, claims, loading: userLoading } = useUser();
-    const router = useRouter();
     const [timeRange, setTimeRange] = useState<'7d' | '30d' | 'all'>('30d');
     const [activeIndex, setActiveIndex] = useState(0);
 

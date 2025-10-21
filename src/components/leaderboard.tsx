@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { leaderboardData, type LeaderboardWallet } from '@/lib/mock-data';
-import { Search, ArrowUp, ArrowDown, Zap, Trophy, Flame, Coins, SlidersHorizontal, Lock } from 'lucide-react';
+import { Search, ArrowUp, ArrowDown, Zap, Trophy, Flame, Coins, SlidersHorizontal, Lock, Eye } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Card, CardContent } from './ui/card';
 import { getExplorerUrl } from '@/lib/explorers';
@@ -101,9 +101,15 @@ const LeaderboardTable = ({ data, isLoading }: { data: LeaderboardWallet[], isLo
 
     if (data.length === 0) {
         return (
-            <Card className="h-48 flex items-center justify-center text-center">
-                <p className="text-muted-foreground">No wallets found for this criteria.</p>
-            </Card>
+            <div className="flex flex-col items-center justify-center text-center text-muted-foreground p-8 rounded-lg border-2 border-dashed h-48">
+                <Search className="h-10 w-10 mb-4" />
+                <p className="font-semibold text-lg text-foreground">
+                    No Wallets Found
+                </p>
+                <p className="text-sm max-w-xs mx-auto">
+                    Try adjusting your search filters to find what you're looking for.
+                </p>
+            </div>
         )
     }
 

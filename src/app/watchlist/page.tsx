@@ -3,7 +3,7 @@
 
 import { useMemo, useState } from 'react';
 import PageHeader from '@/components/page-header';
-import { Eye, Lock, BellPlus } from 'lucide-react';
+import { Eye, Lock } from 'lucide-react';
 import { useUser, useCollection, useFirestore } from '@/firebase';
 import { collection, query, doc, deleteDoc, updateDoc } from 'firebase/firestore';
 import type { WatchlistItem } from '@/lib/types';
@@ -26,8 +26,9 @@ const WATCHLIST_LIMIT_FREE = 5;
 function PageSkeleton() {
     return (
         <div className='space-y-8'>
-            <div className='flex justify-between items-center'>
-                 <Skeleton className="h-12 w-1/3" />
+            <div className='space-y-2'>
+                <Skeleton className="h-8 w-1/4" />
+                <Skeleton className="h-5 w-1/2" />
             </div>
             <div className="space-y-4">
                 <Skeleton className="h-24 w-full" />
@@ -143,7 +144,7 @@ function WatchlistPage() {
     <div>
          <PageHeader
             title="My Watchlist"
-            description={user ? pageDescription : "Track your wallets and tokens all in one place."}
+            description={user ? pageDescription : "Log in to track wallets and tokens all in one place."}
         />
 
         {!user ? (

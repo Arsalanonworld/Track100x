@@ -41,7 +41,7 @@ async function createUserProfile(user: User) {
 }
 
 const guestOnlyRoutes = ['/login'];
-const proOnlyRedirects = ['/upgrade'];
+const proOnlyRedirects = ['/upgrade']; // Pages that Pro users should be redirected away from
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const auth = useAuth();
@@ -88,12 +88,12 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     if (loading) return;
 
-    // If user is logged in, redirect from guest-only pages.
+    // If user is logged in, redirect them away from any guest-only pages.
     if (user) {
       if (guestOnlyRoutes.includes(pathname)) {
         router.replace('/watchlist');
       }
-      // If user is Pro, redirect from pro-only redirect pages.
+      // If user is a Pro member, redirect them away from the upgrade page.
       if (isPro && proOnlyRedirects.includes(pathname)) {
           router.replace('/account');
       }

@@ -9,7 +9,7 @@ import { useUser, useCollection, useFirestore } from '@/firebase';
 import { collection, query } from 'firebase/firestore';
 import type { Alert } from '@/lib/types';
 import Link from 'next/link';
-import { ArrowRight, Lock, BellPlus } from 'lucide-react';
+import { ArrowRight, Lock } from 'lucide-react';
 
 const ALERT_LIMIT_FREE = 5;
 
@@ -35,17 +35,13 @@ export function AlertsPanel({ onNewAlert }: { onNewAlert: () => void }) {
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle>Manage Alerts</CardTitle>
+            <CardTitle>Your Alerts</CardTitle>
             <CardDescription>
               {isPro
                 ? `You have ${alertCount} active alerts.`
                 : `You are using ${alertCount} of ${ALERT_LIMIT_FREE} alerts.`}
             </CardDescription>
           </div>
-          <Button size="sm" onClick={onNewAlert} disabled={alertsAtLimit}>
-            <BellPlus className="h-4 w-4 mr-2" />
-            New Alert
-          </Button>
         </div>
       </CardHeader>
       <CardContent>
