@@ -129,7 +129,7 @@ export default function Sidebar({
     <TooltipProvider>
       <aside
         className={cn(
-          "hidden md:flex flex-col transition-all duration-300 z-40 border-r bg-background fixed h-full top-0 shadow-lg",
+          "hidden md:flex flex-col transition-all duration-300 z-40 border-r bg-background fixed h-full top-0",
           "pt-14 lg:pt-[60px]",
           isExpanded ? "w-60" : "w-[72px]"
         )}
@@ -234,10 +234,10 @@ function SidebarSection({
         {isExpanded ? title : ''}
       </h4>
       {items.map((item) => {
-        const isLocked = item.locked || (item.authRequired && !user);
+        const isLocked = item.authRequired && !user;
         const isActive = pathname === item.href;
         const isButton = !!item.onClick;
-        const href = isLocked && item.authRequired ? "/login" : item.href;
+        const href = item.href;
 
         const content = (
             <div className="relative flex items-center gap-3 overflow-hidden">
@@ -250,7 +250,7 @@ function SidebarSection({
                 >
                 {item.label}
                 </span>
-                {item.locked && isExpanded && (
+                {isLocked && isExpanded && (
                 <Lock
                     size={12}
                     className="ml-auto text-yellow-500 shrink-0"
@@ -288,7 +288,7 @@ function SidebarSection({
             </TooltipTrigger>
             {!isExpanded && (
               <TooltipContent side="right">
-                {item.label} {item.locked && "(Pro)"}
+                {item.label} {isLocked && "(Requires Login)"}
               </TooltipContent>
             )}
           </Tooltip>
