@@ -2,16 +2,14 @@
 'use client';
 
 import { useState } from 'react';
-import { Lock } from 'lucide-react';
+import { Lock, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { AuthDialog } from './auth/auth-dialog';
 import Link from 'next/link';
-import { useUser } from '@/firebase';
 
-export function FeatureLock() {
+export function FeatureLock({ proLock = false }: { proLock?: boolean }) {
   const [isAuthDialogOpen, setAuthDialogOpen] = useState(false);
   const [initialTab, setInitialTab] = useState<'login' | 'signup'>('login');
-  const { user } = useUser();
 
   const openDialog = (tab: 'login' | 'signup') => {
     setInitialTab(tab);
@@ -21,7 +19,7 @@ export function FeatureLock() {
   const AuthLock = () => (
      <div className="text-center p-8 space-y-4">
         <div className="mx-auto w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-        <Lock className="w-8 h-8 text-primary" />
+            <Lock className="w-8 h-8 text-primary" />
         </div>
         <h3 className="text-2xl font-bold">Feature Locked</h3>
         <p className="text-muted-foreground max-w-sm">
@@ -35,11 +33,29 @@ export function FeatureLock() {
         </div>
     </div>
   );
+  
+  const ProLock = () => (
+    <div className="text-center p-8 space-y-4">
+       <div className="mx-auto w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+           <Star className="w-8 h-8 text-primary" />
+       </div>
+       <h3 className="text-2xl font-bold">Pro Feature</h3>
+       <p className="text-muted-foreground max-w-sm">
+           This feature is only available on the Pro plan. Upgrade your account to gain access.
+       </p>
+       <div className="flex justify-center gap-4 pt-4">
+       <Button asChild>
+            <Link href="/upgrade">Upgrade to Pro</Link>
+        </Button>
+       </div>
+   </div>
+ );
+
 
   return (
     <>
       <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-background/80 backdrop-blur-sm">
-        <AuthLock />
+        {proLock ? <ProLock /> : <AuthLock />}
       </div>
       <AuthDialog 
         open={isAuthDialogOpen} 

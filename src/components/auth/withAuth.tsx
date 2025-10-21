@@ -8,6 +8,7 @@ import { Skeleton } from '../ui/skeleton';
 
 type WithAuthOptions = {
     skeleton?: React.ComponentType;
+    proOnly?: boolean;
 }
 
 export function withAuth<P extends object>(
@@ -15,8 +16,9 @@ export function withAuth<P extends object>(
   options: WithAuthOptions = {}
 ) {
   const AuthComponent = (props: P) => {
-    const { user, loading } = useUser();
+    const { user, loading, claims } = useUser();
     const SkeletonComponent = options.skeleton;
+    const isPro = claims?.plan === 'pro';
 
     if (loading) {
       if (SkeletonComponent) {
@@ -32,14 +34,23 @@ export function withAuth<P extends object>(
     if (!user) {
       return (
         <div className="relative min-h-[60vh]">
-          {/* Render skeleton as the blurred background */}
-          <div aria-hidden="true" className="pointer-events-none">
+          <div aria-hidden="true" className="pointer-events-none blur-sm">
               {SkeletonComponent ? <SkeletonComponent /> : <Skeleton className="h-full w-full min-h-[60vh]" />}
           </div>
-          {/* The FeatureLock component is now the overlay */}
           <FeatureLock />
         </div>
       );
+    }
+
+    if (options.proOnly && !isPro) {
+        return (
+            <div className="relative min-h-[60vh]">
+                <div aria-hidden="true" className="pointer-events-none blur-sm">
+                    {SkeletonComponent ? <SkeletonComponent /> : <Skeleton className="h-full w-full min-h-[60vh]" />}
+                </div>
+                <FeatureLock proLock={true}/>
+            </div>
+        )
     }
     
     return <WrappedComponent {...props} />;

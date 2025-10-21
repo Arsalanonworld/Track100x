@@ -1,14 +1,6 @@
 
 'use client';
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
 import { AuthDialog } from '@/components/auth/auth-dialog';
 import { useState, useEffect } from 'react';
 import { useUser } from '@/firebase';
@@ -17,21 +9,17 @@ import { useRouter } from 'next/navigation';
 export default function LoginPage() {
     const { user, loading } = useUser();
     const router = useRouter();
-
-    // This page will show the dialog for guests.
-    // The useUser hook will handle redirecting logged-in users.
     const [isAuthDialogOpen, setAuthDialogOpen] = useState(true);
 
-    // This effect handles closing the dialog. If the user closes it, redirect them home.
     useEffect(() => {
+        // If the user closes the dialog without logging in, send them home.
         if (!isAuthDialogOpen && !user) {
             router.push('/');
         }
     }, [isAuthDialogOpen, user, router]);
 
-
+    // The useUser hook handles redirecting logged-in users away from this page.
     if (loading || user) {
-        // Show a loading state while useUser hook handles redirection.
         return (
             <div className="flex items-center justify-center min-h-[calc(100vh-200px)]">
                 <p className="text-muted-foreground">Loading...</p>

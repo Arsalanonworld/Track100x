@@ -19,4 +19,4 @@ function AnalyticsPage() {
     return <ComingSoon featureName="Analytics" />;
 }
 
-export default withAuth(AnalyticsPage, { skeleton: PageSkeleton });
+export default withAuth(AnalyticsPage, { skeleton: PageSkeleton, proOnly: true });

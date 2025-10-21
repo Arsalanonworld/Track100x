@@ -12,11 +12,10 @@ import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { HoldingsTable } from '@/components/dashboard/holdings-table';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Lock, Wallet } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
+import { Lock } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { FeatureLockInline } from '@/components/feature-lock-inline';
+import { FeatureLock } from '@/components/feature-lock';
 
 const generateChartData = (baseValue: number, days: number, volatility: number) => {
     const data = [];
@@ -145,32 +144,10 @@ function PortfolioPage() {
         setActiveIndex(index);
     };
 
-    // Mocking this, in reality we'd check if any wallets are in watchlist
-    const hasWallets = true; 
-
     if (userLoading) {
       return <PageSkeleton />;
     }
     
-    const LoggedOutView = () => (
-         <Card>
-            <CardContent>
-                <div className="flex flex-col items-center justify-center text-center text-muted-foreground p-8 rounded-lg border-2 border-dashed h-64">
-                    <Wallet className="h-10 w-10 mb-4" />
-                    <p className="font-semibold text-lg text-foreground">Log in to Track Your Portfolio</p>
-                    <p className="text-sm max-w-xs mx-auto mb-6">
-                    Add a wallet to your watchlist to start tracking your portfolio's performance.
-                    </p>
-                    <Button asChild>
-                        <Link href="/login">
-                            Log In / Sign Up
-                        </Link>
-                    </Button>
-                </div>
-            </CardContent>
-        </Card>
-    );
-
     return (
         <div>
             <PageHeader
@@ -178,7 +155,14 @@ function PortfolioPage() {
                 description="Aggregated view of your on-chain wealth from your watched wallets."
             />
             
-            {!user ? <LoggedOutView /> : hasWallets ? (
+            {!user ? (
+                <div className="relative min-h-[60vh]">
+                    <div aria-hidden="true" className="pointer-events-none blur-sm">
+                        <PageSkeleton />
+                    </div>
+                    <FeatureLock />
+                </div>
+            ) : (
               <div className='space-y-8'>
                 <section id="overview">
                     <Card>
@@ -216,7 +200,7 @@ function PortfolioPage() {
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
                             <div className="lg:col-span-2 relative">
                                 <h3 className="font-semibold mb-4 text-center lg:text-left">Net Worth Over Time</h3>
-                                <div className={cn("h-[250px] sm:h-[350px]", !isPro && "blur-md")}>
+                                <div className={cn("h-[250px] sm:h-[350px]", !isPro && timeRange !== '7d' && "blur-md")}>
                                 <ChartContainer config={{
                                         value: {
                                             label: "Net Worth",
@@ -250,7 +234,7 @@ function PortfolioPage() {
                                         </AreaChart>
                                     </ChartContainer>
                                 </div>
-                                {!isPro && (
+                                {!isPro && timeRange !== '7d' && (
                                     <div className="absolute inset-0">
                                         <FeatureLockInline title="Unlock Full History" description="Upgrade to Pro to view 30-day and all-time portfolio performance."/>
                                     </div>
@@ -308,19 +292,6 @@ function PortfolioPage() {
                   <HoldingsTable />
                 </section>
               </div>
-            ) : (
-                <Card className="text-center p-8 border-2 border-dashed">
-                    <Wallet className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                    <h3 className="text-2xl font-bold">Your Portfolio is Empty</h3>
-                    <p className="text-muted-foreground max-w-sm mx-auto mt-2 mb-6">
-                        Add a wallet to your watchlist to start tracking your portfolio's performance.
-                    </p>
-                    <Button asChild>
-                        <Link href="/watchlist">
-                            Go to Watchlist
-                        </Link>
-                    </Button>
-                </Card>
             )}
         </div>
     );

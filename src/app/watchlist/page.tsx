@@ -3,7 +3,7 @@
 
 import { useMemo, useState } from 'react';
 import PageHeader from '@/components/page-header';
-import { Wallet, Eye, Lock, BellPlus } from 'lucide-react';
+import { Eye, Lock, BellPlus } from 'lucide-react';
 import { useUser, useCollection, useFirestore } from '@/firebase';
 import { collection, query, doc, deleteDoc, updateDoc } from 'firebase/firestore';
 import type { WatchlistItem } from '@/lib/types';
@@ -18,8 +18,7 @@ import { FirestorePermissionError } from '@/firebase/errors';
 import { Dialog } from '@/components/ui/dialog';
 import { WatchlistItemCard } from '@/components/watchlist/watchlist-item-card';
 import { Button } from '@/components/ui/button';
-import { AuthDialog } from '@/components/auth/auth-dialog';
-import { useRouter } from 'next/navigation';
+import { FeatureLock } from '@/components/feature-lock';
 
 
 const WATCHLIST_LIMIT_FREE = 5;
@@ -31,7 +30,7 @@ function PageSkeleton() {
                  <Skeleton className="h-12 w-1/3" />
             </div>
             <div className="space-y-4">
-                <Skeleton className="h-12 w-full" />
+                <Skeleton className="h-24 w-full" />
                 <Skeleton className="h-48 w-full" />
             </div>
         </div>
@@ -147,66 +146,69 @@ function WatchlistPage() {
             description={user ? pageDescription : "Track your wallets and tokens all in one place."}
         />
 
-        <div className='space-y-6'>
-            <WatchlistActionForm 
-                user={user}
-                onItemAdded={handleItemAdded}
-                atLimit={!!watchlistAtLimit}
-                isLoading={isLoading}
-            />
-            
-            {user && watchlistAtLimit && (
-                <Card className="text-center p-8 space-y-4 rounded-lg bg-card border shadow-lg border-primary">
-                    <Lock className="w-8 h-8 text-primary mx-auto" />
-                    <h3 className="text-2xl font-bold">Watchlist Limit Reached</h3>
-                    <p className="text-muted-foreground max-w-sm mx-auto">
-                        You've reached the limit of ${WATCHLIST_LIMIT_FREE} items for the Free plan. Upgrade to track unlimited wallets and tokens.
-                    </p>
-                    <Button asChild>
-                        <Link href="/upgrade">Upgrade to Pro</Link>
-                    </Button>
-                </Card>
-            )}
-            
-            <Card>
-                <CardHeader>
-                    <CardTitle>Tracked Items</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <div className="space-y-4">
-                        {isLoading ? <WatchlistSkeleton /> : user && watchlist && watchlist.length > 0 ? (
-                            watchlist.map((item) => (
-                            <WatchlistItemCard 
-                                key={item.id} 
-                                item={item} 
-                                onUpdate={handleUpdate} 
-                                onRemove={handleRemove}
-                                onAlertCreate={handleOpenEditor}
-                                />
-                            ))
-                        ) : (
-                            <div className="flex flex-col items-center justify-center text-center text-muted-foreground p-8 rounded-lg border-2 border-dashed h-48">
-                                <Eye className="h-10 w-10 mb-4" />
-                                <p className="font-semibold text-lg text-foreground">
-                                    {user ? "Your watchlist is empty" : "Log in to build your watchlist"}
-                                </p>
-                                <p className="text-sm max-w-xs mx-auto">
-                                  {user ? "Use the form above to add wallets or tokens to begin." : "Create a free account to track wallets and tokens."}
-                                </p>
-                                {!user && (
-                                    <Button asChild className='mt-4'>
-                                        <Link href="/login">
-                                            Log In / Sign Up
-                                        </Link>
-                                    </Button>
-                                )}
-                            </div>
-                        )}
-                    </div>
-                </CardContent>
-            </Card>
+        {!user ? (
+            <div className="relative min-h-[60vh]">
+                <div aria-hidden="true" className="pointer-events-none blur-sm">
+                    <PageSkeleton />
+                </div>
+                <FeatureLock />
+            </div>
+        ) : (
+          <div className='space-y-6'>
+              <WatchlistActionForm 
+                  user={user}
+                  onItemAdded={handleItemAdded}
+                  atLimit={!!watchlistAtLimit}
+                  isLoading={isLoading}
+              />
+              
+              {user && watchlistAtLimit && (
+                  <Card className="text-center p-8 space-y-4 rounded-lg bg-card border shadow-lg border-primary">
+                      <Lock className="w-8 h-8 text-primary mx-auto" />
+                      <h3 className="text-2xl font-bold">Watchlist Limit Reached</h3>
+                      <p className="text-muted-foreground max-w-sm mx-auto">
+                          You've reached the limit of ${WATCHLIST_LIMIT_FREE} items for the Free plan. Upgrade to track unlimited wallets and tokens.
+                      </p>
+                      <Button asChild>
+                          <Link href="/upgrade">Upgrade to Pro</Link>
+                      </Button>
+                  </Card>
+              )}
+              
+              <Card>
+                  <CardHeader>
+                      <CardTitle>Tracked Items</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                      <div className="space-y-4">
+                          {isLoading ? <WatchlistSkeleton /> : user && watchlist && watchlist.length > 0 ? (
+                              watchlist.map((item) => (
+                              <WatchlistItemCard 
+                                  key={item.id} 
+                                  item={item} 
+                                  onUpdate={handleUpdate} 
+                                  onRemove={handleRemove}
+                                  onAlertCreate={handleOpenEditor}
+                                  />
+                              ))
+                          ) : (
+                              <div className="flex flex-col items-center justify-center text-center text-muted-foreground p-8 rounded-lg border-2 border-dashed h-48">
+                                  <Eye className="h-10 w-10 mb-4" />
+                                  <p className="font-semibold text-lg text-foreground">
+                                      Your watchlist is empty
+                                  </p>
+                                  <p className="text-sm max-w-xs mx-auto">
+                                    Use the form above to add wallets or tokens to begin.
+                                  </p>
+                              </div>
+                          )}
+                      </div>
+                  </CardContent>
+              </Card>
 
-        </div>
+          </div>
+        )}
+
         <Dialog open={isEditorOpen} onOpenChange={setIsEditorOpen}>
             <AlertEditorDialog onOpenChange={setIsEditorOpen} entity={editorEntity} />
         </Dialog>

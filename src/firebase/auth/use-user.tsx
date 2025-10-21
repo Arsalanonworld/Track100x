@@ -40,7 +40,8 @@ async function createUserProfile(user: User) {
   }
 }
 
-const guestOnlyRoutes = ['/login', '/upgrade'];
+const guestOnlyRoutes = ['/login'];
+const proOnlyRedirects = ['/upgrade'];
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const auth = useAuth();
@@ -51,6 +52,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname();
 
   const claims = profile ? { plan: profile.plan } : null;
+  const isPro = claims?.plan === 'pro';
 
   useEffect(() => {
     if (!auth) return;
@@ -91,8 +93,12 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       if (guestOnlyRoutes.includes(pathname)) {
         router.replace('/watchlist');
       }
+      // If user is Pro, redirect from pro-only redirect pages.
+      if (isPro && proOnlyRedirects.includes(pathname)) {
+          router.replace('/account');
+      }
     }
-  }, [user, loading, pathname, router]);
+  }, [user, loading, pathname, router, isPro]);
 
   return (
     <UserContext.Provider value={{ user, claims, loading, profile }}>
