@@ -5,13 +5,23 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { CryptoIcon } from './crypto-icon';
+import { Zap, Eye, Trophy, Wallet } from 'lucide-react';
 
-const icons = [
-  { symbol: 'ETH' }, { symbol: 'USDT' }, { symbol: 'USDC' },
-  { symbol: 'WIF' }, { symbol: 'SOL' }, { symbol: 'JUP' },
-  { symbol: 'SHIB' }, { symbol: 'PEPE' }, { symbol: 'BONK' },
-  { symbol: 'BTC' }, { symbol: 'DOGE' }, { symbol: 'MATIC' },
+const featureIcons = [
+  { component: <Zap />, key: 'zap' },
+  { component: <Eye />, key: 'eye' },
+  { component: <Trophy />, key: 'trophy' },
+  { component: <Wallet />, key: 'wallet' },
+  { component: <Zap />, key: 'zap-2' },
+  { component: <Eye />, key: 'eye-2' },
+  { component: <Trophy />, key: 'trophy-2' },
+  { component: <Wallet />, key: 'wallet-2' },
+  { component: <Zap />, key: 'zap-3' },
+  { component: <Eye />, key: 'eye-3' },
+  { component: <Trophy />, key: 'trophy-3' },
+  { component: <Wallet />, key: 'wallet-3' },
 ];
+
 
 function getOrbitPosition(index: number, total: number, radius: number) {
   const angle = (index / total) * 2 * Math.PI;
@@ -66,13 +76,13 @@ const CryptoFeatureWeb = () => {
 
         {/* Orbiting Icons */}
         <AnimatePresence>
-          {icons.map((icon, index) => {
-            const { x: orbitX, y: orbitY } = getOrbitPosition(index, icons.length, radius);
+          {featureIcons.map((icon, index) => {
+            const { x: orbitX, y: orbitY } = getOrbitPosition(index, featureIcons.length, radius);
             const { x: randomX, y: randomY } = getRandomPosition(radius);
 
             return (
               <motion.div
-                key={icon.symbol}
+                key={icon.key}
                 className="absolute top-1/2 left-1/2"
                 initial={{ x: randomX, y: randomY, scale: 0.5, opacity: 0 }}
                 animate={{
@@ -90,7 +100,7 @@ const CryptoFeatureWeb = () => {
                 exit={{ opacity: 0 }}
               >
                 <div className="h-12 w-12 flex items-center justify-center rounded-full bg-card border-2 shadow-md">
-                  <CryptoIcon token={icon.symbol} className="h-6 w-6" />
+                   {React.cloneElement(icon.component, { className: "h-6 w-6 text-muted-foreground" })}
                 </div>
               </motion.div>
             );
