@@ -48,7 +48,7 @@ export function CommandMenu() {
   const [open, setOpen] = React.useState(false);
   const router = useRouter();
 
-  const [placeholder, setPlaceholder] = React.useState(searchPlaceholders[0]);
+  const [placeholder, setPlaceholder] = React.useState('Search...');
   const placeholderIndex = React.useRef(0);
   const isDeleting = React.useRef(false);
   const timeoutRef = React.useRef<NodeJS.Timeout | null>(null);
