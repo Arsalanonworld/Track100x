@@ -23,28 +23,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       localStorage.setItem('sidebar-collapsed', String(newLockedState));
     }
   };
-  
-  if (!isClient) {
-    return (
-        <div className="flex min-h-screen">
-             <div className="hidden md:block w-[72px] h-screen" />
-             <div className="flex-1 flex flex-col">
-                <div className="h-14 lg:h-[60px] w-full" />
-                <main className="flex-1 p-4 lg:p-6 pb-16">{children}</main>
-            </div>
-        </div>
-    );
-  }
 
+  const mainContentMargin = isSidebarLocked ? 'md:ml-[72px]' : 'md:ml-60';
+  
   return (
     <div className="min-h-screen">
+      <Header />
       <Sidebar isExpanded={!isSidebarLocked} onToggle={handleToggleLock} />
-      <div className={cn("transition-all duration-300", isSidebarLocked ? "md:ml-[72px]" : "md:ml-60")}>
-        <Header />
-        <main className="p-4 lg:p-6 pb-16 pt-14 lg:pt-[60px]">
-          {children}
-        </main>
-      </div>
+      <main className={cn("transition-all duration-300 pt-14 lg:pt-[60px]", mainContentMargin)}>
+          <div className="p-4 lg:p-6 pb-16">
+            {children}
+          </div>
+      </main>
     </div>
   );
 }

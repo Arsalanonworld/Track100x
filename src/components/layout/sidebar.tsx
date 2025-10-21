@@ -117,7 +117,7 @@ export default function Sidebar({
     <TooltipProvider>
       <aside
         className={cn(
-          "hidden md:flex flex-col transition-all duration-300 z-40 border-r bg-background fixed top-0 left-0 h-screen pt-14 lg:pt-[60px]",
+          "hidden md:flex flex-col transition-all duration-300 z-40 border-r bg-background fixed top-14 lg:top-[60px] h-full",
           isExpanded ? "w-60" : "w-[72px]"
         )}
       >
@@ -144,7 +144,7 @@ export default function Sidebar({
           
         {isExpanded && (!user || userPlan === "free") && (
           <div className="p-3 border-t">
-              <div className="p-4 rounded-xl bg-gradient-to-br from-primary via-blue-600 to-blue-700 text-primary-foreground animate-pulse-slow">
+              <div className="p-4 rounded-xl bg-gradient-to-br from-primary via-blue-600 to-blue-700 text-primary-foreground">
                 <p className="font-bold text-sm mb-1">Unlock Full Power</p>
                 <p className="text-xs opacity-90 mb-3">
                   Get advanced analytics, unlimited alerts & more.
