@@ -1,8 +1,8 @@
 
 'use client';
-import { useState, useEffect, useRef } from 'react';
+import { AnimatePresence, motion } from "framer-motion";
 import { Bell, Eye, Search, Wallet } from "lucide-react";
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 const phrases = [
     'Decode On-Chain Behavior.',
@@ -52,69 +52,42 @@ const features = [
     },
 ];
 
+const FlipText = ({ phrases }: { phrases: string[] }) => {
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIndex((prevIndex) => (prevIndex + 1) % phrases.length);
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [phrases]);
+
+  return (
+    <AnimatePresence mode="wait">
+      <motion.h1
+        key={phrases[index]}
+        initial={{ opacity: 0, y: -25 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 25 }}
+        transition={{ duration: 0.5, ease: "easeInOut" }}
+        className="relative text-3xl font-extrabold tracking-tighter sm:text-5xl lg:text-6xl text-foreground text-center"
+      >
+        {phrases[index]}
+      </motion.h1>
+    </AnimatePresence>
+  );
+};
+
+
 export default function HeroSection() {
-    const [text, setText] = useState(phrases[0]);
-    const phraseIndex = useRef(0);
-    const isDeleting = useRef(false);
-    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-    const [isClient, setIsClient] = useState(false);
-
-    const typingSpeed = 200;
-    const deletingSpeed = 100;
-    const delayAfterTyping = 2000;
-
-    useEffect(() => {
-        setIsClient(true);
-    }, []);
-
-    useEffect(() => {
-        if (!isClient) return;
-
-        const handleTyping = () => {
-            const currentPhrase = phrases[phraseIndex.current];
-            
-            let newText;
-            if (isDeleting.current) {
-                newText = text.substring(0, text.length - 1);
-            } else {
-                newText = currentPhrase.substring(0, text.length + 1);
-            }
-            setText(newText);
-
-            let delay = isDeleting.current ? deletingSpeed : typingSpeed;
-
-            if (!isDeleting.current && newText === currentPhrase) {
-                delay = delayAfterTyping;
-                isDeleting.current = true;
-            } else if (isDeleting.current && newText === '') {
-                isDeleting.current = false;
-                phraseIndex.current = (phraseIndex.current + 1) % phrases.length;
-                delay = typingSpeed;
-            }
-
-             timeoutRef.current = setTimeout(handleTyping, delay);
-        };
-        
-        if (timeoutRef.current) clearTimeout(timeoutRef.current);
-        timeoutRef.current = setTimeout(handleTyping, typingSpeed);
-
-        return () => {
-            if (timeoutRef.current) {
-                clearTimeout(timeoutRef.current);
-                timeoutRef.current = null;
-            }
-        };
-    }, [isClient, text]);
-
-
     return (
         <section className="relative overflow-hidden bg-gradient-to-b from-card to-background flex flex-col items-center justify-center py-12">
             <div className="absolute inset-0 bg-[url('/grid.svg')] bg-repeat [mask-image:linear-gradient(to_bottom,white_5%,transparent_80%)] dark:opacity-20"></div>
             <div className="container mx-auto px-4 text-center relative">
-                <h1 className="relative text-3xl font-extrabold tracking-tighter sm:text-5xl lg:text-6xl text-foreground inline-flex items-center justify-center min-h-[40px] sm:min-h-[64px] lg:min-h-[72px]">
-                    <span>{isClient ? text : phrases[0]}</span>
-                    <span className="animate-blinking-cursor w-1 sm:w-1.5 h-8 sm:h-12 ml-1 bg-primary"></span>
-                </h1>
+                 <div className="min-h-[40px] sm:min-h-[64px] lg:min-h-[72px] flex items-center justify-center">
+                    <FlipText phrases={phrases} />
+                 </div>
                  <p className="max-w-3xl mx-auto mt-4 text-base sm:text-lg text-muted-foreground">
                     The Blockchain Intelligence Platform for investors, traders, and researchers.
                 </p>
