@@ -1,96 +1,117 @@
 
 'use client';
 
-import React, { forwardRef, useRef } from "react";
-import { cn } from "@/lib/utils";
-import { AnimatedBeam } from "@/components/ui/animated-beam";
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { cn } from '@/lib/utils';
 import { CryptoIcon } from './crypto-icon';
 
-const Circle = forwardRef<
-  HTMLDivElement,
-  { className?: string; children?: React.ReactNode }
->(({ className, children }, ref) => {
-  return (
-    <div
-      ref={ref}
-      className={cn(
-        "z-10 flex h-12 w-12 items-center justify-center rounded-full border-2 bg-card p-3 shadow-[0_0_20px_-12px_rgba(0,0,0,0.8)]",
-        className,
-      )}
-    >
-      {children}
-    </div>
-  );
-});
-Circle.displayName = "Circle";
-
-
 const icons = [
-  { symbol: 'ETH', x: '50%', y: '10%' },
-  { symbol: 'USDT', x: '85%', y: '30%' },
-  { symbol: 'USDC', x: '90%', y: '65%' },
-  { symbol: 'WIF', x: '70%', y: '90%' },
-  { symbol: 'SOL', x: '30%', y: '95%' },
-  { symbol: 'JUP', x: '5%', y: '75%' },
-  { symbol: 'SHIB', x: '15%', y: '35%' },
+  { symbol: 'ETH' }, { symbol: 'USDT' }, { symbol: 'USDC' },
+  { symbol: 'WIF' }, { symbol: 'SOL' }, { symbol: 'JUP' },
+  { symbol: 'SHIB' }, { symbol: 'PEPE' }, { symbol: 'BONK' },
+  { symbol: 'BTC' }, { symbol: 'DOGE' }, { symbol: 'MATIC' },
 ];
 
-export const CryptoFeatureWeb = () => {
-    const containerRef = useRef<HTMLDivElement>(null);
-    const div1Ref = useRef<HTMLDivElement>(null);
-    const div2Ref = useRef<HTMLDivElement>(null);
-    const div3Ref = useRef<HTMLDivElement>(null);
-    const div4Ref = useRef<HTMLDivElement>(null);
-    const div5Ref = useRef<HTMLDivElement>(null);
-    const div6Ref = useRef<HTMLDivElement>(null);
-    const div7Ref = useRef<HTMLDivElement>(null);
+function getOrbitPosition(index: number, total: number, radius: number) {
+  const angle = (index / total) * 2 * Math.PI;
+  const x = radius * Math.cos(angle);
+  const y = radius * Math.sin(angle);
+  return { x, y };
+}
 
-    const refs = [div1Ref, div2Ref, div3Ref, div4Ref, div5Ref, div6Ref, div7Ref];
+function getRandomPosition(radius: number) {
+  const angle = Math.random() * 2 * Math.PI;
+  const r = radius * (1.2 + Math.random() * 0.8); // Scatter outside the main orbit
+  return {
+    x: r * Math.cos(angle),
+    y: r * Math.sin(angle),
+  };
+}
 
-    return (
-        <div
-        className="relative flex w-full max-w-lg items-center justify-center overflow-hidden rounded-lg p-10 mx-auto h-[350px]"
-        ref={containerRef}
+const CryptoFeatureWeb = () => {
+  const [isScattered, setIsScattered] = useState(true);
+
+  useEffect(() => {
+    // Initial gather animation
+    const initialTimer = setTimeout(() => setIsScattered(false), 100);
+
+    // Loop the animation
+    const interval = setInterval(() => {
+      setIsScattered(true); // Scatter
+      setTimeout(() => {
+        setIsScattered(false); // Gather
+      }, 2000); // Time spent scattered
+    }, 8000); // Total cycle time (gather + orbit + scatter)
+
+    return () => {
+      clearTimeout(initialTimer);
+      clearInterval(interval);
+    };
+  }, []);
+
+  const radius = 130;
+
+  return (
+    <div className="relative flex w-full max-w-lg items-center justify-center mx-auto h-[350px]">
+      <div className="relative w-[300px] h-[300px]">
+        {/* Central Logo */}
+        <motion.div
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20"
+          animate={{ scale: isScattered ? 0.9 : 1 }}
+          transition={{ type: 'spring', stiffness: 200, damping: 10 }}
         >
-            <div className="flex h-full w-full flex-col items-stretch justify-between gap-10">
-                <div className="flex flex-row items-center justify-between">
-                <Circle ref={div1Ref}>
-                    <CryptoIcon token="ETH" className="h-8 w-8" />
-                </Circle>
-                <Circle ref={div2Ref}>
-                    <CryptoIcon token="USDT" className="h-8 w-8" />
-                </Circle>
-                </div>
-                <div className="flex flex-row items-center justify-between">
-                <Circle ref={div3Ref}>
-                    <CryptoIcon token="JUP" className="h-8 w-8" />
-                </Circle>
-                <Circle ref={div4Ref} className="h-16 w-16">
-                    <LogoIcon />
-                </Circle>
-                <Circle ref={div5Ref}>
-                    <CryptoIcon token="SHIB" className="h-8 w-8" />
-                </Circle>
-                </div>
-                <div className="flex flex-row items-center justify-between">
-                <Circle ref={div6Ref}>
-                    <CryptoIcon token="SOL" className="h-8 w-8" />
-                </Circle>
-                <Circle ref={div7Ref}>
-                    <CryptoIcon token="WIF" className="h-8 w-8" />
-                </Circle>
-                </div>
-            </div>
+          <LogoIcon />
+        </motion.div>
 
-            <AnimatedBeam containerRef={containerRef} fromRef={div1Ref} toRef={div4Ref} curvature={-40} duration={3} />
-            <AnimatedBeam containerRef={containerRef} fromRef={div2Ref} toRef={div4Ref} curvature={-40} duration={3} />
-            <AnimatedBeam containerRef={containerRef} fromRef={div3Ref} toRef={div4Ref} curvature={-40} duration={3} />
-            <AnimatedBeam containerRef={containerRef} fromRef={div5Ref} toRef={div4Ref} curvature={40} duration={3} />
-            <AnimatedBeam containerRef={containerRef} fromRef={div6Ref} toRef={div4Ref} curvature={-40} duration={3} />
-            <AnimatedBeam containerRef={containerRef} fromRef={div7Ref} toRef={div4Ref} curvature={40} duration={3} />
-        </div>
-    );
+        {/* Orbiting Icons */}
+        <AnimatePresence>
+          {icons.map((icon, index) => {
+            const { x: orbitX, y: orbitY } = getOrbitPosition(index, icons.length, radius);
+            const { x: randomX, y: randomY } = getRandomPosition(radius);
+
+            return (
+              <motion.div
+                key={icon.symbol}
+                className="absolute top-1/2 left-1/2"
+                initial={{ x: randomX, y: randomY, scale: 0.5, opacity: 0 }}
+                animate={{
+                  x: isScattered ? randomX : orbitX,
+                  y: isScattered ? randomY : orbitY,
+                  scale: isScattered ? 0.8 : 1,
+                  opacity: 1,
+                }}
+                transition={{
+                  type: 'spring',
+                  stiffness: 50,
+                  damping: 15,
+                  delay: isScattered ? 0 : index * 0.05,
+                }}
+                exit={{ opacity: 0 }}
+              >
+                <div className="h-12 w-12 flex items-center justify-center rounded-full bg-card border-2 shadow-md">
+                  <CryptoIcon token={icon.symbol} className="h-6 w-6" />
+                </div>
+              </motion.div>
+            );
+          })}
+        </AnimatePresence>
+
+         {/* Rotating container for when icons are in orbit */}
+         {!isScattered && (
+            <motion.div 
+                className="absolute inset-0 animate-orbit"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1, duration: 1 }}
+            />
+         )}
+      </div>
+    </div>
+  );
 };
+
+export { CryptoFeatureWeb };
 
 
 function LogoIcon() {
@@ -107,7 +128,7 @@ function LogoIcon() {
       viewBox="0 0 784 464"
       enableBackground="new 0 0 784 464"
       xmlSpace="preserve"
-      className="h-10 w-10 text-primary"
+      className="h-16 w-16 text-primary"
     >
       <path
         fill="currentColor"
