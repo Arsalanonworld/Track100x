@@ -6,7 +6,6 @@ import { cn } from '@/lib/utils';
 import { ThemeProvider } from '@/components/theme-provider';
 import DashboardLayout from '@/components/layout/dashboard-layout';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
-import Header from '@/components/layout/header';
 
 
 export const metadata: Metadata = {
@@ -35,7 +34,6 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <FirebaseClientProvider>
-            <Header />
             <DashboardLayout>{children}</DashboardLayout>
           </FirebaseClientProvider>
           <Toaster />

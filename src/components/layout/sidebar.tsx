@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Bell,
-  BarChart3,
   LogOut,
   Star,
   Lock,
@@ -32,7 +31,7 @@ function LogoIcon() {
     return (
       <svg
           xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
+          viewBox="0 0 24"
           fill="none"
           stroke="currentColor"
           strokeWidth="2"
@@ -76,13 +75,6 @@ const navItems = [
       href: "/portfolio",
       authRequired: true,
     },
-    {
-      label: "Analytics",
-      icon: <BarChart3 size={18} />,
-      href: "/analytics",
-      authRequired: true,
-      locked: true,
-    },
   ];
 
 export default function Sidebar({
@@ -123,9 +115,6 @@ export default function Sidebar({
       ];
 
   const finalNavItems = navItems.map(item => {
-    if (item.href === '/analytics') {
-      return { ...item, locked: user ? userPlan === 'free' : true };
-    }
     return item;
   });
 
@@ -141,10 +130,11 @@ export default function Sidebar({
       <aside
         className={cn(
           "hidden md:flex flex-col transition-all duration-300 z-40 border-r bg-background fixed h-full top-0 shadow-lg",
+          "pt-14 lg:pt-[60px]",
           isExpanded ? "w-60" : "w-[72px]"
         )}
       >
-        <div className="flex items-center h-14 lg:h-[60px] border-b px-6">
+        <div className="flex items-center h-14 lg:h-[60px] border-b px-6 absolute top-0 bg-background w-full">
              <Link href="/" className="flex items-center space-x-2">
                 <LogoIcon />
                 <span className={cn("font-bold transition-opacity duration-300 whitespace-nowrap", isExpanded ? "opacity-100" : "opacity-0")}>Track100x</span>

@@ -33,7 +33,6 @@ const mainNavItems = [
     { href: '/watchlist', label: 'Watchlist', icon: Eye },
     { href: '/alerts', label: 'Alerts', icon: Bell },
     { href: '/portfolio', label: 'Portfolio', icon: Wallet },
-    { href: '/analytics', label: 'Analytics', icon: BarChart3, pro: true },
 ];
 
 const accountNavItems = [

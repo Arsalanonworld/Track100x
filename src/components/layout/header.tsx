@@ -14,7 +14,7 @@ function LogoIcon() {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
+      viewBox="0 0 24"
       fill="none"
       stroke="currentColor"
       strokeWidth="2"
@@ -29,30 +29,10 @@ function LogoIcon() {
 
 export default function Header() {
     const { user } = useUser();
-    const [isSidebarLocked, setIsSidebarLocked] = useState(false);
-
-    useEffect(() => {
-        const savedState = localStorage.getItem('sidebar-collapsed');
-        setIsSidebarLocked(savedState === 'true');
-        
-        const handleStorageChange = () => {
-            const savedState = localStorage.getItem('sidebar-collapsed');
-            setIsSidebarLocked(savedState === 'true');
-        };
-
-        window.addEventListener('storage', handleStorageChange);
-        window.addEventListener('sidebarToggle', handleStorageChange);
-
-        return () => {
-            window.removeEventListener('storage', handleStorageChange);
-            window.removeEventListener('sidebarToggle', handleStorageChange);
-        };
-    }, []);
-
+    
     return (
         <header className={cn(
-            "fixed top-0 z-30 w-full bg-background/95 backdrop-blur-sm border-b transition-all duration-300",
-            isSidebarLocked ? 'md:pl-[72px]' : 'md:pl-60'
+            "fixed top-0 z-30 w-full bg-background/95 backdrop-blur-sm border-b"
         )}>
             <div className={cn("flex h-14 items-center lg:h-[60px] px-4")}>
                 <div className="flex items-center gap-2 md:hidden">

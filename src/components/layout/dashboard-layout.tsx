@@ -5,6 +5,7 @@ import React, { useState, useEffect } from 'react';
 import Sidebar from './sidebar';
 import { cn } from '@/lib/utils';
 import { Footer } from './footer';
+import Header from './header';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [isSidebarLocked, setIsSidebarLocked] = useState(false);
@@ -37,17 +38,20 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   };
   
   return (
-    <div className="flex">
-        <Sidebar isExpanded={!isSidebarLocked} onToggle={handleToggleLock} />
-        <div className={cn(
-            "flex flex-col w-full transition-all duration-300",
-            isSidebarLocked ? 'md:ml-[72px]' : 'md:ml-60'
-        )}>
-            <main className="flex-1 p-4 lg:p-6 pt-20 lg:pt-24 min-h-screen">
-                {children}
-            </main>
-            <Footer />
-        </div>
-    </div>
+    <>
+      <Header />
+      <div className="flex">
+          <Sidebar isExpanded={!isSidebarLocked} onToggle={handleToggleLock} />
+          <div className={cn(
+              "flex flex-col w-full transition-all duration-300",
+              isSidebarLocked ? 'md:ml-[72px]' : 'md:ml-60'
+          )}>
+              <main className="flex-1 p-4 lg:p-6 pt-20 lg:pt-24 min-h-screen">
+                  {children}
+              </main>
+              <Footer />
+          </div>
+      </div>
+    </>
   );
 }
