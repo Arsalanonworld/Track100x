@@ -29,33 +29,60 @@ import Link from 'next/link';
 import { Skeleton } from './ui/skeleton';
 import type { WhaleTransaction } from '@/lib/types';
 import { whaleTransactions as mockTransactions } from '@/lib/mock-data';
+import { AnimatePresence, motion } from 'framer-motion';
 
 
-function TransactionCardSkeleton() {
+function PageSkeleton() {
     return (
-        <Card className="w-full p-3 sm:p-4">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                 <div className="flex items-center gap-3 shrink-0">
-                    <Skeleton className="h-10 w-10 rounded-full" />
-                    <div>
-                        <Skeleton className="h-6 w-24" />
-                        <Skeleton className="h-4 w-16 mt-1" />
-                    </div>
-                </div>
-                 <div className="flex-1 w-full min-w-0">
-                     <div className="flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-4">
-                        <Skeleton className="h-6 w-full md:max-w-xs" />
-                        <Skeleton className="h-6 w-full md:max-w-xs" />
-                    </div>
-                </div>
-                <div className="flex items-center self-start sm:self-center justify-end gap-1 sm:gap-2 w-full sm:w-auto">
-                    <Skeleton className="h-6 w-16 hidden xs:inline-flex" />
-                    <Skeleton className="h-4 w-12" />
-                    <Skeleton className="h-8 w-8" />
-                    <Skeleton className="h-8 w-8" />
-                </div>
+        <div className='space-y-8'>
+            <div className='flex justify-between items-center'>
+                 <div className="flex-1">
+                    <Skeleton className="h-8 w-1/3" />
+                    <Skeleton className="h-5 w-2/3 mt-2" />
+                 </div>
+                 <div className="hidden md:flex gap-2">
+                    <Skeleton className="h-10 w-48" />
+                    <Skeleton className="h-10 w-32" />
+                    <Skeleton className="h-10 w-32" />
+                 </div>
+                 <div className="md:hidden">
+                    <Skeleton className="h-10 w-28" />
+                 </div>
             </div>
-        </Card>
+            <Card>
+                <CardHeader>
+                    <Skeleton className="h-6 w-1/4" />
+                    <Skeleton className="h-4 w-1/3" />
+                </CardHeader>
+                <CardContent className="space-y-3">
+                    {[...Array(5)].map((_, i) => (
+                        <Card key={i} className="w-full p-3 sm:p-4">
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                                <div className="flex items-center gap-3 shrink-0">
+                                    <Skeleton className="h-10 w-10 rounded-full" />
+                                    <div>
+                                        <Skeleton className="h-6 w-24" />
+                                        <Skeleton className="h-4 w-16 mt-1" />
+                                    </div>
+                                </div>
+                                <div className="flex-1 w-full min-w-0">
+                                    <div className="flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-4">
+                                        <Skeleton className="h-6 w-full md:max-w-xs" />
+                                        <Skeleton className="h-6 w-full md:max-w-xs" />
+                                    </div>
+                                </div>
+                                <div className="flex items-center self-start sm:self-center justify-end gap-1 sm:gap-2 w-full sm:w-auto">
+                                    <Skeleton className="h-6 w-16 hidden xs:inline-flex" />
+                                    <Skeleton className="h-4 w-12" />
+                                    <Skeleton className="h-8 w-8" />
+                                    <Skeleton className="h-8 w-8" />
+                                </div>
+                            </div>
+                        </Card>
+                    ))}
+                </CardContent>
+            </Card>
+        </div>
     )
 }
 
@@ -72,19 +99,33 @@ export function WhaleFeed({ isPreview = false }: { isPreview?: boolean }) {
 
   const transactionsPerPage = isPreview ? 5 : 10;
   
-  // API Call Simulation
+  // API Call & Live Feed Simulation
   useEffect(() => {
+    // Initial load
     setLoading(true);
-    // In a real app, you would fetch data from an API here.
-    // For now, we simulate a network delay.
-    const timer = setTimeout(() => {
-      // Example: fetch('/api/whale-feed').then(res => res.json()).then(setTransactions)
-      setTransactions(mockTransactions);
-      setLoading(false);
-    }, 1500);
+    const initialData = isPreview ? mockTransactions.slice(0, 5) : mockTransactions.slice(0,10);
+    setTransactions(initialData);
+    setLoading(false);
 
-    return () => clearTimeout(timer);
-  }, []);
+    // If it's a preview, we don't need to simulate a live feed.
+    if (isPreview) return;
+
+    // Live feed simulation
+    let transactionIndex = 10; // Start from where initial load ended
+    const interval = setInterval(() => {
+        if (transactionIndex >= mockTransactions.length) {
+            transactionIndex = 0; // Loop back for continuous demo
+        }
+        const newTransaction = mockTransactions[transactionIndex];
+        setTransactions(prevTransactions => [
+            {...newTransaction, id: `${newTransaction.id}-${Date.now()}`}, // Ensure unique key for animation
+            ...prevTransactions
+        ]);
+        transactionIndex++;
+    }, 4000); // Add a new transaction every 4 seconds
+
+    return () => clearInterval(interval);
+}, [isPreview]);
 
 
   const handleNextPage = () => {
@@ -116,11 +157,14 @@ export function WhaleFeed({ isPreview = false }: { isPreview?: boolean }) {
   const totalPages = Math.ceil(filteredTransactions.length / transactionsPerPage);
   
   const currentTransactions = useMemo(() => {
-     return filteredTransactions.slice(
+     const dataToPaginate = isPreview ? filteredTransactions : filteredTransactions;
+     if (isPreview) return dataToPaginate;
+
+     return dataToPaginate.slice(
         (currentPage - 1) * transactionsPerPage,
         currentPage * transactionsPerPage
       )
-  }, [filteredTransactions, currentPage, transactionsPerPage]);
+  }, [filteredTransactions, currentPage, transactionsPerPage, isPreview]);
 
 
   const FilterControls = () => (
@@ -198,6 +242,10 @@ export function WhaleFeed({ isPreview = false }: { isPreview?: boolean }) {
   )};
 
 
+  if (loading && !transactions.length) {
+    return <PageSkeleton />;
+  }
+
   return (
         <Card className="border-x-0 sm:border-x">
             <CardHeader>
@@ -250,12 +298,26 @@ export function WhaleFeed({ isPreview = false }: { isPreview?: boolean }) {
             </CardHeader>
             <CardContent>
                 <div className="space-y-3">
-                    {loading ? (
-                       [...Array(isPreview ? 5 : 10)].map((_, i) => <TransactionCardSkeleton key={i} />)
+                    {loading && currentTransactions.length === 0 ? (
+                       [...Array(isPreview ? 5 : 10)].map((_, i) => <PageSkeleton key={i} />)
                     ) : currentTransactions.length > 0 ? (
-                      currentTransactions.map((tx) => (
-                        <TransactionCard key={tx.id} tx={tx} />
-                      ))
+                      <AnimatePresence initial={false}>
+                        {currentTransactions.map((tx) => (
+                           <motion.div
+                            key={tx.id}
+                            layout
+                            initial={{ opacity: 0, y: -20, scale: 0.98 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, transition: { duration: 0.2 } }}
+                            transition={{ duration: 0.5, type: "spring" }}
+                            className="bg-card origin-top"
+                          >
+                             <div className="animate-pulse-slow">
+                               <TransactionCard tx={tx} />
+                             </div>
+                           </motion.div>
+                        ))}
+                      </AnimatePresence>
                     ) : (
                       <div className="text-center py-16 text-muted-foreground">
                         <p className="text-lg font-semibold">No transactions found.</p>
@@ -275,3 +337,5 @@ export function WhaleFeed({ isPreview = false }: { isPreview?: boolean }) {
         </Card>
   );
 }
+
+    
