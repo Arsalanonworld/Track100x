@@ -19,6 +19,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     setIsSidebarLocked(newLockedState);
     if (typeof window !== 'undefined') {
       localStorage.setItem('sidebar-collapsed', String(newLockedState));
+      // Dispatch a custom event that the header can listen to
+      window.dispatchEvent(new CustomEvent('sidebarToggle'));
     }
   };
 
@@ -28,7 +30,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     <div className="relative min-h-screen">
       <Sidebar isExpanded={!isSidebarLocked} onToggle={handleToggleLock} />
       <div className={cn("flex flex-col flex-1 transition-all duration-300", mainContentMargin)}>
-        <main className="flex-1 p-4 lg:p-6 pt-14 lg:pt-[60px]">
+        <main className="flex-1 p-4 lg:p-6 pt-20 lg:pt-24">
             {children}
         </main>
         <Footer />
