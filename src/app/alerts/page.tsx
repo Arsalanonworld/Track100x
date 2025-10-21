@@ -3,15 +3,15 @@
 
 import PageHeader from '@/components/page-header';
 import { Skeleton } from '@/components/ui/skeleton';
-import { AlertsPanel } from '@/components/watchlist/alerts-panel';
 import { useState } from 'react';
 import { AlertEditorDialog } from '@/components/alert-editor-dialog';
 import { Dialog } from '@/components/ui/dialog';
 import { useUser } from '@/firebase';
 import { FeatureLock } from '@/components/feature-lock';
-import { Card, CardHeader, CardContent } from '@/components/ui/card';
+import { Card, CardHeader, CardContent, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AlertHistory } from '@/components/alerts/alert-history';
+import { AlertsPanel } from '@/components/watchlist/alerts-panel';
 
 
 function PageSkeleton() {
@@ -63,10 +63,12 @@ function AlertsPage() {
       
       {user ? (
           <Tabs defaultValue="active" className="space-y-6">
-              <TabsList>
-                  <TabsTrigger value="active">Active Alerts</TabsTrigger>
-                  <TabsTrigger value="history">History</TabsTrigger>
-              </TabsList>
+              <div className="flex justify-between items-center">
+                <TabsList>
+                    <TabsTrigger value="active">Active Alerts</TabsTrigger>
+                    <TabsTrigger value="history">History</TabsTrigger>
+                </TabsList>
+              </div>
               <TabsContent value="active">
                 <AlertsPanel onNewAlert={handleOpenEditor} />
               </TabsContent>

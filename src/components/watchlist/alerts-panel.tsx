@@ -35,13 +35,18 @@ export function AlertsPanel({ onNewAlert }: { onNewAlert: () => void }) {
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle>Your Alerts</CardTitle>
+            <CardTitle>Manage Your Alerts</CardTitle>
             <CardDescription>
               {isPro
                 ? `You have ${alertCount} active alerts.`
                 : `You are using ${alertCount} of ${ALERT_LIMIT_FREE} alerts.`}
             </CardDescription>
           </div>
+           {!alertsAtLimit && (
+            <Button onClick={onNewAlert}>
+              Create Alert
+            </Button>
+          )}
         </div>
       </CardHeader>
       <CardContent>
