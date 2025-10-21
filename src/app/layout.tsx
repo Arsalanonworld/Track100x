@@ -25,6 +25,27 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet" />
+        <style>
+          {`
+            ::view-transition-old(root),
+            ::view-transition-new(root) {
+              animation: none;
+              mix-blend-mode: normal;
+            }
+            .dark::view-transition-old(root) {
+              z-index: 1;
+            }
+            .dark::view-transition-new(root) {
+              z-index: 999;
+            }
+            ::view-transition-old(root) {
+              z-index: 999;
+            }
+            ::view-transition-new(root) {
+              z-index: 1;
+            }
+          `}
+        </style>
       </head>
       <body className={cn('min-h-screen bg-background font-sans antialiased')}>
         <ThemeProvider

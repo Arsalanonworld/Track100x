@@ -1,7 +1,6 @@
 
 'use client';
 import { UserNav } from "@/components/user-nav";
-import { ThemeToggle } from "@/components/theme-toggle";
 import Link from "next/link";
 import NotificationBell from "./notification-bell";
 import { MobileNav } from "./mobile-nav";
@@ -11,6 +10,7 @@ import { CommandMenu } from "../command-menu";
 import React, { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { navItems } from "./sidebar";
+import { AnimatedThemeToggler } from "../ui/animated-theme-toggler";
 
 function LogoIcon() {
     return (
@@ -26,7 +26,7 @@ function LogoIcon() {
         viewBox="0 0 784 464"
         enableBackground="new 0 0 784 464"
         xmlSpace="preserve"
-        className="h-9 w-9 md:h-10 md:w-10 text-primary"
+        className="h-10 w-10 text-primary"
       >
         <path
           fill="currentColor"
@@ -131,7 +131,7 @@ export default function Header() {
                 <div className="flex items-center justify-end space-x-2 sm:space-x-4 ml-auto">
                     {user && <NotificationBell />}
                     <UserNav />
-                    <ThemeToggle />
+                    <AnimatedThemeToggler />
                 </div>
             </div>
         </header>
