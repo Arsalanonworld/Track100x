@@ -141,11 +141,9 @@ export default function ActiveAlerts({ onNewAlert }: { onNewAlert: () => void}) 
                             onCheckedChange={() => toggleAlert(alert)}
                             aria-label="Toggle alert"
                         />
-                        <DialogTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleEdit(alert)}>
-                                <Pencil className="h-4 w-4" />
-                            </Button>
-                        </DialogTrigger>
+                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleEdit(alert)}>
+                            <Pencil className="h-4 w-4" />
+                        </Button>
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
                             <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive">

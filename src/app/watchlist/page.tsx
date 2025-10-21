@@ -76,7 +76,6 @@ function WatchlistPage() {
       return query(collection(firestore, `users/${user.uid}/watchlist`));
     }
     return null;
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, firestore]);
 
   const { data: watchlist, loading: watchlistLoading } = useCollection<WatchlistItem>(watchlistQuery);
