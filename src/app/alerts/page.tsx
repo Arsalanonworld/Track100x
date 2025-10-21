@@ -11,6 +11,7 @@ import { useUser } from '@/firebase';
 import { FeatureLock } from '@/components/feature-lock';
 import { Button } from '@/components/ui/button';
 import { BellPlus } from 'lucide-react';
+import { Card, CardHeader, CardContent } from '@/components/ui/card';
 
 
 function PageSkeleton() {
