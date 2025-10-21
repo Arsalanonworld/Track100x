@@ -99,7 +99,8 @@ const CryptoFeatureWeb = () => {
                                 y2={center + y}
                                 stroke="hsl(var(--border))"
                                 strokeWidth="2"
-                                strokeDasharray="3 6"
+                                strokeOpacity={0.5}
+                                strokeDasharray="4 8"
                             />
                          )
                     })}
@@ -243,5 +244,7 @@ z"
     </svg>
   );
 }
+
+    
 
     
