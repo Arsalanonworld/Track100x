@@ -16,20 +16,7 @@ export function FeatureLock() {
   const openDialog = (tab: 'login' | 'signup') => {
     setInitialTab(tab);
     setAuthDialogOpen(true);
-  }
-
-  const UpgradeLock = () => (
-     <div className="text-center p-8 space-y-4">
-        <Lock className="h-8 w-8 mx-auto text-primary mb-2" />
-        <h3 className="text-xl font-bold">This is a Pro Feature</h3>
-        <p className="text-muted-foreground text-sm max-w-xs mx-auto mt-1 mb-4">
-            Upgrade your account to unlock this feature and get full access to all our tools.
-        </p>
-        <Button asChild>
-            <Link href="/upgrade">Upgrade to Pro</Link>
-        </Button>
-    </div>
-  )
+  };
 
   const AuthLock = () => (
      <div className="text-center p-8 space-y-4">
@@ -47,14 +34,12 @@ export function FeatureLock() {
         </Button>
         </div>
     </div>
-  )
+  );
 
   return (
     <>
-      <div className="absolute bottom-0 left-0 right-0 h-96 bg-gradient-to-t from-background via-background/90 to-transparent flex flex-col items-center justify-center">
-        <div className="bg-background/80 backdrop-blur-sm p-8 rounded-lg">
-          <AuthLock />
-        </div>
+      <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-background/80 backdrop-blur-sm">
+        <AuthLock />
       </div>
       <AuthDialog 
         open={isAuthDialogOpen} 

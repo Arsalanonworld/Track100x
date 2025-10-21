@@ -31,10 +31,12 @@ export function withAuth<P extends object>(
     if (!user) {
       return (
         <div className="relative min-h-[60vh]">
-            <div aria-hidden="true" className="pointer-events-none">
-                {SkeletonComponent ? <SkeletonComponent /> : null}
-            </div>
-            <FeatureLock />
+          {/* Render skeleton as the blurred background */}
+          <div aria-hidden="true" className="pointer-events-none">
+              {SkeletonComponent ? <SkeletonComponent /> : null}
+          </div>
+          {/* Render the overlay with the blur effect */}
+          <FeatureLock />
         </div>
       );
     }
