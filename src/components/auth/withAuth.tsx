@@ -1,3 +1,4 @@
+
 'use client';
 
 import React from 'react';
@@ -30,10 +31,10 @@ export function withAuth<P extends object>(
     if (!user) {
       return (
         <div className="relative">
-            <FeatureLock />
-            <div aria-hidden="true">
+            <div aria-hidden="true" className="pointer-events-none">
                 {SkeletonComponent ? <SkeletonComponent /> : <div className='h-[calc(100vh-200px)]'></div>}
             </div>
+            <FeatureLock />
         </div>
       );
     }
