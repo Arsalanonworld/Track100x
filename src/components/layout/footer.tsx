@@ -15,7 +15,7 @@ function LogoIcon() {
       viewBox="0 0 784 464"
       enableBackground="new 0 0 784 464"
       xmlSpace="preserve"
-      className="h-6 w-6 text-primary"
+      className="h-7 w-7 md:h-8 md:w-8 text-primary"
     >
       <path
         fill="currentColor"
