@@ -26,8 +26,8 @@ function PageSkeleton() {
         <Skeleton className="h-10 w-1/3" />
         <Skeleton className="h-6 w-2/3" />
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-        <div className="lg:col-span-1 space-y-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+        <div className="space-y-8">
           <Card>
             <CardHeader>
               <Skeleton className="h-6 w-1/2" />
@@ -46,9 +46,7 @@ function PageSkeleton() {
                   </div>
             </CardContent>
           </Card>
-        </div>
-         <div className="lg:col-span-2 space-y-8">
-            <Card>
+           <Card>
                 <CardHeader>
                     <Skeleton className="h-6 w-1/3" />
                     <Skeleton className="h-4 w-2/3" />
@@ -59,12 +57,30 @@ function PageSkeleton() {
                      <Skeleton className="h-10 w-40 mt-4" />
                 </CardContent>
             </Card>
+        </div>
+         <div className="space-y-8">
             <Card>
                 <CardHeader>
                     <Skeleton className="h-6 w-1/3" />
                 </CardHeader>
                 <CardContent className="space-y-6">
                      <Skeleton className="h-10 w-full" />
+                </CardContent>
+            </Card>
+            <Card>
+                <CardHeader>
+                    <Skeleton className="h-6 w-1/3" />
+                </CardHeader>
+                <CardContent className="space-y-6">
+                     <Skeleton className="h-10 w-full" />
+                </CardContent>
+            </Card>
+            <Card>
+                <CardHeader>
+                    <Skeleton className="h-6 w-1/3" />
+                </CardHeader>
+                <CardContent className="space-y-6">
+                     <Skeleton className="h-10 w-32" />
                 </CardContent>
             </Card>
          </div>
@@ -117,10 +133,9 @@ export default function AccountPage() {
         className='hidden sm:block'
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-        {/* Left Column */}
-        <div className="lg:col-span-1 space-y-8">
-          {/* Profile Card */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+        {/* Left Column: Profile & Subscription */}
+        <div className="space-y-8">
           <Card>
               <CardHeader>
                 <CardTitle>Your Profile</CardTitle>
@@ -157,11 +172,7 @@ export default function AccountPage() {
                   </div>
               </CardContent>
           </Card>
-        </div>
 
-        {/* Right Column */}
-        <div className="lg:col-span-2 space-y-8">
-          {/* Subscription Card */}
           <Card>
               <CardHeader>
                 <CardTitle>Subscription Plan</CardTitle>
@@ -197,8 +208,10 @@ export default function AccountPage() {
                 )}
               </CardContent>
           </Card>
-          
-          {/* Security Card */}
+        </div>
+
+        {/* Right Column: Settings & Danger Zone */}
+        <div className="space-y-8">
           <Card>
             <CardHeader>
                 <CardTitle>Security</CardTitle>
@@ -215,7 +228,6 @@ export default function AccountPage() {
             </CardContent>
           </Card>
           
-          {/* Notifications Card */}
           <Card>
             <CardHeader>
                 <CardTitle>Notifications</CardTitle>
@@ -237,8 +249,7 @@ export default function AccountPage() {
             </CardContent>
           </Card>
           
-           {/* Danger Zone Card */}
-          <Card className="border-destructive/50">
+           <Card className="border-destructive/50">
             <CardHeader>
                 <CardTitle className="text-destructive">Danger Zone</CardTitle>
                 <CardDescription>These actions are irreversible. Please proceed with caution.</CardDescription>
@@ -266,11 +277,8 @@ export default function AccountPage() {
                 </AlertDialog>
             </CardContent>
           </Card>
-
         </div>
       </div>
     </div>
   );
 }
-
-    
