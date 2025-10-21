@@ -9,18 +9,21 @@ function PageSkeleton() {
     return (
         <div className='space-y-8'>
             <div className='flex justify-between items-center'>
-                 <Skeleton className="h-12 w-1/3" />
+                 <div className="flex-1 space-y-2">
+                    <Skeleton className="h-8 w-1/3" />
+                    <Skeleton className="h-5 w-2/3" />
+                 </div>
             </div>
-            <div className="space-y-2">
-                <Skeleton className="h-10 w-full" />
+             <div className="flex flex-col sm:flex-row gap-2 w-full">
+                <Skeleton className="h-10 w-full flex-1" />
+                <div className="flex gap-2">
+                    <Skeleton className="h-10 w-32" />
+                    <Skeleton className="h-10 w-32" />
+                </div>
+            </div>
+            <div className="space-y-3">
                 {[...Array(10)].map((_, i) => (
-                    <div key={i} className="flex items-center p-4 h-[73px] rounded-lg border">
-                         <Skeleton className="h-6 w-8" />
-                         <Skeleton className="h-6 w-32 ml-4" />
-                         <Skeleton className="h-6 w-24 ml-12" />
-                         <Skeleton className="h-6 w-32 ml-12" />
-                         <Skeleton className="h-6 w-24 ml-auto" />
-                    </div>
+                    <Skeleton key={i} className="h-[73px] w-full" />
                 ))}
             </div>
         </div>

@@ -312,7 +312,7 @@ export function WhaleFeed({ isPreview = false, showTitle = true }: { isPreview?:
             <CardContent className={cn(!showTitle && "pt-6")}>
                 <div className="space-y-3">
                     {loading && currentTransactions.length === 0 ? (
-                       [...Array(isPreview ? 5 : 10)].map((_, i) => <PageSkeleton key={i} showTitle={showTitle} />)
+                       [...Array(isPreview ? 5 : 10)].map((_, i) => <PageSkeleton key={i} showTitle={false} />)
                     ) : currentTransactions.length > 0 ? (
                       <AnimatePresence initial={false}>
                         {currentTransactions.map((tx) => (

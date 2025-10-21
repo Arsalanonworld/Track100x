@@ -53,6 +53,7 @@ export function CommandMenu() {
     let currentPlaceholderIndex = 0;
     let currentText = '';
     let isDeleting = false;
+    let timeoutId: NodeJS.Timeout;
 
     const type = () => {
       const fullText = searchPlaceholders[currentPlaceholderIndex];
@@ -80,7 +81,7 @@ export function CommandMenu() {
       timeoutId = setTimeout(type, typingSpeed);
     };
 
-    let timeoutId = setTimeout(type, 1000);
+    timeoutId = setTimeout(type, 1000);
 
     return () => clearTimeout(timeoutId);
   }, [isClient, open]);

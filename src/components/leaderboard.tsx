@@ -61,20 +61,7 @@ function TableSkeleton() {
     return (
         <div className="space-y-3">
             {[...Array(10)].map((_, i) => (
-                <Card key={i} className="p-4">
-                    <div className="flex items-center gap-4">
-                        <Skeleton className="h-6 w-8" />
-                        <div className="flex-1 grid grid-cols-2 md:grid-cols-6 gap-4 items-center">
-                            <Skeleton className="h-6 w-32" />
-                            <Skeleton className="h-6 w-24" />
-                            <Skeleton className="h-6 w-24" />
-                            <Skeleton className="h-6 w-20" />
-                            <Skeleton className="h-6 w-20" />
-                            <Skeleton className="h-6 w-24" />
-                        </div>
-                        <Skeleton className="h-8 w-8 rounded-md" />
-                    </div>
-                </Card>
+                 <Skeleton key={i} className="h-[73px] w-full" />
             ))}
         </div>
     )

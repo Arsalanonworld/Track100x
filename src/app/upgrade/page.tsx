@@ -23,7 +23,7 @@ import { cn } from '@/lib/utils';
 import { useUser } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { AuthDialog } from '@/components/auth/auth-dialog';
-import { features, pricing } from '@/lib/app-data';
+import { features, pricing, faqs } from '@/lib/app-data';
 import { FeatureHighlights } from '@/components/feature-highlights';
 import { Faq } from '@/components/faq';
 

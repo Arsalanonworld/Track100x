@@ -13,7 +13,7 @@ import Link from 'next/link';
 import { Separator } from '@/components/ui/separator';
 import { FeatureLock } from '@/components/feature-lock';
 
-function AccountSkeleton() {
+function PageSkeleton() {
   return (
     <div className="space-y-8">
       <div className="space-y-2">
@@ -66,14 +66,14 @@ export default function AccountPage() {
   const isPro = plan === 'pro';
 
   if (loading) {
-    return <AccountSkeleton />;
+    return <PageSkeleton />;
   }
 
   if (!user) {
     return (
         <div className="relative min-h-[60vh]">
             <div aria-hidden="true" className="pointer-events-none blur-sm">
-                <AccountSkeleton />
+                <PageSkeleton />
             </div>
             <FeatureLock />
         </div>

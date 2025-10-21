@@ -99,4 +99,12 @@ export const faqs = [
     answer:
       'We accept all major credit cards. All payments are processed securely through our payment provider, Stripe.',
   },
+  {
+    question: 'How "real-time" is the data?',
+    answer: 'Our Pro plan offers a feed with near-zero latency, pulling data directly as transactions are confirmed on-chain. The Free plan feed has a delay of up to 1-2 minutes.',
+  },
+   {
+    question: 'Do you offer a free trial for the Pro plan?',
+    answer: "We do not offer a time-based free trial. However, our Free plan is a great way to experience the core functionality of Track100x. You can upgrade to Pro at any time to unlock all features.",
+  },
 ];
