@@ -120,7 +120,6 @@ export function CommandMenu() {
                     <CommandItem
                         key={token.symbol}
                         value={`Token ${token.name} ${token.symbol}`}
-                        onSelect={() => runCommand(() => router.push(`/token/${token.symbol}`))}
                     >
                         <CryptoIcon token={token.symbol} className="mr-2 h-4 w-4" />
                         <span>{token.name}</span>

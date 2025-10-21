@@ -4,9 +4,7 @@
 import { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ActiveAlerts from '@/components/alerts/active-alerts';
-import AlertHistory from '@/components/alerts/alert-history';
 import { useUser, useCollection, useFirestore } from '@/firebase';
 import { collection, query } from 'firebase/firestore';
 import type { Alert } from '@/lib/types';
@@ -63,18 +61,7 @@ export function AlertsPanel({ onNewAlert }: { onNewAlert: () => void }) {
             </Button>
           </div>
         )}
-        <Tabs defaultValue="active">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="active">Active</TabsTrigger>
-            <TabsTrigger value="history">History</TabsTrigger>
-          </TabsList>
-          <TabsContent value="active" className="pt-4">
-             <ActiveAlerts onNewAlert={onNewAlert} />
-          </TabsContent>
-          <TabsContent value="history" className="pt-4">
-            <AlertHistory />
-          </TabsContent>
-        </Tabs>
+        <ActiveAlerts onNewAlert={onNewAlert} />
       </CardContent>
     </Card>
   );

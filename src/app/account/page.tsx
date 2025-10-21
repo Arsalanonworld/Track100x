@@ -7,17 +7,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
-import { Star, User, Bell, Link as LinkIcon, Bot, MoreVertical } from 'lucide-react';
+import { Star, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Separator } from '@/components/ui/separator';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { useToast } from '@/hooks/use-toast';
 
 function AccountSkeleton() {
   return (
@@ -46,10 +39,6 @@ function AccountSkeleton() {
             <CardHeader><Skeleton className="h-6 w-1/4" /></CardHeader>
             <CardContent><Skeleton className="h-10 w-full" /></CardContent>
         </Card>
-         <Card>
-            <CardHeader><Skeleton className="h-6 w-1/4" /></CardHeader>
-            <CardContent><Skeleton className="h-10 w-full" /></CardContent>
-        </Card>
       </div>
     </div>
   );
@@ -58,16 +47,8 @@ function AccountSkeleton() {
 
 export default function AccountPage() {
   const { user, claims, loading } = useUser();
-  const { toast } = useToast();
   const plan = claims?.plan || 'free';
   const isPro = plan === 'pro';
-
-  const handleConnectTelegram = () => {
-    toast({
-        title: "Coming Soon!",
-        description: "Telegram integration is not yet available.",
-    })
-  }
 
   if (loading) {
     return <AccountSkeleton />;
@@ -153,29 +134,6 @@ export default function AccountPage() {
                     </Button>
                   </div>
                 )}
-              </CardContent>
-          </Card>
-
-          {/* Settings Card */}
-          <Card>
-              <CardHeader>
-                <CardTitle>Notification Settings</CardTitle>
-                <CardDescription>Connect your accounts to receive alerts.</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                  <div className='flex items-center justify-between p-4 border rounded-lg'>
-                      <div className='flex items-center gap-3'>
-                          <Bot className="h-5 w-5 text-muted-foreground" />
-                          <div className="space-y-1">
-                              <p className='font-medium'>Telegram Alerts</p>
-                              <p className='text-xs text-muted-foreground'>Receive instant whale alerts in Telegram.</p>
-                          </div>
-                      </div>
-                      <Button variant="outline" disabled>
-                          <LinkIcon className="h-4 w-4 mr-2" />
-                          Coming Soon
-                      </Button>
-                  </div>
               </CardContent>
           </Card>
         </div>

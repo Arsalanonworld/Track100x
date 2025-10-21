@@ -24,13 +24,6 @@ const footerLinks = {
     { label: 'Watchlist', href: '/watchlist' },
     { label: 'Upgrade', href: '/upgrade' },
   ],
-  company: [
-    { label: 'Contact', href: '#' },
-  ],
-  social: [
-    { label: 'Twitter / X', href: '#' },
-    { label: 'Discord', href: '#' },
-  ],
   legal: [
     { label: 'Terms of Service', href: '/terms-of-service' },
     { label: 'Privacy Policy', href: '/privacy-policy' },
@@ -42,7 +35,7 @@ export function Footer() {
     <footer className="border-t bg-background">
       <div className="container py-12">
         <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
-          <div className="col-span-1 md:col-span-2">
+          <div className="col-span-1 md:col-span-3">
             <Link href="/" className="flex items-center space-x-2 mb-4">
               <LogoIcon />
               <span className="inline-block font-bold text-xl">Track100x</span>
@@ -51,35 +44,11 @@ export function Footer() {
               The Blockchain Intelligence Platform for investors, traders, and researchers. Decode on-chain data and find alpha.
             </p>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 text-sm md:col-span-3">
+          <div className="grid grid-cols-2 sm:grid-cols-2 gap-8 text-sm md:col-span-2">
             <div>
               <h3 className="font-semibold text-foreground mb-4">Platform</h3>
               <ul className="space-y-3">
                 {footerLinks.platform.map((link) => (
-                  <li key={link.label}>
-                    <Link href={link.href} className="text-muted-foreground hover:text-foreground transition-colors">
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-semibold text-foreground mb-4">Company</h3>
-              <ul className="space-y-3">
-                {footerLinks.company.map((link) => (
-                  <li key={link.label}>
-                    <Link href={link.href} className="text-muted-foreground hover:text-foreground transition-colors">
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-             <div>
-              <h3 className="font-semibold text-foreground mb-4">Social</h3>
-              <ul className="space-y-3">
-                {footerLinks.social.map((link) => (
                   <li key={link.label}>
                     <Link href={link.href} className="text-muted-foreground hover:text-foreground transition-colors">
                       {link.label}
