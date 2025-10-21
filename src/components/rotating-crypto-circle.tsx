@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, forwardRef, ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { CryptoIcon } from './crypto-icon';
@@ -39,6 +39,41 @@ function getRandomPosition(radius: number) {
   };
 }
 
+const IconContainer = forwardRef<
+  HTMLDivElement,
+  {
+    children?: ReactNode;
+    className?: string;
+    [key: string]: any;
+  }
+>(({ children, className, ...rest }, ref) => {
+  return (
+    <div
+      {...rest}
+      ref={ref}
+      className={cn(
+        "relative flex h-20 w-20 items-center justify-center rounded-full bg-background/80 shadow-inner backdrop-blur-md",
+        className
+      )}
+    >
+      <div className="absolute inset-0 z-10 rounded-full [mask-image:linear-gradient(to_bottom,white_20%,transparent_75%)]" />
+
+      {/* Inner rings */}
+      <div className="absolute inset-2 z-0 animate-[spin_12s_linear_infinite] rounded-full bg-gradient-to-br from-primary/80 via-primary/50 to-secondary/30" />
+      <div className="absolute inset-3 z-0 animate-[spin_18s_linear_infinite_reverse] rounded-full bg-gradient-to-tl from-primary/50 via-primary/30 to-secondary/10" />
+
+      {/* Glow */}
+      <div className="absolute inset-0 z-0 rounded-full bg-primary/20 blur-md" />
+
+      {/* Central icon */}
+      <div className="relative z-20">{children}</div>
+    </div>
+  );
+});
+
+IconContainer.displayName = "IconContainer";
+
+
 const CryptoFeatureWeb = () => {
   const [isScattered, setIsScattered] = useState(true);
 
@@ -71,8 +106,8 @@ const CryptoFeatureWeb = () => {
         <motion.div
           className="absolute flex items-center justify-center"
           style={{
-              top: center,
-              left: center,
+              top: '50%',
+              left: '50%',
               x: '-50%',
               y: '-50%',
               zIndex: 20
@@ -80,7 +115,9 @@ const CryptoFeatureWeb = () => {
           animate={{ scale: isScattered ? 0.9 : 1 }}
           transition={{ type: 'spring', stiffness: 200, damping: 10 }}
         >
-          <LogoIcon />
+          <IconContainer>
+              <LogoIcon />
+          </IconContainer>
         </motion.div>
         
         {/* Dotted Lines SVG */}
@@ -180,7 +217,7 @@ function LogoIcon() {
       viewBox="0 0 784 464"
       enableBackground="new 0 0 784 464"
       xmlSpace="preserve"
-      className="h-16 w-16 text-primary"
+      className="h-10 w-10 text-primary"
     >
       <path
         fill="currentColor"
