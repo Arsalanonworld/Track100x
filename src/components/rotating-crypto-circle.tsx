@@ -69,7 +69,7 @@ const CryptoFeatureWeb = () => {
       <div className="relative" style={{ width: containerSize, height: containerSize }}>
         {/* Central Logo */}
         <motion.div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex items-center justify-center"
           animate={{ scale: isScattered ? 0.9 : 1 }}
           transition={{ type: 'spring', stiffness: 200, damping: 10 }}
         >
@@ -99,7 +99,7 @@ const CryptoFeatureWeb = () => {
                                 y2={center + y}
                                 stroke="hsl(var(--border))"
                                 strokeWidth="2"
-                                strokeOpacity={0.5}
+                                strokeOpacity={0.8}
                                 strokeDasharray="4 8"
                             />
                          )
