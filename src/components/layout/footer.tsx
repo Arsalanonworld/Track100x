@@ -6,39 +6,15 @@ function LogoIcon() {
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+      fill="currentColor"
       className="h-6 w-6 text-primary"
     >
-      <style>
-        {`
-          @keyframes path-1 {
-            0% { stroke-dashoffset: 20; }
-            33% { stroke-dashoffset: 0; }
-            100% { stroke-dashoffset: 0; }
-          }
-          @keyframes path-2 {
-            0% { stroke-dashoffset: 18; }
-            33% { stroke-dashoffset: 18; }
-            66% { stroke-dashoffset: 0; }
-            100% { stroke-dashoffset: 0; }
-          }
-          @keyframes path-3 {
-            0% { stroke-dashoffset: 29; }
-            66% { stroke-dashoffset: 29; }
-            100% { stroke-dashoffset: 0; }
-          }
-          .path-1 { stroke-dasharray: 20; stroke-dashoffset: 20; animation: path-1 2s ease-out infinite; }
-          .path-2 { stroke-dasharray: 18; stroke-dashoffset: 18; animation: path-2 2s ease-out infinite; }
-          .path-3 { stroke-dasharray: 29; stroke-dashoffset: 29; animation: path-3 2s ease-out infinite; }
-        `}
-      </style>
-      <path className="path-1" d="M14.5 12.5L18 16l-3.5 3.5" />
-      <path className="path-2" d="M9.5 12.5L6 16l3.5 3.5" />
-      <path className="path-3" d="M12 4v16" />
+      <path d="M12 11.25a.75.75 0 100-1.5.75.75 0 000 1.5z" />
+      <path
+        fillRule="evenodd"
+        d="M2.25 3.385c0-.83.824-1.408 1.61-.99L11.25 7.5v.033l- контекст9.615-5.138A1.125 1.125 0 012.25 3.385zm19.5 0a1.125 1.125 0 00-2.228.415L12.75 7.533V7.5L20.14 2.395c.787-.418 1.61.16 1.61.99zM12 8.283l-9.75 5.186V15.75l9.75-5.186v-2.28zm0-2.28L21.75 11.25V9.75L12 4.564v1.436zM3.86 16.245l7.39 3.92V21l-8.25-4.385A1.125 1.125 0 013.86 15zM12.75 21v-1.165l7.39-3.92a1.125 1.125 0clave 011.855 1.165L12.75 21z"
+        clipRule="evenodd"
+      />
     </svg>
   );
 }
