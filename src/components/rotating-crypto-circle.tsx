@@ -104,48 +104,10 @@ export const RotatingCryptoCircle = () => {
     const numIcons = icons.length;
     const [isMounted, setIsMounted] = useState(false);
     const controls = useAnimation();
-    const [animationKey, setAnimationKey] = useState(0); // Add a key to force re-render
-
-    const runAnimation = async () => {
-        // Define initial and animate states for each icon
-        const iconAnimations = icons.map((_, i) => {
-             const angle = (i / numIcons) * 2 * Math.PI;
-             const x = Math.cos(angle) * radius;
-             const y = Math.sin(angle) * radius;
-
-             return controls.start( (custom) => ({
-                    ...custom,
-                    x: x - 24, // Adjust for icon size
-                    y: y - 24, // Adjust for icon size
-                    opacity: 1,
-                    scale: 1,
-                    transition: {
-                        type: 'spring',
-                        stiffness: 100,
-                        damping: 20,
-                        delay: 0.5 + i * 0.1,
-                    },
-                })
-             );
-        });
-
-        await Promise.all(iconAnimations);
-    };
+    const [animationKey, setAnimationKey] = useState(0); 
 
     useEffect(() => {
         setIsMounted(true);
-
-        const animateAndRepeat = async () => {
-            // Scatter
-            setAnimationKey(prev => prev + 1); // This will re-trigger the initial animation
-            // Wait for arrangement animation to finish
-            await new Promise(resolve => setTimeout(resolve, 500 + numIcons * 100 + 2000));
-        };
-        
-        const interval = setInterval(animateAndRepeat, 15000); // Repeat every 15 seconds
-        animateAndRepeat();
-
-        return () => clearInterval(interval);
     }, []);
     
 
@@ -178,27 +140,50 @@ export const RotatingCryptoCircle = () => {
                     key={animationKey}
                     className="w-full h-full animate-orbit group-hover:pause"
                 >
+                    <svg
+                      className="absolute top-0 left-0 w-full h-full"
+                      style={{ transform: "translate(-50%, -50%)", top: "50%", left: "50%" }}
+                      viewBox={`0 0 ${radius * 2 + 60} ${radius * 2 + 60}`}
+                    >
+                      <g transform={`translate(${radius + 30}, ${radius + 30})`}>
+                          {icons.map((_, i) => {
+                              const angle = (i / numIcons) * 2 * Math.PI;
+                              const x = Math.cos(angle) * (radius - 12);
+                              const y = Math.sin(angle) * (radius - 12);
+                              return (
+                                  <motion.line
+                                      key={`line-${i}`}
+                                      x1="0"
+                                      y1="0"
+                                      x2={x}
+                                      y2={y}
+                                      stroke="hsl(var(--border))"
+                                      strokeWidth="1"
+                                      strokeDasharray="4 4"
+                                      initial={{ opacity: 0 }}
+                                      animate={{ opacity: 0.5 }}
+                                      transition={{ duration: 0.5, delay: 1 + i * 0.1 }}
+                                  />
+                              );
+                          })}
+                      </g>
+                    </svg>
                     {icons.map((symbol, i) => {
                         const angle = (i / numIcons) * 2 * Math.PI;
                         const x = Math.cos(angle) * radius;
                         const y = Math.sin(angle) * radius;
-
-                        const randomX = (Math.random() - 0.5) * 400;
-                        const randomY = (Math.random() - 0.5) * 400;
 
                         return (
                              <motion.div
                                 key={symbol}
                                 className="absolute top-1/2 left-1/2"
                                 initial={{
-                                    x: randomX,
-                                    y: randomY,
+                                    x: x - 24,
+                                    y: y - 24,
                                     opacity: 0,
                                     scale: 0.5
                                 }}
                                 animate={{
-                                    x: x - 24, // Adjust for icon size
-                                    y: y - 24, // Adjust for icon size
                                     opacity: 1,
                                     scale: 1,
                                 }}
