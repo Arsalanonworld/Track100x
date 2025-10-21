@@ -29,7 +29,7 @@ function PageSkeleton() {
 
 function LeaderboardPage() {
   return (
-    <div className="space-y-8">
+    <div>
       <PageHeader
           title="Smart Money Dashboard"
           description="Discover and track the most influential and profitable wallets in real-time."

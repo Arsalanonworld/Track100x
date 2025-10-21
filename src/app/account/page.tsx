@@ -82,7 +82,7 @@ export default function AccountPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div>
       <PageHeader
         title="My Account"
         description="Manage your profile, subscription, and application settings."

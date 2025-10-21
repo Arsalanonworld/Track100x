@@ -19,7 +19,7 @@ function PageSkeleton() {
 
 function FeedPage() {
   return (
-    <div className='space-y-8'>
+    <div>
         <PageHeader 
             title="Whale Feed"
             description="A live stream of significant on-chain transactions."

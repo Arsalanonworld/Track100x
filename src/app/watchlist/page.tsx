@@ -135,7 +135,7 @@ function WatchlistPage() {
   }
   
   return (
-    <div className="space-y-8">
+    <div>
          <PageHeader
             title="My Watchlist"
             description={pageDescription}

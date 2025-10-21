@@ -147,7 +147,7 @@ function PortfolioPage() {
     const hasWallets = true; 
 
     return (
-        <div className="space-y-8">
+        <div>
             <PageHeader
                 title="Portfolio"
                 description="Aggregated view of your on-chain wealth from your watched wallets."

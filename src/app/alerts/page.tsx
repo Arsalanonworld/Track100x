@@ -28,7 +28,7 @@ function AlertsPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div>
       <PageHeader
         title="Alerts"
         description="Create and manage your on-chain alerts. Get notified about significant market movements."
