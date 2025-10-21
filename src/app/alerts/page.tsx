@@ -10,6 +10,8 @@ import { Dialog } from '@/components/ui/dialog';
 import { useUser } from '@/firebase';
 import { FeatureLock } from '@/components/feature-lock';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { AlertHistory } from '@/components/alerts/alert-history';
 
 
 function PageSkeleton() {
@@ -55,12 +57,23 @@ function AlertsPage() {
     <div>
         <PageHeader
             title="Alerts"
-            description="Create and manage your on-chain alerts. Get notified about significant market movements."
+            description="Create, manage, and review your on-chain alerts."
             className='hidden sm:block'
         />
       
       {user ? (
-          <AlertsPanel onNewAlert={handleOpenEditor} />
+          <Tabs defaultValue="active" className="space-y-6">
+              <TabsList>
+                  <TabsTrigger value="active">Active Alerts</TabsTrigger>
+                  <TabsTrigger value="history">History</TabsTrigger>
+              </TabsList>
+              <TabsContent value="active">
+                <AlertsPanel onNewAlert={handleOpenEditor} />
+              </TabsContent>
+              <TabsContent value="history">
+                <AlertHistory />
+              </TabsContent>
+          </Tabs>
       ) : (
         <div className="relative min-h-[60vh]">
             <div aria-hidden="true" className="pointer-events-none blur-sm">
