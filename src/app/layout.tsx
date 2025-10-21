@@ -7,6 +7,7 @@ import { ThemeProvider } from '@/components/theme-provider';
 import DashboardLayout from '@/components/layout/dashboard-layout';
 import { Footer } from '@/components/layout/footer';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
+import Header from '@/components/layout/header';
 
 export const metadata: Metadata = {
   title: 'Track100x | Blockchain Intelligence Platform',
@@ -35,6 +36,7 @@ export default function RootLayout({
         >
           <FirebaseClientProvider>
             <div className="flex flex-col min-h-screen">
+              <Header />
               <div className="flex-1">
                 <DashboardLayout>{children}</DashboardLayout>
               </div>
