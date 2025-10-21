@@ -197,99 +197,116 @@ function PortfolioPage() {
                             </Select>
                         </div>
                         
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-                            <div className="lg:col-span-2 relative">
-                                <h3 className="font-semibold mb-4 text-center lg:text-left">Net Worth Over Time</h3>
-                                <div className={cn("h-[250px] sm:h-[350px]", !isPro && timeRange !== '7d' && "blur-md")}>
-                                <ChartContainer config={{
-                                        value: {
-                                            label: "Net Worth",
-                                            color: "hsl(var(--primary))",
-                                        },
-                                        }} className="h-full w-full">
-                                        <AreaChart data={chartData} margin={{ top: 5, right: 10, left: -25, bottom: 0 }}>
-                                            <CartesianGrid vertical={false} strokeDasharray="3 3" />
-                                            <XAxis dataKey="name" tick={{ fill: 'hsl(var(--muted-foreground))' }} fontSize={12} axisLine={false} tickLine={false} interval="preserveStartEnd" />
-                                            <YAxis tickFormatter={(value) => `$${(Number(value) / 1000)}k`} tick={{ fill: 'hsl(var(--muted-foreground))' }} fontSize={12} axisLine={false} tickLine={false} />
-                                            <Tooltip
-                                                cursor={{ stroke: 'hsl(var(--border))' }}
-                                                content={<ChartTooltipContent
-                                                    indicator="line"
-                                                    labelFormatter={(label, payload) => {
-                                                        const item = payload[0];
-                                                        if (item && item.payload.name) {
-                                                            return item.payload.name;
-                                                        }
-                                                        return label;
-                                                    }}
-                                                    formatter={(value) => (value as number).toLocaleString('en-US', {
-                                                            style: 'currency',
-                                                            currency: 'USD',
-                                                            minimumFractionDigits: 0,
-                                                            maximumFractionDigits: 0,
-                                                        })}
-                                                    />}
-                                            />
-                                            <Area type="monotone" dataKey="value" stroke="hsl(var(--primary))" fill="hsl(var(--primary))" fillOpacity={0.1} />
-                                        </AreaChart>
-                                    </ChartContainer>
-                                </div>
-                                {!isPro && timeRange !== '7d' && (
-                                    <div className="absolute inset-0">
-                                        <FeatureLockInline title="Unlock Full History" description="Upgrade to Pro to view 30-day and all-time portfolio performance."/>
-                                    </div>
-                                )}
-                            </div>
-                            <div className="h-[250px] sm:h-[350px]">
-                                <h3 className="font-semibold mb-4 text-center lg:text-left">Asset Allocation</h3>
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <PieChart>
-                                        <Pie 
-                                            activeIndex={activeIndex}
-                                            activeShape={renderActiveShape}
-                                            data={allocationData} 
-                                            cx="50%"
-                                            cy="50%"
-                                            innerRadius={60}
-                                            outerRadius={80}
-                                            fill="var(--color-value)"
-                                            dataKey="value"
-                                            onMouseEnter={onPieEnter}
-                                            labelLine={false}
-                                            label={false}
-                                        >
-                                            {allocationData.map((entry, index) => (
-                                                <Cell key={`cell-${index}`} fill={entry.color} style={{ outline: 'none' }} />
-                                            ))}
-                                        </Pie>
-                                        <Legend
-                                            onMouseEnter={(_, index) => onPieEnter(_, index)}
-                                            verticalAlign="bottom" 
-                                            layout="horizontal"
-                                            align="center"
-                                            wrapperStyle={{paddingTop: '20px'}}
-                                            iconSize={10}
-                                            content={({ payload }) => (
-                                            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 mt-4 text-xs text-muted-foreground">
-                                                {payload?.map((entry, index) => (
-                                                <div key={`item-${index}`} onMouseEnter={() => onPieEnter(entry, index)} className={cn("flex items-center gap-1.5 cursor-pointer transition-opacity", activeIndex !== index && 'opacity-50 hover:opacity-100')}>
-                                                    <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: entry.color }} />
-                                                    <span>{entry.value}</span>
-                                                </div>
-                                                ))}
-                                            </div>
-                                            )}
+                        <div className="relative">
+                            <h3 className="font-semibold mb-4 text-center lg:text-left">Net Worth Over Time</h3>
+                            <div className={cn("h-[250px] sm:h-[350px]", !isPro && timeRange !== '7d' && "blur-md")}>
+                            <ChartContainer config={{
+                                    value: {
+                                        label: "Net Worth",
+                                        color: "hsl(var(--primary))",
+                                    },
+                                    }} className="h-full w-full">
+                                    <AreaChart data={chartData} margin={{ top: 5, right: 10, left: -25, bottom: 0 }}>
+                                        <defs>
+                                            <linearGradient id="fillValue" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="5%" stopColor="var(--color-value)" stopOpacity={0.8} />
+                                                <stop offset="95%" stopColor="var(--color-value)" stopOpacity={0.1} />
+                                            </linearGradient>
+                                        </defs>
+                                        <CartesianGrid vertical={false} strokeDasharray="3 3" />
+                                        <XAxis dataKey="name" tick={{ fill: 'hsl(var(--muted-foreground))' }} fontSize={12} axisLine={false} tickLine={false} interval="preserveStartEnd" />
+                                        <YAxis tickFormatter={(value) => `$${(Number(value) / 1000)}k`} tick={{ fill: 'hsl(var(--muted-foreground))' }} fontSize={12} axisLine={false} tickLine={false} />
+                                        <Tooltip
+                                            cursor={{ stroke: 'hsl(var(--border))' }}
+                                            content={<ChartTooltipContent
+                                                indicator="line"
+                                                labelFormatter={(label, payload) => {
+                                                    const item = payload[0];
+                                                    if (item && item.payload.name) {
+                                                        return item.payload.name;
+                                                    }
+                                                    return label;
+                                                }}
+                                                formatter={(value) => (value as number).toLocaleString('en-US', {
+                                                        style: 'currency',
+                                                        currency: 'USD',
+                                                        minimumFractionDigits: 0,
+                                                        maximumFractionDigits: 0,
+                                                    })}
+                                                />}
                                         />
-                                    </PieChart>
-                                </ResponsiveContainer>
+                                        <Area type="monotone" dataKey="value" stroke="hsl(var(--primary))" fill="url(#fillValue)" />
+                                    </AreaChart>
+                                </ChartContainer>
                             </div>
+                            {!isPro && timeRange !== '7d' && (
+                                <div className="absolute inset-0">
+                                    <FeatureLockInline title="Unlock Full History" description="Upgrade to Pro to view 30-day and all-time portfolio performance."/>
+                                </div>
+                            )}
                         </div>
                         </CardContent>
                     </Card>
                 </section>
 
                 <section>
-                  <HoldingsTable />
+                    <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+                        <div className="lg:col-span-3">
+                            <HoldingsTable />
+                        </div>
+                         <div className="lg:col-span-2">
+                            <Card className="h-full">
+                                <CardHeader>
+                                    <CardTitle>Asset Allocation</CardTitle>
+                                    <CardDescription>Visual breakdown of your token holdings.</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="h-[250px] sm:h-[350px]">
+                                        <ResponsiveContainer width="100%" height="100%">
+                                            <PieChart>
+                                                <Pie 
+                                                    activeIndex={activeIndex}
+                                                    activeShape={renderActiveShape}
+                                                    data={allocationData} 
+                                                    cx="50%"
+                                                    cy="50%"
+                                                    innerRadius={60}
+                                                    outerRadius={80}
+                                                    fill="var(--color-value)"
+                                                    dataKey="value"
+                                                    onMouseEnter={onPieEnter}
+                                                    labelLine={false}
+                                                    label={false}
+                                                >
+                                                    {allocationData.map((entry, index) => (
+                                                        <Cell key={`cell-${index}`} fill={entry.color} style={{ outline: 'none' }} />
+                                                    ))}
+                                                </Pie>
+                                                <Legend
+                                                    onMouseEnter={(_, index) => onPieEnter(_, index)}
+                                                    verticalAlign="bottom" 
+                                                    layout="horizontal"
+                                                    align="center"
+                                                    wrapperStyle={{paddingTop: '20px'}}
+                                                    iconSize={10}
+                                                    content={({ payload }) => (
+                                                    <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 mt-4 text-xs text-muted-foreground">
+                                                        {payload?.map((entry, index) => (
+                                                        <div key={`item-${index}`} onMouseEnter={() => onPieEnter(entry, index)} className={cn("flex items-center gap-1.5 cursor-pointer transition-opacity", activeIndex !== index && 'opacity-50 hover:opacity-100')}>
+                                                            <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: entry.color }} />
+                                                            <span>{entry.value}</span>
+                                                        </div>
+                                                        ))}
+                                                    </div>
+                                                    )}
+                                                />
+                                            </PieChart>
+                                        </ResponsiveContainer>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </div>
+                    </div>
                 </section>
               </div>
             )}
