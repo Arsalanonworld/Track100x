@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { leaderboardData, type LeaderboardWallet } from '@/lib/mock-data';
-import { Search, ArrowUp, ArrowDown, Zap, Trophy, Flame, Coins, SlidersHorizontal } from 'lucide-react';
+import { Search, ArrowUp, ArrowDown, Zap, Trophy, Flame, Coins, SlidersHorizontal, Lock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Card, CardContent } from './ui/card';
 import { getExplorerUrl } from '@/lib/explorers';
@@ -27,6 +27,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuLabel
 import { Label } from './ui/label';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useUser } from '@/firebase';
 
 
 const PnlCell = ({ value }: { value: number }) => (
@@ -145,6 +146,8 @@ export function Leaderboard() {
   const [tagFilter, setTagFilter] = useState('all');
   const [sortBy, setSortBy] = useState('pnl7d');
   const [isLoading, setIsLoading] = useState(true);
+  const { claims } = useUser();
+  const isPro = claims?.plan === 'pro';
 
   useEffect(() => {
     // Simulate data loading
@@ -197,6 +200,8 @@ export function Leaderboard() {
 
     return data;
   }, [searchFilter, tagFilter, sortBy]);
+
+  const displayData = isPro ? filteredAndSortedData : filteredAndSortedData.slice(0, 5);
 
   const sortOptions = [
     { value: 'pnl7d', label: '7d P&L' },
@@ -256,7 +261,23 @@ export function Leaderboard() {
                     </DropdownMenu>
                  </div>
             </div>
-            <LeaderboardTable data={filteredAndSortedData} isLoading={isLoading} />
+            <div className="relative">
+                <LeaderboardTable data={displayData} isLoading={isLoading} />
+                {!isPro && !isLoading && (
+                    <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-background to-transparent flex flex-col items-center justify-center text-center p-8">
+                        <div className="bg-background/80 backdrop-blur-sm p-8 rounded-lg">
+                            <Lock className="h-8 w-8 mx-auto text-primary mb-4" />
+                            <h3 className="text-xl font-bold">View the Full Leaderboard</h3>
+                            <p className="text-muted-foreground text-sm max-w-xs mx-auto mt-1 mb-4">
+                                Upgrade to Pro to unlock the top 100 wallets, deep wallet profiles, and more.
+                            </p>
+                            <Button asChild>
+                                <Link href="/upgrade">Upgrade to Pro</Link>
+                            </Button>
+                        </div>
+                    </div>
+                )}
+            </div>
         </div>
     );
 }
