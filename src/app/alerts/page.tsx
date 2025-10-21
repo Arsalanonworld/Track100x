@@ -9,8 +9,6 @@ import { AlertEditorDialog } from '@/components/alert-editor-dialog';
 import { Dialog } from '@/components/ui/dialog';
 import { useUser } from '@/firebase';
 import { FeatureLock } from '@/components/feature-lock';
-import { Button } from '@/components/ui/button';
-import { BellPlus } from 'lucide-react';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
 
 
@@ -58,7 +56,6 @@ function AlertsPage() {
         <PageHeader
             title="Alerts"
             description="Create and manage your on-chain alerts. Get notified about significant market movements."
-            action={user && <Button onClick={handleOpenEditor}><BellPlus className="h-4 w-4 mr-2" /> New Alert</Button>}
             className='hidden sm:block'
         />
       
