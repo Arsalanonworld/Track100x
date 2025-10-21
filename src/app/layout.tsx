@@ -5,7 +5,6 @@ import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
 import { ThemeProvider } from '@/components/theme-provider';
 import DashboardLayout from '@/components/layout/dashboard-layout';
-import { Footer } from '@/components/layout/footer';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
 
 
@@ -36,7 +35,6 @@ export default function RootLayout({
         >
           <FirebaseClientProvider>
             <DashboardLayout>{children}</DashboardLayout>
-            <Footer />
           </FirebaseClientProvider>
           <Toaster />
         </ThemeProvider>
