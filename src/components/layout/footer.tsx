@@ -4,16 +4,41 @@ import Link from 'next/link';
 function LogoIcon() {
   return (
     <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className="h-6 w-6"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="h-6 w-6 text-primary"
     >
-        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+      <style>
+        {`
+          @keyframes path-1 {
+            0% { stroke-dashoffset: 20; }
+            33% { stroke-dashoffset: 0; }
+            100% { stroke-dashoffset: 0; }
+          }
+          @keyframes path-2 {
+            0% { stroke-dashoffset: 18; }
+            33% { stroke-dashoffset: 18; }
+            66% { stroke-dashoffset: 0; }
+            100% { stroke-dashoffset: 0; }
+          }
+          @keyframes path-3 {
+            0% { stroke-dashoffset: 29; }
+            66% { stroke-dashoffset: 29; }
+            100% { stroke-dashoffset: 0; }
+          }
+          .path-1 { stroke-dasharray: 20; stroke-dashoffset: 20; animation: path-1 2s ease-out infinite; }
+          .path-2 { stroke-dasharray: 18; stroke-dashoffset: 18; animation: path-2 2s ease-out infinite; }
+          .path-3 { stroke-dasharray: 29; stroke-dashoffset: 29; animation: path-3 2s ease-out infinite; }
+        `}
+      </style>
+      <path className="path-1" d="M14.5 12.5L18 16l-3.5 3.5" />
+      <path className="path-2" d="M9.5 12.5L6 16l3.5 3.5" />
+      <path className="path-3" d="M12 4v16" />
     </svg>
   );
 }
