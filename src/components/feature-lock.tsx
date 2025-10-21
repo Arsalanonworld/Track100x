@@ -37,7 +37,7 @@ export function FeatureLock() {
       <AuthDialog 
         open={isAuthDialogOpen} 
         onOpenChange={setAuthDialogOpen} 
-        initialTab={initialAuthTab}
+        initialTab={initialTab}
       />
     </>
   );
