@@ -32,13 +32,9 @@ export function withAuth<P extends object>(
       return (
         <div className="relative">
             <FeatureLock />
-            {SkeletonComponent ? (
-                 <div className='opacity-30 blur-sm pointer-events-none'>
-                    <SkeletonComponent />
-                </div>
-            ) : (
-                <div className='h-[calc(100vh-200px)]'></div>
-            )}
+            <div className='opacity-30 blur-sm pointer-events-none' aria-hidden="true">
+                {SkeletonComponent ? <SkeletonComponent /> : <div className='h-[calc(100vh-200px)]'></div>}
+            </div>
         </div>
       );
     }
