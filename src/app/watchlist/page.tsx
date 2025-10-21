@@ -67,10 +67,8 @@ function WatchlistPage() {
   const { user, claims, loading: userLoading } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
-  const router = useRouter();
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [editorEntity, setEditorEntity] = useState<{type: 'wallet' | 'token', identifier: string} | undefined>(undefined);
-  const [isAuthDialogOpen, setAuthDialogOpen] = useState(!user && !userLoading);
   
   const isPro = claims?.plan === 'pro';
 
@@ -128,6 +126,7 @@ function WatchlistPage() {
   }
 
   const handleOpenEditor = (entity: {type: 'wallet' | 'token', identifier: string}) => {
+    if (!user) return;
     setEditorEntity(entity);
     setIsEditorOpen(true);
   }
@@ -141,28 +140,11 @@ function WatchlistPage() {
     return <PageSkeleton />;
   }
 
-  if (!user) {
-    return (
-        <>
-            <div aria-hidden="true">
-                <PageSkeleton />
-            </div>
-            <AuthDialog 
-                open={isAuthDialogOpen}
-                onOpenChange={(open) => {
-                    if(!open) router.push('/');
-                    setAuthDialogOpen(open)
-                }}
-            />
-        </>
-    )
-  }
-
   return (
     <div>
          <PageHeader
             title="My Watchlist"
-            description={pageDescription}
+            description={user ? pageDescription : "Track your wallets and tokens all in one place."}
         />
 
         <div className='space-y-6'>
@@ -173,7 +155,7 @@ function WatchlistPage() {
                 isLoading={isLoading}
             />
             
-            {watchlistAtLimit && (
+            {user && watchlistAtLimit && (
                 <Card className="text-center p-8 space-y-4 rounded-lg bg-card border shadow-lg border-primary">
                     <Lock className="w-8 h-8 text-primary mx-auto" />
                     <h3 className="text-2xl font-bold">Watchlist Limit Reached</h3>
@@ -203,15 +185,22 @@ function WatchlistPage() {
                                 />
                             ))
                         ) : (
-                        !isLoading && (
                             <div className="flex flex-col items-center justify-center text-center text-muted-foreground p-8 rounded-lg border-2 border-dashed h-48">
                                 <Eye className="h-10 w-10 mb-4" />
-                                <p className="font-semibold text-lg text-foreground">Your watchlist is empty</p>
-                                <p className="text-sm max-w-xs mx-auto">
-                                Use the form above to add wallets or tokens to begin.
+                                <p className="font-semibold text-lg text-foreground">
+                                    {user ? "Your watchlist is empty" : "Log in to build your watchlist"}
                                 </p>
+                                <p className="text-sm max-w-xs mx-auto">
+                                  {user ? "Use the form above to add wallets or tokens to begin." : "Create a free account to track wallets and tokens."}
+                                </p>
+                                {!user && (
+                                    <Button asChild className='mt-4'>
+                                        <Link href="/login">
+                                            Log In / Sign Up
+                                        </Link>
+                                    </Button>
+                                )}
                             </div>
-                        )
                         )}
                     </div>
                 </CardContent>

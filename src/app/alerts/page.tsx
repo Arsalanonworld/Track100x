@@ -8,8 +8,10 @@ import { useState } from 'react';
 import { AlertEditorDialog } from '@/components/alert-editor-dialog';
 import { Dialog } from '@/components/ui/dialog';
 import { useUser } from '@/firebase';
-import { AuthDialog } from '@/components/auth/auth-dialog';
-import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { BellPlus } from 'lucide-react';
 
 function PageSkeleton() {
     return (
@@ -25,32 +27,15 @@ function PageSkeleton() {
 function AlertsPage() {
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const { user, loading } = useUser();
-  const router = useRouter();
-  const [isAuthDialogOpen, setAuthDialogOpen] = useState(!user && !loading);
 
   const handleOpenEditor = () => {
-    setIsEditorOpen(true);
+    if (user) {
+        setIsEditorOpen(true);
+    }
   }
 
   if (loading) {
     return <PageSkeleton />;
-  }
-
-  if (!user) {
-    return (
-        <>
-            <div aria-hidden="true">
-                <PageSkeleton />
-            </div>
-            <AuthDialog 
-                open={isAuthDialogOpen}
-                onOpenChange={(open) => {
-                    if(!open) router.push('/');
-                    setAuthDialogOpen(open)
-                }}
-            />
-        </>
-    )
   }
 
   return (
@@ -59,11 +44,39 @@ function AlertsPage() {
         title="Alerts"
         description="Create and manage your on-chain alerts. Get notified about significant market movements."
       />
-      <AlertsPanel onNewAlert={handleOpenEditor} />
+      
+      {user ? (
+          <AlertsPanel onNewAlert={handleOpenEditor} />
+      ) : (
+        <Card>
+            <CardHeader>
+                <CardTitle>Manage Alerts</CardTitle>
+                <CardDescription>
+                    Log in to create and manage your alerts.
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div className="flex flex-col items-center justify-center text-center text-muted-foreground p-8 rounded-lg border-2 border-dashed h-64">
+                    <BellPlus className="h-10 w-10 mb-4" />
+                    <p className="font-semibold text-lg text-foreground">Log in to create alerts</p>
+                    <p className="text-sm max-w-xs mx-auto mb-6">
+                    Sign up for a free account to get started.
+                    </p>
+                    <Button asChild>
+                        <Link href="/login">
+                            Log In / Sign Up
+                        </Link>
+                    </Button>
+                </div>
+            </CardContent>
+        </Card>
+      )}
 
-      <Dialog open={isEditorOpen} onOpenChange={setIsEditorOpen}>
-          <AlertEditorDialog onOpenChange={setIsEditorOpen} />
-      </Dialog>
+      {user && (
+        <Dialog open={isEditorOpen} onOpenChange={setIsEditorOpen}>
+            <AlertEditorDialog onOpenChange={setIsEditorOpen} />
+        </Dialog>
+      )}
     </div>
   );
 }

@@ -15,7 +15,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Lock, Wallet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { AuthDialog } from '@/components/auth/auth-dialog';
 import { useRouter } from 'next/navigation';
 import { FeatureLockInline } from '@/components/feature-lock-inline';
 
@@ -130,7 +129,6 @@ function PortfolioPage() {
     const router = useRouter();
     const [timeRange, setTimeRange] = useState<'7d' | '30d' | 'all'>('30d');
     const [activeIndex, setActiveIndex] = useState(0);
-    const [isAuthDialogOpen, setAuthDialogOpen] = useState(!user && !userLoading);
 
     const isPro = claims?.plan === 'pro';
     
@@ -153,23 +151,21 @@ function PortfolioPage() {
     if (userLoading) {
       return <PageSkeleton />;
     }
-
-    if (!user) {
-        return (
-            <>
-                <div aria-hidden="true">
-                    <PageSkeleton />
-                </div>
-                <AuthDialog 
-                    open={isAuthDialogOpen}
-                    onOpenChange={(open) => {
-                        if(!open) router.push('/');
-                        setAuthDialogOpen(open)
-                    }}
-                />
-            </>
-        )
-    }
+    
+    const LoggedOutView = () => (
+        <Card className="text-center p-8 border-2 border-dashed">
+            <Wallet className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+            <h3 className="text-2xl font-bold">Log in to Track Your Portfolio</h3>
+            <p className="text-muted-foreground max-w-sm mx-auto mt-2 mb-6">
+                Add a wallet to your watchlist to start tracking your portfolio's performance.
+            </p>
+            <Button asChild>
+                <Link href="/login">
+                    Log In / Sign Up
+                </Link>
+            </Button>
+        </Card>
+    );
 
     return (
         <div>
@@ -178,7 +174,7 @@ function PortfolioPage() {
                 description="Aggregated view of your on-chain wealth from your watched wallets."
             />
             
-            {hasWallets ? (
+            {!user ? <LoggedOutView /> : hasWallets ? (
               <div className='space-y-8'>
                 <section id="overview">
                     <Card>
