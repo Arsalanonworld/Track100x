@@ -28,34 +28,31 @@ import {
 import Link from 'next/link';
 import { Skeleton } from './ui/skeleton';
 import type { WhaleTransaction } from '@/lib/types';
-import { whaleTransactions as mockTransactions } from '@/lib/mock-data';
 import { AnimatePresence, motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
 
-function PageSkeleton() {
+function PageSkeleton({ showTitle }: { showTitle: boolean }) {
     return (
         <div className='space-y-8'>
-            <div className='flex justify-between items-center'>
-                 <div className="flex-1">
-                    <Skeleton className="h-8 w-1/3" />
-                    <Skeleton className="h-5 w-2/3 mt-2" />
-                 </div>
-                 <div className="hidden md:flex gap-2">
-                    <Skeleton className="h-10 w-48" />
-                    <Skeleton className="h-10 w-32" />
-                    <Skeleton className="h-10 w-32" />
-                 </div>
-                 <div className="md:hidden">
-                    <Skeleton className="h-10 w-28" />
-                 </div>
-            </div>
+            {showTitle && (
+              <div className='flex justify-between items-center'>
+                  <div className="flex-1">
+                      <Skeleton className="h-8 w-1/3" />
+                      <Skeleton className="h-5 w-2/3 mt-2" />
+                  </div>
+                  <div className="hidden md:flex gap-2">
+                      <Skeleton className="h-10 w-48" />
+                      <Skeleton className="h-10 w-32" />
+                      <Skeleton className="h-10 w-32" />
+                  </div>
+                  <div className="md:hidden">
+                      <Skeleton className="h-10 w-28" />
+                  </div>
+              </div>
+            )}
             <Card>
-                <CardHeader>
-                    <Skeleton className="h-6 w-1/4" />
-                    <Skeleton className="h-4 w-1/3" />
-                </CardHeader>
-                <CardContent className="space-y-3">
+                <CardContent className="space-y-3 pt-6">
                     {[...Array(5)].map((_, i) => (
                         <Card key={i} className="w-full p-3 sm:p-4">
                             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
@@ -90,7 +87,7 @@ function PageSkeleton() {
 
 export function WhaleFeed({ isPreview = false, showTitle = true }: { isPreview?: boolean, showTitle?: boolean }) {
   
-  const [transactions, setTransactions] = useState<WhaleTransaction[]>([]);
+  const [allTransactions, setAllTransactions] = useState<WhaleTransaction[]>([]);
   const [loading, setLoading] = useState(true);
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -102,27 +99,40 @@ export function WhaleFeed({ isPreview = false, showTitle = true }: { isPreview?:
   
   // API Call & Live Feed Simulation
   useEffect(() => {
-    // Initial load
-    setLoading(true);
-    const initialData = isPreview ? mockTransactions.slice(0, 5) : mockTransactions.slice(0,10);
-    setTransactions(initialData);
-    setLoading(false);
+    async function fetchTransactions() {
+        setLoading(true);
+        try {
+            const response = await fetch('/api/whale-feed');
+            const data = await response.json();
+            
+            const initialData = isPreview ? data.slice(0, 5) : data.slice(0,10);
+            setAllTransactions(initialData.map((tx: any) => ({ ...tx, id: `${tx.id}-${Math.random()}` })));
 
-    // If it's a preview, we don't need to simulate a live feed.
+
+        } catch (error) {
+            console.error("Failed to fetch whale feed data:", error);
+        } finally {
+            setLoading(false);
+        }
+    }
+    fetchTransactions();
+
     if (isPreview) return;
 
     // Live feed simulation
-    let transactionIndex = 10; // Start from where initial load ended
-    const interval = setInterval(() => {
-        if (transactionIndex >= mockTransactions.length) {
-            transactionIndex = 0; // Loop back for continuous demo
+    const interval = setInterval(async () => {
+        try {
+            const response = await fetch('/api/whale-feed');
+            const data = await response.json();
+            // Get a random transaction to simulate a new one
+            const newTransaction = data[Math.floor(Math.random() * data.length)];
+             setAllTransactions(prevTransactions => [
+                {...newTransaction, id: `${newTransaction.id}-${Date.now()}`},
+                ...prevTransactions
+            ]);
+        } catch (error) {
+            console.error("Failed to fetch new transaction:", error);
         }
-        const newTransaction = mockTransactions[transactionIndex];
-        setTransactions(prevTransactions => [
-            {...newTransaction, id: `${newTransaction.id}-${Date.now()}`}, // Ensure unique key for animation
-            ...prevTransactions
-        ]);
-        transactionIndex++;
     }, 4000); // Add a new transaction every 4 seconds
 
     return () => clearInterval(interval);
@@ -142,7 +152,7 @@ export function WhaleFeed({ isPreview = false, showTitle = true }: { isPreview?:
   };
 
   const filteredTransactions = useMemo(() => {
-    let txs = transactions;
+    let txs = allTransactions;
     if(tokenFilter) {
       txs = txs.filter(tx => tx.token.symbol.toLowerCase().includes(tokenFilter.toLowerCase()));
     }
@@ -153,12 +163,12 @@ export function WhaleFeed({ isPreview = false, showTitle = true }: { isPreview?:
        txs = txs.filter(tx => tx.type.toLowerCase() === typeFilter);
     }
     return txs;
-  }, [transactions, tokenFilter, chainFilter, typeFilter]);
+  }, [allTransactions, tokenFilter, chainFilter, typeFilter]);
 
   const totalPages = Math.ceil(filteredTransactions.length / transactionsPerPage);
   
   const currentTransactions = useMemo(() => {
-     const dataToPaginate = isPreview ? filteredTransactions : filteredTransactions;
+     const dataToPaginate = isPreview ? filteredTransactions.slice(0,5) : filteredTransactions;
      if (isPreview) return dataToPaginate;
 
      return dataToPaginate.slice(
@@ -243,8 +253,8 @@ export function WhaleFeed({ isPreview = false, showTitle = true }: { isPreview?:
   )};
 
 
-  if (loading && !transactions.length) {
-    return <PageSkeleton />;
+  if (loading && allTransactions.length === 0) {
+    return <PageSkeleton showTitle={showTitle} />;
   }
 
   return (
@@ -302,7 +312,7 @@ export function WhaleFeed({ isPreview = false, showTitle = true }: { isPreview?:
             <CardContent className={cn(!showTitle && "pt-6")}>
                 <div className="space-y-3">
                     {loading && currentTransactions.length === 0 ? (
-                       [...Array(isPreview ? 5 : 10)].map((_, i) => <PageSkeleton key={i} />)
+                       [...Array(isPreview ? 5 : 10)].map((_, i) => <PageSkeleton key={i} showTitle={showTitle} />)
                     ) : currentTransactions.length > 0 ? (
                       <AnimatePresence initial={false}>
                         {currentTransactions.map((tx) => (
@@ -328,7 +338,7 @@ export function WhaleFeed({ isPreview = false, showTitle = true }: { isPreview?:
                       </div>
                     )}
                 </div>
-                {isPreview && !loading && transactions.length > 0 && (
+                {isPreview && !loading && allTransactions.length > 0 && (
                     <div className="text-center mt-6">
                         <Button asChild variant="outline">
                            <Link href="/feed">View full feed <ArrowRight className="h-4 w-4 ml-2" /></Link>
