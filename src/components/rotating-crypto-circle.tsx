@@ -1,8 +1,8 @@
 
 'use client';
 
-import React, { useState, useEffect, forwardRef, ReactNode } from 'react';
-import { motion, AnimatePresence, useTransform, useMotionValue } from 'framer-motion';
+import React, { useState, useEffect, forwardRef, ReactNode, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { CryptoIcon } from './crypto-icon';
 import { Zap, Eye, Trophy, Wallet } from 'lucide-react';
@@ -24,13 +24,13 @@ const featureIcons = [
 
 function getRandomPosition(radius: number) {
   const angle = Math.random() * 2 * Math.PI;
-  // Increase the multiplier to scatter icons farther away.
-  const r = radius * (1 + Math.random());
+  const r = radius * (0.5 + Math.random() * 0.8);
   return {
     x: r * Math.cos(angle),
     y: r * Math.sin(angle),
   };
 }
+
 
 const IconContainer = forwardRef<
   HTMLDivElement,
@@ -56,34 +56,35 @@ const IconContainer = forwardRef<
 });
 IconContainer.displayName = "IconContainer";
 
-const OrbitingIcon = ({ icon, index, total, radius, isOrbiting, scatteredPosition }: any) => {
+const OrbitingIcon = ({ icon, index, total, radius, animationState, scatteredPosition }: any) => {
     const angle = (index / total) * 2 * Math.PI;
     const orbitingX = radius * Math.cos(angle);
     const orbitingY = radius * Math.sin(angle);
 
+    const getTargetPosition = () => {
+        switch (animationState) {
+            case 'scatter':
+                return scatteredPosition;
+            case 'centralize':
+            case 'orbit':
+                return { x: orbitingX, y: orbitingY };
+            default:
+                return { x: 0, y: 0 };
+        }
+    };
+    
     return (
         <motion.div
             key={icon.key}
             className="absolute"
             style={{ top: '50%', left: '50%' }}
-            initial={{ 
-                x: scatteredPosition.x, 
-                y: scatteredPosition.y, 
-                scale: 0.5, 
-                opacity: 0 
-            }}
-            animate={{
-                x: isOrbiting ? orbitingX : scatteredPosition.x,
-                y: isOrbiting ? orbitingY : scatteredPosition.y,
-                scale: 1,
-                opacity: 1,
-            }}
+            initial={scatteredPosition}
+            animate={getTargetPosition()}
             transition={{
                 type: 'spring',
-                stiffness: 20,
-                damping: 20,
+                stiffness: 40,
+                damping: 15,
                 mass: 1,
-                delay: isOrbiting ? index * 0.05 : 0,
             }}
         >
             <div className="h-12 w-12 flex items-center justify-center rounded-full bg-card border-2 shadow-md -translate-x-1/2 -translate-y-1/2">
@@ -95,34 +96,47 @@ const OrbitingIcon = ({ icon, index, total, radius, isOrbiting, scatteredPositio
 
 const CryptoFeatureWeb = () => {
   const [isClient, setIsClient] = useState(false);
-  const [isOrbiting, setIsOrbiting] = useState(false);
+  const [animationState, setAnimationState] = useState<'scatter' | 'centralize' | 'orbit'>('scatter');
   const [scatteredPositions, setScatteredPositions] = useState<Array<{x: number, y: number}>>([]);
-
   const radius = 130;
-  
+
   useEffect(() => {
     setIsClient(true);
-    setScatteredPositions(featureIcons.map(() => getRandomPosition(radius)));
+    setScatteredPositions(featureIcons.map(() => getRandomPosition(radius * 1.5)));
   }, []);
-
+  
   useEffect(() => {
     if (!isClient) return;
 
-    const initialTimer = setTimeout(() => setIsOrbiting(true), 100);
+    const sequence = ['scatter', 'centralize', 'orbit'];
+    let currentIndex = 0;
 
-    const cycleInterval = setInterval(() => {
-      setIsOrbiting(false); 
-      setTimeout(() => {
-        setScatteredPositions(featureIcons.map(() => getRandomPosition(radius)));
-        setTimeout(() => setIsOrbiting(true), 500); 
-      }, 500); 
-    }, 8000); 
+    const runAnimationCycle = () => {
+        const currentState = sequence[currentIndex % sequence.length];
+        
+        setAnimationState(currentState as any);
 
-    return () => {
-      clearTimeout(initialTimer);
-      clearInterval(cycleInterval);
+        if (currentState === 'scatter') {
+             setScatteredPositions(featureIcons.map(() => getRandomPosition(radius * 1.5)));
+        }
+        
+        // Define the duration for each state
+        let duration = 4000;
+        if (currentState === 'centralize') {
+            duration = 2000; // Hold the circle for 2s before rotating
+        }
+
+        setTimeout(() => {
+            currentIndex++;
+            runAnimationCycle();
+        }, duration);
     };
-  }, [isClient]);
+
+    const initialTimeout = setTimeout(runAnimationCycle, 100);
+
+    return () => clearTimeout(initialTimeout);
+}, [isClient]);
+
 
   if (!isClient) {
     return <div className="mx-auto h-[350px] w-full" />;
@@ -132,11 +146,11 @@ const CryptoFeatureWeb = () => {
     <div className="relative flex w-full items-center justify-center mx-auto h-[350px]">
       <motion.div
         className="relative h-full w-full"
-        animate={{ rotate: isOrbiting ? 360 : 0 }}
+        animate={{ rotate: animationState === 'orbit' ? 360 : 0 }}
         transition={{
-            duration: isOrbiting ? 40 : 2,
+            duration: 40,
             ease: "linear",
-            repeat: isOrbiting ? Infinity : 0,
+            repeat: animationState === 'orbit' ? Infinity : 0,
         }}
       >
         <AnimatePresence>
@@ -147,7 +161,7 @@ const CryptoFeatureWeb = () => {
               index={index}
               total={featureIcons.length}
               radius={radius}
-              isOrbiting={isOrbiting}
+              animationState={animationState}
               scatteredPosition={scatteredPositions[index]}
             />
           ))}
@@ -156,7 +170,8 @@ const CryptoFeatureWeb = () => {
         
       <motion.div
         className="absolute z-20"
-        animate={{ scale: isOrbiting ? 1 : 0.9 }}
+        initial={{scale: 0.9}}
+        animate={{ scale: animationState === 'scatter' ? 0.9 : 1 }}
         transition={{ type: 'spring', stiffness: 200, damping: 10 }}
       >
         <IconContainer>
@@ -255,3 +270,5 @@ z"
     </svg>
   );
 }
+
+    
