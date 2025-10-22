@@ -321,7 +321,7 @@ export function WhaleFeed({ isPreview = false, showTitle = true }: { isPreview?:
                             layout
                             initial={{ opacity: 0, y: -20, scale: 0.98 }}
                             animate={{ opacity: 1, y: 0, scale: 1 }}
-                            exit={{ opacity: 0, transition: { duration: 0.2 } }}
+                            exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.2, layout: { duration: 0.3 } } }}
                             transition={{ duration: 0.5, type: "spring" }}
                             className="bg-card origin-top"
                           >
