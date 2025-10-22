@@ -23,10 +23,10 @@ export default function HomePage() {
         
         {/* Feature Highlights Section */}
         <FeatureHighlights />
-      </div>
 
-      {/* Leaderboard Preview (Full Width) */}
-      <LeaderboardPreview />
+        {/* Leaderboard Preview (Full Width) */}
+        <LeaderboardPreview />
+      </div>
 
       <div className="container space-y-12 md:space-y-20">
         {/* Pricing Section */}
