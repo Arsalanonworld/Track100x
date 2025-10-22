@@ -61,15 +61,12 @@ const IconContainer = forwardRef<
 IconContainer.displayName = "IconContainer";
 
 const OrbitingIcon = ({ icon, index, total, radius, isScattered, initialPosition, rotation }: any) => {
-    const time = useTime();
-    // Create a continuous rotation that is independent of the main one for variety
-    const individualRotation = useTransform(time, [0, 15000], [0, 2 * Math.PI], { clamp: false });
     
-    // Combine the main rotation with the individual one
-    const combinedRotation = useTransform([rotation, individualRotation], ([r, ir]) => r + ir * 0.1);
+    const staticX = radius * Math.cos((index / total) * 2 * Math.PI);
+    const staticY = radius * Math.sin((index / total) * 2 * Math.PI);
 
-    const x = useTransform(combinedRotation, r => radius * Math.cos((index / total) * 2 * Math.PI + r));
-    const y = useTransform(combinedRotation, r => radius * Math.sin((index / total) * 2 * Math.PI + r));
+    const x = useTransform(rotation, r => radius * Math.cos((index / total) * 2 * Math.PI + r));
+    const y = useTransform(rotation, r => radius * Math.sin((index / total) * 2 * Math.PI + r));
     
     return (
          <motion.div
@@ -113,11 +110,11 @@ const CryptoFeatureWeb = () => {
   const [isClient, setIsClient] = useState(false);
 
   const time = useTime();
-  const rotation = useTransform(time, [0, 20000], [0, -2 * Math.PI], { clamp: false });
+  const rotation = useTransform(time, [0, 20000], [0, 2 * Math.PI], { clamp: false });
 
   useEffect(() => {
     setIsClient(true);
-    // Set initial positions right away for SSR compatibility
+    // Set initial positions right away
     setInitialPositions(
       featureIcons.map(() => getRandomPosition(150))
     );
@@ -146,8 +143,19 @@ const CryptoFeatureWeb = () => {
   const containerSize = 300;
 
   if (!isClient) {
-    // Render a static placeholder on the server
-    return <div className="h-[350px] w-full flex items-center justify-center"><IconContainer><LogoIcon /></IconContainer></div>;
+    // Render a static placeholder on the server to avoid hydration errors
+    return (
+        <div className="relative flex w-full items-center justify-center mx-auto h-[350px]">
+            <div 
+                className="relative" 
+                style={{ width: containerSize, height: containerSize }}
+            >
+                 <IconContainer>
+                    <LogoIcon />
+                </IconContainer>
+            </div>
+        </div>
+    );
   }
 
   return (
@@ -324,3 +332,5 @@ z"
     </svg>
   );
 }
+
+    
