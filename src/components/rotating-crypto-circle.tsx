@@ -141,7 +141,7 @@ const CryptoFeatureWeb = () => {
         if (currentState === 'scatter') {
              // Reshuffle icons and positions for the next scatter
              setFeatureIcons(shuffleArray([...iconPool]).slice(0, 12));
-             setScatteredPositions(Array.from({ length: 12 }, () => getRandomPosition(radius * 1.2)));
+             setScatteredPositions(Array.from({ length: 12 }, () => getRandomPosition(radius * 1.5)));
         }
         
         let duration;
@@ -352,3 +352,5 @@ z"
     </svg>
   );
 }
+
+    
