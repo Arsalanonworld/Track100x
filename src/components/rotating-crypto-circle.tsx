@@ -24,7 +24,8 @@ const featureIcons = [
 
 function getRandomPosition(radius: number) {
   const angle = Math.random() * 2 * Math.PI;
-  const r = radius * (0.5 + Math.random() * 0.8);
+  // Increase the radius multiplier for more distant scattering
+  const r = radius * (0.8 + Math.random() * 1.2); 
   return {
     x: r * Math.cos(angle),
     y: r * Math.sin(angle),
@@ -82,8 +83,8 @@ const OrbitingIcon = ({ icon, index, total, radius, animationState, scatteredPos
             animate={getTargetPosition()}
             transition={{
                 type: 'spring',
-                stiffness: 40,
-                damping: 15,
+                stiffness: 20, // Lower stiffness for slower animation
+                damping: 20,   // Higher damping for less oscillation
                 mass: 1,
             }}
         >
@@ -102,7 +103,7 @@ const CryptoFeatureWeb = () => {
 
   useEffect(() => {
     setIsClient(true);
-    setScatteredPositions(featureIcons.map(() => getRandomPosition(radius * 1.5)));
+    setScatteredPositions(featureIcons.map(() => getRandomPosition(radius * 1.8)));
   }, []);
   
   useEffect(() => {
@@ -117,13 +118,22 @@ const CryptoFeatureWeb = () => {
         setAnimationState(currentState as any);
 
         if (currentState === 'scatter') {
-             setScatteredPositions(featureIcons.map(() => getRandomPosition(radius * 1.5)));
+             setScatteredPositions(featureIcons.map(() => getRandomPosition(radius * 1.8)));
         }
         
-        // Define the duration for each state
-        let duration = 4000;
-        if (currentState === 'centralize') {
-            duration = 2000; // Hold the circle for 2s before rotating
+        let duration;
+        switch (currentState) {
+            case 'scatter':
+                duration = 3000;
+                break;
+            case 'centralize':
+                duration = 2000;
+                break;
+            case 'orbit':
+                duration = 5000;
+                break;
+            default:
+                duration = 4000;
         }
 
         setTimeout(() => {
@@ -154,17 +164,55 @@ const CryptoFeatureWeb = () => {
         }}
       >
         <AnimatePresence>
-          {isClient && scatteredPositions.length > 0 && featureIcons.map((icon, index) => (
-            <OrbitingIcon
-              key={icon.key}
-              icon={icon}
-              index={index}
-              total={featureIcons.length}
-              radius={radius}
-              animationState={animationState}
-              scatteredPosition={scatteredPositions[index]}
-            />
-          ))}
+            {/* Dotted lines */}
+            {(animationState === 'centralize' || animationState === 'orbit') && (
+                 <motion.svg
+                    width="100%"
+                    height="100%"
+                    className="absolute top-0 left-0"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.5 }}
+                >
+                    <defs>
+                        <linearGradient id="line-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style={{ stopColor: 'hsl(var(--primary) / 0.5)' }} />
+                            <stop offset="100%" style={{ stopColor: 'hsl(var(--primary) / 0)' }} />
+                        </linearGradient>
+                    </defs>
+                    {featureIcons.map((_, index) => {
+                        const angle = (index / featureIcons.length) * 2 * Math.PI;
+                        const x2 = 50 + (radius / 350 * 100) * Math.cos(angle);
+                        const y2 = 50 + (radius / 350 * 100) * Math.sin(angle);
+                        return (
+                            <line
+                                key={`line-${index}`}
+                                x1="50%"
+                                y1="50%"
+                                x2={`${x2}%`}
+                                y2={`${y2}%`}
+                                stroke="url(#line-gradient)"
+                                strokeWidth="1"
+                                strokeDasharray="2 4"
+                            />
+                        );
+                    })}
+                </motion.svg>
+            )}
+
+            {/* Icons */}
+            {isClient && scatteredPositions.length > 0 && featureIcons.map((icon, index) => (
+                <OrbitingIcon
+                key={icon.key}
+                icon={icon}
+                index={index}
+                total={featureIcons.length}
+                radius={radius}
+                animationState={animationState}
+                scatteredPosition={scatteredPositions[index]}
+                />
+            ))}
         </AnimatePresence>
       </motion.div>
         
@@ -270,5 +318,3 @@ z"
     </svg>
   );
 }
-
-    
