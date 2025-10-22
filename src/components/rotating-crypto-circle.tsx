@@ -25,7 +25,7 @@ const featureIcons = [
 function getRandomPosition(radius: number) {
   const angle = Math.random() * 2 * Math.PI;
   // Increase the radius multiplier for more distant scattering
-  const r = radius * (1 + Math.random() * 0.8); 
+  const r = radius * (1.2 + Math.random() * 0.5); 
   return {
     x: r * Math.cos(angle),
     y: r * Math.sin(angle),
@@ -83,9 +83,9 @@ const OrbitingIcon = ({ icon, index, total, radius, animationState, scatteredPos
             animate={getTargetPosition()}
             transition={{
                 type: 'spring',
-                stiffness: 40,
-                damping: 20,
-                mass: 1,
+                stiffness: 20,
+                damping: 15,
+                mass: 1.5,
             }}
         >
             <div className="h-12 w-12 flex items-center justify-center rounded-full bg-card border-2 shadow-md -translate-x-1/2 -translate-y-1/2">
@@ -169,6 +169,7 @@ const CryptoFeatureWeb = () => {
                  <motion.svg
                     width="100%"
                     height="100%"
+                    viewBox="0 0 350 350"
                     className="absolute top-0 left-0"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -183,14 +184,14 @@ const CryptoFeatureWeb = () => {
                     </defs>
                     {featureIcons.map((_, index) => {
                         const angle = (index / featureIcons.length) * 2 * Math.PI;
-                        const containerSize = 350; // The height of the main container
-                        const x2 = (containerSize / 2) + radius * Math.cos(angle);
-                        const y2 = (containerSize / 2) + radius * Math.sin(angle);
+                        const containerCenter = 350 / 2;
+                        const x2 = containerCenter + radius * Math.cos(angle);
+                        const y2 = containerCenter + radius * Math.sin(angle);
                         return (
                             <line
                                 key={`line-${index}`}
-                                x1="50%"
-                                y1="50%"
+                                x1={containerCenter}
+                                y1={containerCenter}
                                 x2={x2}
                                 y2={y2}
                                 stroke="url(#line-gradient)"
@@ -319,5 +320,3 @@ z"
     </svg>
   );
 }
-
-    
