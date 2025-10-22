@@ -7,20 +7,37 @@ import { cn } from '@/lib/utils';
 import { CryptoIcon } from './crypto-icon';
 import { Zap, Eye, Trophy, Wallet, Rss } from 'lucide-react';
 
-const featureIcons = [
+const iconPool = [
   { component: <Rss />, key: 'feed' },
-  { component: <CryptoIcon token="BTC" />, key: 'btc' },
-  { component: <Eye />, key: 'watchlist' },
-  { component: <CryptoIcon token="ETH" />, key: 'eth' },
   { component: <Trophy />, key: 'leaderboard' },
-  { component: <CryptoIcon token="SOL" />, key: 'sol' },
+  { component: <Eye />, key: 'watchlist' },
   { component: <Wallet />, key: 'wallet' },
   { component: <Zap />, key: 'alerts' },
+  { component: <CryptoIcon token="BTC" />, key: 'btc' },
+  { component: <CryptoIcon token="ETH" />, key: 'eth' },
+  { component: <CryptoIcon token="SOL" />, key: 'sol' },
+  { component: <CryptoIcon token="USDT" />, key: 'usdt' },
   { component: <CryptoIcon token="LINK" />, key: 'link' },
   { component: <CryptoIcon token="AVAX" />, key: 'avax' },
   { component: <CryptoIcon token="SHIB" />, key: 'shib' },
   { component: <CryptoIcon token="UNI" />, key: 'uni' },
+  { component: <CryptoIcon token="DOGE" />, key: 'doge' },
+  { component: <CryptoIcon token="ADA" />, key: 'ada' },
+  { component: <CryptoIcon token="XRP" />, key: 'xrp' },
 ];
+
+// Fisher-Yates shuffle algorithm
+const shuffleArray = (array: any[]) => {
+  let currentIndex = array.length, randomIndex;
+  while (currentIndex !== 0) {
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+    [array[currentIndex], array[randomIndex]] = [
+      array[randomIndex], array[currentIndex]];
+  }
+  return array;
+};
+
 
 function getRandomPosition(radius: number) {
   // Use a square area for more random scattering
@@ -98,11 +115,15 @@ const CryptoFeatureWeb = () => {
   const [isClient, setIsClient] = useState(false);
   const [animationState, setAnimationState] = useState<'scatter' | 'centralize' | 'orbit'>('scatter');
   const [scatteredPositions, setScatteredPositions] = useState<Array<{x: number, y: number}>>([]);
+  const [featureIcons, setFeatureIcons] = useState<typeof iconPool>([]);
+
   const radius = 130;
 
   useEffect(() => {
     setIsClient(true);
-    setScatteredPositions(featureIcons.map(() => getRandomPosition(radius)));
+    // Initial shuffle
+    setFeatureIcons(shuffleArray([...iconPool]).slice(0, 12));
+    setScatteredPositions(Array.from({ length: 12 }, () => getRandomPosition(radius)));
   }, []);
   
   useEffect(() => {
@@ -117,7 +138,9 @@ const CryptoFeatureWeb = () => {
         setAnimationState(currentState as any);
 
         if (currentState === 'scatter') {
-             setScatteredPositions(featureIcons.map(() => getRandomPosition(radius * 1.2)));
+             // Reshuffle icons and positions for the next scatter
+             setFeatureIcons(shuffleArray([...iconPool]).slice(0, 12));
+             setScatteredPositions(Array.from({ length: 12 }, () => getRandomPosition(radius * 1.2)));
         }
         
         let duration;
@@ -204,7 +227,7 @@ const CryptoFeatureWeb = () => {
                 </motion.svg>
             )}
 
-            {isClient && scatteredPositions.length > 0 && featureIcons.map((icon, index) => (
+            {isClient && scatteredPositions.length > 0 && featureIcons.length > 0 && featureIcons.map((icon, index) => (
                 <OrbitingIcon
                 key={icon.key}
                 icon={icon}
