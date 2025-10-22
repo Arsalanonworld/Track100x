@@ -22,16 +22,9 @@ const featureIcons = [
   { component: <CryptoIcon token="UNI" />, key: 'uni' },
 ];
 
-function getOrbitPosition(index: number, total: number, radius: number, rotation: number = 0) {
-  const angle = (index / total) * 2 * Math.PI + rotation;
-  const x = radius * Math.cos(angle);
-  const y = radius * Math.sin(angle);
-  return { x, y };
-}
-
 function getRandomPosition(radius: number) {
   const angle = Math.random() * 2 * Math.PI;
-  const r = radius * Math.random(); 
+  const r = radius * Math.sqrt(Math.random());
   return {
     x: r * Math.cos(angle),
     y: r * Math.sin(angle),
@@ -67,8 +60,6 @@ const IconContainer = forwardRef<
 IconContainer.displayName = "IconContainer";
 
 const OrbitingIcon = ({ icon, index, total, radius, isScattered, initialPosition, rotation }: any) => {
-    const { x: orbitX, y: orbitY } = getOrbitPosition(index, total, radius);
-    
     // Animate x and y instead of using a rotating parent
     const x = useTransform(rotation, r => radius * Math.cos((index / total) * 2 * Math.PI + r));
     const y = useTransform(rotation, r => radius * Math.sin((index / total) * 2 * Math.PI + r));
@@ -86,6 +77,8 @@ const OrbitingIcon = ({ icon, index, total, radius, isScattered, initialPosition
             }}
             initial={{ scale: 0.5, opacity: 0 }}
             animate={{
+                x: isScattered ? initialPosition.x : x,
+                y: isScattered ? initialPosition.y : y,
                 scale: isScattered ? 0.8 : 1,
                 opacity: 1,
             }}
@@ -228,6 +221,13 @@ const CryptoFeatureWeb = () => {
 
 export { CryptoFeatureWeb };
 
+
+function getOrbitPosition(index: number, total: number, radius: number, rotation: number = 0) {
+  const angle = (index / total) * 2 * Math.PI + rotation;
+  const x = radius * Math.cos(angle);
+  const y = radius * Math.sin(angle);
+  return { x, y };
+}
 
 function LogoIcon() {
   return (
