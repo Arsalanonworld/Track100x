@@ -99,9 +99,10 @@ const OrbitingIcon = ({ icon, index, total, radius, animationState, scatteredPos
             animate={getTargetPosition()}
             transition={{
                 type: 'spring',
-                stiffness: 40,
+                stiffness: 50,
                 damping: 15,
-                mass: 1.5,
+                mass: 1,
+                delay: index * 0.03,
             }}
         >
             <IconContainer className="-translate-x-1/2 -translate-y-1/2">
@@ -123,7 +124,7 @@ const CryptoFeatureWeb = () => {
     setIsClient(true);
     // Initial shuffle
     setFeatureIcons(shuffleArray([...iconPool]).slice(0, 12));
-    setScatteredPositions(Array.from({ length: 12 }, () => getRandomPosition(radius)));
+    setScatteredPositions(Array.from({ length: 12 }, () => getRandomPosition(radius * 1.2)));
   }, []);
   
   useEffect(() => {
@@ -220,7 +221,7 @@ const CryptoFeatureWeb = () => {
                                 strokeDasharray="2 4"
                                 initial={{ opacity: 0, pathLength: 0 }}
                                 animate={{ opacity: 1, pathLength: 1 }}
-                                transition={{ duration: 0.5, delay: 0.2 }}
+                                transition={{ duration: 0.5, delay: 0.2 + index * 0.05 }}
                             />
                         );
                     })}
