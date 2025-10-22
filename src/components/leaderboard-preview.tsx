@@ -18,32 +18,14 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/
 import Link from 'next/link';
 import { getExplorerUrl } from '@/lib/explorers';
 
-const PnlCell = ({ value, label, className }: { value: number, label: string, className?: string }) => (
+const StatCell = ({ value, label, className }: { value: string | number, label: string, className?: string }) => (
     <div className={cn("text-center", className)}>
         <p className="text-xs text-muted-foreground">{label}</p>
-        <p className={cn("font-semibold text-lg", value >= 0 ? "text-green-500" : "text-red-500")}>
-        {value >= 0 ? '+' : ''}{value.toFixed(2)}%
+        <p className={cn("font-semibold text-lg")}>
+            {value}
         </p>
     </div>
 );
-
-const WalletCell = ({ alias, address }: { alias: string, address: string}) => {
-    
-    const copyAddress = (e: React.MouseEvent) => {
-        e.stopPropagation();
-        e.preventDefault();
-        navigator.clipboard.writeText(address);
-    };
-
-    return (
-        <div className="flex items-center gap-2">
-             <span className='font-mono text-sm text-muted-foreground hover:text-primary transition-colors cursor-pointer'>
-                {alias}
-            </span>
-            <Button variant="ghost" size="icon" className="h-6 w-6 text-muted-foreground hover:text-primary" onClick={copyAddress}><Copy className="h-3 w-3"/></Button>
-        </div>
-    )
-}
 
 const WalletPodiumCard = ({ wallet, rank }: { wallet: typeof leaderboardData[0], rank: number }) => {
     const isFirst = rank === 1;
@@ -65,10 +47,10 @@ const WalletPodiumCard = ({ wallet, rank }: { wallet: typeof leaderboardData[0],
                 </CardHeader>
                 <CardContent className="flex-1 flex flex-col justify-between">
                     <div className='grid grid-cols-2 gap-4'>
-                        <PnlCell value={wallet.pnl7d} label="7d P&L" className="col-span-2 border-b pb-4"/>
+                        <StatCell value={wallet.netWorth} label="Net Worth" className="col-span-2 border-b pb-4"/>
                         <div className='text-center pt-4'>
-                            <p className='text-xs text-muted-foreground'>Win Rate (7d)</p>
-                            <p className='font-semibold text-lg'>{wallet.winRate.toFixed(0)}%</p>
+                            <p className='text-xs text-muted-foreground'>Top Holding</p>
+                            <p className='font-semibold text-lg'>{wallet.topHolding.token}</p>
                         </div>
                         <div className='text-center pt-4'>
                             <p className='text-xs text-muted-foreground'>Trades (7d)</p>

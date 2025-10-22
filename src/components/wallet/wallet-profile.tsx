@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { notFound } from 'next/navigation';
@@ -28,8 +27,6 @@ import { AlertEditorDialog } from '@/components/alert-editor-dialog';
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
 import { CryptoIcon } from '@/components/crypto-icon';
-import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis, PieChart, Pie, Cell, Sector, Legend } from 'recharts';
-import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
 import React from 'react';
 import TransactionCard from '@/components/transaction-card';
 
@@ -43,15 +40,6 @@ type WalletData = LeaderboardWallet & {
         topHoldings: ({ token: string; percentage: number; amount: string; value: string })[];
     } | null;
 }
-
-const PnlBadge = ({ value }: { value: number }) => (
-    <Badge variant={value >= 0 ? "secondary" : "destructive"} className={cn(
-      value >= 0 ? 'text-green-500' : 'text-red-500',
-      'bg-opacity-20 border-opacity-30'
-    )}>
-      {value >= 0 ? '+' : ''}{value.toFixed(2)}%
-    </Badge>
-  );
 
 const StatCard = ({ title, value, icon, valueClassName }: { title: string, value: string | React.ReactNode, icon: React.ReactNode, valueClassName?: string }) => {
     return (
@@ -77,7 +65,7 @@ export function WalletProfile({ walletData }: { walletData: WalletData | { addre
 
   const { address, portfolio, transactions } = walletData;
 
-  const isLeaderboardWallet = 'pnl7d' in walletData;
+  const isLeaderboardWallet = 'tags' in walletData;
 
   return (
     <div className="space-y-8">
@@ -105,16 +93,10 @@ export function WalletProfile({ walletData }: { walletData: WalletData | { addre
       {isLeaderboardWallet && (
         <section id="wallet-stats">
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <StatCard 
-                    title="7-Day P&L"
-                    value={`${(walletData as WalletData).pnl7d.toFixed(2)}%`}
-                    icon={<TrendingUp className="h-4 w-4 text-muted-foreground" />}
-                    valueClassName={(walletData as WalletData).pnl7d >= 0 ? 'text-green-500' : 'text-red-500'}
-                />
                  <StatCard 
-                    title="7-Day Win Rate"
-                    value={`${(walletData as WalletData).winRate.toFixed(1)}%`}
-                    icon={<Percent className="h-4 w-4 text-muted-foreground" />}
+                    title="Net Worth"
+                    value={(walletData as WalletData).netWorth}
+                    icon={<TrendingUp className="h-4 w-4 text-muted-foreground" />}
                 />
                  <StatCard 
                     title="7-Day Trades"
@@ -141,81 +123,42 @@ export function WalletProfile({ walletData }: { walletData: WalletData | { addre
       )}
 
       {portfolio ? (
-        <Card>
-            <CardHeader>
-            <CardTitle>Wallet Analytics</CardTitle>
-            <CardDescription>Performance and holdings for this specific wallet.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-8">
-                <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
-                    <div>
-                    <p className="text-sm text-muted-foreground">Total Net Worth</p>
-                    <p className="text-4xl font-bold">${portfolio.netWorth.toLocaleString()}</p>
-                    {(walletData as WalletData).pnl7d && <PnlBadge value={(walletData as WalletData).pnl7d} />}
-                    </div>
-                </div>
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <div className="lg:col-span-2">
-                        <h3 className="font-semibold mb-4">Net Worth Over Time</h3>
-                        <div className="h-[300px]">
-                        <ChartContainer config={{value: {label: 'Net Worth', color: 'hsl(var(--primary))'}}} className='h-full w-full'>
-                            <AreaChart data={portfolio.history} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
-                            <CartesianGrid vertical={false} strokeDasharray="3 3" />
-                            <XAxis dataKey="name" tick={{ fill: 'hsl(var(--muted-foreground))' }} fontSize={12} axisLine={false} tickLine={false} />
-                            <YAxis tickFormatter={(value) => `$${(Number(value) / 1000)}k`} tick={{ fill: 'hsl(var(--muted-foreground))' }} fontSize={12} axisLine={false} tickLine={false} />
-                            <Tooltip
-                                cursor={{ stroke: 'hsl(var(--border))' }}
-                                content={<ChartTooltipContent 
-                                    indicator="line"
-                                    formatter={(value) => (value as number).toLocaleString('en-US', {
-                                        style: 'currency',
-                                        currency: 'USD',
-                                        minimumFractionDigits: 0,
-                                        maximumFractionDigits: 0,
-                                      })}
-                                />}
-                            />
-                            <Area type="monotone" dataKey="value" stroke="hsl(var(--primary))" fill="hsl(var(--primary))" fillOpacity={0.1} />
-                            </AreaChart>
-                        </ChartContainer>
-                        </div>
-                    </div>
-                    <div>
-                        <h3 className="font-semibold mb-4">Asset Allocation</h3>
-                        <div className="h-[300px]">
-                        <ChartContainer config={{}} className="h-full w-full">
-                            <PieChart>
-                                <Pie 
-                                    data={portfolio.allocations} 
-                                    dataKey="value" 
-                                    nameKey="name" 
-                                    cx="50%" 
-                                    cy="50%" 
-                                    outerRadius={90}
-                                    innerRadius={70}
-                                    labelLine={false}
-                                >
-                                    {portfolio.allocations.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={entry.color} />
-                                    ))}
-                                </Pie>
-                                <Tooltip
-                                    content={<ChartTooltipContent hideLabel />}
-                                />
-                                <Legend
-                                    verticalAlign="bottom"
-                                    layout="horizontal"
-                                    align="center"
-                                    wrapperStyle={{paddingTop: '20px'}}
-                                    iconSize={10}
-                                />
-                            </PieChart>
-                        </ChartContainer>
-                        </div>
-                    </div>
-                </div>
-            </CardContent>
-        </Card>
+        <section id="token-holdings">
+            <h2 className="text-2xl font-bold tracking-tight mb-4">Token Holdings</h2>
+            <Card>
+                <CardContent className="p-0">
+                    <Table>
+                        <TableHeader>
+                        <TableRow>
+                            <TableHead>Token</TableHead>
+                            <TableHead>Amount</TableHead>
+                            <TableHead>Value</TableHead>
+                        </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {portfolio?.topHoldings?.map(holding => (
+                                <TableRow key={holding.token}>
+                                    <TableCell>
+                                        <div className="flex items-center gap-3">
+                                            <CryptoIcon token={holding.token} className="h-8 w-8"/>
+                                            <span className='font-semibold'>{holding.token}</span>
+                                        </div>
+                                    </TableCell>
+                                    <TableCell>{holding.amount}</TableCell>
+                                    <TableCell>{holding.value}</TableCell>
+                                </TableRow>
+                            )) ?? (
+                                <TableRow>
+                                    <TableCell colSpan={3} className="text-center h-24">
+                                    No holding data available for this wallet.
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+                </CardContent>
+            </Card>
+        </section>
       ) : (
         <Card className='text-center p-8 border-dashed border-2'>
             <CardTitle>Analytics Unavailable</CardTitle>
@@ -223,42 +166,6 @@ export function WalletProfile({ walletData }: { walletData: WalletData | { addre
         </Card>
       )}
 
-      <section id="token-holdings">
-        <h2 className="text-2xl font-bold tracking-tight mb-4">Token Holdings</h2>
-        <Card>
-            <CardContent className="p-0">
-                <Table>
-                    <TableHeader>
-                    <TableRow>
-                        <TableHead>Token</TableHead>
-                        <TableHead>Amount</TableHead>
-                        <TableHead>Value</TableHead>
-                    </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {portfolio?.topHoldings?.map(holding => (
-                            <TableRow key={holding.token}>
-                                <TableCell>
-                                    <div className="flex items-center gap-3">
-                                        <CryptoIcon token={holding.token} className="h-8 w-8"/>
-                                        <span className='font-semibold'>{holding.token}</span>
-                                    </div>
-                                </TableCell>
-                                <TableCell>{holding.amount}</TableCell>
-                                <TableCell>{holding.value}</TableCell>
-                            </TableRow>
-                        )) ?? (
-                            <TableRow>
-                                <TableCell colSpan={3} className="text-center h-24">
-                                No holding data available for this wallet.
-                                </TableCell>
-                            </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
-            </CardContent>
-        </Card>
-      </section>
 
       <section id="recent-activity">
         <h2 className="text-2xl font-bold tracking-tight mb-4">Recent Activity</h2>

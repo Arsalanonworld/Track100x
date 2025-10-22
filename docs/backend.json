@@ -98,52 +98,6 @@
         }
       },
       "required": ["identifier", "type", "createdAt", "userId"]
-    },
-    "Portfolio": {
-      "title": "Portfolio",
-      "description": "Represents a user's entire crypto portfolio, aggregated across wallets.",
-      "type": "object",
-      "properties": {
-        "netWorth": { "type": "number" },
-        "history": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "timestamp": { "type": "string", "format": "date-time" },
-              "netWorth": { "type": "number" }
-            }
-          }
-        },
-        "userId": { "type": "string" }
-      },
-       "required": ["userId", "netWorth"]
-    },
-    "Wallet": {
-      "title": "Wallet",
-      "description": "Represents a single wallet being tracked within a portfolio.",
-      "type": "object",
-      "properties": {
-        "address": { "type": "string" },
-        "alias": { "type": "string" },
-        "chain": { "type": "string" },
-        "netWorth": { "type": "number" },
-        "userId": { "type": "string" }
-      },
-      "required": ["address", "chain", "userId"]
-    },
-    "TokenHolding": {
-      "title": "TokenHolding",
-      "description": "Represents the amount and value of a specific token held in a wallet.",
-      "type": "object",
-      "properties": {
-        "tokenSymbol": { "type": "string" },
-        "amount": { "type": "number" },
-        "value": { "type": "number" },
-        "costBasis": { "type": "number" },
-        "walletId": { "type": "string" }
-      },
-       "required": ["tokenSymbol", "amount", "value", "walletId"]
     }
   },
   "auth": {
@@ -165,18 +119,6 @@
     "/whaleFeed/{whaleTransactionId}": {
       "schema": { "$ref": "#/entities/WhaleFeedTransaction" },
       "description": "Stores the public whale feed data."
-    },
-    "/users/{userId}/portfolio/{portfolioId}": {
-        "schema": { "$ref": "#/entities/Portfolio" },
-        "description": "Stores a user's aggregated portfolio data."
-    },
-    "/users/{userId}/wallets/{walletId}": {
-        "schema": { "$ref": "#/entities/Wallet" },
-        "description": "Stores individual wallets linked to a user."
-    },
-    "/users/{userId}/wallets/{walletId}/holdings/{holdingId}": {
-        "schema": { "$ref": "#/entities/TokenHolding" },
-        "description": "Stores token holdings for a specific wallet."
     }
   }
 }

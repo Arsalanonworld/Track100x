@@ -31,7 +31,7 @@ const searchPlaceholders = [
   'Search for tokens...',
   'e.g. 0xde0b...',
   'e.g. WIF, ETH, SOL',
-  'Navigate to your portfolio...',
+  'Navigate to your watchlist...',
 ];
 
 
@@ -149,10 +149,6 @@ export function CommandMenu() {
                     <CommandItem onSelect={() => runCommand(() => router.push('/watchlist'))}>
                     <Eye className="mr-2 h-4 w-4" />
                     <span>My Watchlist</span>
-                    </CommandItem>
-                    <CommandItem onSelect={() => runCommand(() => router.push('/portfolio'))}>
-                    <Wallet className="mr-2 h-4 w-4" />
-                    <span>Portfolio</span>
                     </CommandItem>
                     <CommandItem onSelect={() => runCommand(() => router.push('/account'))}>
                     <Settings className="mr-2 h-4 w-4" />

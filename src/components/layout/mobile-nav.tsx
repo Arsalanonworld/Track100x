@@ -102,7 +102,6 @@ const mainNavItems = [
     { href: '/leaderboard', label: 'Explore', icon: Compass },
     { href: '/watchlist', label: 'Watchlist', icon: Eye },
     { href: '/alerts', label: 'Alerts', icon: Bell },
-    { href: '/portfolio', label: 'Portfolio', icon: Wallet },
 ];
 
 const accountNavItems = [
@@ -208,5 +207,3 @@ function MobileLink({
     </Link>
   )
 }
-
-    

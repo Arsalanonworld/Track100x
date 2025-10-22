@@ -140,12 +140,6 @@ export const navItems = [
       href: "/alerts",
       authRequired: true,
     },
-    {
-      label: "Portfolio",
-      icon: <Wallet size={18} />,
-      href: "/portfolio",
-      authRequired: true,
-    },
   ];
 
 export default function Sidebar({
@@ -368,5 +362,3 @@ function SidebarSection({
     </div>
   );
 }
-
-    

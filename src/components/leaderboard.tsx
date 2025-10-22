@@ -30,16 +30,6 @@ import Link from 'next/link';
 import { useUser } from '@/firebase';
 import { FeatureLockInline } from './feature-lock-inline';
 
-
-const PnlCell = ({ value }: { value: number }) => (
-    <div className={cn("font-medium text-sm", value >= 0 ? "text-green-500" : "text-red-500")}>
-        <div className='flex items-center gap-1.5'>
-            {value >= 0 ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />}
-            <span>{Math.abs(value).toFixed(2)}%</span>
-        </div>
-    </div>
-);
-
 const WalletCell = ({ address }: { address: string}) => {
     return (
         <Link href={`/wallet/${address}`} className='font-mono text-sm hover:text-primary transition-colors' onClick={(e) => e.stopPropagation()}>
@@ -108,13 +98,11 @@ const LeaderboardTable = ({ data, isLoading }: { data: LeaderboardWallet[], isLo
                         <CardContent className="p-3 md:p-4">
                             <div className="flex items-center gap-3 md:gap-4">
                                 <div className='w-8 text-center text-muted-foreground font-bold text-lg'>{index + 1}</div>
-                                <div className="flex-1 grid grid-cols-2 md:grid-cols-7 gap-x-4 gap-y-2 items-center">
+                                <div className="flex-1 grid grid-cols-2 md:grid-cols-5 gap-x-4 gap-y-2 items-center">
                                     <div className="md:col-span-2 font-semibold"><WalletCell address={wallet.address} /></div>
                                     <div className="text-sm text-muted-foreground"><span className="md:hidden">Net Worth: </span><span className="font-medium text-foreground">{wallet.netWorth}</span></div>
                                     <div className="md:col-span-1"><TopHoldingCell holding={wallet.topHolding}/></div>
-                                    <div className="md:col-span-1"><PnlCell value={wallet.pnl7d} /></div>
-                                    <div className="text-sm text-muted-foreground"><span className="md:hidden">Win Rate: </span><span className="font-medium text-foreground">{wallet.winRate.toFixed(1)}%</span></div>
-                                    <div className="md:col-span-1 text-sm text-muted-foreground"><span className="md:hidden">Trades: </span><span className="font-medium text-foreground">{wallet.activity}</span></div>
+                                    <div className="text-sm text-muted-foreground"><span className="md:hidden">Trades (7d): </span><span className="font-medium text-foreground">{wallet.activity}</span></div>
                                 </div>
                                 <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => handleAlertClick(e, wallet.address)}>
                                     <Zap className="h-4 w-4" />
@@ -138,7 +126,7 @@ const LeaderboardTable = ({ data, isLoading }: { data: LeaderboardWallet[], isLo
 export function Leaderboard() {
   const [searchFilter, setSearchFilter] = useState('');
   const [tagFilter, setTagFilter] = useState('all');
-  const [sortBy, setSortBy] = useState('pnl7d');
+  const [sortBy, setSortBy] = useState('netWorth');
   const [isLoading, setIsLoading] = useState(true);
   const { claims } = useUser();
   const isPro = claims?.plan === 'pro';
@@ -178,28 +166,22 @@ export function Leaderboard() {
     // Sort
     data.sort((a, b) => {
         switch (sortBy) {
+            case 'activity':
+                return b.activity - a.activity;
             case 'netWorth':
+            default:
                 const valA = parseFloat(a.netWorth.replace('$', '').replace('M', ''));
                 const valB = parseFloat(b.netWorth.replace('$', '').replace('M', ''));
                 return valB - valA;
-            case 'activity':
-                return b.activity - a.activity;
-            case 'winRate':
-                return b.winRate - a.winRate;
-            case 'pnl7d':
-            default:
-                return b.pnl7d - a.pnl7d;
         }
     });
 
     return data;
   }, [searchFilter, tagFilter, sortBy]);
 
-  const displayData = isPro ? filteredAndSortedData : filteredAndSortedData.slice(0, 5);
+  const displayData = isPro ? filteredAndSortedData : filteredAndSortedData.slice(0, 10);
 
   const sortOptions = [
-    { value: 'pnl7d', label: '7d P&L' },
-    { value: 'winRate', label: 'Win Rate' },
     { value: 'netWorth', label: 'Net Worth' },
     { value: 'activity', label: 'Activity' },
   ];
@@ -260,7 +242,7 @@ export function Leaderboard() {
                 {!isPro && !isLoading && (
                     <FeatureLockInline 
                         title="View the Full Leaderboard"
-                        description="Upgrade to Pro to unlock the top 100 wallets, deep wallet profiles, and more."
+                        description="Upgrade to Pro to unlock the top 100 wallets and advanced filters."
                     />
                 )}
             </div>
