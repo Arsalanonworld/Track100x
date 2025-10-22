@@ -24,7 +24,8 @@ const featureIcons = [
 
 function getRandomPosition(radius: number) {
   const angle = Math.random() * 2 * Math.PI;
-  const r = radius * Math.sqrt(Math.random());
+  // Use a wider range for more dramatic scattering
+  const r = radius * (0.5 + Math.random() * 0.8);
   return {
     x: r * Math.cos(angle),
     y: r * Math.sin(angle),
@@ -60,9 +61,15 @@ const IconContainer = forwardRef<
 IconContainer.displayName = "IconContainer";
 
 const OrbitingIcon = ({ icon, index, total, radius, isScattered, initialPosition, rotation }: any) => {
-    // Animate x and y instead of using a rotating parent
-    const x = useTransform(rotation, r => radius * Math.cos((index / total) * 2 * Math.PI + r));
-    const y = useTransform(rotation, r => radius * Math.sin((index / total) * 2 * Math.PI + r));
+    const time = useTime();
+    // Create a continuous rotation that is independent of the main one for variety
+    const individualRotation = useTransform(time, [0, 15000], [0, 2 * Math.PI], { clamp: false });
+    
+    // Combine the main rotation with the individual one
+    const combinedRotation = useTransform([rotation, individualRotation], ([r, ir]) => r + ir * 0.1);
+
+    const x = useTransform(combinedRotation, r => radius * Math.cos((index / total) * 2 * Math.PI + r));
+    const y = useTransform(combinedRotation, r => radius * Math.sin((index / total) * 2 * Math.PI + r));
     
     return (
          <motion.div
@@ -71,11 +78,13 @@ const OrbitingIcon = ({ icon, index, total, radius, isScattered, initialPosition
             style={{
                 top: '50%',
                 left: '50%',
-                x: isScattered ? initialPosition.x : x,
-                y: isScattered ? initialPosition.y : y,
-                zIndex: 10
             }}
-            initial={{ scale: 0.5, opacity: 0 }}
+            initial={{ 
+                x: initialPosition.x, 
+                y: initialPosition.y,
+                scale: 0.5, 
+                opacity: 0 
+            }}
             animate={{
                 x: isScattered ? initialPosition.x : x,
                 y: isScattered ? initialPosition.y : y,
@@ -84,11 +93,11 @@ const OrbitingIcon = ({ icon, index, total, radius, isScattered, initialPosition
             }}
             transition={{
                 type: 'spring',
-                stiffness: 50,
-                damping: 15,
-                delay: isScattered ? 0 : index * 0.05,
+                stiffness: isScattered ? 40 : 80,
+                damping: isScattered ? 10 : 20,
+                mass: isScattered ? 1.5 : 1,
+                delay: index * 0.05,
             }}
-            exit={{ opacity: 0 }}
         >
             <div className="h-12 w-12 flex items-center justify-center rounded-full bg-card border-2 shadow-md -translate-x-1/2 -translate-y-1/2">
                 {React.cloneElement(icon.component, { className: "h-6 w-6 text-muted-foreground" })}
@@ -103,35 +112,32 @@ const CryptoFeatureWeb = () => {
   const [initialPositions, setInitialPositions] = useState<Array<{x: number, y: number}>>([]);
   const [isClient, setIsClient] = useState(false);
 
-  // Time-based rotation for continuous orbit
   const time = useTime();
-  const rotation = useTransform(time, [0, 20000], [0, 2 * Math.PI], { clamp: false });
+  const rotation = useTransform(time, [0, 20000], [0, -2 * Math.PI], { clamp: false });
 
   useEffect(() => {
     setIsClient(true);
+    // Set initial positions right away for SSR compatibility
+    setInitialPositions(
+      featureIcons.map(() => getRandomPosition(150))
+    );
   }, []);
   
   useEffect(() => {
     if (!isClient) return;
 
-    setInitialPositions(
-      featureIcons.map(() => getRandomPosition(130))
-    );
-    
-    const initialTimer = setTimeout(() => setIsScattered(false), 100);
-
+    // Animation cycle
     const interval = setInterval(() => {
       setIsScattered(true);
       setTimeout(() => {
         setInitialPositions(
-          featureIcons.map(() => getRandomPosition(130))
+          featureIcons.map(() => getRandomPosition(150))
         );
         setIsScattered(false);
-      }, 2000);
-    }, 8000);
+      }, 3000); // Time spent scattered
+    }, 8000); // Total cycle time (scatter + orbit)
 
     return () => {
-      clearTimeout(initialTimer);
       clearInterval(interval);
     };
   }, [isClient]);
@@ -140,7 +146,8 @@ const CryptoFeatureWeb = () => {
   const containerSize = 300;
 
   if (!isClient) {
-    return <div className="h-[350px] w-full" />;
+    // Render a static placeholder on the server
+    return <div className="h-[350px] w-full flex items-center justify-center"><IconContainer><LogoIcon /></IconContainer></div>;
   }
 
   return (
@@ -174,6 +181,9 @@ const CryptoFeatureWeb = () => {
                                 strokeWidth="1"
                                 strokeOpacity={0.8}
                                 strokeDasharray="2 6"
+                                initial={{ pathLength: 0 }}
+                                animate={{ pathLength: 1 }}
+                                transition={{ duration: 0.5, delay: 0.8 + index * 0.05 }}
                             />
                          )
                     })}
@@ -182,8 +192,7 @@ const CryptoFeatureWeb = () => {
         </AnimatePresence>
 
         <AnimatePresence>
-          {featureIcons.map((icon, index) => {
-            const randomPos = initialPositions[index] || { x: 0, y: 0 };
+          {initialPositions.length > 0 && featureIcons.map((icon, index) => {
             return (
               <OrbitingIcon
                 key={icon.key}
@@ -192,7 +201,7 @@ const CryptoFeatureWeb = () => {
                 total={featureIcons.length}
                 radius={radius}
                 isScattered={isScattered}
-                initialPosition={randomPos}
+                initialPosition={initialPositions[index]}
                 rotation={rotation}
               />
             );
