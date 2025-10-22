@@ -11,11 +11,11 @@ import { PricingPreview } from '@/components/pricing-preview';
 
 export default function HomePage() {
   return (
-    <div className="flex flex-col gap-16 md:gap-24">
+    <div className="flex flex-col gap-12 md:gap-20">
       {/* Hero Section */}
       <HeroSection />
 
-      <div className="container space-y-16 md:space-y-24">
+      <div className="container space-y-12 md:space-y-20">
         {/* Whale Feed Section */}
         <section id="whale-feed">
           <WhaleFeed isPreview={true} showTitle={true} />
@@ -28,7 +28,7 @@ export default function HomePage() {
       {/* Leaderboard Preview (Full Width) */}
       <LeaderboardPreview />
 
-      <div className="container space-y-16 md:space-y-24">
+      <div className="container space-y-12 md:space-y-20">
         {/* Pricing Section */}
         <section id="pricing">
            <div className="text-center mb-12">
