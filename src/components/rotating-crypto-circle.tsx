@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useState, useEffect, forwardRef, ReactNode } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useTransform, useMotionValue } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { CryptoIcon } from './crypto-icon';
 import { Zap, Eye, Trophy, Wallet } from 'lucide-react';
@@ -25,7 +25,7 @@ const featureIcons = [
 function getRandomPosition(radius: number) {
   const angle = Math.random() * 2 * Math.PI;
   // Increase the multiplier to scatter icons farther away.
-  const r = radius * Math.random() * 1.5;
+  const r = radius * (1 + Math.random());
   return {
     x: r * Math.cos(angle),
     y: r * Math.sin(angle),
@@ -80,8 +80,8 @@ const OrbitingIcon = ({ icon, index, total, radius, isOrbiting, scatteredPositio
             }}
             transition={{
                 type: 'spring',
-                stiffness: 50,
-                damping: 15,
+                stiffness: 20,
+                damping: 20,
                 mass: 1,
                 delay: isOrbiting ? index * 0.05 : 0,
             }}
@@ -99,12 +99,11 @@ const CryptoFeatureWeb = () => {
   const [scatteredPositions, setScatteredPositions] = useState<Array<{x: number, y: number}>>([]);
 
   const radius = 130;
-  const containerSize = 300;
   
   useEffect(() => {
     setIsClient(true);
     setScatteredPositions(featureIcons.map(() => getRandomPosition(radius)));
-  }, [radius]);
+  }, []);
 
   useEffect(() => {
     if (!isClient) return;
@@ -123,7 +122,7 @@ const CryptoFeatureWeb = () => {
       clearTimeout(initialTimer);
       clearInterval(cycleInterval);
     };
-  }, [isClient, radius]);
+  }, [isClient]);
 
   if (!isClient) {
     return <div className="mx-auto h-[350px] w-full" />;
@@ -132,8 +131,7 @@ const CryptoFeatureWeb = () => {
   return (
     <div className="relative flex w-full items-center justify-center mx-auto h-[350px]">
       <motion.div
-        className="relative"
-        style={{ width: containerSize, height: containerSize }}
+        className="relative h-full w-full"
         animate={{ rotate: isOrbiting ? 360 : 0 }}
         transition={{
             duration: isOrbiting ? 40 : 2,
@@ -257,4 +255,3 @@ z"
     </svg>
   );
 }
-
