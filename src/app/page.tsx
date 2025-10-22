@@ -11,26 +11,27 @@ import { PricingPreview } from '@/components/pricing-preview';
 
 export default function HomePage() {
   return (
-    <div className="space-y-8 md:space-y-12">
+    <div className="flex flex-col gap-16 md:gap-24">
       {/* Hero Section */}
       <HeroSection />
 
-      <div className="container">
+      <div className="container space-y-16 md:space-y-24">
         {/* Whale Feed Section */}
-        <div id="whale-feed">
+        <section id="whale-feed">
           <WhaleFeed isPreview={true} showTitle={true} />
-        </div>
+        </section>
         
         {/* Feature Highlights Section */}
         <FeatureHighlights />
       </div>
-        {/* Leaderboard Preview */}
-        <LeaderboardPreview />
 
-      <div className="container">
+      {/* Leaderboard Preview (Full Width) */}
+      <LeaderboardPreview />
+
+      <div className="container space-y-16 md:space-y-24">
         {/* Pricing Section */}
-        <section id="pricing" className="py-16 sm:py-24">
-           <div className="text-center mb-16">
+        <section id="pricing">
+           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">Simple, Clear Pricing</h2>
             <p className="mt-4 text-muted-foreground max-w-2xl mx-auto">
               Choose the plan that fits your strategy. Start for free, upgrade when you're ready.
