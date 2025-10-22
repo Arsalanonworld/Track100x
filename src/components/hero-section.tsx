@@ -5,28 +5,26 @@ import { Bell, Eye, Search, Wallet } from "lucide-react";
 import React, { useEffect, useState } from 'react';
 
 const phrases = [
-    'Decode On-Chain Behavior.',
     'Follow the Smart Money.',
-    'Discover Alpha, Faster.',
-    'Analyze Wallet Movements.',
-    'Turn Data into Opportunity.',
-    'The On-Chain Research Hub.',
-    'Find Narratives Early.',
-    'Master Crypto Intelligence.',
+    'Track Whale Wallets.',
+    'Discover Top Traders.',
+    'Monitor On-Chain Activity.',
+    'Find Alpha, Faster.',
+    'Your On-Chain Command Center.',
 ];
 
 const features = [
     {
         icon: <Wallet />,
-        label: "Wallet Intelligence"
+        label: "Wallet Tracking"
     },
     {
         icon: <Search />,
-        label: "Ecosystem Research"
+        label: "Leaderboards"
     },
     {
         icon: <Bell />,
-        label: "On-Chain Analytics"
+        label: "Real-Time Alerts"
     },
     {
         icon: <svg
@@ -48,7 +46,7 @@ const features = [
             <path d="M18.5 21a2.5 2.5 0 0 1-4.82-1.4" />
             <path d="M15 15.5a1.5 1.5 0 0 1-3 0" />
             </svg>,
-        label: "Real-Time Whale Flow"
+        label: "Live Whale Feed"
     },
 ];
 

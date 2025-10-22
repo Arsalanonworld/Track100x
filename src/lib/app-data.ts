@@ -5,23 +5,23 @@ import { Bell, Eye, Trophy, Wallet, Zap } from 'lucide-react';
 export const featureHighlights = [
     {
         icon: Zap,
-        title: 'Advanced Alert Builder',
-        description: 'Create complex, multi-conditional alerts to precisely monitor specific on-chain events and strategies.',
+        title: 'Real-Time Alerts',
+        description: 'Set up simple or advanced alerts to monitor specific wallets, tokens, and on-chain events.',
     },
     {
         icon: Eye,
         title: 'Unlimited Watchlist',
-        description: 'Track as many wallets and tokens as you want, without any limitations.',
+        description: 'Track as many wallets and tokens as you want, without any limitations on the Pro plan.',
     },
     {
         icon: Trophy,
-        title: 'Leaderboard Analytics',
+        title: 'Smart Money Leaderboard',
         description: 'Discover and learn from the top-performing traders in real-time with our comprehensive leaderboard.',
     },
      {
         icon: Wallet,
-        title: 'Full Portfolio Tracking',
-        description: 'Link all your wallets and unlock complete historical data and performance insights.',
+        title: 'Wallet Intelligence',
+        description: 'Dive deep into any wallet to see their holdings, transaction history, and performance.',
     },
 ];
 
@@ -32,9 +32,9 @@ export const pricing = {
     price: '$0',
     features: [
       'Real-time Whale Feed',
+      'Top 10 Leaderboard',
       '5 Watchlist Items',
-      '5 Active Alerts',
-      '1 Linked Wallet',
+      '5 Quick Alerts',
     ],
   },
   pro: {
@@ -43,10 +43,10 @@ export const pricing = {
     priceMonthly: '$7',
     priceYearly: '$6',
     features: [
-      'Unlimited Watchlist',
-      'Unlimited Alerts & Advanced Builder',
-      'Unlimited Linked Wallets',
-      'Full Portfolio History & Analytics',
+      'Unlimited Watchlist Items',
+      'Unlimited Quick & Advanced Alerts',
+      'Full Leaderboard Access',
+      'Detailed Wallet Analytics',
     ],
   },
 };
@@ -57,7 +57,7 @@ export const features = [
     category: 'Core Features',
     items: [
       { name: 'Real-Time Whale Feed', free: true, pro: true },
-      { name: 'Leaderboard Access', free: true, pro: true },
+      { name: 'Leaderboard Access', free: 'Top 10', pro: 'Top 100+' },
       { name: 'Watchlist', free: '5 items', pro: 'Unlimited' },
     ],
   },
@@ -66,13 +66,14 @@ export const features = [
     items: [
       { name: 'Quick Alerts', free: '5 active', pro: 'Unlimited' },
       { name: 'Advanced Alert Builder', free: false, pro: true },
+      { name: 'Telegram Notifications', free: false, pro: true },
     ],
   },
    {
-    category: 'Portfolio & Analytics',
+    category: 'Analytics',
     items: [
-        { name: 'Link Wallets', free: '1 wallet', pro: 'Unlimited' },
-        { name: 'Historical Performance', free: '7-day history', pro: 'Full history' },
+        { name: 'Wallet Profile Details', free: true, pro: true },
+        { name: 'Historical Performance Data', free: '7-day history', pro: 'Full history' },
     ]
    },
   {

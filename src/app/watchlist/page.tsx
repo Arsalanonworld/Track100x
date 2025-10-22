@@ -60,8 +60,8 @@ function WatchlistPage() {
   const watchlistAtLimit = !isPro && watchlist && watchlist.length >= WATCHLIST_LIMIT_FREE;
 
   const pageDescription = isPro
-    ? 'Track your wallets and tokens all in one place.'
-    : `You are on the Free plan. Upgrade to unlock all features.`;
+    ? 'Monitor your favorite wallets and tokens in one place.'
+    : `You are on the Free plan. Upgrade to track more items and unlock advanced alerts.`;
 
 
   const handleRemove = (item: WatchlistItem) => {
@@ -119,7 +119,7 @@ function WatchlistPage() {
     <div>
          <PageHeader
             title="My Watchlist"
-            description={user ? pageDescription : "Log in to track wallets and tokens all in one place."}
+            description={user ? pageDescription : "Log in to start tracking wallets and tokens."}
             className='hidden sm:block'
         />
 

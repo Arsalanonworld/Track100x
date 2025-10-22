@@ -1,16 +1,14 @@
 # Track100x: Blockchain Intelligence Platform
 
-Track100x is a Next.js application designed to be a comprehensive blockchain intelligence platform. It provides users with tools to decode on-chain behavior, discover opportunities, and track significant market movements in real-time.
+Track100x is a Next.js application designed to be a streamlined blockchain intelligence platform. It provides users with tools to follow smart money, discover opportunities, and track significant market movements in real-time.
 
 This project was built within [Firebase Studio](https://studio.firebase.google.com).
 
 ## ✨ Key Features
 
-- **Real-Time Whale Feed**: A live stream of significant on-chain transactions, filterable by token, chain, and type.
+- **Real-Time Whale Feed**: A live stream of significant on-chain transactions, filterable by token and chain.
 - **Smart Money Dashboard**: A leaderboard to discover and track the most influential and profitable wallets.
 - **Personalized Watchlist**: Users can add wallets and tokens to their own watchlist for easy monitoring.
-- **Advanced Alert System**: Create custom, multi-conditional alerts for on-chain events (e.g., large transactions, price changes).
-- **Portfolio Tracking**: An aggregated view of on-chain wealth from watched wallets.
 - **Secure Authentication**: User accounts managed via Firebase Authentication (Email & Google).
 - **Pro & Free Tiers**: Implements a subscription model with feature-locking for different user plans.
 

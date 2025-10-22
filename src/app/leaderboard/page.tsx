@@ -34,8 +34,8 @@ function LeaderboardPage() {
   return (
     <div>
       <PageHeader
-          title="Smart Money Dashboard"
-          description="Discover and track the most influential and profitable wallets in real-time."
+          title="Smart Money Leaderboard"
+          description="Discover and track the most influential wallets in crypto."
           className='hidden sm:block'
       />
       <Leaderboard />
