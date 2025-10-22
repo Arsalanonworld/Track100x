@@ -65,11 +65,12 @@ const FlipText = ({ phrases }: { phrases: string[] }) => {
     <AnimatePresence mode="wait">
       <motion.h1
         key={phrases[index]}
-        initial={{ opacity: 0, y: -25 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 25 }}
-        transition={{ duration: 0.5, ease: "easeInOut" }}
+        initial={{ opacity: 0, y: 20, rotateX: -90 }}
+        animate={{ opacity: 1, y: 0, rotateX: 0 }}
+        exit={{ opacity: 0, y: -20, rotateX: 90 }}
+        transition={{ duration: 0.4, ease: "easeInOut" }}
         className="relative text-3xl font-extrabold tracking-tighter sm:text-5xl lg:text-6xl text-foreground text-center"
+        style={{ perspective: '400px' }}
       >
         {phrases[index]}
       </motion.h1>
