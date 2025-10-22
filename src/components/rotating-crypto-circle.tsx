@@ -5,17 +5,17 @@ import React, { useState, useEffect, forwardRef, ReactNode, useMemo } from 'reac
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { CryptoIcon } from './crypto-icon';
-import { Zap, Eye, Trophy, Wallet } from 'lucide-react';
+import { Zap, Eye, Trophy, Wallet, Rss } from 'lucide-react';
 
 const featureIcons = [
-  { component: <Zap />, key: 'zap' },
+  { component: <Rss />, key: 'feed' },
   { component: <CryptoIcon token="BTC" />, key: 'btc' },
-  { component: <Eye />, key: 'eye' },
+  { component: <Eye />, key: 'watchlist' },
   { component: <CryptoIcon token="ETH" />, key: 'eth' },
-  { component: <Trophy />, key: 'trophy' },
+  { component: <Trophy />, key: 'leaderboard' },
   { component: <CryptoIcon token="SOL" />, key: 'sol' },
   { component: <Wallet />, key: 'wallet' },
-  { component: <CryptoIcon token="DOGE" />, key: 'doge' },
+  { component: <Zap />, key: 'alerts' },
   { component: <CryptoIcon token="LINK" />, key: 'link' },
   { component: <CryptoIcon token="AVAX" />, key: 'avax' },
   { component: <CryptoIcon token="SHIB" />, key: 'shib' },
@@ -102,7 +102,7 @@ const CryptoFeatureWeb = () => {
 
   useEffect(() => {
     setIsClient(true);
-    setScatteredPositions(featureIcons.map(() => getRandomPosition(radius * 1.2)));
+    setScatteredPositions(featureIcons.map(() => getRandomPosition(radius)));
   }, []);
   
   useEffect(() => {
@@ -117,7 +117,7 @@ const CryptoFeatureWeb = () => {
         setAnimationState(currentState as any);
 
         if (currentState === 'scatter') {
-             setScatteredPositions(featureIcons.map(() => getRandomPosition(radius)));
+             setScatteredPositions(featureIcons.map(() => getRandomPosition(radius * 1.2)));
         }
         
         let duration;
