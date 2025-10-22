@@ -24,8 +24,8 @@ const featureIcons = [
 
 function getRandomPosition(radius: number) {
   const angle = Math.random() * 2 * Math.PI;
-  // Use a larger radius for more distant scattering
-  const r = radius * (1.2 + Math.random() * 0.8);
+  // Ensure the random radius is within the container bounds
+  const r = radius * Math.random() * 0.9;
   return {
     x: r * Math.cos(angle),
     y: r * Math.sin(angle),
@@ -103,7 +103,7 @@ const CryptoFeatureWeb = () => {
 
   useEffect(() => {
     setIsClient(true);
-    setScatteredPositions(featureIcons.map(() => getRandomPosition(radius * 1.8)));
+    setScatteredPositions(featureIcons.map(() => getRandomPosition(radius * 1.2)));
   }, []);
   
   useEffect(() => {
@@ -118,7 +118,7 @@ const CryptoFeatureWeb = () => {
         setAnimationState(currentState as any);
 
         if (currentState === 'scatter') {
-             setScatteredPositions(featureIcons.map(() => getRandomPosition(radius * 1.8)));
+             setScatteredPositions(featureIcons.map(() => getRandomPosition(radius * 1.2)));
         }
         
         let duration;
