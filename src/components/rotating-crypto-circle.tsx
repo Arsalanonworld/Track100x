@@ -24,7 +24,8 @@ const featureIcons = [
 
 function getRandomPosition(radius: number) {
   const angle = Math.random() * 2 * Math.PI;
-  const r = radius * Math.random();
+  // Increase the multiplier to scatter icons farther away.
+  const r = radius * Math.random() * 1.5;
   return {
     x: r * Math.cos(angle),
     y: r * Math.sin(angle),
@@ -65,7 +66,12 @@ const OrbitingIcon = ({ icon, index, total, radius, isOrbiting, scatteredPositio
             key={icon.key}
             className="absolute"
             style={{ top: '50%', left: '50%' }}
-            initial={{ x: scatteredPosition.x, y: scatteredPosition.y, scale: 0.5, opacity: 0 }}
+            initial={{ 
+                x: scatteredPosition.x, 
+                y: scatteredPosition.y, 
+                scale: 0.5, 
+                opacity: 0 
+            }}
             animate={{
                 x: isOrbiting ? orbitingX : scatteredPosition.x,
                 y: isOrbiting ? orbitingY : scatteredPosition.y,
@@ -77,7 +83,7 @@ const OrbitingIcon = ({ icon, index, total, radius, isOrbiting, scatteredPositio
                 stiffness: 50,
                 damping: 15,
                 mass: 1,
-                delay: index * 0.05,
+                delay: isOrbiting ? index * 0.05 : 0,
             }}
         >
             <div className="h-12 w-12 flex items-center justify-center rounded-full bg-card border-2 shadow-md -translate-x-1/2 -translate-y-1/2">
@@ -97,24 +103,21 @@ const CryptoFeatureWeb = () => {
   
   useEffect(() => {
     setIsClient(true);
-    setScatteredPositions(featureIcons.map(() => getRandomPosition(radius * 0.8)));
-  }, []);
+    setScatteredPositions(featureIcons.map(() => getRandomPosition(radius)));
+  }, [radius]);
 
   useEffect(() => {
     if (!isClient) return;
 
-    // Initial animation from scattered to orbiting
     const initialTimer = setTimeout(() => setIsOrbiting(true), 100);
 
-    // Animation cycle
     const cycleInterval = setInterval(() => {
-      setIsOrbiting(false); // Scatter
-      // After scattering, generate new positions and then orbit again
+      setIsOrbiting(false); 
       setTimeout(() => {
-        setScatteredPositions(featureIcons.map(() => getRandomPosition(radius * 0.8)));
-        setIsOrbiting(true);
-      }, 3000); // Time spent scattered
-    }, 8000); // Total cycle time
+        setScatteredPositions(featureIcons.map(() => getRandomPosition(radius)));
+        setTimeout(() => setIsOrbiting(true), 500); 
+      }, 500); 
+    }, 8000); 
 
     return () => {
       clearTimeout(initialTimer);
@@ -133,10 +136,9 @@ const CryptoFeatureWeb = () => {
         style={{ width: containerSize, height: containerSize }}
         animate={{ rotate: isOrbiting ? 360 : 0 }}
         transition={{
-            duration: isOrbiting ? 20 : 2,
+            duration: isOrbiting ? 40 : 2,
             ease: "linear",
             repeat: isOrbiting ? Infinity : 0,
-            delay: isOrbiting ? 0.5 : 0,
         }}
       >
         <AnimatePresence>
@@ -255,3 +257,4 @@ z"
     </svg>
   );
 }
+
