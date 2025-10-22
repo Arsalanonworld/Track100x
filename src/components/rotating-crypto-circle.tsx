@@ -23,12 +23,11 @@ const featureIcons = [
 ];
 
 function getRandomPosition(radius: number) {
-  const angle = Math.random() * 2 * Math.PI;
-  // Ensure the random radius is within the container bounds
-  const r = radius * Math.random() * 0.9;
+  // Use a square area for more random scattering
+  const side = radius * 2;
   return {
-    x: r * Math.cos(angle),
-    y: r * Math.sin(angle),
+    x: Math.random() * side - radius,
+    y: Math.random() * side - radius,
   };
 }
 
@@ -118,7 +117,7 @@ const CryptoFeatureWeb = () => {
         setAnimationState(currentState as any);
 
         if (currentState === 'scatter') {
-             setScatteredPositions(featureIcons.map(() => getRandomPosition(radius * 1.2)));
+             setScatteredPositions(featureIcons.map(() => getRandomPosition(radius)));
         }
         
         let duration;
@@ -329,5 +328,3 @@ z"
     </svg>
   );
 }
-
-    
