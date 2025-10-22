@@ -24,8 +24,8 @@ const featureIcons = [
 
 function getRandomPosition(radius: number) {
   const angle = Math.random() * 2 * Math.PI;
-  // Increase the radius multiplier for more distant scattering
-  const r = radius * (1.2 + Math.random() * 0.5); 
+  // Use a larger radius for more distant scattering
+  const r = radius * (1.2 + Math.random() * 0.8);
   return {
     x: r * Math.cos(angle),
     y: r * Math.sin(angle),
@@ -46,7 +46,7 @@ const IconContainer = forwardRef<
       {...rest}
       ref={ref}
       className={cn(
-        "relative flex h-20 w-20 items-center justify-center rounded-full bg-background shadow-inner",
+        "relative flex h-12 w-12 items-center justify-center rounded-full bg-card border-2 shadow-md",
         className
       )}
     >
@@ -83,14 +83,14 @@ const OrbitingIcon = ({ icon, index, total, radius, animationState, scatteredPos
             animate={getTargetPosition()}
             transition={{
                 type: 'spring',
-                stiffness: 20,
+                stiffness: 40,
                 damping: 15,
                 mass: 1.5,
             }}
         >
-            <div className="h-12 w-12 flex items-center justify-center rounded-full bg-card border-2 shadow-md -translate-x-1/2 -translate-y-1/2">
+            <IconContainer className="-translate-x-1/2 -translate-y-1/2">
                 {React.cloneElement(icon.component, { className: "h-6 w-6 text-muted-foreground" })}
-            </div>
+            </IconContainer>
         </motion.div>
     )
 }
@@ -164,13 +164,12 @@ const CryptoFeatureWeb = () => {
         }}
       >
         <AnimatePresence>
-            {/* Dotted lines */}
             {(animationState === 'centralize' || animationState === 'orbit') && (
                  <motion.svg
-                    width="100%"
-                    height="100%"
+                    width="350"
+                    height="350"
                     viewBox="0 0 350 350"
-                    className="absolute top-0 left-0"
+                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
@@ -184,11 +183,11 @@ const CryptoFeatureWeb = () => {
                     </defs>
                     {featureIcons.map((_, index) => {
                         const angle = (index / featureIcons.length) * 2 * Math.PI;
-                        const containerCenter = 350 / 2;
+                        const containerCenter = 175; // Half of 350
                         const x2 = containerCenter + radius * Math.cos(angle);
                         const y2 = containerCenter + radius * Math.sin(angle);
                         return (
-                            <line
+                            <motion.line
                                 key={`line-${index}`}
                                 x1={containerCenter}
                                 y1={containerCenter}
@@ -197,13 +196,15 @@ const CryptoFeatureWeb = () => {
                                 stroke="url(#line-gradient)"
                                 strokeWidth="1"
                                 strokeDasharray="2 4"
+                                initial={{ opacity: 0, pathLength: 0 }}
+                                animate={{ opacity: 1, pathLength: 1 }}
+                                transition={{ duration: 0.5, delay: 0.2 }}
                             />
                         );
                     })}
                 </motion.svg>
             )}
 
-            {/* Icons */}
             {isClient && scatteredPositions.length > 0 && featureIcons.map((icon, index) => (
                 <OrbitingIcon
                 key={icon.key}
@@ -224,9 +225,17 @@ const CryptoFeatureWeb = () => {
         animate={{ scale: animationState === 'scatter' ? 0.9 : 1 }}
         transition={{ type: 'spring', stiffness: 200, damping: 10 }}
       >
-        <IconContainer>
-            <LogoIcon />
-        </IconContainer>
+        <div className={cn(
+            "relative flex h-20 w-20 items-center justify-center rounded-full bg-background shadow-inner",
+        )}>
+            <div className={cn(
+                "absolute inset-0 z-0 rounded-full bg-primary/20 blur-lg",
+                animationState !== 'scatter' && "animate-pulse-slow"
+            )} />
+            <div className="relative z-20">
+                <LogoIcon />
+            </div>
+        </div>
       </motion.div>
     </div>
   );
@@ -320,3 +329,5 @@ z"
     </svg>
   );
 }
+
+    
