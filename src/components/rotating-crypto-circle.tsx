@@ -1,8 +1,8 @@
 
 'use client';
 
-import React, { useState, useEffect, forwardRef, ReactNode, useRef } from 'react';
-import { motion, AnimatePresence, useTime, useTransform, useAnimation } from 'framer-motion';
+import React, { useState, useEffect, forwardRef, ReactNode } from 'react';
+import { motion, AnimatePresence, useTime, useTransform } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { CryptoIcon } from './crypto-icon';
 import { Zap, Eye, Trophy, Wallet } from 'lucide-react';
@@ -22,9 +22,8 @@ const featureIcons = [
   { component: <CryptoIcon token="UNI" />, key: 'uni' },
 ];
 
-
-function getOrbitPosition(index: number, total: number, radius: number) {
-  const angle = (index / total) * 2 * Math.PI;
+function getOrbitPosition(index: number, total: number, radius: number, rotation: number = 0) {
+  const angle = (index / total) * 2 * Math.PI + rotation;
   const x = radius * Math.cos(angle);
   const y = radius * Math.sin(angle);
   return { x, y };
@@ -32,7 +31,6 @@ function getOrbitPosition(index: number, total: number, radius: number) {
 
 function getRandomPosition(radius: number) {
   const angle = Math.random() * 2 * Math.PI;
-  // Ensure the random radius is *within* the main orbit
   const r = radius * Math.random(); 
   return {
     x: r * Math.cos(angle),
@@ -68,11 +66,53 @@ const IconContainer = forwardRef<
 
 IconContainer.displayName = "IconContainer";
 
+const OrbitingIcon = ({ icon, index, total, radius, isScattered, initialPosition, rotation }: any) => {
+    const { x: orbitX, y: orbitY } = getOrbitPosition(index, total, radius);
+    
+    // Animate x and y instead of using a rotating parent
+    const x = useTransform(rotation, r => radius * Math.cos((index / total) * 2 * Math.PI + r));
+    const y = useTransform(rotation, r => radius * Math.sin((index / total) * 2 * Math.PI + r));
+    
+    return (
+         <motion.div
+            key={icon.key}
+            className="absolute"
+            style={{
+                top: '50%',
+                left: '50%',
+                x: isScattered ? initialPosition.x : x,
+                y: isScattered ? initialPosition.y : y,
+                zIndex: 10
+            }}
+            initial={{ scale: 0.5, opacity: 0 }}
+            animate={{
+                scale: isScattered ? 0.8 : 1,
+                opacity: 1,
+            }}
+            transition={{
+                type: 'spring',
+                stiffness: 50,
+                damping: 15,
+                delay: isScattered ? 0 : index * 0.05,
+            }}
+            exit={{ opacity: 0 }}
+        >
+            <div className="h-12 w-12 flex items-center justify-center rounded-full bg-card border-2 shadow-md -translate-x-1/2 -translate-y-1/2">
+                {React.cloneElement(icon.component, { className: "h-6 w-6 text-muted-foreground" })}
+            </div>
+        </motion.div>
+    )
+}
+
 
 const CryptoFeatureWeb = () => {
   const [isScattered, setIsScattered] = useState(true);
   const [initialPositions, setInitialPositions] = useState<Array<{x: number, y: number}>>([]);
   const [isClient, setIsClient] = useState(false);
+
+  // Time-based rotation for continuous orbit
+  const time = useTime();
+  const rotation = useTransform(time, [0, 20000], [0, 2 * Math.PI], { clamp: false });
 
   useEffect(() => {
     setIsClient(true);
@@ -81,25 +121,21 @@ const CryptoFeatureWeb = () => {
   useEffect(() => {
     if (!isClient) return;
 
-    // Generate initial random positions on mount
     setInitialPositions(
       featureIcons.map(() => getRandomPosition(130))
     );
     
-    // Initial gather animation
     const initialTimer = setTimeout(() => setIsScattered(false), 100);
 
-    // Loop the animation
     const interval = setInterval(() => {
-      setIsScattered(true); // Scatter
+      setIsScattered(true);
       setTimeout(() => {
-        // Regenerate random positions for the next scatter
         setInitialPositions(
           featureIcons.map(() => getRandomPosition(130))
         );
-        setIsScattered(false); // Gather
-      }, 2000); // Time spent scattered
-    }, 8000); // Total cycle time (gather + orbit + scatter)
+        setIsScattered(false);
+      }, 2000);
+    }, 8000);
 
     return () => {
       clearTimeout(initialTimer);
@@ -109,27 +145,18 @@ const CryptoFeatureWeb = () => {
 
   const radius = 130;
   const containerSize = 300;
-  const center = containerSize / 2;
 
   if (!isClient) {
-    // Render nothing or a placeholder on the server to avoid hydration errors
     return <div className="h-[350px] w-full" />;
   }
 
   return (
     <div className="relative flex w-full items-center justify-center mx-auto h-[350px]">
-      <motion.div 
+      <div 
         className="relative" 
         style={{ width: containerSize, height: containerSize }}
-        animate={{ rotate: isScattered ? 0 : 360 }}
-        transition={{ 
-            duration: isScattered ? 0 : 40, // Only rotate when not scattered
-            repeat: Infinity, 
-            ease: "linear" 
-        }}
         >
         
-        {/* Dotted Lines SVG */}
         <AnimatePresence>
             {!isScattered && (
                 <motion.svg
@@ -146,10 +173,10 @@ const CryptoFeatureWeb = () => {
                          return (
                             <motion.line
                                 key={`line-${index}`}
-                                x1={center}
-                                y1={center}
-                                x2={center + x}
-                                y2={center + y}
+                                x1={containerSize / 2}
+                                y1={containerSize / 2}
+                                x2={containerSize / 2 + x}
+                                y2={containerSize / 2 + y}
                                 stroke="hsl(var(--muted-foreground))"
                                 strokeWidth="1"
                                 strokeOpacity={0.8}
@@ -161,47 +188,24 @@ const CryptoFeatureWeb = () => {
             )}
         </AnimatePresence>
 
-        {/* Orbiting Icons */}
         <AnimatePresence>
           {featureIcons.map((icon, index) => {
-            const { x: orbitX, y: orbitY } = getOrbitPosition(index, featureIcons.length, radius);
             const randomPos = initialPositions[index] || { x: 0, y: 0 };
-
             return (
-              <motion.div
+              <OrbitingIcon
                 key={icon.key}
-                className="absolute"
-                style={{ top: center, left: center, zIndex: 10 }}
-                initial={{ x: randomPos.x, y: randomPos.y, scale: 0.5, opacity: 0 }}
-                animate={{
-                  x: isScattered ? randomPos.x : orbitX,
-                  y: isScattered ? randomPos.y : orbitY,
-                  scale: isScattered ? 0.8 : 1,
-                  opacity: 1,
-                  rotate: isScattered ? 0 : -360 // Counter-rotate
-                }}
-                transition={{
-                  type: 'spring',
-                  stiffness: 50,
-                  damping: 15,
-                  delay: isScattered ? 0 : index * 0.05,
-                  rotate: {
-                    duration: 40,
-                    repeat: Infinity,
-                    ease: "linear",
-                  }
-                }}
-                exit={{ opacity: 0 }}
-              >
-                <div className="h-12 w-12 flex items-center justify-center rounded-full bg-card border-2 shadow-md -translate-x-1/2 -translate-y-1/2">
-                   {React.cloneElement(icon.component, { className: "h-6 w-6 text-muted-foreground" })}
-                </div>
-              </motion.div>
+                icon={icon}
+                index={index}
+                total={featureIcons.length}
+                radius={radius}
+                isScattered={isScattered}
+                initialPosition={randomPos}
+                rotation={rotation}
+              />
             );
           })}
         </AnimatePresence>
         
-        {/* Central Logo - always on top */}
         <motion.div
           className="absolute z-20"
           style={{
@@ -217,7 +221,7 @@ const CryptoFeatureWeb = () => {
               <LogoIcon />
           </IconContainer>
         </motion.div>
-      </motion.div>
+      </div>
     </div>
   );
 };
