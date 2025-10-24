@@ -2,7 +2,7 @@
 
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { leaderboardData, whaleTransactions } from '@/lib/mock-data';
+import { whaleTransactions } from '@/lib/mock-data';
 import { WalletProfile } from '@/components/wallet/wallet-profile';
 
 
@@ -24,34 +24,11 @@ export async function generateMetadata({ params }: WalletPageProps): Promise<Met
 
 // Find wallet data from mock data
 const getWalletData = (address: string) => {
-    const wallet = leaderboardData.find(w => w.address.toLowerCase() === address.toLowerCase());
+    // Leaderboard data is removed, so we only get transactions.
     const transactions = whaleTransactions.filter(tx => tx.from.toLowerCase() === address.toLowerCase() || tx.to.toLowerCase() === address.toLowerCase());
     
-    // Create some mock portfolio data based on the wallet
-    if (wallet) {
-        const currentNetWorth = parseFloat(wallet.netWorth.replace('$', '').replace('M', '')) * 1000000;
-        // Correctly calculate past value from PnL: PastValue = CurrentValue / (1 + PnL)
-        const pastNetWorth = currentNetWorth / (1 + wallet.pnl7d / 100);
-
-        return {
-            ...wallet,
-            transactions,
-            portfolio: {
-                netWorth: currentNetWorth,
-                history: [
-                    { name: '30d ago', value: pastNetWorth },
-                    { name: 'Today', value: currentNetWorth },
-                ],
-                allocations: [
-                    { name: wallet.topHolding.token, value: wallet.topHolding.percentage, color: 'hsl(var(--chart-1))' },
-                    { name: 'Others', value: 100 - wallet.topHolding.percentage, color: 'hsl(var(--chart-2))' },
-                ],
-                topHoldings: [
-                    {...wallet.topHolding, amount: '1,234.56', value: '$500,000' }
-                ]
-            }
-        };
-    }
+    // In a real app, you'd fetch wallet-specific analytics here.
+    // For now, portfolio is null as it depended on leaderboard data.
     return { address, transactions, portfolio: null };
 };
 

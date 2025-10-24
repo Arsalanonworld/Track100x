@@ -20,7 +20,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import PageHeader from '@/components/page-header';
 import { Button } from '@/components/ui/button';
-import { Copy, ArrowUpRight, Zap, Eye, Download, Lock, TrendingUp, Percent, ArrowRightLeft, Tag } from 'lucide-react';
+import { Zap } from 'lucide-react';
 import { whaleTransactions, type LeaderboardWallet } from '@/lib/mock-data';
 import { WatchlistButton } from '@/components/track-button';
 import { AlertEditorDialog } from '@/components/alert-editor-dialog';
@@ -31,13 +31,14 @@ import React from 'react';
 import TransactionCard from '@/components/transaction-card';
 
 
-type WalletData = LeaderboardWallet & {
+type WalletData = {
+    address: string,
     transactions: typeof whaleTransactions,
     portfolio: {
         netWorth: number;
         history: { name: string; value: number }[];
         allocations: { name: string; value: number; color: string }[];
-        topHoldings: ({ token: string; percentage: number; amount: string; value: string })[];
+        topHoldings: ({ token: string; amount: string; value: string })[];
     } | null;
 }
 
@@ -58,14 +59,13 @@ const StatCard = ({ title, value, icon, valueClassName }: { title: string, value
 };
 
 
-export function WalletProfile({ walletData }: { walletData: WalletData | { address: string, transactions: any[], portfolio: null } }) {
+export function WalletProfile({ walletData }: { walletData: WalletData }) {
   if (!walletData) {
     notFound();
   }
 
   const { address, portfolio, transactions } = walletData;
 
-  const isLeaderboardWallet = 'tags' in walletData;
 
   return (
     <div className="space-y-8">
@@ -88,38 +88,6 @@ export function WalletProfile({ walletData }: { walletData: WalletData | { addre
         }
       />
       
-      {isLeaderboardWallet && (
-        <section id="wallet-stats">
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                 <StatCard 
-                    title="Net Worth"
-                    value={(walletData as WalletData).netWorth}
-                    icon={<TrendingUp className="h-4 w-4 text-muted-foreground" />}
-                />
-                 <StatCard 
-                    title="7-Day Trades"
-                    value={(walletData as WalletData).activity}
-                    icon={<ArrowRightLeft className="h-4 w-4 text-muted-foreground" />}
-                />
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Tags</CardTitle>
-                        <Tag className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="flex flex-wrap gap-2 pt-1">
-                             {(walletData as WalletData).tags && (walletData as WalletData).tags.length > 0 ? (
-                                (walletData as WalletData).tags.map(tag => <Badge key={tag} variant="secondary">{tag}</Badge>)
-                             ) : (
-                                <p className='text-sm text-muted-foreground'>No tags</p>
-                             )}
-                        </div>
-                    </CardContent>
-                </Card>
-            </div>
-        </section>
-      )}
-
       {portfolio ? (
         <section id="token-holdings">
             <h2 className="text-2xl font-bold tracking-tight mb-4">Token Holdings</h2>
@@ -160,7 +128,7 @@ export function WalletProfile({ walletData }: { walletData: WalletData | { addre
       ) : (
         <Card className='text-center p-8 border-dashed border-2'>
             <CardTitle>Analytics Unavailable</CardTitle>
-            <CardDescription>Detailed analytics are only available for wallets on the leaderboard.</CardDescription>
+            <CardDescription>This wallet is not currently on the leaderboard. Add it to your watchlist to monitor its activity.</CardDescription>
         </Card>
       )}
 

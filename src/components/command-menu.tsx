@@ -5,9 +5,9 @@ import * as React from 'react';
 import {
   Search,
   Rss,
-  Compass,
   Eye,
   Settings,
+  Bell,
 } from 'lucide-react';
 import {
   Command,
@@ -20,11 +20,9 @@ import {
 } from '@/components/ui/command';
 import { Button } from './ui/button';
 import { useRouter } from 'next/navigation';
-import { leaderboardData } from '@/lib/mock-data';
 import { tokenLibrary } from '@/lib/tokens';
 import { CryptoIcon } from './crypto-icon';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
-import { Wallet } from 'lucide-react';
 
 const searchPlaceholders = [
   'Search for wallets...',
@@ -104,7 +102,6 @@ export function CommandMenu() {
     command();
   };
 
-  const wallets = leaderboardData.slice(0, 5);
   const tokens = Object.values(tokenLibrary).slice(0, 5);
 
   return (
@@ -142,31 +139,18 @@ export function CommandMenu() {
                     <Rss className="mr-2 h-4 w-4" />
                     <span>Whale Feed</span>
                     </CommandItem>
-                    <CommandItem onSelect={() => runCommand(() => router.push('/leaderboard'))}>
-                    <Compass className="mr-2 h-4 w-4" />
-                    <span>Explore</span>
-                    </CommandItem>
                     <CommandItem onSelect={() => runCommand(() => router.push('/watchlist'))}>
                     <Eye className="mr-2 h-4 w-4" />
                     <span>My Watchlist</span>
+                    </CommandItem>
+                     <CommandItem onSelect={() => runCommand(() => router.push('/alerts'))}>
+                    <Bell className="mr-2 h-4 w-4" />
+                    <span>Alerts</span>
                     </CommandItem>
                     <CommandItem onSelect={() => runCommand(() => router.push('/account'))}>
                     <Settings className="mr-2 h-4 w-4" />
                     <span>Settings</span>
                     </CommandItem>
-                </CommandGroup>
-                <CommandSeparator />
-                <CommandGroup heading="Top Wallets">
-                    {wallets.map(wallet => (
-                    <CommandItem
-                        key={wallet.address}
-                        value={`Wallet ${wallet.address}`}
-                        onSelect={() => runCommand(() => router.push(`/wallet/${wallet.address}`))}
-                    >
-                        <Wallet className="mr-2 h-4 w-4" />
-                        <span>{wallet.address}</span>
-                    </CommandItem>
-                    ))}
                 </CommandGroup>
                 <CommandSeparator />
                 <CommandGroup heading="Popular Tokens">

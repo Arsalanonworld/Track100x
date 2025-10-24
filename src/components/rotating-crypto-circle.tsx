@@ -9,7 +9,6 @@ import { Zap, Eye, Trophy, Wallet, Rss } from 'lucide-react';
 
 const iconPool = [
   { component: <Rss />, key: 'feed' },
-  { component: <Trophy />, key: 'leaderboard' },
   { component: <Eye />, key: 'watchlist' },
   { component: <Wallet />, key: 'wallet' },
   { component: <Zap />, key: 'alerts' },

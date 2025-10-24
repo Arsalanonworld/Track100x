@@ -3,7 +3,6 @@
 
 import { WhaleFeed } from '@/components/whale-feed';
 import HeroSection from '@/components/hero-section';
-import { LeaderboardPreview } from '@/components/leaderboard-preview';
 import React from 'react';
 import { HomePageCta } from '@/components/home-page-cta';
 import { FeatureHighlights } from '@/components/feature-highlights';
@@ -11,11 +10,11 @@ import { PricingPreview } from '@/components/pricing-preview';
 
 export default function HomePage() {
   return (
-    <div className="flex flex-col gap-10 md:gap-16">
+    <div className="flex flex-col gap-10 md:gap-12">
       {/* Hero Section */}
       <HeroSection />
 
-      <div className="container space-y-10 md:space-y-16">
+      <div className="container space-y-10 md:space-y-12">
         {/* Whale Feed Section */}
         <section id="whale-feed">
           <WhaleFeed isPreview={true} showTitle={true} />
@@ -24,9 +23,6 @@ export default function HomePage() {
         {/* Feature Highlights Section */}
         <FeatureHighlights />
       </div>
-
-      {/* Leaderboard Preview (Full Width) */}
-      <LeaderboardPreview />
 
       <div className="container space-y-10 md:space-y-16">
         {/* Pricing Section */}

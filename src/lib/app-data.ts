@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Bell, Eye, Trophy, Wallet, Zap } from 'lucide-react';
+import { Bell, Eye, Wallet, Zap } from 'lucide-react';
 
 export const featureHighlights = [
     {
@@ -12,11 +12,6 @@ export const featureHighlights = [
         icon: Eye,
         title: 'Unlimited Watchlist',
         description: 'Track as many wallets and tokens as you want, without any limitations on the Pro plan.',
-    },
-    {
-        icon: Trophy,
-        title: 'Smart Money Leaderboard',
-        description: 'Discover and learn from the top-performing traders in real-time with our comprehensive leaderboard.',
     },
      {
         icon: Wallet,
@@ -32,7 +27,6 @@ export const pricing = {
     price: '$0',
     features: [
       'Real-time Whale Feed',
-      'Top 10 Leaderboard',
       '5 Watchlist Items',
       '5 Quick Alerts',
     ],
@@ -45,7 +39,6 @@ export const pricing = {
     features: [
       'Unlimited Watchlist Items',
       'Unlimited Quick & Advanced Alerts',
-      'Full Leaderboard Access',
       'Detailed Wallet Analytics',
     ],
   },
@@ -57,7 +50,6 @@ export const features = [
     category: 'Core Features',
     items: [
       { name: 'Real-Time Whale Feed', free: true, pro: true },
-      { name: 'Leaderboard Access', free: 'Top 10', pro: 'Top 100+' },
       { name: 'Watchlist', free: '5 items', pro: 'Unlimited' },
     ],
   },

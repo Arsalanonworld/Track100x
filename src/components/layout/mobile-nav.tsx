@@ -4,7 +4,7 @@
 import * as React from "react"
 import Link, { type LinkProps } from "next/link"
 import { useRouter } from "next/navigation"
-import { Menu, Rss, Trophy, LayoutDashboard, Compass, Eye, Star, Sparkles, Bell, Wallet, BarChart3, Settings } from "lucide-react"
+import { Menu, Rss, Eye, Star, Bell, Settings } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -99,7 +99,6 @@ z"
 
 const mainNavItems = [
     { href: '/feed', label: 'Whale Feed', icon: Rss },
-    { href: '/leaderboard', label: 'Explore', icon: Compass },
     { href: '/watchlist', label: 'Watchlist', icon: Eye },
     { href: '/alerts', label: 'Alerts', icon: Bell },
 ];

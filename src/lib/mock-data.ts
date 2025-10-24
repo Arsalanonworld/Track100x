@@ -1,6 +1,6 @@
 
 
-import type { WhaleTransaction, TriggeredAlert, LeaderboardWallet } from './types';
+import type { WhaleTransaction, TriggeredAlert } from './types';
 
 
 export const whaleTransactions: WhaleTransaction[] = [
@@ -277,97 +277,4 @@ export const triggeredAlerts: TriggeredAlert[] = [
         time: '3h ago',
         value: 'Wallet active after 98 days',
     }
-];
-
-export const leaderboardData: LeaderboardWallet[] = [
-  {
-    address: '0xde0b295669a9fd93d5f28d9ec85e40f4cb697bae',
-    netWorth: '$12.5M',
-    topHolding: { token: 'WIF', percentage: 45 },
-    pnl7d: 125.75,
-    winRate: 82.1,
-    activity: 88,
-    tags: ['Smart Money', 'Meme Trader'],
-  },
-  {
-    address: '0x742d54eC7E1E43D35eaA64324f40f28E23744e88',
-    netWorth: '$8.2M',
-    topHolding: { token: 'ETH', percentage: 60 },
-    pnl7d: 88.2,
-    winRate: 75.5,
-    activity: 72,
-    tags: ['Smart Money', 'DeFi Farmer'],
-  },
-  {
-    address: '0xbe0eb53f46cd790cd13851d5eff43d12404d33e8',
-    netWorth: '$25.1M',
-    topHolding: { token: 'WBTC', percentage: 80 },
-    pnl7d: 75.9,
-    winRate: 68.3,
-    activity: 65,
-    tags: ['Whale'],
-  },
-  {
-    address: '0xf977814e90da44bfa03b6295a0616a897441acec',
-    netWorth: '$5.8M',
-    topHolding: { token: 'SOL', percentage: 70 },
-    pnl7d: 68.4,
-    winRate: 71.2,
-    activity: 75,
-    tags: ['Influencer'],
-  },
-  {
-    address: '0xfa52274dd61e1643d2205169732f291140b340b3',
-    netWorth: '$2.3M',
-    topHolding: { token: 'RNDR', percentage: 30 },
-    pnl7d: 45.1,
-    winRate: 65.0,
-    activity: 55,
-    tags: ['Market Maker'],
-  },
-  {
-    address: '0x503828976D22510aad0201ac7EC88293211D2383',
-    netWorth: '$55.6M',
-    topHolding: { token: 'USDC', percentage: 90 },
-    pnl7d: 22.5,
-    winRate: 95.2,
-    activity: 95,
-    tags: ['Whale', 'CEX'],
-  },
-  {
-    address: '0x1c35AA15321AEde2d21A2e26998BCc183E55225A',
-    netWorth: '$4.1M',
-    topHolding: { token: 'PEPE', percentage: 55 },
-    pnl7d: 180.3,
-    winRate: 78.9,
-    activity: 110,
-    tags: ['Meme Trader', 'Smart Money'],
-  },
-  {
-    address: '0x835332f5B34390A2aB254A653AA26425141Ff547',
-    netWorth: '$1.8M',
-    topHolding: { token: 'LINK', percentage: 40 },
-    pnl7d: 35.6,
-    winRate: 60.1,
-    activity: 40,
-    tags: ['DeFi Farmer'],
-  },
-  {
-    address: '0x6F4bA3E4A357C6934524458A389a315f45532a48',
-    netWorth: '$9.7M',
-    topHolding: { token: 'AAVE', percentage: 25 },
-    pnl7d: 55.2,
-    winRate: 66.7,
-    activity: 58,
-    tags: ['Lending Maxi'],
-  },
-  {
-    address: '0x21a31Ee1afC51d94C2eFcCAa2092aF10283328E7',
-    netWorth: '$3.5M',
-    topHolding: { token: 'UNI', percentage: 35 },
-    pnl7d: 48.9,
-    winRate: 69.4,
-    activity: 62,
-    tags: ['DEX Trader'],
-  },
 ];

@@ -8,9 +8,7 @@ import {
   LogOut,
   Star,
   Lock,
-  Compass,
   Eye,
-  Wallet,
   Rss,
   Settings,
   ChevronLeft,
@@ -120,12 +118,6 @@ export const navItems = [
       label: "Whale Feed",
       icon: <Rss size={18} />,
       href: "/feed",
-      authRequired: false,
-    },
-    {
-      label: "Explore",
-      icon: <Compass size={18} />,
-      href: "/leaderboard",
       authRequired: false,
     },
     {
