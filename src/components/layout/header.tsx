@@ -105,9 +105,17 @@ export default function Header() {
 
     const getPageTitle = () => {
         if (pathname === '/') return 'Home';
-        const item = navItems.find(item => item.href === pathname);
-        // Capitalize first letter
-        return item?.label || pathname.substring(1).charAt(0).toUpperCase() + pathname.slice(2);
+        const item = navItems.find(item => pathname.startsWith(item.href));
+        if (item) return item.label;
+
+        // Handle dynamic routes like /wallet/[address]
+        if (pathname.startsWith('/wallet/')) return 'Wallet Profile';
+        if (pathname.startsWith('/account')) return 'My Account';
+        if (pathname.startsWith('/upgrade')) return 'Upgrade';
+
+        // Fallback for other pages
+        const pageName = pathname.substring(1).charAt(0).toUpperCase() + pathname.slice(2);
+        return pageName.split('/')[0];
     }
     
     return (

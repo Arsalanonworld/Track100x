@@ -71,9 +71,9 @@ export function WalletProfile({ walletData }: { walletData: WalletData | { addre
     <div className="space-y-8">
       <PageHeader
         title="Wallet Profile"
-        description={<span className="font-mono">{address}</span>}
+        description={<span className="font-mono break-all">{address}</span>}
         action={
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 mt-4 sm:mt-0">
             <WatchlistButton identifier={address} type="wallet" />
             <Dialog>
                 <DialogTrigger asChild>
@@ -84,10 +84,8 @@ export function WalletProfile({ walletData }: { walletData: WalletData | { addre
                 </DialogTrigger>
                 <AlertEditorDialog onOpenChange={()=>{}} entity={{ type: 'wallet', identifier: address }} />
             </Dialog>
-            
           </div>
         }
-        className='hidden sm:block'
       />
       
       {isLeaderboardWallet && (
