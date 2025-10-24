@@ -9,6 +9,7 @@ import { Menu, Rss, Eye, Star, Bell, Settings } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { navItems } from "@/lib/app-data"
 
 function LogoIcon() {
   return (
@@ -97,12 +98,6 @@ z"
   );
 }
 
-const mainNavItems = [
-    { href: '/feed', label: 'Whale Feed', icon: Rss },
-    { href: '/watchlist', label: 'Watchlist', icon: Eye },
-    { href: '/alerts', label: 'Alerts', icon: Bell },
-];
-
 const accountNavItems = [
     { href: '/account', label: 'My Account', icon: Settings },
     { href: '/upgrade', label: 'Upgrade to Pro', icon: Star, pro: true },
@@ -117,7 +112,7 @@ export function MobileNav() {
       <SheetTrigger asChild>
         <Button
           variant="ghost"
-          className="px-0 text-base hover:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
+          className="px-0 text-base hover:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 md:hidden"
         >
           <Menu className="h-6 w-6" />
           <span className="sr-only">Toggle Menu</span>
@@ -137,7 +132,7 @@ export function MobileNav() {
             </SheetTitle>
         </SheetHeader>
         <div className="flex flex-col gap-4 pl-6 mt-4 text-lg font-medium flex-1">
-          {mainNavItems.map((item) => {
+          {navItems.map((item) => {
             const Icon = item.icon || Star;
             return (
               <MobileLink

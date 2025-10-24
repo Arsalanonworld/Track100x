@@ -7,10 +7,10 @@ import { MobileNav } from "./mobile-nav";
 import { useUser } from "@/firebase";
 import { cn } from "@/lib/utils";
 import { CommandMenu } from "../command-menu";
-import React, { useState, useEffect } from "react";
+import { navItems } from "@/lib/app-data";
 import { usePathname } from "next/navigation";
-import { navItems } from "./sidebar";
 import { AnimatedThemeToggler } from "../ui/animated-theme-toggler";
+import { Button } from "../ui/button";
 
 function LogoIcon() {
     return (
@@ -26,7 +26,7 @@ function LogoIcon() {
         viewBox="0 0 784 464"
         enableBackground="new 0 0 784 464"
         xmlSpace="preserve"
-        className="h-10 w-10 text-primary"
+        className="h-8 w-8 text-primary"
       >
         <path
           fill="currentColor"
@@ -102,41 +102,40 @@ function LogoIcon() {
 export default function Header() {
     const { user } = useUser();
     const pathname = usePathname();
-
-    const getPageTitle = () => {
-        if (pathname === '/') return 'Home';
-        const item = navItems.find(item => pathname.startsWith(item.href));
-        if (item) return item.label;
-
-        // Handle dynamic routes like /wallet/[address]
-        if (pathname.startsWith('/wallet/')) return 'Wallet Profile';
-        if (pathname.startsWith('/account')) return 'My Account';
-        if (pathname.startsWith('/upgrade')) return 'Upgrade';
-
-        // Fallback for other pages
-        const pageName = pathname.substring(1).charAt(0).toUpperCase() + pathname.slice(2);
-        return pageName.split('/')[0];
-    }
     
     return (
         <header className={cn(
             "fixed top-0 z-30 w-full bg-background/95 backdrop-blur-sm border-b"
         )}>
-            <div className={cn("flex h-14 items-center lg:h-[60px] px-4")}>
+            <div className={cn("container flex h-14 items-center lg:h-16")}>
+                {/* Mobile Nav */}
                 <div className="flex items-center gap-2 md:hidden">
                    <MobileNav />
-                   <Link href="/" className="flex items-center space-x-2 pl-2">
-                        <span className="font-bold text-lg">{getPageTitle()}</span>
+                </div>
+                
+                {/* Desktop Nav */}
+                <div className="hidden md:flex items-center gap-6">
+                    <Link href="/" className="flex items-center space-x-2">
+                        <LogoIcon />
+                        <span className="font-bold text-lg">Track100x</span>
                     </Link>
+                    <nav className="flex items-center gap-2">
+                       {navItems.map((item) => (
+                         <Button
+                            key={item.href}
+                            variant={pathname.startsWith(item.href) ? 'secondary' : 'ghost'}
+                            asChild
+                         >
+                            <Link href={item.href}>{item.label}</Link>
+                         </Button>
+                       ))}
+                    </nav>
                 </div>
                 
-                <div className="hidden md:flex flex-1 justify-center px-4 md:px-0">
-                    <div className="w-full max-w-md">
-                      <CommandMenu />
+                <div className="flex flex-1 items-center justify-end space-x-2 sm:space-x-4">
+                    <div className="w-full flex-1 md:w-auto md:flex-none">
+                        <CommandMenu />
                     </div>
-                </div>
-                
-                <div className="flex items-center justify-end space-x-2 sm:space-x-4 ml-auto">
                     {user && <NotificationBell />}
                     <UserNav />
                     <AnimatedThemeToggler />
@@ -145,5 +144,3 @@ export default function Header() {
         </header>
     );
 }
-
-    
