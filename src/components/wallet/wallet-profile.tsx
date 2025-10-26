@@ -21,7 +21,7 @@ import { Badge } from '@/components/ui/badge';
 import PageHeader from '@/components/page-header';
 import { Button } from '@/components/ui/button';
 import { Zap } from 'lucide-react';
-import { whaleTransactions, type LeaderboardWallet } from '@/lib/mock-data';
+import { whaleTransactions } from '@/lib/mock-data';
 import { WatchlistButton } from '@/components/track-button';
 import { AlertEditorDialog } from '@/components/alert-editor-dialog';
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';

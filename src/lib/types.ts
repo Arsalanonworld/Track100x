@@ -84,3 +84,20 @@ export type TriggeredAlert = {
     target?: string;
 };
     
+export type Deal = {
+  dealId: string;
+  name: string;
+  industry: string;
+  location: string;
+  sde: number;
+  askingPrice: number;
+  multiple: number;
+  growth: number;
+  tenure: number;
+  signal: string;
+  source: string;
+  sourceUrl: string;
+  type: 'listed' | 'off-market';
+  isPro: boolean;
+  listedAt: string;
+};

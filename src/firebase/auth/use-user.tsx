@@ -28,15 +28,14 @@ async function createUserProfile(user: User) {
   const userDoc = await getDoc(userRef);
 
   if (!userDoc.exists()) {
-    const newUserProfile: UserProfile = {
+    const newUserProfile: Omit<UserProfile, 'createdAt'> = {
       uid: user.uid,
       email: user.email,
       displayName: user.displayName,
       photoURL: user.photoURL,
       plan: 'free',
-      createdAt: serverTimestamp(),
     };
-    await setDoc(userRef, newUserProfile);
+    await setDoc(userRef, {...newUserProfile, createdAt: serverTimestamp()});
   }
 }
 
@@ -91,7 +90,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     // If user is logged in, redirect them away from any guest-only pages.
     if (user) {
       if (guestOnlyRoutes.includes(pathname)) {
-        router.replace('/watchlist');
+        router.replace('/feed');
       }
       // If user is a Pro member, redirect them away from the upgrade page.
       if (isPro && proOnlyRedirects.includes(pathname)) {

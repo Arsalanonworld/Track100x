@@ -8,8 +8,8 @@ import {
   Eye,
   Settings,
   Bell,
-  Briefcase,
-  Building2,
+  Wallet,
+  Bitcoin,
 } from 'lucide-react';
 import {
   Command,
@@ -23,13 +23,14 @@ import {
 import { Button } from './ui/button';
 import { useRouter } from 'next/navigation';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
-import { mockDeals } from '@/lib/mock-deal-data';
+import { whaleTransactions } from '@/lib/mock-data';
+
 
 const searchPlaceholders = [
-  'Search for deals...',
-  'e.g. Landscaping in Austin',
-  'e.g. SaaS, E-commerce',
-  'Find off-market deals...',
+  'Search wallets, tokens...',
+  'e.g. 0xde0b295669a9fd93d5f28d9ec85e40f4cb697bae',
+  'e.g. ETH, WIF, PEPE',
+  'Find the next 100x opportunity...',
 ];
 
 
@@ -102,7 +103,7 @@ export function CommandMenu() {
     command();
   };
 
-  const deals = mockDeals.slice(0, 3);
+  const featuredWallets = whaleTransactions.slice(0, 3);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -135,13 +136,17 @@ export function CommandMenu() {
             <CommandList>
                 <CommandEmpty>No results found.</CommandEmpty>
                 <CommandGroup heading="Navigation">
-                    <CommandItem onSelect={() => runCommand(() => router.push('/deals'))}>
+                    <CommandItem onSelect={() => runCommand(() => router.push('/feed'))}>
                         <Rss className="mr-2 h-4 w-4" />
-                        <span>Deal Radar</span>
+                        <span>Whale Feed</span>
                     </CommandItem>
                     <CommandItem onSelect={() => runCommand(() => router.push('/watchlist'))}>
                         <Eye className="mr-2 h-4 w-4" />
-                        <span>Saved Deals</span>
+                        <span>Watchlist</span>
+                    </CommandItem>
+                     <CommandItem onSelect={() => runCommand(() => router.push('/alerts'))}>
+                        <Bell className="mr-2 h-4 w-4" />
+                        <span>Alerts</span>
                     </CommandItem>
                     <CommandItem onSelect={() => runCommand(() => router.push('/account'))}>
                         <Settings className="mr-2 h-4 w-4" />
@@ -149,16 +154,16 @@ export function CommandMenu() {
                     </CommandItem>
                 </CommandGroup>
                 <CommandSeparator />
-                <CommandGroup heading="Featured Deals">
-                    {deals.map(deal => (
+                <CommandGroup heading="Featured Wallets">
+                    {featuredWallets.map(tx => (
                     <CommandItem
-                        key={deal.dealId}
-                        value={`Deal ${deal.name} ${deal.industry}`}
-                         onSelect={() => runCommand(() => router.push(`/deal/${deal.dealId}`))}
+                        key={tx.id}
+                        value={`Wallet ${tx.fromShort} ${tx.from}`}
+                         onSelect={() => runCommand(() => router.push(`/wallet/${tx.from}`))}
                     >
-                        {deal.type === 'off-market' ? <Briefcase className="mr-2 h-4 w-4" /> : <Building2 className="mr-2 h-4 w-4" />}
-                        <span>{deal.name}</span>
-                        <span className="text-muted-foreground ml-2">{deal.industry}</span>
+                        <Wallet className="mr-2 h-4 w-4" />
+                        <span>{tx.fromShort}</span>
+                        <span className="text-muted-foreground ml-2 truncate">{tx.fromTags?.join(', ')}</span>
                     </CommandItem>
                     ))}
                 </CommandGroup>
