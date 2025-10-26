@@ -50,7 +50,7 @@ const features = [
     },
 ];
 
-const FlipText = ({ phrases }: { phrases: string[] }) => {
+const SlidingText = ({ phrases }: { phrases: string[] }) => {
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
@@ -65,12 +65,11 @@ const FlipText = ({ phrases }: { phrases: string[] }) => {
     <AnimatePresence mode="wait">
       <motion.h1
         key={phrases[index]}
-        initial={{ opacity: 0, y: 20, rotateX: -90 }}
-        animate={{ opacity: 1, y: 0, rotateX: 0 }}
-        exit={{ opacity: 0, y: -20, rotateX: 90 }}
-        transition={{ duration: 0.4, ease: "easeInOut" }}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -20 }}
+        transition={{ duration: 0.5, ease: "easeInOut" }}
         className="relative text-3xl font-extrabold tracking-tighter sm:text-5xl lg:text-6xl text-foreground text-center"
-        style={{ perspective: '400px' }}
       >
         {phrases[index]}
       </motion.h1>
@@ -85,7 +84,7 @@ export default function HeroSection() {
             <div className="absolute inset-0 bg-[url('/grid.svg')] bg-repeat [mask-image:linear-gradient(to_bottom,white_5%,transparent_80%)] dark:opacity-20"></div>
             <div className="container mx-auto px-4 text-center relative">
                  <div className="min-h-[40px] sm:min-h-[64px] lg:min-h-[72px] flex items-center justify-center">
-                    <FlipText phrases={phrases} />
+                    <SlidingText phrases={phrases} />
                  </div>
                  <p className="max-w-3xl mx-auto mt-4 text-base sm:text-lg text-muted-foreground">
                     The Blockchain Intelligence Platform for investors, traders, and researchers.
