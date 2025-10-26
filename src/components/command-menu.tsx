@@ -8,6 +8,8 @@ import {
   Eye,
   Settings,
   Bell,
+  Briefcase,
+  Building2,
 } from 'lucide-react';
 import {
   Command,
@@ -20,16 +22,14 @@ import {
 } from '@/components/ui/command';
 import { Button } from './ui/button';
 import { useRouter } from 'next/navigation';
-import { tokenLibrary } from '@/lib/tokens';
-import { CryptoIcon } from './crypto-icon';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
+import { mockDeals } from '@/lib/mock-deal-data';
 
 const searchPlaceholders = [
-  'Search for wallets...',
-  'Search for tokens...',
-  'e.g. 0xde0b...',
-  'e.g. WIF, ETH, SOL',
-  'Navigate to your watchlist...',
+  'Search for deals...',
+  'e.g. Landscaping in Austin',
+  'e.g. SaaS, E-commerce',
+  'Find off-market deals...',
 ];
 
 
@@ -102,7 +102,7 @@ export function CommandMenu() {
     command();
   };
 
-  const tokens = Object.values(tokenLibrary).slice(0, 5);
+  const deals = mockDeals.slice(0, 3);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -135,34 +135,30 @@ export function CommandMenu() {
             <CommandList>
                 <CommandEmpty>No results found.</CommandEmpty>
                 <CommandGroup heading="Navigation">
-                    <CommandItem onSelect={() => runCommand(() => router.push('/feed'))}>
-                    <Rss className="mr-2 h-4 w-4" />
-                    <span>Whale Feed</span>
+                    <CommandItem onSelect={() => runCommand(() => router.push('/deals'))}>
+                        <Rss className="mr-2 h-4 w-4" />
+                        <span>Deal Radar</span>
                     </CommandItem>
                     <CommandItem onSelect={() => runCommand(() => router.push('/watchlist'))}>
-                    <Eye className="mr-2 h-4 w-4" />
-                    <span>My Watchlist</span>
-                    </CommandItem>
-                     <CommandItem onSelect={() => runCommand(() => router.push('/alerts'))}>
-                    <Bell className="mr-2 h-4 w-4" />
-                    <span>Alerts</span>
+                        <Eye className="mr-2 h-4 w-4" />
+                        <span>Saved Deals</span>
                     </CommandItem>
                     <CommandItem onSelect={() => runCommand(() => router.push('/account'))}>
-                    <Settings className="mr-2 h-4 w-4" />
-                    <span>Settings</span>
+                        <Settings className="mr-2 h-4 w-4" />
+                        <span>Settings</span>
                     </CommandItem>
                 </CommandGroup>
                 <CommandSeparator />
-                <CommandGroup heading="Popular Tokens">
-                    {tokens.map(token => (
+                <CommandGroup heading="Featured Deals">
+                    {deals.map(deal => (
                     <CommandItem
-                        key={token.symbol}
-                        value={`Token ${token.name} ${token.symbol}`}
-                         onSelect={() => runCommand(() => {})}
+                        key={deal.dealId}
+                        value={`Deal ${deal.name} ${deal.industry}`}
+                         onSelect={() => runCommand(() => router.push(`/deal/${deal.dealId}`))}
                     >
-                        <CryptoIcon token={token.symbol} className="mr-2 h-4 w-4" />
-                        <span>{token.name}</span>
-                        <span className="text-muted-foreground ml-2">{token.symbol}</span>
+                        {deal.type === 'off-market' ? <Briefcase className="mr-2 h-4 w-4" /> : <Building2 className="mr-2 h-4 w-4" />}
+                        <span>{deal.name}</span>
+                        <span className="text-muted-foreground ml-2">{deal.industry}</span>
                     </CommandItem>
                     ))}
                 </CommandGroup>
