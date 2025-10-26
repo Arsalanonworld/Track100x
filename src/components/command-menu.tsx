@@ -9,7 +9,6 @@ import {
   Settings,
   Bell,
   Wallet,
-  Bitcoin,
 } from 'lucide-react';
 import {
   Command,
@@ -40,48 +39,51 @@ export function CommandMenu() {
   const [isClient, setIsClient] = React.useState(false);
   const [placeholder, setPlaceholder] = React.useState(searchPlaceholders[0]);
 
-  // Set isClient to true only on the client side
+  // Set isClient to true only on the client side to avoid hydration errors
   React.useEffect(() => {
     setIsClient(true);
   }, []);
 
-  // Typing animation effect
+  // Typing animation effect for placeholders
   React.useEffect(() => {
     if (!isClient || open) return;
 
-    let currentPlaceholderIndex = 0;
-    let currentText = '';
+    let placeholderIndex = 0;
+    let charIndex = 0;
     let isDeleting = false;
     let timeoutId: NodeJS.Timeout;
 
     const type = () => {
-      const fullText = searchPlaceholders[currentPlaceholderIndex];
+      const currentPlaceholder = searchPlaceholders[placeholderIndex];
       
       if (isDeleting) {
-        currentText = fullText.substring(0, currentText.length - 1);
+        // Deleting text
+        charIndex--;
+        setPlaceholder(currentPlaceholder.substring(0, charIndex));
+        if (charIndex === 0) {
+          isDeleting = false;
+          placeholderIndex = (placeholderIndex + 1) % searchPlaceholders.length;
+          timeoutId = setTimeout(type, 500); // Pause before typing new placeholder
+        } else {
+          timeoutId = setTimeout(type, 50); // Deleting speed
+        }
       } else {
-        currentText = fullText.substring(0, currentText.length + 1);
+        // Typing text
+        charIndex++;
+        setPlaceholder(currentPlaceholder.substring(0, charIndex));
+        if (charIndex === currentPlaceholder.length) {
+          isDeleting = true;
+          timeoutId = setTimeout(type, 2000); // Pause at end of placeholder
+        } else {
+          timeoutId = setTimeout(type, 100); // Typing speed
+        }
       }
-
-      setPlaceholder(currentText);
-
-      let typingSpeed = isDeleting ? 50 : 100;
-
-      if (!isDeleting && currentText === fullText) {
-        // Pause at end of word
-        typingSpeed = 2000;
-        isDeleting = true;
-      } else if (isDeleting && currentText === '') {
-        isDeleting = false;
-        currentPlaceholderIndex = (currentPlaceholderIndex + 1) % searchPlaceholders.length;
-        typingSpeed = 500; // Pause before typing new word
-      }
-      
-      timeoutId = setTimeout(type, typingSpeed);
     };
 
+    // Start the animation
     timeoutId = setTimeout(type, 1000);
 
+    // Cleanup on component unmount or when the popover opens
     return () => clearTimeout(timeoutId);
   }, [isClient, open]);
 
@@ -116,7 +118,7 @@ export function CommandMenu() {
         >
           <Search className="mr-2 h-4 w-4 shrink-0" />
           <span className='flex-1 text-left whitespace-nowrap overflow-hidden'>
-            {!open && isClient ? (
+            {isClient && !open ? (
               <>
                 {placeholder}
                 <span className="animate-blinking-cursor w-px h-4 ml-0.5 bg-foreground inline-block" />
