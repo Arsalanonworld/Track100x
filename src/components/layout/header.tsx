@@ -6,7 +6,6 @@ import NotificationBell from "./notification-bell";
 import { MobileNav } from "./mobile-nav";
 import { useUser } from "@/firebase";
 import { cn } from "@/lib/utils";
-import { CommandMenu } from "../command-menu";
 import { navItems } from "@/lib/app-data";
 import { usePathname } from "next/navigation";
 import { AnimatedThemeToggler } from "../ui/animated-theme-toggler";
@@ -133,9 +132,6 @@ export default function Header() {
                 </div>
                 
                 <div className="flex flex-1 items-center justify-end space-x-2 sm:space-x-4">
-                    <div className="w-full flex-1 md:w-auto md:flex-none">
-                        <CommandMenu />
-                    </div>
                     {user && <NotificationBell />}
                     <UserNav />
                     <AnimatedThemeToggler />
