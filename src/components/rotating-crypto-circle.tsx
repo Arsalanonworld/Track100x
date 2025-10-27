@@ -5,10 +5,10 @@ import React, { useState, useEffect, forwardRef, ReactNode, useMemo } from 'reac
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { CryptoIcon } from './crypto-icon';
-import { Zap, Eye, Trophy, Wallet, Rss } from 'lucide-react';
+import { Zap, Eye, Trophy, Wallet, Radar } from 'lucide-react';
 
 const iconPool = [
-  { component: <Rss />, key: 'feed' },
+  { component: <Radar />, key: 'radar' },
   { component: <Eye />, key: 'watchlist' },
   { component: <Wallet />, key: 'wallet' },
   { component: <Zap />, key: 'alerts' },
@@ -351,5 +351,7 @@ z"
     </svg>
   );
 }
+
+    
 
     
