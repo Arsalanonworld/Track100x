@@ -95,9 +95,6 @@ export function WatchlistItemCard({
                                     {item.identifier}
                                 </Link>
                             )}
-                             <div className='text-xs text-muted-foreground pt-1'>
-                                <p>Net Worth & P/L: <span className='italic'>Fetching data...</span></p>
-                             </div>
                             </>
                        ) : (
                             <div>
