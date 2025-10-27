@@ -24,41 +24,46 @@ export const navItems = [
 export const featureHighlights = [
     {
         icon: Zap,
-        title: 'Real-Time Alerts',
-        description: 'Set up simple or advanced alerts to monitor specific wallets, tokens, and on-chain events.',
+        title: 'Advanced & Quick Alerts',
+        description: 'Get instant Telegram notifications for any on-chain event. Create simple alerts or build complex ones with our Pro builder.',
     },
     {
         icon: Eye,
         title: 'Unlimited Watchlist',
-        description: 'Track as many wallets and tokens as you want, without any limitations on the Pro plan.',
+        description: 'Track every wallet and token that matters to you. Your on-chain universe, all in one place.',
     },
      {
-        icon: Wallet,
-        title: 'Wallet Intelligence',
-        description: 'Dive deep into any wallet to see their holdings, transaction history, and performance.',
+        icon: Radar,
+        title: 'Smart Money Radar',
+        description: 'Discover trending tokens and see which wallets are making the most profitable moves right now.',
     },
 ];
 
 export const pricing = {
   free: {
     name: 'Free',
-    description: 'Get a feel for our platform with essential tracking tools.',
+    description: 'Get a feel for the market with our essential on-chain tools.',
     price: '$0',
     features: [
-      'Real-time Whale Feed',
-      '5 Watchlist Items',
+      'Real-Time Whale Feed (Delayed)',
+      '5 Items on Watchlist',
       '5 Quick Alerts',
+      '7-Day Historical Data',
     ],
   },
   pro: {
     name: 'Pro',
-    description: 'Unlimited access to every tool for the serious on-chain analyst.',
+    description: 'The ultimate toolkit for serious on-chain analysts and traders.',
     priceMonthly: '$7',
     priceYearly: '$6',
     features: [
+      'Everything in Free, plus:',
       'Unlimited Watchlist Items',
       'Unlimited Quick & Advanced Alerts',
-      'Detailed Wallet Analytics',
+      'Smart Money Radar',
+      'Telegram Notifications',
+      'Full Historical Data',
+      'Priority Support'
     ],
   },
 };
@@ -66,10 +71,11 @@ export const pricing = {
 
 export const features = [
   {
-    category: 'Core Features',
+    category: 'Core Tools',
     items: [
-      { name: 'Real-Time Whale Feed', free: true, pro: true },
-      { name: 'Watchlist', free: '5 items', pro: 'Unlimited' },
+      { name: 'Real-Time Whale Feed', free: 'Delayed', pro: 'Real-Time' },
+      { name: 'Watchlist Capacity', free: '5 items', pro: 'Unlimited' },
+      { name: 'Smart Money Radar', free: false, pro: true },
     ],
   },
   {
@@ -81,16 +87,18 @@ export const features = [
     ],
   },
    {
-    category: 'Analytics',
+    category: 'Analytics & Data',
     items: [
         { name: 'Wallet Profile Details', free: true, pro: true },
         { name: 'Historical Performance Data', free: '7-day history', pro: 'Full history' },
+        { name: 'Data Export (CSV)', free: false, pro: true },
     ]
    },
   {
-    category: 'Experience',
+    category: 'Support & Experience',
     items: [
       { name: 'Priority Support', free: false, pro: true },
+      { name: 'Ad-Free Experience', free: false, pro: true },
     ],
   },
 ];

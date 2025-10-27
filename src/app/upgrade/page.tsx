@@ -71,14 +71,14 @@ export default function UpgradePage() {
         {/* Hero Section */}
         <section className="text-center max-w-4xl mx-auto">
           <h1 className="text-4xl font-extrabold tracking-tighter sm:text-5xl lg:text-6xl">
-            Unlock Your Full On-Chain Potential
+            Go Pro. Get Your Edge.
           </h1>
           <p className="max-w-2xl mx-auto mt-6 text-lg text-muted-foreground">
-            Go beyond the basics. Get unlimited alerts, access the advanced builder, and track your entire portfolio with full historical data.
+            Stop guessing. Upgrade to Track100x Pro to unlock unlimited tracking, advanced alerts, and exclusive tools like the Smart Money Radar.
           </p>
           <div className="flex items-center justify-center gap-4 mt-8">
             <Button size="lg" onClick={handleUpgradeClick}>
-              Upgrade Now <ArrowRight className="ml-2 h-4 w-4" />
+              Upgrade to Pro <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
             <Button variant="ghost" size="lg" onClick={() => scrollTo('comparison')}>
               Compare Plans
@@ -93,10 +93,10 @@ export default function UpgradePage() {
         <section id="pricing" className="mt-12">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">
-              Simple, Clear Pricing
+              Simple, Powerful Pricing
             </h2>
             <p className="max-w-xl mx-auto mt-4 text-muted-foreground">
-              Choose the plan that fits your strategy.
+              One plan that has it all. Go Pro to unlock the full potential of on-chain intelligence.
             </p>
           </div>
           <div className="flex items-center justify-center gap-4 mt-8">
@@ -188,10 +188,10 @@ export default function UpgradePage() {
         <section id="comparison" className="mt-24">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">
-              Feature Comparison
+              Compare Free vs. Pro
             </h2>
             <p className="max-w-xl mx-auto mt-4 text-muted-foreground">
-              A detailed look at what separates our Free and Pro plans.
+              See exactly what you get when you upgrade. Unlock powerful features to find your edge in the market.
             </p>
           </div>
 
