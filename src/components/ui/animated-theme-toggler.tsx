@@ -39,18 +39,18 @@ export const AnimatedThemeToggler = ({
   const toggleTheme = useCallback(async () => {
     if (!buttonRef.current || !(document as any).startViewTransition) {
         const newTheme = !isDark
-        setIsDark(newTheme)
-        document.documentElement.classList.toggle("dark")
+        document.documentElement.classList.toggle("dark", newTheme)
         localStorage.setItem("theme", newTheme ? "dark" : "light")
+        setIsDark(newTheme)
         return;
     }
 
     await (document as any).startViewTransition(() => {
       flushSync(() => {
         const newTheme = !isDark
-        setIsDark(newTheme)
-        document.documentElement.classList.toggle("dark")
+        document.documentElement.classList.toggle("dark", newTheme)
         localStorage.setItem("theme", newTheme ? "dark" : "light")
+        setIsDark(newTheme)
       })
     }).ready
 
