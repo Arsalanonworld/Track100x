@@ -319,15 +319,13 @@ export function WhaleFeed({ isPreview = false, showTitle = true }: { isPreview?:
                            <motion.div
                             key={tx.id}
                             layout
-                            initial={{ opacity: 0, y: -20, scale: 0.98 }}
-                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            initial={{ opacity: 0, scale: 0.95, y: -20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.2, layout: { duration: 0.3 } } }}
-                            transition={{ duration: 0.5, type: "spring" }}
+                            transition={{ type: "spring", stiffness: 300, damping: 25, mass: 0.5 }}
                             className="bg-card origin-top"
                           >
-                             <div className="animate-pulse-slow">
-                               <TransactionCard tx={tx} />
-                             </div>
+                            <TransactionCard tx={tx} />
                            </motion.div>
                         ))}
                       </AnimatePresence>
