@@ -110,7 +110,7 @@ export default function Header() {
     
     return (
         <header className={cn(
-            "fixed top-0 z-30 w-full bg-background/95 backdrop-blur-sm border-b"
+            "fixed top-10 z-30 w-full bg-background/95 backdrop-blur-sm border-b"
         )}>
             <div className={cn("container flex h-14 items-center lg:h-16")}>
                 {/* Mobile Nav */}
