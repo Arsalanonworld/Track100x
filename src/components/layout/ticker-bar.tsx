@@ -63,7 +63,7 @@ export const TickerBar = () => {
 
     if (!isClient || loading) {
       return (
-         <div className="fixed top-0 z-20 w-full overflow-hidden bg-muted/50 border-b h-10 flex items-center">
+         <div className="fixed top-0 z-20 w-full overflow-hidden bg-muted border-b h-10 flex items-center">
             <p className='text-xs text-muted-foreground px-4 animate-pulse'>Fetching market data...</p>
          </div>
       )
@@ -75,7 +75,7 @@ export const TickerBar = () => {
     }
 
   return (
-    <div className="fixed top-0 z-20 w-full overflow-hidden bg-muted/50 border-b h-10 group">
+    <div className="fixed top-0 z-20 w-full overflow-hidden bg-muted border-b h-10 group">
       <div className="absolute top-0 left-0 h-full flex items-center animate-scroll group-hover:pause">
         {extendedData.map((item, index) => (
           <React.Fragment key={index}>
