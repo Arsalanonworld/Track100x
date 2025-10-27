@@ -86,23 +86,23 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
                                 <div className="flex-1 w-full min-w-0 pt-3 md:pt-0">
                                     {/* Desktop View */}
                                     <div className="hidden md:flex items-center gap-2 text-sm">
-                                        <div className="flex items-center gap-2 min-w-0">
+                                        <div className="flex items-center gap-2 min-w-0 flex-1">
                                             <span className="text-muted-foreground">From</span>
                                             <Link href={getExplorerUrl(tx.network, tx.from, 'address')} target="_blank" rel="noopener noreferrer" className="font-mono hover:underline truncate">
                                                 {tx.fromShort}
                                             </Link>
-                                            <WatchlistButton type="wallet" identifier={tx.from} />
                                             <div className="flex items-center gap-1.5">{tx.fromTags.map(tag => <Badge key={tag} variant="secondary">{tag}</Badge>)}</div>
                                         </div>
+                                        <WatchlistButton type="wallet" identifier={tx.from} />
                                         <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0 mx-2" />
-                                        <div className="flex items-center gap-2 min-w-0">
+                                        <div className="flex items-center gap-2 min-w-0 flex-1">
                                             <span className="text-muted-foreground">To</span>
                                              <Link href={getExplorerUrl(tx.network, tx.to, 'address')} target="_blank" rel="noopener noreferrer" className="font-mono hover:underline truncate">
                                                 {tx.toShort}
                                              </Link>
-                                            <WatchlistButton type="wallet" identifier={tx.to} />
                                              <div className="flex items-center gap-1.5">{tx.toTags.map(tag => <Badge key={tag} variant="secondary">{tag}</Badge>)}</div>
                                         </div>
+                                        <WatchlistButton type="wallet" identifier={tx.to} />
                                     </div>
                                     {/* Mobile View */}
                                     <div className="md:hidden space-y-2 text-sm">

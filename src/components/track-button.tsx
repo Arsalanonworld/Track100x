@@ -122,7 +122,7 @@ export const WatchlistButton = ({ identifier, type }: WatchlistButtonProps) => {
     }
     
     if (checking || userLoading) {
-        return <Button variant="ghost" size="icon" disabled className="h-8 w-8"><Loader2 className="h-4 w-4 animate-spin"/></Button>
+        return <Button variant="ghost" size="icon" disabled className="h-8 w-8 shrink-0"><Loader2 className="h-4 w-4 animate-spin"/></Button>
     }
 
     return (
