@@ -1,6 +1,6 @@
 
 
-import type { WhaleTransaction, TriggeredAlert } from './types';
+import type { WhaleTransaction, TriggeredAlert, TrendingToken } from './types';
 
 
 export const whaleTransactions: WhaleTransaction[] = [
@@ -278,3 +278,70 @@ export const triggeredAlerts: TriggeredAlert[] = [
         value: 'Wallet active after 98 days',
     }
 ];
+
+export const trendingTokens: TrendingToken[] = [
+    {
+        id: '1',
+        name: 'dogwifhat',
+        symbol: 'WIF',
+        priceChange: 42.5,
+        whaleBuys: 15,
+        swapUrl: 'https://jup.ag/swap/SOL-WIF',
+    },
+    {
+        id: '2',
+        name: 'Bonk',
+        symbol: 'BONK',
+        priceChange: 12.1,
+        whaleBuys: 8,
+        swapUrl: 'https://jup.ag/swap/SOL-BONK',
+    },
+    {
+        id: '3',
+        name: 'Jeo Boden',
+        symbol: 'BODEN',
+        priceChange: 78.3,
+        whaleBuys: 25,
+        swapUrl: 'https://jup.ag/swap/SOL-BODEN',
+    },
+    {
+        id: '4',
+        name: 'MOTHER',
+        symbol: 'MOTHER',
+        priceChange: -5.2,
+        whaleBuys: 3,
+        swapUrl: 'https://jup.ag/swap/SOL-MOTHER',
+    },
+    {
+        id: '5',
+        name: 'New Pump Token',
+        symbol: 'PUMP',
+        priceChange: 1200,
+        whaleBuys: 50,
+        pumpFunUrl: 'https://pump.fun/board',
+    },
+    {
+        id: '6',
+        name: 'Pepe',
+        symbol: 'PEPE',
+        priceChange: 22.8,
+        whaleBuys: 12,
+        swapUrl: 'https://app.uniswap.org/swap?outputCurrency=0x6982508145454Ce325dDbE47a25d4ec3d2311933',
+    },
+     {
+        id: '7',
+        name: 'Solana',
+        symbol: 'SOL',
+        priceChange: 8.2,
+        whaleBuys: 18,
+        swapUrl: 'https://jup.ag/swap/USDC-SOL',
+    },
+    {
+        id: '8',
+        name: 'Based Token',
+        symbol: 'BASED',
+        priceChange: 45.6,
+        whaleBuys: 21,
+        pumpFunUrl: 'https://pump.fun/board',
+    },
+]

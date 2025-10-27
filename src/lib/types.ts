@@ -101,3 +101,13 @@ export type Deal = {
   isPro: boolean;
   listedAt: string;
 };
+
+export type TrendingToken = {
+    id: string;
+    name: string;
+    symbol: string;
+    priceChange: number;
+    whaleBuys: number;
+    swapUrl?: string;
+    pumpFunUrl?: string;
+}

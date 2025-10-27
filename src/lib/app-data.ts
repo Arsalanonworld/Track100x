@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Bell, Eye, Wallet, Zap, Rss } from 'lucide-react';
+import { Bell, Eye, Wallet, Zap, Rss, Radar } from 'lucide-react';
 
 
 export const navItems = [
@@ -13,6 +13,11 @@ export const navItems = [
       label: "Alerts",
       icon: Bell,
       href: "/alerts",
+    },
+     {
+      label: "Radar",
+      icon: Radar,
+      href: "/radar",
     },
 ];
 
