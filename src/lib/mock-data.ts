@@ -286,7 +286,7 @@ export const trendingTokens: TrendingToken[] = [
         symbol: 'WIF',
         priceChange: 42.5,
         whaleBuys: 15,
-        swapUrl: 'https://jup.ag/swap/SOL-WIF',
+        swapUrl: 'https://jup.ag/swap/SOL-WIF?ref=track100x',
     },
     {
         id: '2',
@@ -294,7 +294,7 @@ export const trendingTokens: TrendingToken[] = [
         symbol: 'BONK',
         priceChange: 12.1,
         whaleBuys: 8,
-        swapUrl: 'https://jup.ag/swap/SOL-BONK',
+        swapUrl: 'https://jup.ag/swap/SOL-BONK?ref=track100x',
     },
     {
         id: '3',
@@ -302,7 +302,7 @@ export const trendingTokens: TrendingToken[] = [
         symbol: 'BODEN',
         priceChange: 78.3,
         whaleBuys: 25,
-        swapUrl: 'https://jup.ag/swap/SOL-BODEN',
+        swapUrl: 'https://jup.ag/swap/SOL-BODEN?ref=track100x',
     },
     {
         id: '4',
@@ -310,7 +310,7 @@ export const trendingTokens: TrendingToken[] = [
         symbol: 'MOTHER',
         priceChange: -5.2,
         whaleBuys: 3,
-        swapUrl: 'https://jup.ag/swap/SOL-MOTHER',
+        swapUrl: 'https://jup.ag/swap/SOL-MOTHER?ref=track100x',
     },
     {
         id: '5',
@@ -318,7 +318,7 @@ export const trendingTokens: TrendingToken[] = [
         symbol: 'PUMP',
         priceChange: 1200,
         whaleBuys: 50,
-        pumpFunUrl: 'https://pump.fun/board',
+        pumpFunUrl: 'https://pump.fun/board?ref=track100x',
     },
     {
         id: '6',
@@ -326,7 +326,7 @@ export const trendingTokens: TrendingToken[] = [
         symbol: 'PEPE',
         priceChange: 22.8,
         whaleBuys: 12,
-        swapUrl: 'https://app.uniswap.org/swap?outputCurrency=0x6982508145454Ce325dDbE47a25d4ec3d2311933',
+        swapUrl: 'https://app.uniswap.org/swap?outputCurrency=0x6982508145454Ce325dDbE47a25d4ec3d2311933&ref=track100x',
     },
      {
         id: '7',
@@ -334,7 +334,7 @@ export const trendingTokens: TrendingToken[] = [
         symbol: 'SOL',
         priceChange: 8.2,
         whaleBuys: 18,
-        swapUrl: 'https://jup.ag/swap/USDC-SOL',
+        swapUrl: 'https://jup.ag/swap/USDC-SOL?ref=track100x',
     },
     {
         id: '8',
@@ -342,6 +342,6 @@ export const trendingTokens: TrendingToken[] = [
         symbol: 'BASED',
         priceChange: 45.6,
         whaleBuys: 21,
-        pumpFunUrl: 'https://pump.fun/board',
+        pumpFunUrl: 'https://pump.fun/board?ref=track100x',
     },
 ]

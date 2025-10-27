@@ -30,6 +30,7 @@ import { Skeleton } from './ui/skeleton';
 import type { WhaleTransaction } from '@/lib/types';
 import { AnimatePresence, motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { AdBanner } from './ad-banner';
 
 
 function PageSkeleton({ showTitle }: { showTitle: boolean }) {
@@ -257,6 +258,15 @@ export function WhaleFeed({ isPreview = false, showTitle = true }: { isPreview?:
     return <PageSkeleton showTitle={showTitle} />;
   }
 
+  const transactionsWithAds = currentTransactions.reduce((acc, tx, index) => {
+    acc.push(tx);
+    if ((index + 1) % 5 === 0 && index < currentTransactions.length -1) {
+        acc.push({ isAd: true, id: `ad-${index}` });
+    }
+    return acc;
+  }, [] as (WhaleTransaction | {isAd: boolean, id: string})[]);
+
+
   return (
         <Card>
             {showTitle && (
@@ -315,19 +325,37 @@ export function WhaleFeed({ isPreview = false, showTitle = true }: { isPreview?:
                        [...Array(isPreview ? 5 : 10)].map((_, i) => <PageSkeleton key={i} showTitle={false} />)
                     ) : currentTransactions.length > 0 ? (
                       <AnimatePresence initial={false}>
-                        {currentTransactions.map((tx) => (
-                           <motion.div
-                            key={tx.id}
-                            layout
-                            initial={{ opacity: 0, scale: 0.95, y: -20 }}
-                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.2, layout: { duration: 0.3 } } }}
-                            transition={{ type: "spring", stiffness: 300, damping: 25, mass: 0.5 }}
-                            className="bg-card origin-top"
-                          >
-                            <TransactionCard tx={tx} />
-                           </motion.div>
-                        ))}
+                        {transactionsWithAds.map((item) => {
+                            if ('isAd' in item) {
+                                return (
+                                    <motion.div
+                                        key={item.id}
+                                        layout
+                                        initial={{ opacity: 0, scale: 0.95, y: -20 }}
+                                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                                        exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.2, layout: { duration: 0.3 } } }}
+                                        transition={{ type: "spring", stiffness: 300, damping: 25, mass: 0.5 }}
+                                        className="bg-card origin-top"
+                                    >
+                                        <AdBanner />
+                                    </motion.div>
+                                )
+                            }
+                            const tx = item as WhaleTransaction;
+                            return (
+                               <motion.div
+                                key={tx.id}
+                                layout
+                                initial={{ opacity: 0, scale: 0.95, y: -20 }}
+                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.2, layout: { duration: 0.3 } } }}
+                                transition={{ type: "spring", stiffness: 300, damping: 25, mass: 0.5 }}
+                                className="bg-card origin-top"
+                              >
+                                <TransactionCard tx={tx} />
+                               </motion.div>
+                            )
+                        })}
                       </AnimatePresence>
                     ) : (
                       <div className="text-center py-16 text-muted-foreground">
