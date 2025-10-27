@@ -43,7 +43,7 @@ const AnimatedPlaceholder = ({ placeholders }: { placeholders: string[] }) => {
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -5 }}
         transition={{ duration: 0.3 }}
-        className="absolute left-0 top-0"
+        className="absolute inset-0 text-left"
       >
         {placeholders[index]}
       </motion.span>
@@ -85,7 +85,7 @@ export function CommandMenu() {
         >
           <Search className="mr-2 h-4 w-4 shrink-0" />
           <div className="flex-1 text-left whitespace-nowrap overflow-hidden">
-            <span>Search </span>
+            <span className="mr-2">Search</span>
             <span className="relative inline-block w-[200px] h-4 overflow-hidden align-bottom">
                  <AnimatedPlaceholder placeholders={searchPlaceholders} />
             </span>
