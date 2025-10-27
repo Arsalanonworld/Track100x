@@ -5,6 +5,11 @@ import { Bell, Eye, Wallet, Zap, Rss, Radar } from 'lucide-react';
 
 export const navItems = [
     {
+      label: "Radar",
+      icon: Radar,
+      href: "/radar",
+    },
+    {
       label: "Watchlist",
       icon: Eye,
       href: "/watchlist",
@@ -13,11 +18,6 @@ export const navItems = [
       label: "Alerts",
       icon: Bell,
       href: "/alerts",
-    },
-     {
-      label: "Radar",
-      icon: Radar,
-      href: "/radar",
     },
 ];
 
