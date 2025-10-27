@@ -5,11 +5,6 @@ import { Bell, Eye, Wallet, Zap, Rss } from 'lucide-react';
 
 export const navItems = [
     {
-      label: "Whale Feed",
-      icon: Rss,
-      href: "/feed",
-    },
-    {
       label: "Watchlist",
       icon: Eye,
       href: "/watchlist",

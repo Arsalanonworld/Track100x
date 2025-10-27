@@ -90,8 +90,8 @@ z"
 
 const footerLinks = {
   platform: [
-    { label: 'Feed', href: '/feed' },
     { label: 'Watchlist', href: '/watchlist' },
+    { label: 'Alerts', href: '/alerts' },
     { label: 'Upgrade', href: '/upgrade' },
   ],
   legal: [
