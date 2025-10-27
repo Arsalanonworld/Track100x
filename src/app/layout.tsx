@@ -37,10 +37,10 @@ export default function RootLayout({
               z-index: 1;
             }
             .dark::view-transition-new(root) {
-              z-index: 999;
+              z-index: 9999;
             }
             ::view-transition-old(root) {
-              z-index: 999;
+              z-index: 9999;
             }
             ::view-transition-new(root) {
               z-index: 1;
