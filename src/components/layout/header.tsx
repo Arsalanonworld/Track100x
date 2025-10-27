@@ -10,6 +10,7 @@ import { navItems } from "@/lib/app-data";
 import { usePathname } from "next/navigation";
 import { AnimatedThemeToggler } from "../ui/animated-theme-toggler";
 import { Button } from "../ui/button";
+import React from "react";
 
 function LogoIcon() {
     return (
@@ -101,6 +102,11 @@ function LogoIcon() {
 export default function Header() {
     const { user } = useUser();
     const pathname = usePathname();
+    const [mounted, setMounted] = React.useState(false);
+
+    React.useEffect(() => {
+        setMounted(true);
+    }, []);
     
     return (
         <header className={cn(
@@ -119,15 +125,18 @@ export default function Header() {
                         <span className="font-bold text-lg">Track100x</span>
                     </Link>
                     <nav className="flex items-center gap-2">
-                       {navItems.map((item) => (
+                       {navItems.map((item) => {
+                        // Only apply active style after client-side hydration is complete
+                        const isActive = mounted && pathname.startsWith(item.href);
+                        return (
                          <Button
                             key={item.href}
-                            variant={pathname.startsWith(item.href) ? 'secondary' : 'ghost'}
+                            variant={isActive ? 'secondary' : 'ghost'}
                             asChild
                          >
                             <Link href={item.href}>{item.label}</Link>
                          </Button>
-                       ))}
+                       )})}
                     </nav>
                 </div>
                 
