@@ -119,7 +119,7 @@ export default function Header() {
                         <span className="font-bold text-lg">Track100x</span>
                     </Link>
                     <nav className="flex items-center gap-2">
-                       {user && navItems.map((item) => (
+                       {navItems.map((item) => (
                          <Button
                             key={item.href}
                             variant={pathname.startsWith(item.href) ? 'secondary' : 'ghost'}
