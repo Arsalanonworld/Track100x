@@ -52,6 +52,16 @@ const DetailItem = ({ label, value, network, entityType }: { label: string; valu
     );
 };
 
+const AddressLink = ({ address, shortAddress, tags, network }: { address: string, shortAddress: string, tags: string[], network: string }) => (
+    <div className="flex items-center gap-2 min-w-0">
+        <Link href={getExplorerUrl(network, address, 'address')} target="_blank" rel="noopener noreferrer" className="font-mono hover:underline truncate">
+            {shortAddress}
+        </Link>
+        <div className="flex items-center gap-1.5">{tags.map(tag => <Badge key={tag} variant="secondary">{tag}</Badge>)}</div>
+        <WatchlistButton type="wallet" identifier={address} />
+    </div>
+);
+
 
 const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -84,47 +94,15 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
 
                                 {/* Center: From/To Flow */}
                                 <div className="flex-1 w-full min-w-0 pt-3 md:pt-0">
-                                    {/* Desktop View */}
-                                    <div className="hidden md:flex items-center gap-2 text-sm">
-                                        <div className="flex items-center gap-2 min-w-0 flex-1">
-                                            <span className="text-muted-foreground">From</span>
-                                            <Link href={getExplorerUrl(tx.network, tx.from, 'address')} target="_blank" rel="noopener noreferrer" className="font-mono hover:underline truncate">
-                                                {tx.fromShort}
-                                            </Link>
-                                            <div className="flex items-center gap-1.5">{tx.fromTags.map(tag => <Badge key={tag} variant="secondary">{tag}</Badge>)}</div>
+                                    <div className="flex items-center gap-2 text-sm">
+                                        <span className="text-muted-foreground hidden md:inline">From</span>
+                                        <div className="flex-1 min-w-0">
+                                            <AddressLink address={tx.from} shortAddress={tx.fromShort} tags={tx.fromTags} network={tx.network} />
                                         </div>
-                                        <WatchlistButton type="wallet" identifier={tx.from} />
-                                        <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0 mx-2" />
-                                        <div className="flex items-center gap-2 min-w-0 flex-1">
-                                            <span className="text-muted-foreground">To</span>
-                                             <Link href={getExplorerUrl(tx.network, tx.to, 'address')} target="_blank" rel="noopener noreferrer" className="font-mono hover:underline truncate">
-                                                {tx.toShort}
-                                             </Link>
-                                             <div className="flex items-center gap-1.5">{tx.toTags.map(tag => <Badge key={tag} variant="secondary">{tag}</Badge>)}</div>
-                                        </div>
-                                        <WatchlistButton type="wallet" identifier={tx.to} />
-                                    </div>
-                                    {/* Mobile View */}
-                                    <div className="md:hidden space-y-2 text-sm">
-                                        {/* From */}
-                                        <div className="flex items-center gap-2">
-                                            <span className="text-muted-foreground w-8">From</span>
-                                            <Link href={getExplorerUrl(tx.network, tx.from, 'address')} target="_blank" rel="noopener noreferrer" className="font-mono hover:underline truncate">
-                                                {tx.fromShort}
-                                            </Link>
-                                            <WatchlistButton type="wallet" identifier={tx.from} />
-                                        </div>
-                                        {/* Arrow */}
-                                        <div className="pl-4">
-                                            <ArrowDown className="h-4 w-4 text-muted-foreground" />
-                                        </div>
-                                        {/* To */}
-                                        <div className="flex items-center gap-2">
-                                            <span className="text-muted-foreground w-8">To</span>
-                                             <Link href={getExplorerUrl(tx.network, tx.to, 'address')} target="_blank" rel="noopener noreferrer" className="font-mono hover:underline truncate">
-                                                {tx.toShort}
-                                             </Link>
-                                            <WatchlistButton type="wallet" identifier={tx.to} />
+                                        <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0 mx-1" />
+                                        <span className="text-muted-foreground hidden md:inline">To</span>
+                                        <div className="flex-1 min-w-0">
+                                            <AddressLink address={tx.to} shortAddress={tx.toShort} tags={tx.toTags} network={tx.network} />
                                         </div>
                                     </div>
                                 </div>
@@ -132,10 +110,7 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
                                 {/* Right Side: Actions and Details Toggle */}
                                 <div className="w-full md:w-auto flex items-center justify-between md:justify-end mt-2 md:mt-0 gap-2 pl-0 md:pl-4">
                                    <div className="flex items-center gap-2">
-                                        <div className="md:hidden flex items-center gap-1.5 flex-wrap">
-                                            {uniqueTags.slice(0, 2).map(tag => <Badge key={tag} variant="secondary">{tag}</Badge>)}
-                                        </div>
-                                        <Badge variant="outline" className="hidden xs:inline-flex">{tx.network}</Badge>
+                                        <Badge variant="outline">{tx.network}</Badge>
                                         <span className="text-xs text-muted-foreground whitespace-nowrap">{tx.time}</span>
                                     </div>
                                     <div className="flex items-center -mr-1">
@@ -183,3 +158,4 @@ const TransactionCard = ({ tx }: { tx: WhaleTransaction }) => {
 
 
 export default TransactionCard;
+
